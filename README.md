@@ -9,3 +9,5 @@ maybe ill start commenting it
 Anyway I hope this helps someone for something or just as a learning experiance
 
 Once again thanks for reading.
+
+You also need to use Unity 5.6 if you want to use this code as it all uses the old UI system.
