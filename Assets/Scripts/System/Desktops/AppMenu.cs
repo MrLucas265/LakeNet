@@ -1,0 +1,85 @@
+﻿using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+
+public class AppMenu : MonoBehaviour
+{
+	public bool show;
+	public int windowID;
+
+	private GameObject AppMenus;
+
+	private AppatureAppMenu appatureAppMenu;
+	private TreeOSAppMenu treeOSAppMenu;
+	private IceOSAppMenu iceOSAppMenu;
+
+    void Start () 
+	{
+		AppMenus = GameObject.Find("AppMenus");
+		//Desktop Enviros
+		appatureAppMenu = AppMenus.GetComponent<AppatureAppMenu>();
+		treeOSAppMenu = AppMenus.GetComponent<TreeOSAppMenu>();
+		iceOSAppMenu = AppMenus.GetComponent<IceOSAppMenu>();
+	}
+
+	void Update()
+	{
+		switch (GameControl.control.SelectedOS.Name) 
+		{
+		case OperatingSystems.OSName.AppatureOS:
+			if (show == true) 
+			{
+				appatureAppMenu.enabled = true;
+				appatureAppMenu.show = true;
+			} 
+			else 
+			{
+				appatureAppMenu.enabled = false;
+				appatureAppMenu.show = false;
+			}
+			break;
+		case OperatingSystems.OSName.TreeOS:
+			if (show == true) 
+			{
+				treeOSAppMenu.enabled = true;
+				treeOSAppMenu.show = true;
+				//treeOSAppMenu.AppMenuState = 1;
+			} 
+			else 
+			{
+				//treeOSAppMenu.enabled = false;
+				//treeOSAppMenu.show = false;
+				//treeOSAppMenu.AppMenuState = 2;
+			}
+			break;
+		case OperatingSystems.OSName.FluidicIceOS:
+			if (show == true) 
+			{
+				iceOSAppMenu.enabled = true;
+				iceOSAppMenu.show = true;
+				//treeOSAppMenu.AppMenuState = 1;
+			} 
+			else 
+			{
+				//treeOSAppMenu.enabled = false;
+				//treeOSAppMenu.show = false;
+				//treeOSAppMenu.AppMenuState = 2;
+			}
+			break;
+        case OperatingSystems.OSName.QuantinitumOS:
+            if (show == true)
+            {
+                iceOSAppMenu.enabled = true;
+                iceOSAppMenu.show = true;
+                //treeOSAppMenu.AppMenuState = 1;
+            }
+            else
+            {
+                //treeOSAppMenu.enabled = false;
+                //treeOSAppMenu.show = false;
+                //treeOSAppMenu.AppMenuState = 2;
+            }
+            break;
+        }
+    }
+}
