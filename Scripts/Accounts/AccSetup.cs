@@ -28,6 +28,9 @@ public class AccSetup : MonoBehaviour
     public int SelectedColour;
     public int CurrentColor;
 
+    public ColorSystem Colour;
+    public OSFPCSystem OSFPC;
+
     public float timer;
     public float timer1;
     public float MaxTimer;
@@ -54,7 +57,7 @@ public class AccSetup : MonoBehaviour
     public float SelectedTime;
     public float ScoredTime;
 
-    private SoundControl sc;
+    private SoundControlLogin sc;
     private SetupSound ss;
 
     public string GatewayName;
@@ -71,6 +74,9 @@ public class AccSetup : MonoBehaviour
 
     public float MapX;
     public float MapY;
+
+    public float TempMapX;
+    public float TempMapY;
 
     public string SelectedLocation;
 
@@ -119,6 +125,16 @@ public class AccSetup : MonoBehaviour
 
     public bool AcceptedKey;
 
+    public List<DrivePatSystem> Partitions = new List<DrivePatSystem>();
+    public List<DrivePatSystem> PartitionsBlank = new List<DrivePatSystem>();
+    public List<InfectionSystem> BlankInfections = new List<InfectionSystem>();
+    public List<ProgramSystem.FileType> BlankFileType = new List<ProgramSystem.FileType>();
+    public List<ProgramSystem.FileType> DocumentFileType = new List<ProgramSystem.FileType>();
+
+    public List<BankLogsSystem> BlankBankLogs = new List<BankLogsSystem>();
+
+    public List<BankAccountsSystem> StartingBank = new List<BankAccountsSystem>();
+
     // Use this for initialization
     void Start()
     {
@@ -157,7 +173,7 @@ public class AccSetup : MonoBehaviour
 
 
         SerialKey = StringGenerator.RandomCapsWithNumbersChar(25, 25);
-        sc = GetComponent<SoundControl>();
+        sc = GetComponent<SoundControlLogin>();
         ss = GetComponent<SetupSound>();
 
         AfterStart();
@@ -169,22 +185,42 @@ public class AccSetup : MonoBehaviour
         Reset();
 
         sc.CurrentVolume = 1f;
-        ss.CurrentVolume = 0.1f;
+        ss.CurrentVolume = 0.025f;
 
         DevMode = false;
 
         serial = GetComponent<Serial>();
 
-        AvalibleOS.Add(new OperatingSystems(OperatingSystems.OSName.TreeOS));
-        AvalibleOS.Add(new OperatingSystems(OperatingSystems.OSName.FluidicIceOS));
-        AvalibleOS.Add(new OperatingSystems(OperatingSystems.OSName.AppatureOS));
+
+        Colour.Button.Red = 255;
+        Colour.Button.Green = 255;
+        Colour.Button.Blue = 255;
+        Colour.Button.Alpha = 255;
+
+        Colour.Window.Red = 255;
+        Colour.Window.Green = 255;
+        Colour.Window.Blue = 255;
+        Colour.Window.Alpha = 255;
+
+        Colour.Font.Alpha = 255;
+
+        OSFPC.BackgroundAddress = "";
+        OSFPC.MouseCursorAddress = "";
+        OSFPC.ScreenSaverBackgroundAddress = "";
+        OSFPC.ScreenSaverPictureAddress = "";
+
+
+        AvalibleOS.Add(new OperatingSystems(OperatingSystems.OSName.TreeOS,"TreeOS", Colour, OSFPC, false,9999,false));
+        AvalibleOS.Add(new OperatingSystems(OperatingSystems.OSName.FluidicIceOS,"FluidicIceOS", Colour, OSFPC, false, 9999, false));
+        AvalibleOS.Add(new OperatingSystems(OperatingSystems.OSName.AppatureOS, "AppatureOS", Colour, OSFPC, false, 9999, false));
+        AvalibleOS.Add(new OperatingSystems(OperatingSystems.OSName.EthelOS, "EthelOS", Colour, OSFPC, true, 9999, false));
     }
 
     void Reset()
     {
         GameControl.control.Save();
         Customize.cust.Save();
-        HardwareController.hdcon.Save();
+        PersonController.control.Save();
     }
 
     void AfterStart()
@@ -579,6 +615,21 @@ public class AccSetup : MonoBehaviour
             DevAccount();
         }
 
+        if (InputtedText == "INSIDER")
+        {
+            InsiderAccount();
+        }
+
+        if (InputtedText == "TEST1")
+        {
+            TestAccount();
+        }
+
+        if (InputtedText == "TEST2")
+        {
+            TestAccount1();
+        }
+
         if (InputtedText == serial.SerialKey || InputtedText == SerialKey || InputtedText == "THNKUFOR8UY1N9TH3FNVMLEV1" || InputtedText == "7H4NKY0UF0R73271N97H3G4M3" || InputtedText == "M33RY-CHR12-7M42F-R0MFN-VMD3V" || InputtedText == "SKIP")
         {
             AcceptedKey = true;
@@ -907,7 +958,8 @@ public class AccSetup : MonoBehaviour
         {
             if (GUI.Button(new Rect(Screen.width / XPos, Screen.height / YPos + 150 + 23 * i, 150, 22), AvalibleOS[i].Name.ToString()))
             {
-                SelectedOS.Name = AvalibleOS[i].Name;
+                //SelectedOS.Name = AvalibleOS[i].Name;
+                SelectedOS = AvalibleOS[i];
             }
         }
 
@@ -991,6 +1043,13 @@ public class AccSetup : MonoBehaviour
             SelectedLocation = "Russia";
             MapX = 310;
             MapY = 65;
+        }
+
+        if (GUI.Button(new Rect(0.48f * XPos, 0.19f * YPos, W, H), "EU", Button))
+        {
+            SelectedLocation = "Europe";
+            MapX = 285;
+            MapY = 83;
         }
 
         if (GUI.Button(new Rect(0.75f * XPos, 0.3f * YPos, W, H), "CN", Button))
@@ -1106,9 +1165,84 @@ public class AccSetup : MonoBehaviour
     void DevAccount()
     {
         GatewayName = "Gateway";
+        PrimaryUsername = "LakeNet Dev";
+        PrimaryPassword = "a";
+        PrimaryPassHint = "This is a dev account.";
+        SelectedProfilePic = 4;
+        SelectedLocation = "Australia";
+        MapX = 500;
+        MapY = 212;
+        ShortCommand = true;
+        SpacingCharacterCheck = "_";
+        SelectedMenu = 9;
+
+        GameControl.control.ProgramFiles.Add(new ProgramSystem("Notepad", "", "", "", "", "", "C:/Real", "Notepad", "", "", ProgramSystem.FileExtension.Real, ProgramSystem.FileExtension.Null, 0, 0, 0, 0, 0, 0, 0, 100, 1.0f, 0, 0, 0, 0, 0, 0, 0, false, false, false, false, BlankInfections, BlankFileType));
+        GameControl.control.ProgramFiles.Add(new ProgramSystem("Steam", "", "", "", "", "", "C:/Real", "D:/Steam/Steam.exe", "", "", ProgramSystem.FileExtension.Real, ProgramSystem.FileExtension.Null, 0, 0, 0, 0, 0, 0, 0, 100, 1.0f, 0, 0, 0, 0, 0, 0, 0, false, false, false, false, BlankInfections, BlankFileType));
+        GameControl.control.ProgramFiles.Add(new ProgramSystem("File Explorer", "", "", "", "", "", "C:/Real", "C:/Users", "", "", ProgramSystem.FileExtension.Real, ProgramSystem.FileExtension.Null, 0, 0, 0, 0, 0, 0, 0, 100, 1.0f, 0, 0, 0, 0, 0, 0, 0, false, false, false, false, BlankInfections, BlankFileType));
+        GameControl.control.ProgramFiles.Add(new ProgramSystem("Discord", "", "", "", "", "", "C:/Real", "C:/Users/lucas/AppData/Local/Discord/app-0.0.309/Discord.exe", "", "", ProgramSystem.FileExtension.Real, ProgramSystem.FileExtension.Null, 0, 0, 0, 0, 0, 0, 0, 100, 1.0f, 0, 0, 0, 0, 0, 0, 0, false, false, false, false, BlankInfections, BlankFileType));
+        GameControl.control.ProgramFiles.Add(new ProgramSystem("Alfaykun king cover", "", "", "", "", "", "C:/Real", "C:/Users/lucas/Pictures/Alfaykun King Cover louder.mp4", "", "", ProgramSystem.FileExtension.Real, ProgramSystem.FileExtension.Null, 0, 0, 0, 0, 0, 0, 0, 100, 1.0f, 0, 0, 0, 0, 0, 0, 0, false, false, false, false, BlankInfections, BlankFileType));
+        GameControl.control.ProgramFiles.Add(new ProgramSystem("German Mili Cover", "", "", "", "", "", "C:/Real", "F:/Photos/Masterful.mp4", "", "", ProgramSystem.FileExtension.Real, ProgramSystem.FileExtension.Null, 0, 0, 0, 0, 0, 0, 0, 100, 1.0f, 0, 0, 0, 0, 0, 0, 0, false, false, false, false, BlankInfections, BlankFileType));
+
+        GameControl.control.DesktopIconList.Add(new ProgramSystem("Notepad", "", "", "", "", "", "C:/Real", "Notepad", "", "", ProgramSystem.FileExtension.Real, ProgramSystem.FileExtension.Null, 0, 0, 0, 0, 0, 0, 0, 100, 1.0f, 0, 0, 0, 0, 0, 0, 0, false, false, false, false, BlankInfections, BlankFileType));
+        GameControl.control.DesktopIconList.Add(new ProgramSystem("Steam", "", "", "", "", "", "C:/Real", "D:/Steam/Steam.exe", "", "", ProgramSystem.FileExtension.Real, ProgramSystem.FileExtension.Null, 0, 0, 0, 0, 0, 0, 0, 100, 1.0f, 0, 0, 0, 0, 0, 0, 0, false, false, false, false, BlankInfections, BlankFileType));
+        GameControl.control.DesktopIconList.Add(new ProgramSystem("File Explorer", "", "", "", "", "", "C:/Real", "C:/Users", "", "", ProgramSystem.FileExtension.Real, ProgramSystem.FileExtension.Null, 0, 0, 0, 0, 0, 0, 0, 100, 1.0f, 0, 0, 0, 0, 0, 0, 0, false, false, false, false, BlankInfections, BlankFileType));
+        GameControl.control.DesktopIconList.Add(new ProgramSystem("Discord", "", "", "", "", "", "C:/Real", "C:/Users/lucas/AppData/Local/Discord/app-0.0.309/Discord.exe", "", "", ProgramSystem.FileExtension.Real, ProgramSystem.FileExtension.Null, 0, 0, 0, 0, 0, 0, 0, 100, 1.0f, 0, 0, 0, 0, 0, 0, 0, false, false, false, false, BlankInfections, BlankFileType));
+        GameControl.control.DesktopIconList.Add(new ProgramSystem("Alfaykun king cover", "", "", "", "", "", "C:/Real", "C:/Users/lucas/Pictures/Alfaykun King Cover louder.mp4", "", "", ProgramSystem.FileExtension.Real, ProgramSystem.FileExtension.Null, 0, 0, 0, 0, 0, 0, 0, 100, 1.0f, 0, 0, 0, 0, 0, 0, 0, false, false, false, false, BlankInfections, BlankFileType));
+        GameControl.control.DesktopIconList.Add(new ProgramSystem("German Mili Cover", "", "", "", "", "", "C:/Real", "F:/Photos/Masterful.mp4", "", "", ProgramSystem.FileExtension.Real, ProgramSystem.FileExtension.Null, 0, 0, 0, 0, 0, 0, 0, 100, 1.0f, 0, 0, 0, 0, 0, 0, 0, false, false, false, false, BlankInfections, BlankFileType));
+        GameControl.control.DesktopIconList.Add(new ProgramSystem("Media Player", "", "", "", "", "", "C:/Programs", "Media Player", "", "", ProgramSystem.FileExtension.Exe, ProgramSystem.FileExtension.Null, 0, 0, 0, 0, 0, 0, 0, 100, 1.0f, 0, 0, 0, 0, 0, 0, 0, false, false, false, false, BlankInfections, BlankFileType));
+    }
+
+    void InsiderAccount()
+    {
+        GatewayName = "Gateway";
         PrimaryUsername = "LakeNet Insider";
         PrimaryPassword = "a";
         PrimaryPassHint = "This is an insider account.";
+        SelectedProfilePic = 4;
+        SelectedLocation = "Australia";
+        MapX = 500;
+        MapY = 212;
+        ShortCommand = true;
+        SpacingCharacterCheck = "_";
+        SelectedMenu = 9;
+
+        GameControl.control.ProgramFiles.Add(new ProgramSystem("Notepad", "", "", "", "", "", "C:/Real", "Notepad", "", "", ProgramSystem.FileExtension.Real, ProgramSystem.FileExtension.Null, 0, 0, 0, 0, 0, 0, 0, 100, 1.0f, 0, 0, 0, 0, 0, 0, 0, false, false, false, false, BlankInfections, BlankFileType));
+        GameControl.control.ProgramFiles.Add(new ProgramSystem("Steam", "", "", "", "", "", "C:/Real", "D:/Steam/Steam.exe", "", "", ProgramSystem.FileExtension.Real, ProgramSystem.FileExtension.Null, 0, 0, 0, 0, 0, 0, 0, 100, 1.0f, 0, 0, 0, 0, 0, 0, 0, false, false, false, false, BlankInfections, BlankFileType));
+        GameControl.control.ProgramFiles.Add(new ProgramSystem("File Explorer", "", "", "", "", "", "C:/Real", "C:/Users", "", "", ProgramSystem.FileExtension.Real, ProgramSystem.FileExtension.Null, 0, 0, 0, 0, 0, 0, 0, 100, 1.0f, 0, 0, 0, 0, 0, 0, 0, false, false, false, false, BlankInfections, BlankFileType));
+        GameControl.control.ProgramFiles.Add(new ProgramSystem("Discord", "", "", "", "", "", "C:/Real", "C:/Users/lucas/AppData/Local/Discord/app-0.0.309/Discord.exe", "", "", ProgramSystem.FileExtension.Real, ProgramSystem.FileExtension.Null, 0, 0, 0, 0, 0, 0, 0, 100, 1.0f, 0, 0, 0, 0, 0, 0, 0, false, false, false, false, BlankInfections, BlankFileType));
+        GameControl.control.ProgramFiles.Add(new ProgramSystem("Alfaykun king cover", "", "", "", "", "", "C:/Real", "C:/Users/lucas/Pictures/Alfaykun King Cover louder.mp4", "", "", ProgramSystem.FileExtension.Real, ProgramSystem.FileExtension.Null, 0, 0, 0, 0, 0, 0, 0, 100, 1.0f, 0, 0, 0, 0, 0, 0, 0, false, false, false, false, BlankInfections, BlankFileType));
+        GameControl.control.ProgramFiles.Add(new ProgramSystem("German Mili Cover", "", "", "", "", "", "C:/Real", "F:/Photos/Masterful.mp4", "", "", ProgramSystem.FileExtension.Real, ProgramSystem.FileExtension.Null, 0, 0, 0, 0, 0, 0, 0, 100, 1.0f, 0, 0, 0, 0, 0, 0, 0, false, false, false, false, BlankInfections, BlankFileType));
+
+        GameControl.control.DesktopIconList.Add(new ProgramSystem("Notepad", "", "", "", "", "", "C:/Real", "Notepad", "", "", ProgramSystem.FileExtension.Real, ProgramSystem.FileExtension.Null, 0, 0, 0, 0, 0, 0, 0, 100, 1.0f, 0, 0, 0, 0, 0, 0, 0, false, false, false, false, BlankInfections, BlankFileType));
+        GameControl.control.DesktopIconList.Add(new ProgramSystem("Steam", "", "", "", "", "", "C:/Real", "D:/Steam/Steam.exe", "", "", ProgramSystem.FileExtension.Real, ProgramSystem.FileExtension.Null, 0, 0, 0, 0, 0, 0, 0, 100, 1.0f, 0, 0, 0, 0, 0, 0, 0, false, false, false, false, BlankInfections, BlankFileType));
+        GameControl.control.DesktopIconList.Add(new ProgramSystem("File Explorer", "", "", "", "", "", "C:/Real", "C:/Users", "", "", ProgramSystem.FileExtension.Real, ProgramSystem.FileExtension.Null, 0, 0, 0, 0, 0, 0, 0, 100, 1.0f, 0, 0, 0, 0, 0, 0, 0, false, false, false, false, BlankInfections, BlankFileType));
+        GameControl.control.DesktopIconList.Add(new ProgramSystem("Discord", "", "", "", "", "", "C:/Real", "C:/Users/lucas/AppData/Local/Discord/app-0.0.309/Discord.exe", "", "", ProgramSystem.FileExtension.Real, ProgramSystem.FileExtension.Null, 0, 0, 0, 0, 0, 0, 0, 100, 1.0f, 0, 0, 0, 0, 0, 0, 0, false, false, false, false, BlankInfections, BlankFileType));
+        GameControl.control.DesktopIconList.Add(new ProgramSystem("Alfaykun king cover", "", "", "", "", "", "C:/Real", "C:/Users/lucas/Pictures/Alfaykun King Cover louder.mp4", "", "", ProgramSystem.FileExtension.Real, ProgramSystem.FileExtension.Null, 0, 0, 0, 0, 0, 0, 0, 100, 1.0f, 0, 0, 0, 0, 0, 0, 0, false, false, false, false, BlankInfections, BlankFileType));
+        GameControl.control.DesktopIconList.Add(new ProgramSystem("German Mili Cover", "", "", "", "", "", "C:/Real", "F:/Photos/Masterful.mp4", "", "", ProgramSystem.FileExtension.Real, ProgramSystem.FileExtension.Null, 0, 0, 0, 0, 0, 0, 0, 100, 1.0f, 0, 0, 0, 0, 0, 0, 0, false, false, false, false, BlankInfections, BlankFileType));
+        GameControl.control.DesktopIconList.Add(new ProgramSystem("Media Player", "", "", "", "", "", "C:/Programs", "Media Player", "", "", ProgramSystem.FileExtension.Exe, ProgramSystem.FileExtension.Null, 0, 0, 0, 0, 0, 0, 0, 100, 1.0f, 0, 0, 0, 0, 0, 0, 0, false, false, false, false, BlankInfections, BlankFileType));
+    }
+
+    void TestAccount()
+    {
+        GatewayName = "Gateway";
+        PrimaryUsername = "Test Account #1";
+        PrimaryPassword = "a";
+        PrimaryPassHint = "This is a test account.";
+        SelectedProfilePic = 4;
+        SelectedLocation = "Australia";
+        MapX = 500;
+        MapY = 212;
+        ShortCommand = true;
+        SpacingCharacterCheck = "_";
+        SelectedMenu = 9;
+    }
+
+    void TestAccount1()
+    {
+        GatewayName = "Gateway";
+        PrimaryUsername = "Test Account #2";
+        PrimaryPassword = "a";
+        PrimaryPassHint = "This is a test account.";
         SelectedProfilePic = 4;
         SelectedLocation = "Australia";
         MapX = 500;
@@ -1124,7 +1258,7 @@ public class AccSetup : MonoBehaviour
         ProfileController.procon.ProfilePassWord.Add(PrimaryPassword);
         ProfileController.procon.Profiles.Add(PrimaryUsername);
         ProfileController.procon.ProfileID.Add(1);
-        ProfileController.procon.SelectedOS.Add(new OperatingSystems(SelectedOS.Name));
+        ProfileController.procon.SelectedOS.Add(new OperatingSystems(SelectedOS.Name,SelectedOS.Title, SelectedOS.Colour, SelectedOS.FPC, SelectedOS.DisableColourOption, 9999, SelectedOS.GridMode));
         ProfileController.procon.PasswordHint.Add(PrimaryPassHint);
         ProfileController.procon.ProfilePic.Add(SelectedProfilePic);
         PrimaryPassword = "";
@@ -1133,20 +1267,23 @@ public class AccSetup : MonoBehaviour
         Select = ProfileController.procon.Profiles.Count - 1;
         GameControl.control.ProfileName = ProfileController.procon.Profiles[Select];
         GameControl.control.ProfilePicID = ProfileController.procon.ProfilePic[Select];
+        GameControl.control.ProfileID = Select;
         GameControl.control.GatewayLocation = SelectedLocation;
         GameControl.control.GatewayPosX = MapX;
         GameControl.control.GatewayPosY = MapY;
         GameControl.control.Rep.Add(new RepSystem("REVA", 0, 0, 0, 0, 0, 0));
-        GameControl.control.OSName.Add(new OperatingSystems(SelectedOS.Name));
+        GameControl.control.OSName.Add(new OperatingSystems(OperatingSystems.OSName.SafeMode, "Kernal-Sanders", SelectedOS.Colour, SelectedOS.FPC, SelectedOS.DisableColourOption, 9999, SelectedOS.GridMode));
+        GameControl.control.OSName.Add(new OperatingSystems(SelectedOS.Name, SelectedOS.Title, SelectedOS.Colour, SelectedOS.FPC, SelectedOS.DisableColourOption, 9999, SelectedOS.GridMode));
         GameControl.control.SelectedOS = SelectedOS;
         GameControl.control.SerialKey = SerialKey;
-        GameControl.control.ProgramFiles.Add(new ProgramSystem("Kernal-Sanders", "", "", "", "C:/System", "", 0, 0, 10, 0, 100, 1, false, ProgramSystem.ProgramType.OS));
-        GameControl.control.ProgramFiles.Add(new ProgramSystem("" + GameControl.control.SelectedOS.Name, "", "", "", "C:/System", "", 0, 0, 10, 0, 100, 1, false, ProgramSystem.ProgramType.OS));
+        GameControl.control.ProgramFiles.Add(new ProgramSystem("Kernal-Sanders", "", "", "","","", "Reserved", "","","",ProgramSystem.FileExtension.OS, ProgramSystem.FileExtension.Null,0, 0, 0, 0, 0,0,0, 100, 1,0,0,0,0,0,0,0,false,false,false,false,BlankInfections,BlankFileType));
+        GameControl.control.ProgramFiles.Add(new ProgramSystem("" + GameControl.control.SelectedOS.Name, "", "", "", "", "", "C:/System", "", "", "", ProgramSystem.FileExtension.OS, ProgramSystem.FileExtension.Null, 0, 0, 10, 0, 0, 0, 0, 100, 1, 0, 0, 0, 0, 0, 0, 0, false, false, false, false, BlankInfections, BlankFileType));
         GameControl.control.ShortCommands = ShortCommand;
         Customize.cust.ProfileName = ProfileController.procon.Profiles[Select];
         Customize.cust.GatewayName = GatewayName;
         Customize.cust.DoubleClickDelayMenu = 0.5f;
-        HardwareController.hdcon.ProfileName = ProfileController.procon.Profiles[Select];
+        PersonController.control.ProfileName = ProfileController.procon.Profiles[Select];
+        PersonController.control.People.RemoveRange(0, PersonController.control.People.Count);
 
         GameControl.control.Time.Day = 1;
         GameControl.control.Time.DayNumber = 5;
@@ -1157,45 +1294,61 @@ public class AccSetup : MonoBehaviour
 
         string FullDate = "" + GameControl.control.Time.Day + "-" + GameControl.control.Time.Month + "-" + GameControl.control.Time.Year;
 
-        GameControl.control.ProgramFiles.Add(new ProgramSystem("Calculator", "", "", "", "D:/Programs", "Calculator", 0, 0, 2, 0, 100, 10, false, ProgramSystem.ProgramType.Exe));
-        GameControl.control.ProgramFiles.Add(new ProgramSystem("Music Player", "", "", "", "D:/Programs", "Music Player", 0, 0, 2, 0, 100, 10, false, ProgramSystem.ProgramType.Exe));
-        GameControl.control.ProgramFiles.Add(new ProgramSystem("Net Viewer", "", "", "", "D:/Programs", "Net Viewer", 0, 0, 2, 0, 100, 10, false, ProgramSystem.ProgramType.Exe));
-        GameControl.control.ProgramFiles.Add(new ProgramSystem("System Panel", "", "", "", "D:/Programs", "System Panel", 0, 0, 2, 0, 100, 10, false, ProgramSystem.ProgramType.Exe));
-        GameControl.control.ProgramFiles.Add(new ProgramSystem("Remote Viewer", "", "", "", "D:/Programs", "Remote Viewer", 0, 0, 2, 0, 100, 10, false, ProgramSystem.ProgramType.Exe));
-        GameControl.control.ProgramFiles.Add(new ProgramSystem("Notepad", "", "", "", "D:/Programs", "Notepad", 0, 0, 2, 0, 100, 10, false, ProgramSystem.ProgramType.Exe));
-        GameControl.control.ProgramFiles.Add(new ProgramSystem("CLI", "", "", "", "D:/Programs", "Command Line V3", 0, 0, 2, 0, 100, 10, false, ProgramSystem.ProgramType.Exe));
-        GameControl.control.ProgramFiles.Add(new ProgramSystem("Task Viewer", "", "", "", "D:/Programs", "Task Viewer", 0, 0, 2, 0, 100, 10, false, ProgramSystem.ProgramType.Exe));
-        GameControl.control.ProgramFiles.Add(new ProgramSystem("CHM", "", "", "", "D:/Programs", "CHM", 0, 0, 2, 0, 100, 10, false, ProgramSystem.ProgramType.Exe));
-        GameControl.control.ProgramFiles.Add(new ProgramSystem("Version", "", "", "", "D:/Programs", "Version", 0, 0, 2, 0, 100, 10, false, ProgramSystem.ProgramType.Exe));
-        GameControl.control.ProgramFiles.Add(new ProgramSystem("Disk Manager", "", "", "", "D:/Programs", "Disk Manager", 0, 0, 2, 0, 100, 10, false, ProgramSystem.ProgramType.Exe));
-        GameControl.control.ProgramFiles.Add(new ProgramSystem("Mail", "", "", "", "D:/Programs", "Email", 0, 0, 2, 0, 100, 10, false, ProgramSystem.ProgramType.Exe));
-        GameControl.control.ProgramFiles.Add(new ProgramSystem("Gateway", "", "", "", "D:/Programs", "Computer", 0, 0, 2, 0, 100, 10, false, ProgramSystem.ProgramType.Exe));
-        GameControl.control.ProgramFiles.Add(new ProgramSystem("Device Manager", "", "", "", "D:/Programs", "Device Manager", 0, 0, 2, 0, 100, 10, false, ProgramSystem.ProgramType.Exe));
-        GameControl.control.ProgramFiles.Add(new ProgramSystem("Accounts", "", "", "", "D:/Programs", "Account Tracker", 0, 0, 2, 0, 100, 2, false, ProgramSystem.ProgramType.Exe));
-        GameControl.control.ProgramFiles.Add(new ProgramSystem("QA Report System", "", "", "", "D:/Programs", "Bug Report", 0, 0, 0, 0, 100, 2, false, ProgramSystem.ProgramType.Exe));
-        GameControl.control.ProgramFiles.Add(new ProgramSystem("Notification Viewer", "", "", "", "D:/Programs", "Notification Viewer", 0, 0, 0, 0, 100, 2, false, ProgramSystem.ProgramType.Exe));
-        GameControl.control.ProgramFiles.Add(new ProgramSystem("Calendar", "", "", "", "D:/Programs", "Calendar v2", 0, 0, 0, 0, 100, 2, false, ProgramSystem.ProgramType.Exe));
-        GameControl.control.ProgramFiles.Add(new ProgramSystem("Event Viewer", "", "", "", "D:/Programs", "Event Viewer", 0, 0, 0, 0, 100, 2, false, ProgramSystem.ProgramType.Exe));
-        GameControl.control.ProgramFiles.Add(new ProgramSystem("Exchange Viewer", "", "", "", "D:/Programs", "Exchange Viewer", 0, 0, 0, 0, 100, 2, false, ProgramSystem.ProgramType.Exe));
-        GameControl.control.ProgramFiles.Add(new ProgramSystem("Plan Viewer", "", "", "", "D:/Programs", "Plan Viewer", 0, 0, 0, 0, 100, 2, false, ProgramSystem.ProgramType.Exe));
-        GameControl.control.ProgramFiles.Add(new ProgramSystem("Executor", "", "", "", "D:/Programs", "Executor", 0, 0, 0, 0, 100, 2, false, ProgramSystem.ProgramType.Exe));
-        GameControl.control.ProgramFiles.Add(new ProgramSystem("Gateway Viewer", "", "", "", "D:/Programs", "Gateway Viewer", 0, 0, 0, 0, 100, 2, false, ProgramSystem.ProgramType.Exe));
+        string InstallLocation = "D:/Programs";
+        string SysInstallLocation = "C:/Programs";
 
-        //NOTIFICATION TEST
-        GameControl.control.Notifications.Add(new NotificationSystem("System", "Test", "This is a system notification Test", GameControl.control.Time.CurrentTime, GameControl.control.Time.TodaysDate, NotificationSystem.NotificationType.System));
-        GameControl.control.Notifications.Add(new NotificationSystem("Message", "Test", "This is a message notification Test", GameControl.control.Time.CurrentTime, GameControl.control.Time.TodaysDate, NotificationSystem.NotificationType.Message));
-        GameControl.control.Notifications.Add(new NotificationSystem("Reminder", "Test", "This is a reminder notification Test", GameControl.control.Time.CurrentTime, GameControl.control.Time.TodaysDate, NotificationSystem.NotificationType.Reminder));
-        GameControl.control.Notifications.Add(new NotificationSystem("Mail", "Test", "This is a mail notification Test", GameControl.control.Time.CurrentTime, GameControl.control.Time.TodaysDate, NotificationSystem.NotificationType.Mail));
+        BlankFileType.Add(ProgramSystem.FileType.Legal);
+        DocumentFileType.Add(ProgramSystem.FileType.Legal);
+        DocumentFileType.Add(ProgramSystem.FileType.DocumentReaders);
+
+        GameControl.control.DefaultLaunchedPrograms.Add(new ProgramSystem("Notepad", "", "", "", "", "", SysInstallLocation, "Notepad", "", "", ProgramSystem.FileExtension.Exe, ProgramSystem.FileExtension.Null, 0, 0, 2, 0, 0, 0, 0, 100, 1.0f, 0, 0, 0, 0, 0, 0, 0, false, false, false, false, BlankInfections, DocumentFileType));
+
+        GameControl.control.ProgramFiles.Add(new ProgramSystem("QA Report System", "", "", "", "", "", "Dev", "Bug Report", "", "", ProgramSystem.FileExtension.Exe, ProgramSystem.FileExtension.Null, 0, 0, 0, 0, 0, 0, 0, 100, 2, 0, 0, 0, 0, 0, 0, 0,false,false, false, false, BlankInfections,BlankFileType));
+
+        GameControl.control.ProgramFiles.Add(new ProgramSystem("Music Player", "", "", "", "", "", InstallLocation, "Music Player", "", "", ProgramSystem.FileExtension.Exe, ProgramSystem.FileExtension.Null, 0, 0, 2, 0, 0, 0, 0, 100, 1.0f, 0, 0, 0, 0, 0, 0, 0, false, false, false, false, BlankInfections, BlankFileType));
+        GameControl.control.ProgramFiles.Add(new ProgramSystem("Exchange Viewer", "", "", "", "", "", InstallLocation, "Exchange Viewer", "", "", ProgramSystem.FileExtension.Exe, ProgramSystem.FileExtension.Null, 0, 0, 2, 0, 0, 0, 0, 100, 1.0f, 0, 0, 0, 0, 0, 0, 0, false, false, false, false, BlankInfections, BlankFileType));
+        GameControl.control.ProgramFiles.Add(new ProgramSystem("CHM", "", "", "", "", "", InstallLocation, "CHM", "", "", ProgramSystem.FileExtension.Exe, ProgramSystem.FileExtension.Null, 0, 0, 2, 0, 0, 0, 0, 100, 1.0f, 0, 0, 0, 0, 0, 0, 0, false, false, false, false, BlankInfections, BlankFileType));
+
+        //GameControl.control.ProgramFiles.Add(new ProgramSystem("Remote Viewer", "", "", "", "", "", SysInstallLocation, "Remote Viewer", "", "", ProgramSystem.FileExtension.Exe, ProgramSystem.FileExtension.Null, 0, 0, 2, 0, 0, 0, 0, 100, 1.0f, 0, 0, 0, 0, 0, 0, 0, false, false, false, false, BlankInfections, BlankFileType));
+        GameControl.control.ProgramFiles.Add(new ProgramSystem("Calculator", "", "", "", "", "", SysInstallLocation, "Calculator", "", "", ProgramSystem.FileExtension.Exe, ProgramSystem.FileExtension.Null, 0, 0, 2, 0, 0, 0, 0, 100, 1.0f, 0, 0, 0, 0, 0, 0, 0, false, false, false, false, BlankInfections, BlankFileType));
+        GameControl.control.ProgramFiles.Add(new ProgramSystem("Notepad", "", "", "", "", "", SysInstallLocation, "Notepad", "", "", ProgramSystem.FileExtension.Exe, ProgramSystem.FileExtension.Null, 0, 0, 2, 0, 0, 0, 0, 100, 1.0f, 0, 0, 0, 0, 0, 0, 0, false, false, false, false, BlankInfections, DocumentFileType));
+        //GameControl.control.ProgramFiles.Add(new ProgramSystem("Notepadv2", "", "", "", "", "", SysInstallLocation, "Notepadv2", "", "", ProgramSystem.FileExtension.Exe, ProgramSystem.FileExtension.Null, 0, 0, 2, 0, 0, 0, 0, 100, 1.0f, 0, 0, 0, 0, 0, 0, 0, false, false, false, false, BlankInfections, DocumentFileType));
+        GameControl.control.ProgramFiles.Add(new ProgramSystem("CLI", "", "", "", "", "", SysInstallLocation, "Command Line V3", "", "", ProgramSystem.FileExtension.Exe, ProgramSystem.FileExtension.Null, 0, 0, 2, 0, 0, 0, 0, 100, 1.0f, 0, 0, 0, 0, 0, 0, 0, false, false, false, false, BlankInfections, BlankFileType));
+        GameControl.control.ProgramFiles.Add(new ProgramSystem("Task Viewer", "", "", "", "", "", SysInstallLocation, "Task Viewer", "", "", ProgramSystem.FileExtension.Exe, ProgramSystem.FileExtension.Null, 0, 0, 2, 0, 0, 0, 0, 100, 1.0f, 0, 0, 0, 0, 0, 0, 0, false, false, false, false, BlankInfections, BlankFileType));
+        GameControl.control.ProgramFiles.Add(new ProgramSystem("Version", "", "", "", "", "", SysInstallLocation, "Version", "", "", ProgramSystem.FileExtension.Exe, ProgramSystem.FileExtension.Null, 0, 0, 2, 0, 0, 0, 0, 100, 1.0f, 0, 0, 0, 0, 0, 0, 0, false, false, false, false, BlankInfections, BlankFileType));
+        GameControl.control.ProgramFiles.Add(new ProgramSystem("Disk Manager", "", "", "", "", "", SysInstallLocation, "Disk Manager", "", "", ProgramSystem.FileExtension.Exe, ProgramSystem.FileExtension.Null, 0, 0, 2, 0, 0, 0, 0, 100, 1.0f, 0, 0, 0, 0, 0, 0, 0, false, false, false, false, BlankInfections, BlankFileType));
+        GameControl.control.ProgramFiles.Add(new ProgramSystem("Mail", "", "", "", "", "", SysInstallLocation, "Email", "", "", ProgramSystem.FileExtension.Exe, ProgramSystem.FileExtension.Null, 0, 0, 2, 0, 0, 0, 0, 100, 1.0f, 0, 0, 0, 0, 0, 0, 0, false, false, false, false, BlankInfections, BlankFileType));
+        GameControl.control.ProgramFiles.Add(new ProgramSystem("Gateway", "", "", "", "", "", SysInstallLocation, "Computer", "", "", ProgramSystem.FileExtension.Exe, ProgramSystem.FileExtension.Null, 0, 0, 2, 0, 0, 0, 0, 100, 1.0f, 0, 0, 0, 0, 0, 0, 0, false, false, false, false, BlankInfections, BlankFileType));
+        GameControl.control.ProgramFiles.Add(new ProgramSystem("Device Manager", "", "", "", "", "", SysInstallLocation, "Device Manager", "", "", ProgramSystem.FileExtension.Exe, ProgramSystem.FileExtension.Null, 0, 0, 2, 0, 0, 0, 0, 100, 1.0f, 0, 0, 0, 0, 0, 0, 0, false, false, false, false, BlankInfections, BlankFileType));
+        GameControl.control.ProgramFiles.Add(new ProgramSystem("Accounts", "", "", "", "", "", SysInstallLocation, "Account Tracker", "", "", ProgramSystem.FileExtension.Exe, ProgramSystem.FileExtension.Null, 0, 0, 2, 0, 0, 0, 0, 100, 1.0f, 0, 0, 0, 0, 0, 0, 0, false, false, false, false, BlankInfections, BlankFileType));
+        GameControl.control.ProgramFiles.Add(new ProgramSystem("Notification Viewer", "", "", "", "", "", SysInstallLocation, "Notification Viewer", "", "", ProgramSystem.FileExtension.Exe, ProgramSystem.FileExtension.Null, 0, 0, 2, 0, 0, 0, 0, 100, 1.0f, 0, 0, 0, 0, 0, 0, 0, false, false, false, false, BlankInfections, BlankFileType));
+        GameControl.control.ProgramFiles.Add(new ProgramSystem("Calendar", "", "", "", "", "", SysInstallLocation, "Calendar v2", "", "", ProgramSystem.FileExtension.Exe, ProgramSystem.FileExtension.Null, 0, 0, 2, 0, 0, 0, 0, 100, 1.0f, 0, 0, 0, 0, 0, 0, 0, false, false, false, false, BlankInfections, BlankFileType));
+        GameControl.control.ProgramFiles.Add(new ProgramSystem("Event Viewer", "", "", "", "", "", SysInstallLocation, "Event Viewer", "", "", ProgramSystem.FileExtension.Exe, ProgramSystem.FileExtension.Null, 0, 0, 2, 0, 0, 0, 0, 100, 1.0f, 0, 0, 0, 0, 0, 0, 0, false, false, false, false, BlankInfections, BlankFileType));
+        GameControl.control.ProgramFiles.Add(new ProgramSystem("Plan Viewer", "", "", "", "", "", SysInstallLocation, "Plan Viewer", "", "", ProgramSystem.FileExtension.Exe, ProgramSystem.FileExtension.Null, 0, 0, 2, 0, 0, 0, 0, 100, 1.0f, 0, 0, 0, 0, 0, 0, 0, false, false, false, false, BlankInfections, BlankFileType));
+        GameControl.control.ProgramFiles.Add(new ProgramSystem("Executor", "", "", "", "", "", SysInstallLocation, "Executor", "", "", ProgramSystem.FileExtension.Exe, ProgramSystem.FileExtension.Null, 0, 0, 2, 0, 0, 0, 0, 100, 1.0f, 0, 0, 0, 0, 0, 0, 0, false, false, false, false, BlankInfections, BlankFileType));
+        GameControl.control.ProgramFiles.Add(new ProgramSystem("Net Viewer", "", "", "", "", "", SysInstallLocation, "Net Viewer", "", "", ProgramSystem.FileExtension.Exe, ProgramSystem.FileExtension.Null, 0, 0, 2, 0, 0, 0, 0, 100, 1.0f, 0, 0, 0, 0, 0, 0, 0, false, false, false, false, BlankInfections, BlankFileType));
+        GameControl.control.ProgramFiles.Add(new ProgramSystem("System Panel", "", "", "", "", "", SysInstallLocation, "System Panel", "", "", ProgramSystem.FileExtension.Exe, ProgramSystem.FileExtension.Null, 0, 0, 2, 0, 0, 0, 0, 100, 1.0f, 0, 0, 0, 0, 0, 0, 0, false, false, false, false, BlankInfections, BlankFileType));
+        GameControl.control.ProgramFiles.Add(new ProgramSystem("Gateway Viewer", "", "", "", "", "", SysInstallLocation, "Gateway Viewer", "", "", ProgramSystem.FileExtension.Exe, ProgramSystem.FileExtension.Null, 0, 0, 2, 0, 0, 0, 0, 100, 1.0f, 0, 0, 0, 0, 0, 0, 0, false, false, false, false, BlankInfections, BlankFileType));
+        GameControl.control.ProgramFiles.Add(new ProgramSystem("Media Player", "", "", "", "", "", SysInstallLocation, "Media Player", "", "", ProgramSystem.FileExtension.Exe, ProgramSystem.FileExtension.Null, 0, 0, 2, 0, 0, 0, 0, 100, 1.0f, 0, 0, 0, 0, 0, 0, 0, false, false, false, false, BlankInfections, BlankFileType));
+        GameControl.control.ProgramFiles.Add(new ProgramSystem("Real Exe Creator", "", "", "", "", "", SysInstallLocation, "Real Exe Creator", "", "", ProgramSystem.FileExtension.Exe, ProgramSystem.FileExtension.Null, 0, 0, 2, 0, 0, 0, 0, 100, 1.0f, 0, 0, 0, 0, 0, 0, 0, false, false, false, false, BlankInfections, BlankFileType));
+
+        string IPAddress = StringGenerator.RandomNumberChar(3, 3) + "." + StringGenerator.RandomNumberChar(3, 3) + "." + StringGenerator.RandomNumberChar(3, 3) + "." + StringGenerator.RandomNumberChar(3, 3);
 
         GameControl.control.Gateway.CPUSockets.Add(new SocketSystem("420",88,108,0));
-        GameControl.control.Gateway.StorageSlots.Add(new SocketSystem("SS1", 128, 180, 1));
-        GameControl.control.Gateway.MemorySlots.Add(new SocketSystem("DDR1", 139, 70, 1));
+        GameControl.control.Gateway.StorageSockets.Add(new SocketSystem("SS1", 128, 180, 1));
+        GameControl.control.Gateway.MemorySockets.Add(new SocketSystem("DDR1", 139, 70, 1));
         GameControl.control.Gateway.InstalledCPU.Add(new CPUSystem("Zion Z-14", "Zion", "Z-14", "420", 32, 1, 0.5f, 0.1f, 0.5f, 0, 0, 0, 0, 0, 1, 0.01f, 0, 100, 100, 0, "", 0, 20, 0.0025f, 0, 0, 0));
         GameControl.control.Gateway.InstalledGPU.Add(new GPUSystem("Qividia 970", "PCI-E", 970, 2, 0.1f, 2f, 256, 0, 0, 0, 1, 0.01f, 100, 100, 0, 120, 0.0025f));
         GameControl.control.Gateway.InstalledRAM.Add(new RamSystem("Vortex 2GB", "DDR1", 0, 2048, 0, 0, 100, 0.01f, 100, 100, 0, 0.0025f,0));
-        GameControl.control.Gateway.InstalledStorageDevice.Add(new StorageDevice("EasternVirtual 128", "", "", "", 0.133f, 0, 128, 128, 15, 0.001f, 100, 100, 0, 0.0025f, 0.14f, StorageDevice.StorageType.HDD,0,0,0));
         GameControl.control.Gateway.InstalledPSU.Add(new PowerSupplySystem("Toughpower-2pack", "", 450, 0, 0, 0.01f, 100, 100, 0, 0.0025f));
-        GameControl.control.Gateway.InstalledModem.Add(new ModemSystem("TUGs Basic Modem", "", "", "", 0.056f, 0.056f, 0.029f, 0, 15, 0.01f, 100, 100, 0, 0.0025f, 150, 0, ModemSystem.ModemConnectionType.DialUp));
+        GameControl.control.Gateway.InstalledModem.Add(new ModemSystem("TUGs Basic Modem", "", "", "", 0.056f, 0.056f, 0.056f, 0.029f, 0, 15, 0.01f, 100, 100, 0, 0.0025f, 150, 0,IPAddress, ModemSystem.ModemConnectionType.DialUp));
+
+        GameControl.control.Gateway.InstalledStorageDevice.Add(new StorageDevice("EasternVirtual 128", "", "", "", 0.133f, 0, 128, 128, 15, 0.001f, 100, 100, 0, 0.0025f, 0.14f,0.25f,0.25f, StorageDevice.StorageType.HDD,0,0,0, Partitions));
+
+        Partitions.Add(new DrivePatSystem("System", "C", 60,0,0, 0));
+        Partitions.Add(new DrivePatSystem("Storage", "D", 60,0,0, 0));
+
+        GameControl.control.Gateway.InstalledStorageDevice.Add(new StorageDevice("EasternVirtual 128", "", "", "", 0.133f, 0, 128, 128, 15, 0.001f, 100, 100, 0, 0.0025f, 0.14f, 30, 30, StorageDevice.StorageType.HDD, 0, 0, 0, PartitionsBlank));
 
         int IDay = 1;
         int IMonth = 1;
@@ -1208,22 +1361,24 @@ public class AccSetup : MonoBehaviour
 
         GameControl.control.Plans.Add(new PlanSystem("TUG", "www.tugs.com", "Basic Modem Package", "A basic modem package that comes with dialup and a modem for 150 a month", 150, InitalPlanDate, DuePlanDate));
 
-        GameControl.control.ProgramFiles.Add(new ProgramSystem("C:/", "System", "", "", "Gateway", "C:/", 6, 0, 0, 60, 100, 0, false, ProgramSystem.ProgramType.Dir));
+        GameControl.control.ProgramFiles.Add(new ProgramSystem("C:/", "System", "", "", "", "", "Gateway","C:/", "", "", ProgramSystem.FileExtension.Dir, ProgramSystem.FileExtension.Null, 0, 0, 60, 0, 0, 0, 0, 100, 0, 0, 0, 0, 0, 0, 0, 0, false, false, false, false, BlankInfections, BlankFileType));
         GameControl.control.Gateway.InstalledStorageDevice[0].UsedSpace += 60;
         GameControl.control.Gateway.InstalledStorageDevice[0].FreeSpace = GameControl.control.Gateway.InstalledStorageDevice[0].Capacity - GameControl.control.Gateway.InstalledStorageDevice[0].UsedSpace;
-        GameControl.control.ProgramFiles.Add(new ProgramSystem("Downloads", "", "", "", "C:/", "C:/Downloads", 6, 0, 0, 0, 0, 0, false, ProgramSystem.ProgramType.Fdl));
-        GameControl.control.ProgramFiles.Add(new ProgramSystem("Documents", "", "", "", "C:/", "C:/Documents", 6, 0, 0, 0, 0, 0, false, ProgramSystem.ProgramType.Fdl));
-        GameControl.control.ProgramFiles.Add(new ProgramSystem("Program Files", "", "", "", "C:/", "C:/Programs", 6, 0, 0, 0, 0, 0, false, ProgramSystem.ProgramType.Fdl));
-        GameControl.control.ProgramFiles.Add(new ProgramSystem("System Files", "", "", "", "C:/", "C:/System", 6, 0, 0, 0, 0, 0, false, ProgramSystem.ProgramType.Fdl));
+        GameControl.control.ProgramFiles.Add(new ProgramSystem("Downloads", "", "", "", "", "", "C:/", "C:/Downloads", "", "", ProgramSystem.FileExtension.Fdl, ProgramSystem.FileExtension.Null, 0, 0, 0, 0, 0, 0, 0, 100, 0, 0, 0, 0, 0, 0, 0, 0, false, false, false, false, BlankInfections, BlankFileType));
+        GameControl.control.ProgramFiles.Add(new ProgramSystem("Documents", "", "", "", "", "", "C:/", "C:/Documents", "", "", ProgramSystem.FileExtension.Fdl, ProgramSystem.FileExtension.Null, 0, 0, 0, 0, 0, 0, 0, 100, 0, 0, 0, 0, 0, 0, 0, 0, false, false, false, false, BlankInfections, BlankFileType));
+        GameControl.control.ProgramFiles.Add(new ProgramSystem("Programs", "", "", "", "", "", "C:/", "C:/Programs", "", "", ProgramSystem.FileExtension.Fdl, ProgramSystem.FileExtension.Null, 0, 0, 0, 0, 0, 0, 0, 100, 0, 0, 0, 0, 0, 0, 0, 0, false, false, false, false, BlankInfections, BlankFileType));
+        GameControl.control.ProgramFiles.Add(new ProgramSystem("System", "", "", "", "", "", "C:/", "C:/System", "", "", ProgramSystem.FileExtension.Fdl, ProgramSystem.FileExtension.Null, 0, 0, 0, 0, 0, 0, 0, 100, 0, 0, 0, 0, 0, 0, 0, 0, false, false, false, false, BlankInfections, BlankFileType));
+        GameControl.control.ProgramFiles.Add(new ProgramSystem("Real", "", "", "", "", "", "C:/", "C:/Real", "", "", ProgramSystem.FileExtension.Fdl, ProgramSystem.FileExtension.Null, 0, 0, 0, 0, 0, 0, 0, 100, 0, 0, 0, 0, 0, 0, 0, 0, false, false, false, false, BlankInfections, BlankFileType));
 
-        GameControl.control.ProgramFiles.Add(new ProgramSystem("D:/", "Storage", "", "", "Gateway", "D:/", 6, 0, 0, 60, 100, 0, false, ProgramSystem.ProgramType.Dir));
+        GameControl.control.ProgramFiles.Add(new ProgramSystem("D:/", "Storage", "", "", "", "", "Gateway", "D:/", "", "", ProgramSystem.FileExtension.Dir, ProgramSystem.FileExtension.Null, 0, 0, 60, 0, 0, 0, 0, 100, 0, 0, 0, 0, 0, 0, 0, 0, false, false, false, false, BlankInfections, BlankFileType));
         GameControl.control.Gateway.InstalledStorageDevice[0].UsedSpace += 60;
         GameControl.control.Gateway.InstalledStorageDevice[0].FreeSpace = GameControl.control.Gateway.InstalledStorageDevice[0].Capacity - GameControl.control.Gateway.InstalledStorageDevice[0].UsedSpace;
 
-        GameControl.control.ProgramFiles.Add(new ProgramSystem("Installed Programs", "", "", "", "D:/", "D:/Programs", 6, 0, 0, 0, 0, 0, false, ProgramSystem.ProgramType.Fdl));
+        GameControl.control.ProgramFiles.Add(new ProgramSystem("Programs", "", "", "", "", "", "D:/", "D:/Programs", "", "", ProgramSystem.FileExtension.Fdl, ProgramSystem.FileExtension.Null, 0, 0, 0, 0, 0, 0, 0, 100, 0, 0, 0, 0, 0, 0, 0, 0, false, false, false, false, BlankInfections, BlankFileType));
 
         GameControl.control.StoredLogins.Add(new LoginSystem("LEC Bank", StringGenerator.RandomNumberChar(6, 6), StringGenerator.RandomMixedChar(15, 15), 0));
-        GameControl.control.MyBankDetails.Add(new BankSystem("192.168.56.91", "LEC Bank", GameControl.control.StoredLogins[0].Username, GameControl.control.StoredLogins[0].Username, GameControl.control.StoredLogins[0].Password, 0, 1, 0, 0, 1));
+        StartingBank.Add(new BankAccountsSystem(IPAddress, "LEC Bank", GameControl.control.StoredLogins[0].Username, GameControl.control.StoredLogins[0].Username, GameControl.control.StoredLogins[0].Password, 0, 1,0, 0, 0, 1,true,true, BlankBankLogs));
+        GameControl.control.BankData.Add(new BankSystem("LEC Bank", "192.168.56.91", StartingBank));
         string EmailSender = "14K3N37 VMB";
         string EmailSubject = "LEC Bank Account Details";
         string EmailContent = "Due to being a new member of 14K3N37 VMB we have created a new LEC Account for you as you complete contracts funds will automatically go there." +
@@ -1234,8 +1389,6 @@ public class AccSetup : MonoBehaviour
 
         GameControl.control.EmailData.Add(new EmailSystem(EmailSubject, EmailSender, InitalPlanDate.TodaysDate, EmailContent, 0, 0, 0, false, EmailSystem.EmailType.New));
 
-        HardwareController.hdcon.Motherboard.Add("Basic");
-        HardwareController.hdcon.CPUVoltage = 1;
         Customize.cust.TerminalCommandCharacterSplit = CommandCharacterCheck;
         Customize.cust.TerminalSpaceCharacterSplit = SpacingCharacterCheck;
         Customize.cust.DoubleClickDelayMenu = 0.5f;
@@ -1246,11 +1399,13 @@ public class AccSetup : MonoBehaviour
         Customize.cust.TraceBeepsVolume = 0.1f;
         Customize.cust.PlayNotiSound = true;
         Customize.cust.SelectedNotiSound = 7;
+        Customize.cust.AutoSaveTime = 60;
+        Customize.cust.EnableAutoSave = true;
 
-        GameControl.control.GameVersion.Add("Version: 0.0.390");
-        GameControl.control.GameVersion.Add("Iteration: 2");
-        GameControl.control.GameVersion.Add("Build: 2");
-        GameControl.control.GameVersion.Add("Project State: Production");
+        GameControl.control.GameVersion.Add("Version: 0.0.395");
+        GameControl.control.GameVersion.Add("Iteration: 0");
+        GameControl.control.GameVersion.Add("Build: 1");
+        GameControl.control.GameVersion.Add("Build State: Inside Devloperment Build");
 
 
         for (int i = 0; i < GameControl.control.ProgramFiles.Count; i++)
@@ -1260,7 +1415,6 @@ public class AccSetup : MonoBehaviour
 
         Customize.cust.Load();
         GameControl.control.Load();
-        HardwareController.hdcon.Load();
         Application.LoadLevel("Game");
     }
 

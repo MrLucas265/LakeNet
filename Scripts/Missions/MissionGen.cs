@@ -68,7 +68,7 @@ public class MissionGen : MonoBehaviour
 	public int IdleDeleteTime;
 
 	private GameObject Prompts;
-	private NotfiPrompt noti;
+	private NotificationPrompt noti;
 	private MissionBrow missionbrow;
 
 	public float Timer;
@@ -85,7 +85,7 @@ public class MissionGen : MonoBehaviour
     {
         //FilesToDelete.Capacity = DeleteAmt;
 		Prompts = GameObject.Find("Prompts");
-		noti = Prompts.GetComponent<NotfiPrompt>();
+		noti = Prompts.GetComponent<NotificationPrompt>();
 		missionbrow = GetComponent<MissionBrow>();
 
 		StartTime = 5;
@@ -99,7 +99,7 @@ public class MissionGen : MonoBehaviour
 
 		StoryMissionSystem();
 
-        if (GameControl.control.WebsiteFiles.Count > 200)
+        if (GameControl.control.CompanyServerData.Count > 4)
         {
             if (MissionList.Count >= MissionTotal)
             {
@@ -141,132 +141,204 @@ public class MissionGen : MonoBehaviour
 			NewMissionTimer -= 1 * Time.deltaTime;
 			if (NewMissionTimer <= 0)
 			{
-                if (GameControl.control.WebsiteFiles.Count > 200)
+                if (GameControl.control.CompanyServerData.Count > 4)
                 {
-                    GeneratingMissions();
+					WipeCompileList();
+					ListComplier();
+					GeneratingMissions();
                 }
                 NewMissionStartTime = Random.Range(1, 60);
 				NewMissionTimer = NewMissionStartTime;
             }
 		}
 
-        if (ScannedInt <= GameControl.control.WebsiteFiles.Count && ComplierDone == false)
+		if (REVATestPublic.Count > 10)
 		{
-			ComplierDone = true;
+			if (GameControl.control.Rep.Count > 0)
+			{
+				if (GameControl.control.Rep[0].RepLevel == 0)
+				{
+					if (GameControl.control.Rep[0].CurrentRep == 0)
+					{
+						if (GameControl.control.Contracts.Count == 0)
+						{
+							FirstMission();
+						}
+					}
+				}
+			}
 		}
+	}
 
-		if (Count <= GameControl.control.WebsiteFiles.Count) 
-		{
-			ListComplier();
-		}
-    }
+	public void WipeCompileList()
+	{
+		JaildewPublic.RemoveRange(0, JaildewPublic.Count);
+		JaildewPrivate.RemoveRange(0, JaildewPrivate.Count);
+
+		BecasPublic.RemoveRange(0, JaildewPublic.Count);
+		BecasPrivate.RemoveRange(0, JaildewPrivate.Count);
+
+		UnicomPublic.RemoveRange(0, JaildewPublic.Count);
+		UnicomPrivate.RemoveRange(0, JaildewPrivate.Count);
+
+		REVATestPublic.RemoveRange(0, JaildewPublic.Count);
+		REVATestPrivate.RemoveRange(0, JaildewPrivate.Count);
+	}
 
 	public void FirstMission()
 	{
-		if (REVATestPublic.Count > 10 && REVATestPrivate.Count > 10) 
+		if (REVATestPublic.Count > 10) 
 		{
+			noti.enabled = true;
 			SelectedFile = Random.Range (0, REVATestPublic.Count);
 			DescFile = REVATestPublic[SelectedFile];
 			GameControl.control.Contracts.Add(new MissionSystem ("REVA Test",DescFile,"www.revatest.com","www.reva.com","done","done","Public","REVA",0,0,0,Random.Range (200, 200),0,MissionSystem.MissionType.PTCopy));
-			GameControl.control.EmailData.Add (new EmailSystem ("Reva Test","www.reva.com",GameControl.control.Time.FullDate,"We would like you to connect to www.revatest.com by opening net viewer in the app menu then typing the URL in the address bar then goto the public file section find and copy this file " + DescFile +  " then reply to this email and click the @ to attach the file to the email and send it then we will give you the membership login details", 0, 0, 0, false,EmailSystem.EmailType.Contract));
-			noti.ShowNoti = true;
-			noti.Notification = "To open the new mail click the letter Icon>Folders>Con";
-			noti.playsound = true;
-			noti.DisplayTime = 15;
-            GameControl.control.NewAccount = false;
-
+			GameControl.control.EmailData.Add (new EmailSystem ("Reva Test","www.reva.com",GameControl.control.Time.FullDate,"We would like you to connect to www.reva.com/test by opening net viewer in the app menu then typing the URL in the address bar then goto the public file section find and copy this file " + DescFile +  " then reply to this email and click the @ to attach the file to the email and send it then we will give you the membership login details", 0, 0, 0, false,EmailSystem.EmailType.Contract));
+			noti.AddStackNotification("New Mail", "Open Mail", "To open the new mail click the letter Icon>Folders>Con", true, 60,true);
+			noti.AddStackNotification("New Notification", "Open Notification", "To open the new notification click the letter Icon>Folders>Con", true, 120,false);
+			GameControl.control.NewAccount = false;
         }
 	}
 
 	void ListComplier()
 	{
-		for(int i = 0; i < GameControl.control.WebsiteFiles.Count; i++)
+		for (int Index = 0; Index < GameControl.control.CompanyServerData.Count; Index++)
 		{
-			switch(GameControl.control.WebsiteFiles [i].Location)
+			switch(GameControl.control.CompanyServerData[Index].Name)
 			{
-			case "Jaildew Public":
-				if (!JaildewPublic.Contains (GameControl.control.WebsiteFiles [i].Name)) 
-				{
-					JaildewPublic.Add (GameControl.control.WebsiteFiles [i].Name);
-					Count++;
-				}
+				case "Jaildew":
+					if (GameControl.control.CompanyServerData[Index].Files.Count > 0)
+					{
+						for (int i = 0; i < GameControl.control.CompanyServerData[Index].Files.Count; i++)
+						{
+							switch(GameControl.control.CompanyServerData[Index].Files[i].Description)
+							{
+								case "Public":
+									if (!JaildewPublic.Contains(GameControl.control.CompanyServerData[Index].Files[i].Name))
+									{
+										JaildewPublic.Add(GameControl.control.CompanyServerData[Index].Files[i].Name);
+										Count++;
+									}
+								break;
+
+								case "Private":
+									if (!JaildewPrivate.Contains(GameControl.control.CompanyServerData[Index].Files[i].Name))
+									{
+										JaildewPrivate.Add(GameControl.control.CompanyServerData[Index].Files[i].Name);
+										Count++;
+									}
+								break;
+							}
+						}
+					}
 				break;
 
-			case "Jaildew Private":
-				if (!JaildewPrivate.Contains (GameControl.control.WebsiteFiles [i].Name)) 
-				{
-					JaildewPrivate.Add (GameControl.control.WebsiteFiles [i].Name);
-					Count++;
-				}
-				break;
+				case "Becas":
+					if (GameControl.control.CompanyServerData[Index].Files.Count > 0)
+					{
+						for (int i = 0; i < GameControl.control.CompanyServerData[Index].Files.Count; i++)
+						{
+							switch (GameControl.control.CompanyServerData[Index].Files[i].Description)
+							{
+								case "Public":
+									if (!BecasPublic.Contains(GameControl.control.CompanyServerData[Index].Files[i].Name))
+									{
+										BecasPublic.Add(GameControl.control.CompanyServerData[Index].Files[i].Name);
+										Count++;
+									}
+									break;
 
-			case "Becas Public":
-				if (!BecasPublic.Contains (GameControl.control.WebsiteFiles [i].Name)) 
-				{
-					BecasPublic.Add (GameControl.control.WebsiteFiles [i].Name);
-					Count++;
-				}
-				break;
+								case "Private":
+									if (!BecasPrivate.Contains(GameControl.control.CompanyServerData[Index].Files[i].Name))
+									{
+										BecasPrivate.Add(GameControl.control.CompanyServerData[Index].Files[i].Name);
+										Count++;
+									}
+									break;
+							}
+						}
+					}
+					break;
 
-			case "Becas Private":
-				if (!BecasPrivate.Contains (GameControl.control.WebsiteFiles [i].Name)) 
-				{
-					BecasPrivate.Add (GameControl.control.WebsiteFiles [i].Name);
-					Count++;
-				}
-				break;
+				case "Unicom":
+					if (GameControl.control.CompanyServerData[Index].Files.Count > 0)
+					{
+						for (int i = 0; i < GameControl.control.CompanyServerData[Index].Files.Count; i++)
+						{
+							switch (GameControl.control.CompanyServerData[Index].Files[i].Description)
+							{
+								case "Public":
+									if (!UnicomPublic.Contains(GameControl.control.CompanyServerData[Index].Files[i].Name))
+									{
+										UnicomPublic.Add(GameControl.control.CompanyServerData[Index].Files[i].Name);
+										Count++;
+									}
+									break;
 
-			case "Unicom Public":
-				if (!UnicomPublic.Contains (GameControl.control.WebsiteFiles [i].Name)) 
-				{
-					UnicomPublic.Add (GameControl.control.WebsiteFiles [i].Name);
-					Count++;
-				}
-				break;
+								case "Private":
+									if (!UnicomPrivate.Contains(GameControl.control.CompanyServerData[Index].Files[i].Name))
+									{
+										UnicomPrivate.Add(GameControl.control.CompanyServerData[Index].Files[i].Name);
+										Count++;
+									}
+									break;
+							}
+						}
+					}
+					break;
 
-			case "Unicom Private":
-				if (!UnicomPrivate.Contains (GameControl.control.WebsiteFiles [i].Name)) 
-				{
-					UnicomPrivate.Add (GameControl.control.WebsiteFiles [i].Name);
-					Count++;
-				}
-				break;
+				case "RevaTest":
+					if (GameControl.control.CompanyServerData[Index].Files.Count > 0)
+					{
+						for (int i = 0; i < GameControl.control.CompanyServerData[Index].Files.Count; i++)
+						{
+							switch (GameControl.control.CompanyServerData[Index].Files[i].Description)
+							{
+								case "Public":
+									if (!REVATestPublic.Contains(GameControl.control.CompanyServerData[Index].Files[i].Name))
+									{
+										REVATestPublic.Add(GameControl.control.CompanyServerData[Index].Files[i].Name);
+										Count++;
+									}
+									break;
 
-			case "REVA Private":
-				if (!REVATestPrivate.Contains (GameControl.control.WebsiteFiles [i].Name)) 
-				{
-					REVATestPrivate.Add (GameControl.control.WebsiteFiles [i].Name);
-					Count++;
-				}
-				break;
-
-			case "REVA Public":
-				if (!REVATestPublic.Contains (GameControl.control.WebsiteFiles [i].Name)) 
-				{
-					REVATestPublic.Add (GameControl.control.WebsiteFiles [i].Name);
-					Count++;
-				}
-				break;
-
-			case "Para Private":
-				if (!ParaPrivate.Contains (GameControl.control.WebsiteFiles [i].Name)) 
-				{
-					ParaPrivate.Add (GameControl.control.WebsiteFiles [i].Name);
-					Count++;
-				}
-				break;
-
-			case "Para Public":
-				if (!ParaPublic.Contains (GameControl.control.WebsiteFiles [i].Name)) 
-				{
-					ParaPublic.Add (GameControl.control.WebsiteFiles [i].Name);
-					Count++;
-				}
-				break;
+								case "Private":
+									if (!REVATestPrivate.Contains(GameControl.control.CompanyServerData[Index].Files[i].Name))
+									{
+										REVATestPrivate.Add(GameControl.control.CompanyServerData[Index].Files[i].Name);
+										Count++;
+									}
+									break;
+							}
+						}
+					}
+					break;
 			}
-
-			ScannedInt = i;
 		}
+
+		//for (int i = 0; i < GameControl.control.WebsiteFiles.Count; i++)
+		//{
+		//	switch(GameControl.control.WebsiteFiles [i].Location)
+		//	{
+		//	case "Para Private":
+		//		if (!ParaPrivate.Contains (GameControl.control.WebsiteFiles [i].Name)) 
+		//		{
+		//			ParaPrivate.Add (GameControl.control.WebsiteFiles [i].Name);
+		//			Count++;
+		//		}
+		//		break;
+
+		//	case "Para Public":
+		//		if (!ParaPublic.Contains (GameControl.control.WebsiteFiles [i].Name)) 
+		//		{
+		//			ParaPublic.Add (GameControl.control.WebsiteFiles [i].Name);
+		//			Count++;
+		//		}
+		//		break;
+		//	}
+
+		//	ScannedInt = i;
+		//}
 	}
 
 	// Update is called once per frame

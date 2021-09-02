@@ -6,6 +6,12 @@ using UnityEngine;
 public class OperatingSystems
 {
 	public OSName Name;
+	public string Title;
+	public ColorSystem Colour;
+	public OSFPCSystem FPC;
+	public bool DisableColourOption;
+	public int SelectedBackground;
+	public bool GridMode;
 
 	public enum OSName
 	{
@@ -18,11 +24,19 @@ public class OperatingSystems
 		AppatureOS,
 		CSOSV1,
 		HackLink,
-        QuantinitumOS
+        QuantinitumOS,
+		SafeMode,
+		EthelOS
     }
 
-	public OperatingSystems(OSName name) //,Texture2D icon)
+	public OperatingSystems(OSName name,string title, ColorSystem colour,OSFPCSystem fpc,bool disablecolouroption,int selectedbackground, bool gridmode) //,Texture2D icon)
 	{
 		Name = name;
+		Title = title;
+		Colour = colour;
+		FPC = fpc;
+		DisableColourOption = disablecolouroption;
+		SelectedBackground = selectedbackground;
+		GridMode = gridmode;
 	}
 }

@@ -62,6 +62,9 @@ public class Notepadv2 : MonoBehaviour
 	public string SelectedOption;
 	public Vector2 Scroll;
 
+	public List<InfectionSystem> BlankInfections = new List<InfectionSystem>();
+	public List<ProgramSystem.FileType> BlankFileType = new List<ProgramSystem.FileType>();
+
 	void Start()
 	{
 		SysSoftware = GameObject.Find("System");
@@ -81,11 +84,6 @@ public class Notepadv2 : MonoBehaviour
 		ContextwindowRect.width = 100;
 
 		CloseButton = new Rect (windowRect.width-23,2,21,21);
-
-		if (GameControl.control.SoftwareVersion[1] == 0)
-		{
-			GameControl.control.SoftwareVersion[1] = 1;
-		}
 	}
 
 	void PosCheck()
@@ -157,7 +155,7 @@ public class Notepadv2 : MonoBehaviour
 			{
                 if (GameControl.control.ProgramFiles[SelectedDocument].Name != TypedTitle)
                 {
-                    GameControl.control.ProgramFiles.Insert(0, new ProgramSystem(TypedTitle, "", GameControl.control.Time.DayName, TypedText, SaveLocation, "", 0, 0, FileSize, 0, 100, 0, false, ProgramSystem.ProgramType.Txt));
+					GameControl.control.ProgramFiles.Insert(0, new ProgramSystem(TypedTitle, "", "", GameControl.control.Time.DayName, TypedText, "", SaveLocation, "", "", "", ProgramSystem.FileExtension.Txt, ProgramSystem.FileExtension.Null, 0, 0, FileSize, 0, 0, 0, 0, 100, 0f, 0, 0, 0, 0, 0, 0, 0, false, false, false, false, BlankInfections, BlankFileType));
                     GameControl.control.ProgramFiles[0].Used = FileSize;
                 }
                 else
@@ -170,14 +168,14 @@ public class Notepadv2 : MonoBehaviour
 			{
 				if (GameControl.control.ProgramFiles[SelectedDocument].Name != TypedTitle)
 				{
-					GameControl.control.ProgramFiles.Insert(0, new ProgramSystem(TypedTitle, "", GameControl.control.Time.DayName, TypedText, SaveLocation, "", 0, 0, FileSize, 0, 100, 0, false, ProgramSystem.ProgramType.Txt));
+					GameControl.control.ProgramFiles.Insert(0, new ProgramSystem(TypedTitle, "", "", GameControl.control.Time.DayName, TypedText, "", SaveLocation, "", "", "", ProgramSystem.FileExtension.Txt, ProgramSystem.FileExtension.Null, 0, 0, FileSize, 0, 0, 0, 0, 100, 0f, 0, 0, 0, 0, 0, 0, 0, false, false, false, false, BlankInfections, BlankFileType));
 					GameControl.control.ProgramFiles[0].Used = FileSize;
 				}
 			}
 		}
 		else
 		{
-			GameControl.control.ProgramFiles.Insert(0, new ProgramSystem(TypedTitle, "", GameControl.control.Time.DayName, TypedText, SaveLocation, "", 0, 0, FileSize, 0, 100, 0, false, ProgramSystem.ProgramType.Txt));
+			GameControl.control.ProgramFiles.Insert(0, new ProgramSystem(TypedTitle, "", "", GameControl.control.Time.DayName, TypedText, "", SaveLocation, "", "", "", ProgramSystem.FileExtension.Txt, ProgramSystem.FileExtension.Null, 0, 0, FileSize, 0, 0, 0, 0, 100, 0f, 0, 0, 0, 0, 0, 0, 0, false, false, false, false, BlankInfections, BlankFileType));
 			GameControl.control.ProgramFiles[0].Used = FileSize;
 		}
 	}
@@ -190,7 +188,7 @@ public class Notepadv2 : MonoBehaviour
 		Files.RemoveRange(0, Files.Count);
 		for (int i = 0; i < GameControl.control.ProgramFiles.Count; i++)
 		{
-			if (GameControl.control.ProgramFiles[i].Type == ProgramSystem.ProgramType.Txt)
+			if (GameControl.control.ProgramFiles[i].Extension == ProgramSystem.FileExtension.Txt)
 			{
 				if (Name.Contains(GameControl.control.ProgramFiles[i].Name))
 				{
@@ -266,27 +264,21 @@ public class Notepadv2 : MonoBehaviour
 		case "Open":
             if(fp.enabled == true)
             {
-                fp.Program = "Notepad";
-                fp.SelectedFileType = "Text";
-                fp.TitleName = "Open";
+				fp.SetFileExplorerData("Text", "Open", "Notepad");
                 CloseContextMenu();
             }
             else
             {
                 appman.SelectedApp = "File Explorer";
-                fp.Program = "Notepad";
-                fp.SelectedFileType = "Text";
-                fp.TitleName = "Open";
+				fp.SetFileExplorerData("Text", "Open", "Notepad");
                 CloseContextMenu();
             }
 			break;
 		case "Save As":
             if (fp.enabled == true)
             {
-                fp.Program = "Notepad";
-                fp.SelectedFileType = "Text";
-                fp.TitleName = "Save As";
-                ShowFileNameMaker = false;
+				fp.SetFileExplorerData("Text", "Save As", "Notepad");
+				ShowFileNameMaker = false;
                 ShowFileContent = false;
                 ShowFileOpen = false;
                 SelectedMenu = 0;
@@ -295,10 +287,8 @@ public class Notepadv2 : MonoBehaviour
             else
             {
                 appman.SelectedApp = "File Explorer";
-                fp.Program = "Notepad";
-                fp.SelectedFileType = "Text";
-                fp.TitleName = "Save As";
-                ShowFileNameMaker = false;
+				fp.SetFileExplorerData("Text", "Save As", "Notepad");
+				ShowFileNameMaker = false;
                 ShowFileContent = false;
                 ShowFileOpen = false;
                 SelectedMenu = 0;
@@ -320,9 +310,7 @@ public class Notepadv2 : MonoBehaviour
 			{
                 if (fp.enabled == true)
                 {
-                    fp.SelectedFileType = "Text";
-                    fp.TitleName = "Save As";
-                    fp.Program = "Notepad";
+					fp.SetFileExplorerData("Text", "Save As", "Notepad");
                     ShowFileNameMaker = false;
                     ShowFileContent = false;
                     ShowFileOpen = false;
@@ -331,9 +319,7 @@ public class Notepadv2 : MonoBehaviour
                 else
                 {
                     appman.SelectedApp = "File Explorer";
-                    fp.SelectedFileType = "Text";
-                    fp.TitleName = "Save As";
-                    fp.Program = "Notepad";
+					fp.SetFileExplorerData("Text", "Save As", "Notepad");
                     ShowFileNameMaker = false;
                     ShowFileContent = false;
                     ShowFileOpen = false;

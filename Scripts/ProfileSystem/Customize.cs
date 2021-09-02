@@ -9,21 +9,6 @@ public class Customize : MonoBehaviour
 {
 	public static Customize cust;
 
-	public float ButtonR;
-	public float ButtonG;
-	public float ButtonB;
-	public float ButtonA;
-
-	public float WindowR;
-	public float WindowG;
-	public float WindowB;
-	public float WindowA;
-
-	public float FontR;
-	public float FontG;
-	public float FontB;
-	public float FontA;
-
 	public int ButtonColorInt;
 	public int WindowColorInt;
 	public int FontColorInt;
@@ -31,8 +16,6 @@ public class Customize : MonoBehaviour
 	public int AA;
 	public int VSync;
 	public bool FullScreen;
-
-	public int SelectedBackground;
 
 	public bool UseCustomBG;
 
@@ -114,6 +97,9 @@ public class Customize : MonoBehaviour
 	public bool CustomThemeColorEnabled;
 	public bool CustomThemeSelectorEnabled;
 
+	public bool EnableAutoSave;
+	public float AutoSaveTime;
+
 	void Awake()
 	{
 		if (!Directory.Exists (ProfilePath)) 
@@ -160,18 +146,6 @@ public class Customize : MonoBehaviour
 		data.windowx = windowx;
 		data.windowy = windowy;
 		data.GUIID = GUIID;
-		data.ButtonR = ButtonR;
-		data.ButtonG = ButtonG;
-		data.ButtonB = ButtonB;
-		data.ButtonA = ButtonA;
-		data.WindowR = WindowR;
-		data.WindowG = WindowG;
-		data.WindowB = WindowB;
-		data.WindowA = WindowA;
-		data.FontR = FontR;
-		data.FontG = FontG;
-		data.FontB = FontB;
-		data.FontA = FontA;
 		data.RezX = RezX;
 		data.RezY = RezY;
 		data.RezSelect = RezSelect;
@@ -188,7 +162,6 @@ public class Customize : MonoBehaviour
 		data.WindowColorInt = WindowColorInt;
 		data.FontColorInt = FontColorInt;
 		data.UseCustomBG = UseCustomBG;
-		data.SelectedBackground = SelectedBackground;
 		data.native_width = native_width;
 		data.native_height = native_height;
 		data.UIScale = UIScale;
@@ -228,6 +201,8 @@ public class Customize : MonoBehaviour
 		data.SoundtrackVolume = SoundtrackVolume;
 		data.DesktopfontSize = DesktopfontSize;
         data.AdvancedMode = AdvancedMode;
+		data.EnableAutoSave = EnableAutoSave;
+		data.AutoSaveTime = AutoSaveTime;
 
         bf.Serialize (file, data);
 		file.Close();
@@ -245,18 +220,6 @@ public class Customize : MonoBehaviour
 			windowx = data.windowx;
 			windowy = data.windowy;
 			GUIID = data.GUIID;
-			ButtonR = data.ButtonR;
-			ButtonG = data.ButtonG;
-			ButtonB = data.ButtonB;
-			ButtonA = data.ButtonA;
-			WindowR = data.WindowR;
-			WindowG = data.WindowG;
-			WindowB = data.WindowB;
-			WindowA = data.WindowA;
-			FontR = data.FontR;
-			FontG = data.FontG;
-			FontB = data.FontB;
-			FontA = data.FontA;
 			RezX =  data.RezX;
 			RezY = data.RezY;
 			RezSelect = data.RezSelect;
@@ -273,7 +236,6 @@ public class Customize : MonoBehaviour
 			WindowColorInt = data.WindowColorInt;
 			FontColorInt = data.FontColorInt;
 			UseCustomBG = data.UseCustomBG;
-			SelectedBackground = data.SelectedBackground;
 			native_width = data.native_width;
 			native_height = data.native_height;
 			UIScale = data.UIScale;
@@ -313,6 +275,8 @@ public class Customize : MonoBehaviour
 			SoundtrackVolume = data.SoundtrackVolume;
 			DesktopfontSize = data.DesktopfontSize;
             AdvancedMode = data.AdvancedMode;
+			EnableAutoSave = data.EnableAutoSave;
+			AutoSaveTime = data.AutoSaveTime;
         }
 	}
 
@@ -321,21 +285,6 @@ public class Customize : MonoBehaviour
 	{
 		public int GUIID;
 
-		public float ButtonR;
-		public float ButtonG;
-		public float ButtonB;
-		public float ButtonA;
-
-		public float WindowR;
-		public float WindowG;
-		public float WindowB;
-		public float WindowA;
-
-		public float FontR;
-		public float FontG;
-		public float FontB;
-		public float FontA;
-
 		public int ButtonColorInt;
 		public int WindowColorInt;
 		public int FontColorInt;
@@ -343,8 +292,6 @@ public class Customize : MonoBehaviour
 		public int AA;
 		public int VSync;
 		public bool FullScreen;
-
-		public int SelectedBackground;
 
 		public bool UseCustomBG;
 
@@ -414,5 +361,8 @@ public class Customize : MonoBehaviour
 		public int DesktopfontSize;
 
         public bool AdvancedMode;
-    }
+
+		public bool EnableAutoSave;
+		public float AutoSaveTime;
+	}
 }

@@ -11,8 +11,9 @@ public class SignoutMan : MonoBehaviour
     private GameObject System;
 
     private IceOSLogout IceOSLog;
+	private EthelOSLogout EthelOSLog;
 
-    private AppMan appman;
+	private AppMan appman;
     private TaskViewer tv;
 
     private SoundControl sc;
@@ -23,6 +24,7 @@ public class SignoutMan : MonoBehaviour
 	void Start ()
 	{
 		IceOSLog = GetComponent<IceOSLogout>();
+        EthelOSLog = GetComponent<EthelOSLogout>();
         Software = GameObject.Find("Software");
         System = GameObject.Find("System");
         sc = System.GetComponent<SoundControl>();
@@ -61,6 +63,33 @@ public class SignoutMan : MonoBehaviour
                     Software.SetActive(false);
                     IceOSLog.Timers();
                 }
+	    break;
+
+		case OperatingSystems.OSName.EthelOS:
+            if (tv.RunningTasks.Count > 0)
+            {
+                RemoveTimer -= Time.deltaTime;
+                if(RemoveTimer <= 0)
+                {
+                    appman.SelectedApp = tv.RunningTasks[0].RunningApplications;
+                    tv.RunningTasks.RemoveAt(0);
+                    RemoveTimer = 0.25f;
+                }
+            }
+            if (tv.RunningTasks.Count <= 0)
+            {
+                if (EthelOSLog.Timer == 0)
+                {
+                    EthelOSLog.Timer = 2;
+                }
+                //IceOSLog = StopCodeWord;
+                //IceOSLog.StopCodeNumber = StopCodeNumber;
+                //IceOSLog.CodeDetail = CodeDetail;
+                EthelOSLog.SignoutMessage = SignoutMessage;
+                EthelOSLog.enabled = true;
+                Software.SetActive(false);
+                EthelOSLog.Timers();
+            }
 	    break;
 
 		case OperatingSystems.OSName.AppatureOS:

@@ -44,7 +44,15 @@ public class MusicPlayer : MonoBehaviour
 	public Vector2 scrollpos = Vector2.zero;
 	public int scrollsize;
 
-	public int Page; 
+	public int Page;
+
+	public bool ReloadSongFiles;
+
+	public List<string> Files = new List<string>();
+
+	public AudioClip clip;
+
+	private AppMan appman;
 
 
 	enum Menus
@@ -64,10 +72,7 @@ public class MusicPlayer : MonoBehaviour
 		Puter = GameObject.Find("System");
 		com = Puter.GetComponent<Computer>();
 
-		if (Customize.cust.MusicPath != "")
-		{
-			ReloadSounds();
-		}
+		appman = Puter.GetComponent<AppMan>();
 			
 		if (source == null) source = gameObject.AddComponent<AudioSource>();
 
@@ -116,6 +121,31 @@ public class MusicPlayer : MonoBehaviour
 	{
 		source.Stop();
 		Paused = true;
+	}
+
+
+	void AddingSongs()
+	{
+		//Grabs all files from FileDirectory
+		string[] files;
+		files = Directory.GetFiles(Customize.cust.MusicPath);
+
+		//Checks all files and stores all WAV files into the Files list.
+		for (int i = 0; i < files.Length; i++)
+		{
+			if (files[i].EndsWith(".wav"))
+			{
+				Files.Add(files[i]);
+				clips.Add(new WWW(files[i]).GetAudioClip(false, true, AudioType.WAV));
+			}
+		}
+	}
+
+	public void PlaySong(int _listIndex)
+	{
+		clip = clips[_listIndex];
+		source.clip = clip;
+		source.Play();
 	}
 
 	void ReloadSounds()
@@ -201,6 +231,16 @@ public class MusicPlayer : MonoBehaviour
 
 	void Update()
 	{
+
+		if (ReloadSongFiles == true)
+		{
+			if (Customize.cust.MusicPath != "")
+			{
+				ReloadSounds();
+			}
+			ReloadSongFiles = false;
+		}
+
 		if (clips.Count > 0) 
 		{
 			if (!source.isPlaying && !Paused) 
@@ -231,7 +271,7 @@ public class MusicPlayer : MonoBehaviour
 		{
 			if (GUI.Button (new Rect (CloseButton), "X", com.Skin [GameControl.control.GUIID].customStyles [0])) 
 			{
-				show = false;
+				appman.SelectedApp = "Music Player";
 			}
 		} 
 		else

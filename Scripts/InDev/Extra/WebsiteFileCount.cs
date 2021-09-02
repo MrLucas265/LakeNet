@@ -16,6 +16,6 @@ public class WebsiteFileCount : MonoBehaviour {
 
 	void OnGUI()
 	{
-		GUI.Label (new Rect(Screen.width / 2, Screen.height / 2, 100, 22),"" + GameControl.control.WebsiteFiles.Count);
+		//GUI.Label (new Rect(Screen.width / 2, Screen.height / 2, 100, 22),"" + GameControl.control.WebsiteFiles.Count);
 	}
 }

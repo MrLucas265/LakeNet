@@ -11,6 +11,7 @@ public class Desktop : MonoBehaviour
 	private TreeOSDesktop treeDesktop;
 	private IceOSDesktop iceDesktop;
 	private	CmdSysOSDesktop cmdsysosDesktop;
+	private EthelOSDesktop ethelosDesktop;
 
 	private Boot boot;
 
@@ -40,12 +41,13 @@ public class Desktop : MonoBehaviour
 		treeDesktop = Desktops.GetComponent<TreeOSDesktop>();
 		iceDesktop = Desktops.GetComponent<IceOSDesktop>();
 		cmdsysosDesktop = Desktops.GetComponent<CmdSysOSDesktop>();
+		ethelosDesktop = Desktops.GetComponent<EthelOSDesktop>();
 
 		appman = GetComponent<AppMan>();
 
 		boot = GetComponent<Boot>();
 
-		if (boot.Terminal == true)
+		if (GameControl.control.Gateway.Status.Terminal == true)
 		{
 			this.enabled = false;
 		}
@@ -77,6 +79,10 @@ public class Desktop : MonoBehaviour
 			break;
 		case OperatingSystems.OSName.CSOSV1:
 			cmdsysosDesktop.enabled = true;
+			this.enabled = false;
+			break;
+		case OperatingSystems.OSName.EthelOS:
+			ethelosDesktop.enabled = true;
 			this.enabled = false;
 			break;
 		}

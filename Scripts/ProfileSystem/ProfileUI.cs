@@ -78,45 +78,40 @@ public class ProfileUI : MonoBehaviour
 
     public int SelectedBackground;
 
-    //public string Answer;
-    //public float Var1;
-    //public float Var2;
+	public bool ShowDeleteInfo;
+	public bool ConfirmedAccountDeletion;
+	public int DeleteSelectedAccount;
+	public int CorrectCount;
 
-    // Use this for initialization
-    void Start()
+	public bool showAccountsList;
+
+	public string CurrentTime;
+
+	public GUIStyle test;
+	public Rect Black_Box;
+	public Texture2D BlackBox;
+
+	void Start()
     {
         ep = GetComponent<ErrorProm>();
         sdp = GetComponent<ShutdownProm>();
         dp = GetComponent<DeleteProm>();
         accset = GetComponent<AccSetup>();
 
-        ProfileController.procon.Load();
+		ProfileController.procon.Load();
 
         SelectedBackground = Random.Range(0, BackgroundPics.Count - 1);
 
-        //		if (GameControl.control.SelectedOS == null)
-        //		{
-        //			GameControl.control.SelectedOS = GameControl.control.OSName[0];
-        //		}
+		showAccountsList = true;
+	}
 
-    }
-
-    // Update is called once per frame
     void Update()
     {
-        //var x = Var1;
-        //var factor = Var2;
-        //var divs = x / factor;
-        //var remainder = x % factor;
-        //Answer = (string.Format("{0} / {1} = {2} // {0} % {1} = {3}", x, factor, divs, remainder));
-
-        //if (TypedPass[0] != ProfileController.procon.ProfilePassWord[Select])
-        //{
-        //    Correctpass = false;
-        //}
-
         Counting();
-    }
+
+		CurrentTime = "" + System.DateTime.Now;
+
+	}
 
     void Counting()
     {
@@ -165,10 +160,10 @@ public class ProfileUI : MonoBehaviour
 	void SignIn()
 	{
 		GameControl.control.ProfileName = ProfileController.procon.Profiles[Select];
-		GameControl.control.ProfilePicID = ProfileController.procon.ProfileID[Select];
+		GameControl.control.ProfilePicID = ProfileController.procon.ProfilePic[Select];
 		GameControl.control.ProfileID = Select;
 		Customize.cust.ProfileName = ProfileController.procon.Profiles[Select];
-		HardwareController.hdcon.ProfileName = ProfileController.procon.Profiles[Select];
+		PersonController.control.ProfileName = ProfileController.procon.Profiles[Select];
 		Application.LoadLevel(1);
 	}
 
@@ -220,146 +215,249 @@ public class ProfileUI : MonoBehaviour
 		}
 	}
 
+	void DeleteAccountUI()
+	{
+		GUI.DrawTexture(new Rect(400, 100, 128, 128), GameControl.control.UserPic[ProfileController.procon.ProfilePic[DeleteSelectedAccount]]);
+
+		CharLength = ProfileController.procon.Profiles[DeleteSelectedAccount].Length;
+		mod = CharLength * 0.4f;
+		CharLengthMath = CharLength * mod;
+		GUI.Label(new Rect(425 - CharLengthMath, 240, 100, 24), "Delete Account: " + ProfileController.procon.Profiles[DeleteSelectedAccount], style1);
+
+		switch(CorrectCount)
+		{
+			case 0:
+				GUI.Label(new Rect(300, 325, 250, 150), "Press enter or click DEL to confirm the deletion of the account.");
+				break;
+			case 1:
+				GUI.Label(new Rect(300, 325, 250, 150), "Are you sure you wish to remove this account.");
+				break;
+			case 2:
+				GUI.Label(new Rect(300, 325, 250, 150), "Confirm once more for permenant removal.");
+				break;
+		}
+
+		//GUI.Label(new Rect(300, 325, 250, 150), "Press enter or click DEL to confirm the deletion of the account.");
+
+		if (Event.current.type == EventType.keyDown && Event.current.keyCode == KeyCode.Return || Event.current.type == EventType.keyDown && Event.current.keyCode == KeyCode.Delete)
+		{
+			if (TypedPass[1] == ProfileController.procon.ProfilePassWord[DeleteSelectedAccount])
+			{
+				CorrectCount++;
+			}
+			else
+			{
+				CorrectCount = 0;
+			}
+
+			if (CorrectCount >= 2)
+			{
+				ConfirmedAccountDeletion = true;
+				TypedPass[1] = "";
+				InputtedPass = "";
+				CorrectCount = 0;
+			}
+
+			TypedPass[1] = InputtedPass;
+		}
+
+		if (Event.current.type == EventType.keyDown && Event.current.keyCode == KeyCode.Backspace)
+		{
+			ShowDeleteInfo = false;
+			TypedPass[1] = "";
+			CorrectCount = 0;
+
+		}
+
+		if (GUI.Button(new Rect(278, 300, 24, 24), "X"))
+		{
+			ShowDeleteInfo = false;
+			TypedPass[1] = "";
+			CorrectCount = 0;
+		}
+
+		GUI.SetNextControlName("Text1");
+		InputtedPass = GUI.PasswordField(new Rect(375, 300, 175, 24), InputtedPass, "*"[0]);
+
+		GUI.Label(new Rect(300, 300, 100, 24), "Password: ");
+
+		if (GUI.Button(new Rect(551, 300, 24, 24), "DEL"))
+		{
+			if (TypedPass[1] == ProfileController.procon.ProfilePassWord[DeleteSelectedAccount])
+			{
+				CorrectCount++;
+			}
+			else
+			{
+				CorrectCount = 0;
+			}
+
+			if (CorrectCount>=2)
+			{
+				ConfirmedAccountDeletion = true;
+				TypedPass[1] = "";
+				InputtedPass = "";
+				CorrectCount = 0;
+			}
+
+			TypedPass[1] = InputtedPass;
+		}
+
+		if (!Focused)
+		{
+			GUI.FocusControl("Text1");
+			Focused = true;
+		}
+	}
+
+	void AccountSelection()
+	{
+		if (ProfileController.procon.Profiles.Count >= 1 && showAccountsList == true)
+		{
+			scrollpos = GUI.BeginScrollView(new Rect(5, 5, 260, 410), scrollpos, new Rect(0, 0, 0, scrollsize * ScrollSizeHolder));
+			for (scrollsize = 0; scrollsize < ProfileController.procon.Profiles.Count; scrollsize++)
+			{
+				StyleFunc();
+				if (GUI.Button(new Rect(2, scrollsize * ScrollSizeHolder, 200, 32), ProfileController.procon.Profiles[scrollsize], style))
+				{
+					ShowDeleteInfo = false;
+					Select = scrollsize;
+					InputtedPass = "";
+					Correctpass = false;
+					CorrectCount = 0;
+					if (Select > 0)
+					{
+						LoadProfileData(Select);
+					}
+					else
+					{
+						Select = 0;
+						LoadProfileData(Select);
+						StartSetup();
+					}
+				}
+
+				GUI.Label(new Rect(-33, scrollsize * ScrollSizeHolder, 32, 32), GameControl.control.UserPic[ProfileController.procon.ProfilePic[scrollsize]], style);
+				if (scrollsize == 0)
+				{
+					GUI.Label(new Rect(-33, scrollsize * ScrollSizeHolder, 32, 32), Plus, style);
+				}
+				else
+				{
+					if (GUI.Button(new Rect(204, scrollsize * ScrollSizeHolder, 32, 32), "DEL"))
+					{
+						DeleteSelectedAccount = scrollsize;
+						InputtedPass = "";
+						Correctpass = false;
+						CorrectCount = 0;
+						if (DeleteSelectedAccount > 0)
+						{
+							ShowDeleteInfo = true;
+						}
+						else
+						{
+							ShowDeleteInfo = false;
+						}
+					}
+				}
+			}
+
+			GUI.EndScrollView();
+		}
+	}
+
+	void DeleteAccount()
+	{
+		LoadProfileData(DeleteSelectedAccount);
+
+		GameControl.control.DeleteFile();
+		Customize.cust.DeleteFile();
+
+		ProfileController.procon.DeleteProfile(DeleteSelectedAccount);
+
+		ProfileController.procon.Save();
+
+		DeleteSelectedAccount = 0;
+		Select = 0;
+		CorrectCount = 0;
+
+		LoadProfileData(DeleteSelectedAccount);
+	}
+
+	void LoadProfileData(int Selected)
+	{
+		GameControl.control.ProfileName = ProfileController.procon.Profiles[Selected];
+		Customize.cust.ProfileName = ProfileController.procon.Profiles[Selected];
+		PersonController.control.ProfileName = ProfileController.procon.Profiles[Selected];
+		GameControl.control.Load();
+		Customize.cust.Load();
+		PersonController.control.Load();
+	}
+
 	void OnGUI()
 	{
 		Customize.cust.windowx[windowID] = windowRect.x;
 		Customize.cust.windowy[windowID] = windowRect.y;
 		GUI.skin = Skin;
 
-        GUI.DrawTexture(new Rect(0, 0, Screen.width, Screen.height), BackgroundPics[SelectedBackground]);
 
-		//GUI.Label(new Rect(695, Screen.height-30, 100, 30),"Turn off system");
+		GUI.DrawTexture(new Rect(0, 0, Screen.width, Screen.height), BackgroundPics[SelectedBackground]);
 
-//		if(GUI.Button(new Rect(100, Screen.height-31, 110, 22), "Create Account"))
-//		{
-//			Select = 0;
-//			GameControl.control.Load();
-//			StartSetup();
-//		}
-
-        if(ProfileController.procon.Profiles.Count == 2)
+        if(ProfileController.procon.Profiles.Count == 2 && Select != 1)
         {
             Select = 1;
-            GameControl.control.ProfileName = ProfileController.procon.Profiles[Select];
-            Customize.cust.ProfileName = ProfileController.procon.Profiles[Select];
-            HardwareController.hdcon.ProfileName = ProfileController.procon.Profiles[Select];
-            GameControl.control.Load();
-            Customize.cust.Load();
-            HardwareController.hdcon.Load();
-        }
+			LoadProfileData(Select);
+		}
 
-		if (Select > 0) 
+		if(ShowDeleteInfo == true)
 		{
-			//GUI.Label (new Rect (400, 100, 150, 22), "Account Name: " + GameControl.control.ProfileName);
-			//if (GameControl.control.MyBankDetails.Count > 0)
-			//{
-			//	GUI.Label(new Rect(400, 120, 150, 22), "Bank Balance: " + "$" + GameControl.control.MyBankDetails[GameControl.control.SelectedBank].AccountBalance);
-			//}
-			//else
-			//{
-			//	GUI.Label(new Rect(400, 120, 150, 22), "Bank Balance: " + "$" + 0);
-			//}
-			//GUI.Label (new Rect (400, 140, 150, 22), "Reputation: " + GameControl.control.Rep);
-			//GUI.Label (new Rect (400, 160, 150, 22), "Current Contracts: " + GameControl.control.Contracts.Count);
-			//GUI.Label (new Rect (400, 180, 150, 22), "IP: " + GameControl.control.fullip);
-			//GUI.Label (new Rect (400, 200, 150, 22), "Time: " + ProfileController.procon.Hour.ToString("F0") + ":" + ProfileController.procon.Min.ToString("F0"));
-			//GUI.Label (new Rect (400, 220, 150, 22), "Date: " + ProfileController.procon.Day + "/" + ProfileController.procon.Month + "/" + ProfileController.procon.CurYear);
-			//if (ProfileController.procon.SelectedOS != null)
-			//{
-			//	GUI.Label (new Rect (400, 240, 300, 22), "Selected OS: " + ProfileController.procon.SelectedOS[Select].Name);
-			//}
+			DeleteAccountUI();
 
-			if (Correctpass == false)
+			if (ConfirmedAccountDeletion == true)
 			{
-				PasswordLogin ();
+				DeleteAccount();
+				ShowDeleteInfo = false;
+				ConfirmedAccountDeletion = false;
+				TypedPass[1] = "";
+				Select = 0;
+				DeleteSelectedAccount = 0;
+				CorrectCount = 0;
 			}
-			else
+		}
+		else
+		{
+			if (Select > 0)
 			{
-				SigningIn = true;
+
+				if (Correctpass == false)
+				{
+					PasswordLogin();
+				}
+				else
+				{
+					SigningIn = true;
+				}
 			}
-
-			//if (GUI.Button(new Rect(0, Select * ScrollSizeHolder, 32, 32), "Del"))
-			//{
-			//	ProfileController.procon.SelectedProfile = Select;
-			//	GameControl.control.ProfileName = ProfileController.procon.Profiles[Select];
-			//	Customize.cust.ProfileName = ProfileController.procon.Profiles[Select];
-			//	HardwareController.hdcon.ProfileName = ProfileController.procon.Profiles[Select];
-			//	GameControl.control.DeleteFile();
-			//	Customize.cust.DeleteFile();
-			//	HardwareController.hdcon.DeleteFile();
-			//	ProfileController.procon.DeleteProfile();
-			//	Select = -1;
-			//	ProfileController.procon.SelectedProfile = Select;
-			//}
-
-			//			if (GameControl.control.OSName.Count > 1)
-			//			{
-			//				OSscrollpos = GUI.BeginScrollView(new Rect(50, 265, 170, 150), OSscrollpos, new Rect(0, 0, 0, OSscrollsize*23));
-			//				for (OSscrollsize = 0; OSscrollsize < GameControl.control.OSName.Count; OSscrollsize++)
-			//				{
-			//					if (GUI.Button (new Rect (0, 23 * OSscrollsize, 150, 22),"" + GameControl.control.OSName[OSscrollsize].Name)) 
-			//					{
-			//						GameControl.control.SelectedOS = GameControl.control.OSName[OSscrollsize];
-			//					}
-			//				}
-			//				GUI.EndScrollView();
-			//			}
 		}
 
 		if (SigningIn == false)
 		{
-			if(GUI.Button(new Rect(Screen.width-33, Screen.height-33, 32, 32), ShutdownPic))
+			if (GUI.Button(new Rect(Screen.width - 33, Screen.height - 33, 32, 32), ShutdownPic))
 			{
 				Application.Quit();
 			}
-
-
-
-			if (ProfileController.procon.Profiles.Count >= 1) 
-			{
-				scrollpos = GUI.BeginScrollView(new Rect(5, 5, 350, 410), scrollpos, new Rect(0, 0, 0, scrollsize*ScrollSizeHolder));
-				for (scrollsize = 0; scrollsize < ProfileController.procon.Profiles.Count; scrollsize++)
-				{
-					StyleFunc();
-					if(GUI.Button(new Rect(2, scrollsize * ScrollSizeHolder, 200, 32),ProfileController.procon.Profiles[scrollsize],style))
-					{
-						Select = scrollsize;
-						if (Select > 0) 
-						{
-							GameControl.control.ProfileName = ProfileController.procon.Profiles [Select];
-							Customize.cust.ProfileName = ProfileController.procon.Profiles[Select];
-							HardwareController.hdcon.ProfileName = ProfileController.procon.Profiles[Select];
-							GameControl.control.Load ();
-							Customize.cust.Load();
-							HardwareController.hdcon.Load();
-						}
-						else 
-						{
-							Select = 0;
-							GameControl.control.ProfileName = ProfileController.procon.Profiles [Select];
-							Customize.cust.ProfileName = ProfileController.procon.Profiles[Select];
-							GameControl.control.Load();
-							Customize.cust.Load();
-							HardwareController.hdcon.Load();
-							StartSetup();
-						}
-					}
-					GUI.Label(new Rect(-33, scrollsize * ScrollSizeHolder, 32, 32),GameControl.control.UserPic[ProfileController.procon.ProfilePic[scrollsize]], style);
-                    if (scrollsize == 0)
-                    {
-                        GUI.Label(new Rect(-33, scrollsize * ScrollSizeHolder, 32, 32), Plus, style);
-                    }
-                    //				GUI.DrawTexture (new Rect (5, scrollsize * ScrollSizeHolder + 5f, 24, 24),GameControl.control.UserPic[ProfileController.procon.ProfileID [scrollsize]]);
-                }
-
-				GUI.EndScrollView();
-			}
 		}
+
+		AccountSelection();
 
 		if (SigningIn == true)
 		{
+			showAccountsList = false;
 			GUI.Label(new Rect(Screen.width/2.5f, Screen.height/2, 100, 24),"Signing In please wait.", style1);
 			SignIn();
 		}
+
+		GUI.Label(new Rect(Screen.width / 2, Screen.height-200, Black_Box.width, 200), BlackBox);
+		GUI.Label(new Rect(Screen.width / 2, Screen.height-200, 500, 500), CurrentTime, test);
 	}
 }

@@ -22,7 +22,7 @@ public class NotfiPrompt : MonoBehaviour
     private GameObject NotiSnd;
     private Computer com;
 	private Defalt def;
-	private NotiSndControl sc;
+	private SoundControl sc;
 
 	public float y;
 	public float x;
@@ -46,7 +46,7 @@ public class NotfiPrompt : MonoBehaviour
         NotiSnd = GameObject.Find("Notification");
         com = Puter.GetComponent<Computer>();
 		def = Puter.GetComponent<Defalt>();
-		sc = NotiSnd.GetComponent<NotiSndControl>();
+		sc = Puter.GetComponent<SoundControl>();
 		native_height = Customize.cust.native_height;
 		native_width = Customize.cust.native_width;
 		SetWindowPos();
@@ -66,26 +66,43 @@ public class NotfiPrompt : MonoBehaviour
 
 	public void NewNotification(string Title,string SubTitle,string Message)
 	{
-		ShowNoti = true;
-		Notification = SubTitle;
-		if (ForcedMusicSetting == true)
+		if (SubTitle == "OS Kernal Panic")
 		{
-			if (ForcedMusicOption == true) 
-			{
-				playsound = true;
-			} 
-			else 
-			{
-				playsound = false;
-			}
-
-		} 
-		else 
-		{
-			playsound = Customize.cust.PlayNotiSound;	
+			GameControl.control.Notifications.Add(new NotificationSystem(Title, SubTitle, Message, GameControl.control.Time.CurrentTime, GameControl.control.Time.TodaysDate, NotificationSystem.NotificationType.System));
+			ShowNoti = false;
 		}
-		DisplayTime = 4;
-		GameControl.control.Notifications.Add (new NotificationSystem (Title, SubTitle, Message, GameControl.control.Time.CurrentTime, GameControl.control.Time.TodaysDate,NotificationSystem.NotificationType.System));
+		else
+		{
+			ShowNoti = true;
+			Notification = SubTitle;
+			if (ForcedMusicSetting == true)
+			{
+				if (ForcedMusicOption == true)
+				{
+					playsound = true;
+				}
+				else
+				{
+					playsound = false;
+				}
+
+			}
+			else
+			{
+				playsound = Customize.cust.PlayNotiSound;
+			}
+			DisplayTime = 4;
+			GameControl.control.Notifications.Add(new NotificationSystem(Title, SubTitle, Message, GameControl.control.Time.CurrentTime, GameControl.control.Time.TodaysDate, NotificationSystem.NotificationType.System));
+		}
+	}
+
+	public void DisplayNotification(string Title, string SubTitle, string Message,bool playsnd,float Timer)
+	{
+		ShowNoti = true;
+		DisplayTime = Timer;
+		Notification = Message;
+		playsound = playsnd;
+		GameControl.control.Notifications.Add(new NotificationSystem(Title, SubTitle, Message, GameControl.control.Time.CurrentTime, GameControl.control.Time.TodaysDate, NotificationSystem.NotificationType.System));
 	}
 
 	void OnGUI()
@@ -111,6 +128,7 @@ public class NotfiPrompt : MonoBehaviour
 
 	void DoMyWindow(int WindowID)
 	{
+		GUI.BringWindowToFront(windowID);
 		GUI.TextArea((new Rect (2, 2, 196, 46)),Notification);
 
 		if (ShowNoti == true) 

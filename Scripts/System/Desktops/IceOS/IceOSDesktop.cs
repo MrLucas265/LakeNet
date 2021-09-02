@@ -56,7 +56,6 @@ public class IceOSDesktop : MonoBehaviour
 	private DirSearch ds;
 	private Favs fav;
 	private TreeView tv;
-	private CLI cmd;
 	private SystemMap sm;
 	private MonitorBypass mPass;
 	private WebSecViewer wsv;
@@ -166,7 +165,6 @@ public class IceOSDesktop : MonoBehaviour
 		clk = SysSoftware.GetComponent<Clock>();
 		defalt = SysSoftware.GetComponent<Defalt>();
 		am = SysSoftware.GetComponent<AppMenu>();
-		cmd = SysSoftware. GetComponent<CLI>();
 		com = SysSoftware.GetComponent<Computer>();
 		sc = SysSoftware.GetComponent<SoundControl>();
 		appman = SysSoftware.GetComponent<AppMan>();
@@ -259,7 +257,10 @@ public class IceOSDesktop : MonoBehaviour
 
 		ClockX = Screen.width - 150;
 		//Clock = new Rect(ClockX,DesktopY,120,21);
-		Clock = new Rect(0,DesktopY,Screen.width,Group.height);
+
+		//TASK BAR MATH
+		//Clock = new Rect(0,DesktopY,Screen.width,Group.height);
+
 		//Hint = new Rect(ClockX-350,DesktopY+12,300,22);
 
 		SpeakerX = Screen.width - 22 - Size;
@@ -533,6 +534,11 @@ public class IceOSDesktop : MonoBehaviour
 		{
 			com.Hint = "";
 		}
+	}
+
+	void TaskBarAlpha()
+	{
+
 	}
 
 	void ClockUI()

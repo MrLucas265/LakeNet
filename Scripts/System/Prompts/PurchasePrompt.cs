@@ -74,17 +74,17 @@ public class PurchasePrompt : MonoBehaviour
 
 		if(GUI.Button(new Rect(100, 125, 50, 20),"Buy"))
 		{
-			if(GameControl.control.Balance[GameControl.control.SelectedBank] >= upg.Cost)
-			{
-				GameControl.control.Balance[GameControl.control.SelectedBank] -= upg.Cost;
-				Bought = true;
-				playsound = true;
-			}
-			else
-			{
-				ConfirmTitle = "Error-269 Transaction Error";
-				ConfirmMsg = "Transaction Could not complete due to insuffcient funds.";
-			}
+			//if(GameControl.control.Balance[GameControl.control.SelectedBank] >= upg.Cost)
+			//{
+			//	GameControl.control.Balance[GameControl.control.SelectedBank] -= upg.Cost;
+			//	Bought = true;
+			//	playsound = true;
+			//}
+			//else
+			//{
+			//	ConfirmTitle = "Error-269 Transaction Error";
+			//	ConfirmMsg = "Transaction Could not complete due to insuffcient funds.";
+			//}
 		}
 
 		if(GUI.Button(new Rect(300, 125, 50, 20),"Cancel"))

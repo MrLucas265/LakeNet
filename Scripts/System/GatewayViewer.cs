@@ -36,6 +36,8 @@ public class GatewayViewer : MonoBehaviour
     private HardwareCFile hcf;
     int DesktopStyle = 3;
 
+    private AppMan appman;
+
     public Rect Gateway;
     public Texture2D GatewayPic;
     public List<SocketSystem> CPUSockets = new List<SocketSystem>();
@@ -65,6 +67,8 @@ public class GatewayViewer : MonoBehaviour
         sc = Puter.GetComponent<SoundControl>();
         def = Puter.GetComponent<Defalt>();
         hcf = Hardware.GetComponent<HardwareCFile>();
+        appman = Puter.GetComponent<AppMan>();
+
         if (Game == true)
         {
             native_height = Customize.cust.native_height;
@@ -72,6 +76,8 @@ public class GatewayViewer : MonoBehaviour
         }
 
         AfterStart();
+
+        //MotherBoard2 CPU Socket = 107Y
     }
 
     void AfterStart()
@@ -142,13 +148,13 @@ public class GatewayViewer : MonoBehaviour
         Storage.RemoveRange(0, Storage.Count);
         StoragePic.RemoveRange(0, StoragePic.Count);
 
-        for (int i = 0; i < GameControl.control.Gateway.StorageSlots.Count; i++)
+        for (int i = 0; i < GameControl.control.Gateway.StorageSockets.Count; i++)
         {
-            StorageSockets.Add(GameControl.control.Gateway.StorageSlots[i]);
+            StorageSockets.Add(GameControl.control.Gateway.StorageSockets[i]);
 
             for (int j = 0; j < hcf.ListOfStorageImages.Count; j++)
             {
-                if (GameControl.control.Gateway.StorageSlots[i].SelectedImageNumber == j)
+                if (GameControl.control.Gateway.StorageSockets[i].SelectedImageNumber == j)
                 {
                     StoragePic.Add(hcf.ListOfStorageImages[j]);
                     Storage.Add(new Rect(StorageSockets[i].POSX, StorageSockets[i].POSY, StoragePic[i].width, StoragePic[i].height));
@@ -163,13 +169,13 @@ public class GatewayViewer : MonoBehaviour
         Memory.RemoveRange(0, Memory.Count);
         MemoryPic.RemoveRange(0, MemoryPic.Count);
 
-        for (int i = 0; i < GameControl.control.Gateway.MemorySlots.Count; i++)
+        for (int i = 0; i < GameControl.control.Gateway.MemorySockets.Count; i++)
         {
-            MemorySockets.Add(GameControl.control.Gateway.MemorySlots[i]);
+            MemorySockets.Add(GameControl.control.Gateway.MemorySockets[i]);
 
             for (int j = 0; j < hcf.ListOfMemoryImages.Count; j++)
             {
-                if (GameControl.control.Gateway.MemorySlots[i].SelectedImageNumber == j)
+                if (GameControl.control.Gateway.MemorySockets[i].SelectedImageNumber == j)
                 {
                     MemoryPic.Add(hcf.ListOfMemoryImages[j]);
                     Memory.Add(new Rect(MemorySockets[i].POSX, MemorySockets[i].POSY, MemoryPic[i].width, MemoryPic[i].height));
@@ -198,8 +204,7 @@ public class GatewayViewer : MonoBehaviour
         {
             if (GUI.Button(new Rect(CloseButton), "X", com.Skin[GameControl.control.GUIID].customStyles[0]))
             {
-                show = false;
-                this.enabled = false;
+                appman.SelectedApp = "Gateway Viewer";
             }
         }
         else

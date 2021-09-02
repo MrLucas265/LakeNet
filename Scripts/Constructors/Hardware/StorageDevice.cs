@@ -26,20 +26,27 @@ public class StorageDevice
 
     public float BootTime;
 
+	public float Timer;
+	public float InitalTimer;
+
     public StorageType Type;
 
     public int UIPosX = 0;
     public int UIPosY = 0;
     public int Image = 0;
 
-    public enum StorageType
+	public List<DrivePatSystem> Partitions = new List<DrivePatSystem>();
+
+	//public BandwidthSystem Bandwidth;
+
+	public enum StorageType
 	{
 		External,
 		HDD,
 		SSD
 	}
 		
-	public StorageDevice(string name, string manufactor,string description, string connector,float speed,float usedspace,float freespace,float capacity,float powerusage,float degradationrate, float maxhealth, float currenthealth, float healthpercentage, float powereff,float boottime, StorageType type,int uiposx,int uiposy,int image)
+	public StorageDevice(string name, string manufactor,string description, string connector,float speed,float usedspace,float freespace,float capacity,float powerusage,float degradationrate, float maxhealth, float currenthealth, float healthpercentage, float powereff,float boottime,float timer,float initaltimer, StorageType type,int uiposx,int uiposy,int image, List<DrivePatSystem> part)//,BandwidthSystem bandwidth)
 	{
 		Name = name;
 		Manufactor = manufactor;
@@ -56,9 +63,13 @@ public class StorageDevice
         HealthPercentage = healthpercentage;
         PowerEff = powereff;
         BootTime = boottime;
+		Timer = timer;
+		InitalTimer = initaltimer;
         Type = type;
         UIPosX = uiposx;
         UIPosY = uiposy;
         Image = image;
+		Partitions = part;
+		//Bandwidth = bandwidth;
 	}
 }

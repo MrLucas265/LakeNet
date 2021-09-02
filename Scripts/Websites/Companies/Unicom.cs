@@ -2,13 +2,12 @@
 using System.Collections;
 using System.Collections.Generic;
 
-public class Unicom : MonoBehaviour 
+public class Unicom : MonoBehaviour
 {
 	public int StartCount;
 	public List<string> EmailSubject = new List<string>();
 	public List<string> NoteTitle = new List<string>();
 
-	public bool logged;
 	public bool showMenu;
 
 	public int Select;
@@ -36,8 +35,10 @@ public class Unicom : MonoBehaviour
 	private PasswordList pl;
 	private CLICommandsV2 clic;
 
-	public Color32 buttonColor = new Color32(0,0,0,0);
-	public Color32 fontColor = new Color32(0,0,0,0);
+	public WebSecSystem WebSec;
+
+	public Color32 buttonColor = new Color32(0, 0, 0, 0);
+	public Color32 fontColor = new Color32(0, 0, 0, 0);
 
 	public List<ProgramSystem> PageFile = new List<ProgramSystem>();
 
@@ -57,6 +58,16 @@ public class Unicom : MonoBehaviour
 
 	public bool GenFiles;
 
+	public List<UACSystem> Accounts = new List<UACSystem>();
+
+	public List<RemoteFileSystem> PageFile1 = new List<RemoteFileSystem>();
+	public List<ProgramSystem> PageFile2 = new List<ProgramSystem>();
+
+	public List<InfectionSystem> BlankInfections = new List<InfectionSystem>();
+	public List<ProgramSystem.FileType> BlankFileType = new List<ProgramSystem.FileType>();
+
+	public UACSystem LoggedInAs;
+
 	void Start()
 	{
 		Computer = GameObject.Find("Computer");
@@ -64,15 +75,21 @@ public class Unicom : MonoBehaviour
 		Applications = GameObject.Find("Applications");
 		Hacking = GameObject.Find("Hacking");
 		System = GameObject.Find("System");
-		StartCount = Random.Range(25,100);
+		StartCount = Random.Range(25, 100);
 
-		MaxPublicFiles = Random.Range(25,50);
-		MaxPrivateFiles = Random.Range(25,50);
+		MaxPublicFiles = Random.Range(25, 50);
+		MaxPrivateFiles = Random.Range(25, 50);
 
 		LoadPresetColors();
 		FileSystemGenerator();
 		Documents();
 		WebSearch();
+		//Directories();
+	}
+
+	void SetWebSec()
+	{
+		ib.ConntectedWebSec = WebSec;
 	}
 
 
@@ -93,6 +110,7 @@ public class Unicom : MonoBehaviour
 		fontColor.b = 255;
 		fontColor.a = 255;
 	}
+
 
 
 	void WebSearch()
@@ -116,97 +134,165 @@ public class Unicom : MonoBehaviour
 
 	void Update()
 	{
-		if (SiteAdminPass == "") 
+		if (Accounts.Count == 0)
 		{
-			SiteAdminPass = StringGenerator.RandomMixedChar(8, 8);
+			PasswordSetup();
 		}
 
-		if (WebsiteCount <= GameControl.control.WebsiteFiles.Count)
+		if (GameControl.control.CompanyServerData.Count > 0)
 		{
-			for (int i = 0; i < GameControl.control.WebsiteFiles.Count; i++) 
+			for (int Index = 0; Index < GameControl.control.CompanyServerData.Count; Index++)
 			{
-				if (GameControl.control.WebsiteFiles [i].Location == "Unicom Public") 
+				if (GameControl.control.CompanyServerData[Index].Name == "Unicom")
 				{
-					PublicFileCount++;
+					PublicFileCount = 0;
+					PrivateFileCount = 0;
+					if (GameControl.control.CompanyServerData[Index].Files.Count > 0)
+					{
+						for (int i = 0; i < GameControl.control.CompanyServerData[Index].Files.Count; i++)
+						{
+							if (GameControl.control.CompanyServerData[Index].Files[i].Description == "Public")
+							{
+								PublicFileCount++;
+							}
+							if (GameControl.control.CompanyServerData[Index].Files[i].Description == "Private")
+							{
+								PrivateFileCount++;
+							}
+						}
+					}
 				}
-
-				if (GameControl.control.WebsiteFiles [i].Location == "Unicom Private") 
-				{
-					PrivateFileCount++;
-				}
-				WebsiteCount++;
 			}
 		}
 
-		if (WebsiteCount == GameControl.control.WebsiteFiles.Count)
+		if (PublicFileCount <= MaxPublicFiles || PrivateFileCount <= MaxPrivateFiles)
 		{
 			GenFiles = true;
 		}
 
-		if (PublicFileCount <= MaxPublicFiles || PrivateFileCount <= MaxPrivateFiles) 
+		if (GenFiles == true)
 		{
-			if (GenFiles == true)
-			{
-				FileSystemGenerator();
-			}
+			FileSystemGenerator();
 		}
 
-		if (PublicCount == MaxPublicFiles && PrivateCount == MaxPrivateFiles)
+		if (PublicCount == MaxPublicFiles || PrivateCount == MaxPrivateFiles)
 		{
 			GenFiles = false;
 		}
 	}
 
-	void FileCheck()
-	{
-		PageFile.RemoveRange(0, PageFile.Count);
-
-		for (int i = 0; i < GameControl.control.WebsiteFiles.Count; i++)
-		{
-			if (GameControl.control.WebsiteFiles[i].Location == ib.CurrentLocation)
-			{
-				PageFile.Add(GameControl.control.WebsiteFiles[i]);
-			}
-		}
-	}
-
 	void PasswordSetup()
 	{
-		if (ws.SecLevel > 3)
+		if (Accounts.Count > 0)
 		{
-			SiteAdminPass = StringGenerator.RandomMixedChar(8, 8);
+			for (int j = 0; j < Accounts.Count; j++)
+			{
+				if (Accounts[j].UserName == LoggedInAs.UserName)
+				{
+					if (ib.CurrentSecurity.Count > 0)
+					{
+						for (int i = 0; i < ib.CurrentSecurity.Count; i++)
+						{
+							if (ib.CurrentSecurity[i].Type == WebSecSystem.SecType.UAC)
+							{
+								if (ib.CurrentSecurity[i].Level > 3)
+								{
+									Accounts[j].Password = StringGenerator.RandomMixedChar(8, 8);
+
+								}
+								else
+								{
+									Accounts[j].Password = pl.PasswordWords[Random.Range(0, pl.PasswordWords.Count)].Trim();
+								}
+							}
+						}
+					}
+				}
+			}
 		}
 		else
 		{
-			int Index = Random.Range(0, pl.Words1.Count);
-			SiteAdminPass = pl.Words1[Index];
+			if (ib.CurrentSecurity.Count > 0)
+			{
+				for (int i = 0; i < ib.CurrentSecurity.Count; i++)
+				{
+					if (ib.CurrentSecurity[i].Type == WebSecSystem.SecType.UAC)
+					{
+						if (ib.CurrentSecurity[i].Level > 3)
+						{
+							Accounts.Add(new UACSystem("Admin", StringGenerator.RandomMixedChar(8, 8), "", "123.456.789", "", false, UACSystem.AccountType.Admin));
+							Accounts.Add(new UACSystem("SysAdmin", StringGenerator.RandomMixedChar(8, 8), "", "123.456.789", "", false, UACSystem.AccountType.Admin));
+
+						}
+						else
+						{
+							Accounts.Add(new UACSystem("Admin", pl.PasswordWords[Random.Range(0, pl.PasswordWords.Count)].Trim(), "", "123.456.789", "", false, UACSystem.AccountType.Admin));
+							Accounts.Add(new UACSystem("SysAdmin", pl.PasswordWords[Random.Range(0, pl.PasswordWords.Count)].Trim(), "", "123.456.789", "", false, UACSystem.AccountType.Admin));
+						}
+					}
+				}
+			}
 		}
 	}
 
 	public void FileSystemGenerator()
 	{
-		for(int i=0; i<1; i++)
+		for (int i = 0; i < 1; i++)
 		{
 			string FileName = StringGenerator.RandomMixedChar(4, 4);
-			float FileSize = Random.Range (1, 10);
-			float FileTypePick = Random.Range (1, 10);
-			if (FileTypePick <= 5) 
+			float FileSize = Random.Range(1, 10);
+			float FileTypePick = Random.Range(1, 10);
+			if (FileTypePick <= 5)
 			{
 				if (PublicCount <= MaxPublicFiles)
 				{
-					GameControl.control.WebsiteFiles.Add (new ProgramSystem (FileName, "", "", "", "Unicom Public", "", 0, 0, FileSize, 0, 100, 0, false, ProgramSystem.ProgramType.File));
+					for (int CompanyIndex = 0; CompanyIndex < GameControl.control.CompanyServerData.Count; CompanyIndex++)
+					{
+						switch (GameControl.control.CompanyServerData[CompanyIndex].Name)
+						{
+							case "Unicom":
+								for (int CompanyPageIndex = 0; CompanyPageIndex < GameControl.control.CompanyServerData[CompanyIndex].WebPages.Count; CompanyPageIndex++)
+								{
+									switch (GameControl.control.CompanyServerData[CompanyIndex].WebPages[CompanyPageIndex].Name)
+									{
+										case "Temp Files":
+											string FileLocation = GameControl.control.CompanyServerData[CompanyIndex].WebPages[CompanyPageIndex].Target;
+											//GameControl.control.WebsiteFiles.Add(new ProgramSystem(FileName, "", "", "", "", "", "unicom Public", "", "", "", ProgramSystem.FileExtension.File, ProgramSystem.FileExtension.Null, 0, 0, FileSize, 0, 0, 0, 0, 100, 0, 0, 0, 0, 0, 0, 0, 0, false, false, false, false, BlankInfections, BlankFileType));
+											GameControl.control.CompanyServerData[CompanyIndex].Files.Add(new ProgramSystem(FileName, "", "", "", "", "Public", FileLocation, "", "", "", ProgramSystem.FileExtension.File, ProgramSystem.FileExtension.Null, 0, 0, FileSize, 0, 0, 0, 0, 100, 0, 0, 0, 0, 0, 0, 0, 0, false, false, false, false, BlankInfections, BlankFileType));
+											break;
+									}
+								}
+								break;
+						}
+					}
 					PublicCount++;
 				}
 			}
-			if (FileTypePick > 5) 
+			if (FileTypePick > 5)
 			{
 				if (PrivateCount <= MaxPrivateFiles)
 				{
-					GameControl.control.WebsiteFiles.Add (new ProgramSystem (FileName, "", "", "", "Unicom Private", "", 0, 0, FileSize, 0, 100, 0, false, ProgramSystem.ProgramType.File));
+					for (int CompanyIndex = 0; CompanyIndex < GameControl.control.CompanyServerData.Count; CompanyIndex++)
+					{
+						switch (GameControl.control.CompanyServerData[CompanyIndex].Name)
+						{
+							case "Unicom":
+								for (int CompanyPageIndex = 0; CompanyPageIndex < GameControl.control.CompanyServerData[CompanyIndex].WebPages.Count; CompanyPageIndex++)
+								{
+									switch (GameControl.control.CompanyServerData[CompanyIndex].WebPages[CompanyPageIndex].Name)
+									{
+										case "Internal Files":
+											string FileLocation = GameControl.control.CompanyServerData[CompanyIndex].WebPages[CompanyPageIndex].Target;
+											GameControl.control.CompanyServerData[CompanyIndex].Files.Add(new ProgramSystem(FileName, "", "", "", "", "Private", FileLocation, "", "", "", ProgramSystem.FileExtension.File, ProgramSystem.FileExtension.Null, 0, 0, FileSize, 0, 0, 0, 0, 100, 0, 0, 0, 0, 0, 0, 0, 0, false, false, false, false, BlankInfections, BlankFileType));
+											break;
+									}
+								}
+								break;
+						}
+					}
 					PrivateCount++;
 				}
 			}
-			//GameControl.control.becassystemsFileSystem.Sort();
 		}
 	}
 
@@ -223,313 +309,305 @@ public class Unicom : MonoBehaviour
 
 	}
 
+	void Home()
+	{
+		if (ib.AddressBar == "www.unicom.com")
+		{
+			ib.AddressBar = "www.unicom.com/home";
+		}
+	}
+
+	void ResetLoggedInData()
+	{
+		LoggedInAs.UserName = "";
+		LoggedInAs.Password = "";
+		LoggedInAs.IP = "";
+		LoggedInAs.LoggedInIP = "";
+		LoggedInAs.Type = UACSystem.AccountType.AccessPrivilages0;
+	}
+
+	public void SignOut()
+	{
+		PasswordSetup();
+		if (Accounts.Count > 0)
+		{
+			for (int i = 0; i < Accounts.Count; i++)
+			{
+				if (LoggedInAs.UserName == Accounts[i].UserName)
+				{
+					Accounts[i].LoggedIn = false;
+					Accounts[i].LoggedInIP = "";
+					ResetLoggedInData();
+					//LoggedInAs = null;
+				}
+			}
+		}
+		//trace.stopping = true;
+		ib.Username = "";
+		ib.showAddressBar = true;
+		ib.AddressBar = "www.unicom.com/home";
+		UsrName = "";
+		password = "";
+		//sm.Disconnect();
+	}
+
+	public void FileDownload()
+	{
+		clic.CommandLine = "dl▓" + PageFile2[Select].Name;
+		clic.CheckInput();
+		clic.CommandLine = "";
+		Select = -1;
+		showMenu = false;
+	}
+
+	public void FileDelete()
+	{
+		clic.CommandLine = "-r▓rm▓" + PageFile2[Select].Name;
+		clic.CheckInput();
+		clic.CommandLine = "";
+		Select = -1;
+		showMenu = false;
+	}
+
 	public void RenderSite()
 	{
 		GUI.backgroundColor = buttonColor;
 		GUI.contentColor = fontColor;
+		NewWebsiteStuff();
+	}
 
-		switch(ib.AddressBar)
+	void RefreshPage()
+	{
+		PageFile1.RemoveRange(0, PageFile1.Count);
+		for (int Index = 0; Index < GameControl.control.CompanyServerData.Count; Index++)
 		{
-		case "www.unicom.com":
-			if (GUI.Button (new Rect (10, 75, 100, 20), "Public")) 
+			if (GameControl.control.CompanyServerData[Index].Name == "Unicom")
 			{
-				ib.AddressBar = "www.unicom.com/public";
-				ib.showAddressBar = false;
-				ib.ClearDirContents ();
-				ib.DirContents.Add ("Home");
-				ib.DirContents.Add ("Files");
-			}  
-			if (GUI.Button (new Rect (10, 120, 100, 20), "Sign in")) 
-			{
-				ib.AddressBar = "www.unicom.com/login";
-				ib.showAddressBar = false;
-				ib.ClearDirContents ();
-			}
-			if (ib.Request == true)
-			{
-				ib.ClearDirContents();
-				clic.PastCommands.Add ("www.unicom.com/public");
-				clic.PastCommands.Add ("www.unicom.com/login");
-				ib.Request = false;
-			}
-			break;
-
-		case "www.unicom.com/public": 
-			if(GUI.Button(new Rect(10,75,100,20),"Home"))
-			{
-				ib.ClearDirContents();
-				trace.UpdateTimer = false;
-				ib.showAddressBar = true;
-				logged = false;
-				UsrName = "";
-				password = "";
-				//sm.BounceIPs.Remove(sm.JaildewIP);
-				//sm.BouncedConnections.Remove(sm.JaildewPos);
-				ib.AddressBar = "www.unicom.com";
-			}    
-
-			if(GUI.Button(new Rect(10,100,100,20),"Temp Files"))
-			{
-				ib.ClearDirContents();
-				ib.AddressBar = "www.unicom.com/tempfiles";
-				//ib.DirContents.Add(GameControl.control.becassystemsPublicFileSize[scrollsize].ToString("F0"));
-			}
-			if (ib.Request == true)
-			{
-				ib.ClearDirContents();
-				clic.PastCommands.Add ("www.unicom.com");
-				clic.PastCommands.Add ("www.unicom.com/tempfiles");
-				ib.Request = false;
-			}
-			break;
-
-		case "www.unicom.com/tempfiles": 
-			if (GUI.Button (new Rect (245, 30, 50, 20), "Back"))
-			{
-				ib.ClearDirContents ();
-				ib.AddressBar = "www.unicom.com/public";
-			}
-
-			FileCheck();
-
-			ib.CurrentLocation = "Unicom Public";
-
-			if (ib.Request == true)
-			{
-				int FileCount;
-				for (FileCount = 0; FileCount < GameControl.control.WebsiteFiles.Count; FileCount++)
+				for (int i = 0; i < GameControl.control.CompanyServerData[Index].WebPages.Count; i++)
 				{
-					//ib.DirContents.Add (GameControl.control.becassystemsPublicFileSystem [FileCount].Name);
-					if (GameControl.control.WebsiteFiles [FileCount].Location == ib.CurrentLocation)
+					if (GameControl.control.CompanyServerData[Index].WebPages[i].Location == ib.AddressBar)
 					{
-						clic.PastCommands.Add (GameControl.control.WebsiteFiles[FileCount].Name);
+						if (!PageFile1.Contains(GameControl.control.CompanyServerData[Index].WebPages[i]))
+						{
+							PageFile1.Add(GameControl.control.CompanyServerData[Index].WebPages[i]);
+						}
 					}
 				}
-
-				if (FileCount >= GameControl.control.WebsiteFiles.Count)
-				{
-					ib.Request = false;
-				}
 			}
+		}
+	}
 
-			GUI.Label (new Rect (115, 50, 500, 500), "File Name");
-			GUI.Label (new Rect (200, 50, 500, 500), "Size");
-
-			if (showMenu == true) 
+	void RefreshFiles()
+	{
+		PageFile2.RemoveRange(0, PageFile2.Count);
+		for (int Index = 0; Index < GameControl.control.CompanyServerData.Count; Index++)
+		{
+			if (GameControl.control.CompanyServerData[Index].Name == "Unicom")
 			{
-				if (GUI.Button (new Rect (10, 105, 100, 20), "Delete " + PageFile[Select].Name)) 
+				if (GameControl.control.CompanyServerData[Index].Files.Count > 0)
 				{
-					clic.CommandLine = "-r▓rm▓" + PageFile[Select].Name;
-					clic.CheckInput();
-					clic.CommandLine = "";
-					Select = -1;
-					showMenu = false;
-				}
-				if (GUI.Button (new Rect (10, 145, 100, 20), "Download " + PageFile[Select].Name)) 
-				{
-					clic.CommandLine = "dl▓" + PageFile[Select].Name;
-					clic.CheckInput();
-					clic.CommandLine = "";
-					Select = -1;
-					showMenu = false;
+					for (int i = 0; i < GameControl.control.CompanyServerData[Index].Files.Count; i++)
+					{
+						if (GameControl.control.CompanyServerData[Index].Files[i].Location == ib.AddressBar)
+						{
+							if (!PageFile2.Contains(GameControl.control.CompanyServerData[Index].Files[i]))
+							{
+								PageFile2.Add(GameControl.control.CompanyServerData[Index].Files[i]);
+							}
+						}
+					}
 				}
 			}
-			scrollpos = GUI.BeginScrollView (new Rect (130, 75, 150, 100), scrollpos, new Rect (0, 0, 0, scrollsize * 20));
+		}
+	}
 
-			if (scrollsize > PageFile.Count)
+	void Request()
+	{
+		if (PageFile1.Count > 0)
+		{
+			for (int i = 0; i < PageFile1.Count; i++)
+			{
+				clic.PastCommands.Add("#" + i + " " + PageFile1[i].Target);
+			}
+		}
+
+		if (PageFile2.Count > 0)
+		{
+			for (int i = 0; i < PageFile2.Count; i++)
+			{
+				clic.PastCommands.Add("#" + i + " " + PageFile2[i].Name);
+			}
+		}
+
+		ib.Request = false;
+	}
+
+	void NewWebsiteStuff()
+	{
+		Home();
+		RefreshPage();
+		RefreshFiles();
+		if (PageFile1.Count > 0)
+		{
+			if (ib.Request == true)
+			{
+				Request();
+			}
+
+
+			for (int i = 0; i < PageFile1.Count; i++)
+			{
+				if (GUI.Button(new Rect(10, 35 + 30 * i, 100, 22), PageFile1[i].Name))
+				{
+					//ib.Inputted = PageFile1[i].Target;
+					ib.AddressBar = PageFile1[i].Target;
+				}
+			}
+		}
+
+		NewCheck();
+		WebsiteStuff();
+	}
+
+	void NewCheck()
+	{
+		if (ib.AddressBar == "www.unicom.com/tempfiles")
+		{
+			ib.CurrentLocation = "Unicom";
+
+			if (ib.Request == true)
+			{
+				Request();
+			}
+
+			GUI.Label(new Rect(115, 50, 500, 500), "File Name");
+			GUI.Label(new Rect(200, 50, 500, 500), "Size");
+
+			if (showMenu == true)
+			{
+				if (GUI.Button(new Rect(10, 105, 100, 20), "Delete " + PageFile2[Select].Name))
+				{
+					FileDelete();
+				}
+				if (GUI.Button(new Rect(10, 145, 100, 20), "Download " + PageFile2[Select].Name))
+				{
+					FileDownload();
+				}
+			}
+			scrollpos = GUI.BeginScrollView(new Rect(130, 75, 150, 100), scrollpos, new Rect(0, 0, 0, scrollsize * 20));
+
+			if (scrollsize > PageFile2.Count)
 			{
 				scrollsize = 0;
 			}
 
-			if(PageFile.Count > 0)
+			if (PageFile2.Count > 0)
 			{
-				for (scrollsize = 0; scrollsize < PageFile.Count; scrollsize++)
+				for (scrollsize = 0; scrollsize < PageFile2.Count; scrollsize++)
 				{
-					if (PageFile[scrollsize].Location == "Unicom Public")
+					if (GUI.Button(new Rect(3, scrollsize * 20, 80, 20), "" + PageFile2[scrollsize].Name))
 					{
-						if (GUI.Button(new Rect(3, scrollsize * 20, 80, 20), "" + PageFile[scrollsize].Name))
-						{
-							showMenu = true;
-							Select = scrollsize;
-						}
-						GUI.Button(new Rect(85, scrollsize * 20, 40, 20), "" + PageFile[scrollsize].Used);
+						showMenu = true;
+						Select = scrollsize;
 					}
+					GUI.Button(new Rect(85, scrollsize * 20, 40, 20), "" + PageFile2[scrollsize].Used);
 				}
 
 			}
 
 			GUI.EndScrollView();
+		}
+	}
 
-			break;
-
-		case "www.unicom.com/filesystem": 
-			if (logged == true)
-			{
-				FileCheck();
-				if (GUI.Button(new Rect(5, 55, 100, 20), "Back"))
+	void WebsiteStuff()
+	{
+		switch (ib.AddressBar)
+		{
+			case "www.unicom.com/internal/files":
+				if (LoggedInAs.LoggedIn == true)
 				{
-					ib.AddressBar = "www.unicom.com/internal";
-				}
+					ib.CurrentLocation = "Unicom";
 
-				ib.CurrentLocation = "Unicom Private";
-
-				if (ib.Request == true)
-				{
-					int FileCount;
-					//string FileLocation = "becassystems Private";
-					for (FileCount = 0; FileCount < PageFile.Count; FileCount++)
+					if (ib.Request == true)
 					{
-						//ib.DirContents.Add (GameControl.control.becassystemsPublicFileSystem [FileCount].Name);
-						if (PageFile[FileCount].Location == ib.CurrentLocation)
+						Request();
+					}
+
+					GUI.Label(new Rect(115, 50, 500, 500), "File Name");
+					GUI.Label(new Rect(200, 50, 500, 500), "Size");
+
+					if (showMenu == true)
+					{
+						if (GUI.Button(new Rect(10, 105, 100, 20), "Delete " + PageFile2[Select].Name))
 						{
-							clic.PastCommands.Add (PageFile[FileCount].Name);
+							FileDelete();
+						}
+						if (GUI.Button(new Rect(10, 145, 100, 20), "Download " + PageFile2[Select].Name))
+						{
+							FileDownload();
 						}
 					}
+					scrollpos = GUI.BeginScrollView(new Rect(130, 75, 150, 100), scrollpos, new Rect(0, 0, 0, scrollsize * 20));
 
-					if (FileCount >= PageFile.Count)
+					if (scrollsize > PageFile2.Count)
 					{
-						ib.Request = false;
+						scrollsize = 0;
+					}
+
+					if (PageFile2.Count > 0)
+					{
+						for (scrollsize = 0; scrollsize < PageFile2.Count; scrollsize++)
+						{
+							if (GUI.Button(new Rect(3, scrollsize * 20, 80, 20), "" + PageFile2[scrollsize].Name))
+							{
+								showMenu = true;
+								Select = scrollsize;
+							}
+							GUI.Button(new Rect(85, scrollsize * 20, 40, 20), "" + PageFile2[scrollsize].Used);
+						}
+
+					}
+
+					GUI.EndScrollView();
+				}
+				break;
+
+			case "www.unicom.com/login":
+
+				UsrName = GUI.TextField(new Rect(85, 55, 120, 20), UsrName);
+				password = GUI.TextField(new Rect(85, 75, 120, 20), password);
+
+				GUI.Label(new Rect(3, 55, 500, 500), "User Name: ");
+				GUI.Label(new Rect(3, 75, 500, 500), "Password: ");
+				ib.showAddressBar = false;
+
+				for (int i = 0; i < Accounts.Count; i++)
+				{
+					if (UsrName == Accounts[i].UserName)
+					{
+						ib.Username = UsrName;
+						ib.SiteAdminPass = Accounts[i].Password;
+
+						if (Accounts[i].Password == password)
+						{
+							if (GUI.Button(new Rect(10, 125, 100, 20), "Login"))
+							{
+								Accounts[i].LoggedInIP = GameControl.control.Gateway.InstalledModem[0].ModemIP;
+								Accounts[i].LoggedIn = true;
+								LoggedInAs = Accounts[i];
+								//trace.UpdateTimer = true;
+								ib.showAddressBar = false;
+								ib.AddressBar = "www.unicom.com/internal";
+								//log.log.Add(GameControl.control.fullip);
+							}
+						}
 					}
 				}
+				break;
 
-				GUI.Label(new Rect(115, 50, 500, 500), "File Name");
-				GUI.Label(new Rect(200, 50, 500, 500), "Size");
-
-				if(showMenu == true)
-				{
-					//					if(GUI.Button(new Rect(10, 105, 100, 20), "Delete " + GameControl.control.JaildewPublicFileName[Select].Name))
-					//					{
-					//
-					//					}
-					//					if(GUI.Button(new Rect(10,145,100,20),"Copy " + GameControl.control.JaildewPublicFileName[Select].Name))
-					//					{
-					//
-					//					}
-				}
-				scrollpos = GUI.BeginScrollView(new Rect(130, 75, 150, 100), scrollpos, new Rect(0, 0, 0, scrollsize * 20));
-				for (scrollsize = 0; scrollsize < PageFile.Count; scrollsize++)
-				{
-					if (GUI.Button(new Rect(3, scrollsize * 20, 80, 20), "" + PageFile[scrollsize].Name))
-					{
-						showMenu = true;
-						Select = scrollsize;
-					}
-					GUI.Button(new Rect(85, scrollsize * 20, 40, 20), "" + PageFile[scrollsize].Used);
-				}
-				GUI.EndScrollView();
-			}
-			break;
-
-		case "www.unicom.com/login":
-
-			if (UsrName == "Admin") 
-			{
-				ib.Username = UsrName;
-			}
-
-			UsrName = GUI.TextField(new Rect(85, 55, 120, 20), UsrName, 500);
-			password = GUI.TextField(new Rect(85, 75, 120, 20), password, 500);
-
-			GUI.Label(new Rect(3, 55, 500, 500), "User Name: ");
-			GUI.Label(new Rect(3, 75, 500, 500), "Password: ");
-			ib.showAddressBar = false;
-
-			if(prog.Running == false)
-			{
-				if (GUI.Button(new Rect(245,30,50,20), "Back"))
-				{
-					trace.UpdateTimer = false;
-					ib.showAddressBar = true;
-					logged = false;
-					UsrName = "";
-					password = "";
-					//sm.BounceIPs.Remove(sm.JaildewIP);
-					//sm.BouncedConnections.Remove(sm.JaildewPos);
-					ib.AddressBar = "www.unicom.com";
-				} 
-			}
-
-			if(UsrName == "Admin" && password == SiteAdminPass)
-			{
-				if(GUI.Button(new Rect(10,125,100,20),"Login"))
-				{
-					ib.showAddressBar = false;
-					logged = true;
-					ib.AddressBar = "www.unicom.com/internal";
-					trace.UpdateTimer = true;
-					//log.log.Add(GameControl.control.fullip);
-				}
-			}
-			break;
-
-		case "www.unicom.com/documents/emails":
-			if(logged == true)
-			{
-				scrollpos = GUI.BeginScrollView(new Rect(115, 75, 125, 100), scrollpos, new Rect(0, 0, 0, scrollsize*20));
-				for (scrollsize = 0; scrollsize < EmailSubject.Count; scrollsize++)
-				{
-					if(GUI.Button(new Rect(3, scrollsize * 20, 120, 20), "" + EmailSubject[scrollsize]))
-					{
-						tr.show = true;
-						tr.Title = EmailSubject[scrollsize];
-					}
-				}
-				GUI.EndScrollView();
-
-				if(GUI.Button(new Rect(245,30,50,20),"Back"))
-				{
-					ib.AddressBar = "www.unicom.com/internal";
-				}
-			}
-			break;
-
-		case "www.unicom.com/documents":
-			if(logged == true)
-			{
-				if(GUI.Button(new Rect(10,75,100,20),"Emails"))
-				{
-					ib.AddressBar = "www.unicom.com/documents/emails";
-				}
-				if(GUI.Button(new Rect(10,100,100,20),"Notes"))
-				{
-					ib.AddressBar = "www.unicom.com/documents/notes";
-				}
-				if(GUI.Button(new Rect(10,150,100,20),"Back"))
-				{
-					ib.AddressBar = "www.unicom.com/internal";
-				}
-			}
-			break;
-
-		case "www.unicom.com/internal":
-			if(logged == true)
-			{
-				if(GUI.Button(new Rect(10,75,100,20),"File System"))
-				{
-					ib.AddressBar = "www.unicom.com/filesystem";
-				}
-				if(GUI.Button(new Rect(10,100,100,20),"Documents"))
-				{
-					ib.AddressBar = "www.unicom.com/documents";
-				}
-				if(GUI.Button(new Rect(10,125,100,20),"Logs"))
-				{
-					ib.AddressBar = "www.unicom.com/logs";
-				}
-				if(GUI.Button(new Rect(10,150,100,20),"Sign Out"))
-				{
-					trace.stopping = true;
-					ib.Username = "";
-					ib.showAddressBar = true;
-					logged = false;
-					UsrName = "";
-					password = "";
-					PasswordSetup();
-					sm.Disconnect();
-					ib.AddressBar = "www.unicom.com";
-				}
-			}
-			break;
+			case "www.unicom.com/signout":
+				SignOut();
+				break;
 		}
 	}
 }

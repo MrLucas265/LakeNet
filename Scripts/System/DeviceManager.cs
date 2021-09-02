@@ -21,44 +21,10 @@ public class DeviceManager : MonoBehaviour
 
     public bool show;
 
-    public List<string> RunningApplications = new List<string>();
-    public List<int> RunningApplicationsWindowID = new List<int>();
-    public List<float> CPUList = new List<float>();
-    public List<float> MemoryList = new List<float>();
-    public List<float> GraphicsList = new List<float>();
-    public List<float> DiskList = new List<float>();
-    public List<float> NetworkList = new List<float>();
-
     public Vector2 scrollpos = Vector2.zero;
     public int scrollsize;
 
-    public bool ShowApplications;
-    public bool showStartUp;
-    public bool showDetails;
-    public bool showServices;
-    public bool showPerformance;
-    public bool showUsers;
-    public bool showHistory;
-    public bool showSettings;
-    public bool showSpecs;
-
-    public bool showCPU;
-    public bool showRAM;
-    public bool showPSU;
-    public bool showDisk;
-    public bool showNET;
-    public bool showGPU;
-    public bool AnyShowen;
-
-    public Texture2D[] Pics;
-
     public string Title;
-
-    public string hint;
-
-    public bool CompactMode;
-    public bool ChangeLayout;
-    public string CompactModeName;
 
     private GameObject Hardware;
     private CPU cpu;
@@ -72,22 +38,27 @@ public class DeviceManager : MonoBehaviour
     private SoundControl sc;
     private AppMan appman;
 
-    //CONTEXT MENU
-    public Rect ContextwindowRect = new Rect(100, 100, 100, 200);
-    public bool ShowContext;
-    public int ContextMenuID;
-    public int SelectedProgram;
-    public List<string> ContextMenuOptions = new List<string>();
-    public string SelectedOption;
-    public float LastClick;
-    public ProgramSystem SelectedTask;
-
     public int Selected;
 
     public int SelectedDevice;
 
     public Rect Test = new Rect(0, 0, 0, 0);
     public Rect TestL = new Rect(0, 0, 0, 0);
+
+    public Menu SelectedMenu;
+
+
+    public enum Menu
+    {
+        CPU,
+        RAM,
+        PSU,
+        GPU,
+        Disk,
+        NET,
+        Motherboard,
+        Home
+    }
 
     // Use this for initialization
     void Start()
@@ -103,19 +74,10 @@ public class DeviceManager : MonoBehaviour
 
         PosCheck();
 
-        ContextwindowRect.width = 100;
-
         windowRect.width = 400;
 
         CloseButton = new Rect(windowRect.width - 22, 1, 21, 21);
         MiniButton = new Rect(windowRect.width - 43, 1, 21, 21);
-
-        if (CompactMode == true)
-        {
-            minimize = true;
-            Minimize();
-            showSpecs = true;
-        }
     }
 
     void PosCheck()
@@ -147,27 +109,12 @@ public class DeviceManager : MonoBehaviour
 
     void CloseAllMainMenus()
     {
-        ShowApplications = false;
-        showStartUp = false;
-        showDetails = false;
-        showServices = false;
-        showPerformance = false;
-        showUsers = false;
-        showHistory = false;
-        showSettings = false;
-        showSpecs = false;
         CloseAllMainMenuSubMenus();
     }
 
     void CloseAllMainMenuSubMenus()
     {
-        showCPU = false;
-        showRAM = false;
-        showPSU = false;
-        showGPU = false;
-        showDisk = false;
-        showNET = false;
-        AnyShowen = false;
+        SelectedMenu = Menu.Home;
         Selected = -1;
         Index = 0;
     }
@@ -177,34 +124,12 @@ public class DeviceManager : MonoBehaviour
         Customize.cust.windowx[windowID] = windowRect.x;
         Customize.cust.windowy[windowID] = windowRect.y;
 
-        GUI.skin = com.Skin[GameControl.control.GUIID];
-
-        //set up scaling
-        //float rx = Screen.width / native_width;
-        //float ry = Screen.height / native_height;
-
-        //GUI.matrix = Matrix4x4.TRS (Vector3.zero, Quaternion.identity, new Vector3 (rx, ry, 1)); 
+        GUI.skin = com.Skin[GameControl.control.GUIID]; 
 
         if (show == true)
         {
             GUI.color = com.colors[Customize.cust.WindowColorInt];
             windowRect = WindowClamp.ClampToScreen(GUI.Window(windowID, windowRect, DoMyWindow, ""));
-        }
-
-        if (ShowContext == true)
-        {
-            ContextwindowRect.height = 21 * ContextMenuOptions.Count + 2;
-            GUI.skin = com.Skin[GameControl.control.GUIID];
-            GUI.color = com.colors[Customize.cust.WindowColorInt];
-            ContextwindowRect = WindowClamp.ClampToScreen(GUI.Window(ContextMenuID, ContextwindowRect, DoMyContextWindow, ""));
-        }
-
-        if (Input.GetMouseButtonUp(0) || Input.GetMouseButtonUp(1) || Input.GetMouseButtonUp(2))
-        {
-            if (!ContextwindowRect.Contains(Event.current.mousePosition))
-            {
-                ShowContext = false;
-            }
         }
     }
 
@@ -216,17 +141,14 @@ public class DeviceManager : MonoBehaviour
         {
             if (GUI.Button(new Rect(CloseButton), "X", com.Skin[GameControl.control.GUIID].customStyles[0]))
             {
-                this.enabled = false;
+                appman.SelectedApp = "Device Manager";
             }
         }
         else
         {
             GUI.backgroundColor = com.colors[Customize.cust.ButtonColorInt];
             GUI.contentColor = com.colors[Customize.cust.FontColorInt];
-            if (GUI.Button(new Rect(CloseButton), "X", com.Skin[GameControl.control.GUIID].customStyles[1]))
-            {
-                this.enabled = false;
-            }
+            GUI.Button(new Rect(CloseButton), "X", com.Skin[GameControl.control.GUIID].customStyles[1]);
         }
 
         GUI.backgroundColor = com.colors[Customize.cust.ButtonColorInt];
@@ -234,21 +156,10 @@ public class DeviceManager : MonoBehaviour
 
         if (MiniButton.Contains(Event.current.mousePosition))
         {
-            if (CompactMode == true)
+            if (GUI.Button(new Rect(MiniButton), "-", com.Skin[GameControl.control.GUIID].customStyles[2]))
             {
-                if (GUI.Button(new Rect(MiniButton), "-", com.Skin[GameControl.control.GUIID].customStyles[2]))
-                {
-                    minimize = !minimize;
-                    Minimize();
-                }
-            }
-            else
-            {
-                if (GUI.Button(new Rect(MiniButton), "-", com.Skin[GameControl.control.GUIID].customStyles[2]))
-                {
-                    minimize = !minimize;
-                    Minimize();
-                }
+                minimize = !minimize;
+                Minimize();
             }
         }
         else
@@ -268,98 +179,26 @@ public class DeviceManager : MonoBehaviour
 
         MenuSystem();
 
-        if (showCPU == true)
+        switch(SelectedMenu)
         {
-            RenderCPUTab();
-        }
-
-        if (showGPU == true)
-        {
-            RenderGPUTab();
-        }
-
-        if (showRAM == true)
-        {
-            RenderRAMTab();
-        }
-
-        if (showPSU == true)
-        {
-            RenderPSUTab();
-        }
-
-        if (showDisk == true)
-        {
-            RenderDisksTab();
-        }
-
-        if (showPerformance == true)
-        {
-            GUI.Button(new Rect(2, 50, 40, 40), Pics[1]);
-            GUI.Button(new Rect(2, 100, 40, 40), Pics[2]);
-            //GUI.Button (new Rect (2, 50, 60, 20),"Memory");
-            //GUI.Button (new Rect (2, 50, 60, 20),"GPU");
-            //GUI.Button (new Rect (2, 50, 60, 20),"Disk");
-            //GUI.Button (new Rect (2, 50, 60, 20),"Network");
-
-            //			scrollpos = GUI.BeginScrollView(new Rect(2, 71, 500, 100), scrollpos, new Rect(0, 0, 0, scrollsize * 20));
-            //			for (scrollsize = 0; scrollsize < RunningApplications.Count; scrollsize++)
-            //			{
-            //				//GUI.Button (new Rect (2, scrollsize * 20, 20, 20),"" + scrollsize);
-            //				GUI.Button (new Rect (0, scrollsize * 20, 150, 20), RunningApplications [scrollsize]);
-            //				GUI.Button (new Rect (151, scrollsize * 20, 60, 20),"" + CPU [scrollsize]);
-            //				GUI.Button (new Rect (212, scrollsize * 20, 60, 20),"" + Memory [scrollsize]);
-            //				GUI.Button (new Rect (273, scrollsize * 20, 60, 20),"" + Graphics [scrollsize]);
-            //				GUI.Button (new Rect (334, scrollsize * 20, 60, 20),"" + Disk [scrollsize]);
-            //				GUI.Button (new Rect (395, scrollsize * 20, 60, 20),"" + Network [scrollsize]);
-            //			}
-            //			GUI.EndScrollView();
-        }
-
-        if (showSettings == true)
-        {
-            GUI.Label(new Rect(1, 170, 200, 21), hint);
-
-            if (CompactMode)
-            {
-                if (GUI.Button(new Rect(1, 44 + 2, 150, 20), "Normal Mode"))
-                {
-                    CompactMode = false;
-                    showSettings = false;
-                    minimize = false;
-                    Minimize();
-                }
-            }
-            else
-            {
-                if (GUI.Button(new Rect(1, 44 + 2, 150, 20), "Compact Mode"))
-                {
-                    CompactMode = true;
-                    showSpecs = true;
-                    showSettings = false;
-                    minimize = true;
-                    Minimize();
-                }
-            }
-        }
-
-        if (ChangeLayout == true)
-        {
-            if (AnyShowen == false)
-            {
-                if (GUI.Button(new Rect(2, 24, 75, 21), "Specs"))
-                {
-                    showSettings = false;
-                    showSpecs = true;
-                }
-            }
-            if (AnyShowen == true)
-            {
-                if (GUI.Button(new Rect(2, 24, 74, 21), "Back"))
-                {
-                    CloseAllMainMenuSubMenus();
-                }
-            }
+            case Menu.CPU:
+                RenderCPUTab();
+                break;
+            case Menu.GPU:
+                RenderGPUTab();
+                break;
+            case Menu.RAM:
+                RenderRAMTab();
+                break;
+            case Menu.PSU:
+                RenderPSUTab();
+                break;
+            case Menu.Disk:
+                RenderDisksTab();
+                break;
+            case Menu.Motherboard:
+                RenderMotherboardTab();
+                break;
         }
     }
 
@@ -448,46 +287,9 @@ public class DeviceManager : MonoBehaviour
 
     }
 
-    void AddContextOptions()
+    void RenderMotherboardTab()
     {
-        //if (GameControl.control.DesktopIconList [SelectedProgram].Type == ProgramSystem.ProgramType.Exe)
-        //{
-        //	ContextMenuOptions.Add ("Open");
-        //	//ContextMenuOptions.Add ("Copy");
-        //	ContextMenuOptions.Add ("Rename");
-        //	if (!GameControl.control.QuickLaunchNames.Contains (GameControl.control.DesktopIconList [SelectedProgram].Name)) 
-        //	{
-        //		ContextMenuOptions.Add ("Pin to QL");
-        //	}
-        //	else
-        //	{
-        //		ContextMenuOptions.Add ("Unpin from QL");
-        //	}
-        //	ContextMenuOptions.Add ("Delete");
-        //	//ContextMenuOptions.Add ("Create Icon");
-        //	ContextMenuOptions.Add ("Details");
-        //}
-        //else if (GameControl.control.DesktopIconList [SelectedProgram].Type == ProgramSystem.ProgramType.Dir || GameControl.control.DesktopIconList [SelectedProgram].Type == ProgramSystem.ProgramType.Fdl)
-        //{
-        //	ContextMenuOptions.Add ("Open");
-        //	//ContextMenuOptions.Add ("Create Icon");
-        //	ContextMenuOptions.Add ("Delete");
-        //	ContextMenuOptions.Add ("Details");
-        //}
-        //else 
-        //{
-        //	ContextMenuOptions.Add ("Open");
-        //	//ContextMenuOptions.Add ("Copy");
-        //	ContextMenuOptions.Add ("Rename");
-        //	ContextMenuOptions.Add ("Delete");
-        //	//ContextMenuOptions.Add ("Create Icon");
-        //	ContextMenuOptions.Add ("Details");
-        //}
-        ContextMenuOptions.Add("Kill");
-        //ContextMenuOptions.Add ("Copy");
-        ContextMenuOptions.Add("Location");
-        //ContextMenuOptions.Add ("Create Icon");
-        ContextMenuOptions.Add("Details");
+
     }
 
     void PlayClickSound()
@@ -496,138 +298,48 @@ public class DeviceManager : MonoBehaviour
         sc.PlaySound();
     }
 
-    void DoMyContextWindow(int WindowID)
-    {
-        //GUI.Box (new Rect (Input.mousePosition.x, Input.mousePosition.y, 100, 200), "");
-        GUI.backgroundColor = com.colors[Customize.cust.ButtonColorInt];
-        GUI.contentColor = com.colors[Customize.cust.FontColorInt];
-
-        if (ContextMenuOptions.Count <= 0)
-        {
-            AddContextOptions();
-        }
-
-        if (ContextMenuOptions.Count > 0)
-        {
-            for (int i = 0; i < ContextMenuOptions.Count; i++)
-            {
-                if (GUI.Button(new Rect(1, 1 + 21 * i, ContextwindowRect.width - 2, 21), ContextMenuOptions[i]))
-                {
-                    SelectedOption = ContextMenuOptions[i];
-                }
-            }
-        }
-
-        switch (SelectedOption)
-        {
-            case "Kill":
-                switch (SelectedTask.Type)
-                {
-                    case ProgramSystem.ProgramType.Txt:
-                        //EndProgram();
-                        CloseContextMenu();
-                        break;
-                    case ProgramSystem.ProgramType.Fdl:
-                        //OpenFld();
-                        CloseContextMenu();
-                        break;
-                    case ProgramSystem.ProgramType.Ins:
-                        //OpenIns();
-                        CloseContextMenu();
-                        break;
-                    case ProgramSystem.ProgramType.Exe:
-                        EndProgram();
-                        CloseContextMenu();
-                        break;
-                    case ProgramSystem.ProgramType.Dir:
-                        //OpenFld();
-                        CloseContextMenu();
-                        break;
-                }
-                break;
-            case "Location":
-                ProgramLocation();
-                PlayClickSound();
-                CloseContextMenu();
-                break;
-            case "Details":
-                //DeleteSystem();
-                PlayClickSound();
-                CloseContextMenu();
-                break;
-        }
-    }
-
-    void ProgramLocation()
-    {
-        PlayClickSound();
-        if (com.show == true)
-        {
-            com.ComAddress = SelectedTask.Location;
-        }
-        else
-        {
-            appman.SelectedApp = "Computer";
-            com.ComAddress = SelectedTask.Location;
-        }
-        //		SelectedProgram = -1;
-        //		com.MenuSelected = 0;
-    }
-
-    void EndProgram()
-    {
-        PlayClickSound();
-        appman.SelectedApp = SelectedTask.Target;
-        SelectedProgram = -1;
-        com.MenuSelected = 0;
-    }
-
-
-    void CloseContextMenu()
-    {
-        ContextMenuOptions.RemoveRange(0, ContextMenuOptions.Count);
-        SelectedOption = "";
-        ShowContext = false;
-    }
-
     void MenuSystem()
     {
-        if (ChangeLayout == false)
+        if (GUI.Button(new Rect(1, 23, 50, 20), "CPU"))
         {
-            if (GUI.Button(new Rect(1, 23, 50, 20), "CPU"))
-            {
-                Title = " - CPU";
-                CloseAllMainMenus();
-                showCPU = true;
-            }
+            Title = " - CPU";
+            CloseAllMainMenus();
+            SelectedMenu = Menu.CPU;
+        }
 
-            if (GUI.Button(new Rect(52, 23, 50, 20), "GPU"))
-            {
-                Title = " - GPU";
-                CloseAllMainMenus();
-                showGPU = true;
-            }
+        if (GUI.Button(new Rect(52, 23, 50, 20), "GPU"))
+        {
+            Title = " - GPU";
+            CloseAllMainMenus();
+            SelectedMenu = Menu.GPU;
+        }
 
-            if (GUI.Button(new Rect(103, 23, 50, 20), "RAM"))
-            {
-                Title = " - RAM";
-                CloseAllMainMenus();
-                showRAM = true;
-            }
+        if (GUI.Button(new Rect(103, 23, 50, 20), "RAM"))
+        {
+            Title = " - RAM";
+            CloseAllMainMenus();
+            SelectedMenu = Menu.RAM;
+        }
 
-            if (GUI.Button(new Rect(154, 23, 60, 20), "Disks"))
-            {
-                Title = " - Storage Devices";
-                CloseAllMainMenus();
-                showDisk = true;
-            }
+        if (GUI.Button(new Rect(154, 23, 50, 20), "PSU"))
+        {
+            Title = " - Power Supply";
+            CloseAllMainMenus();
+            SelectedMenu = Menu.PSU;
+        }
 
-            if (GUI.Button(new Rect(215, 23, 50, 20), "PSU"))
-            {
-                Title = " - Power Supply";
-                CloseAllMainMenus();
-                showPSU = true;
-            }
+        if (GUI.Button(new Rect(205, 23, 60, 20), "Disks"))
+        {
+            Title = " - Storage Devices";
+            CloseAllMainMenus();
+            SelectedMenu = Menu.Disk;
+        }
+
+        if (GUI.Button(new Rect(266, 23, 90, 20), "Motherboard"))
+        {
+            Title = " - Motherboard";
+            CloseAllMainMenus();
+            SelectedMenu = Menu.Motherboard;
         }
     }
 }

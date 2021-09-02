@@ -48,13 +48,13 @@ public class Ping : MonoBehaviour
 	void UpdateSiteListv2()
 	{
 		ListOfSites.Clear();
-		for (int i = 0; i < GameControl.control.CompanyServers.Count;i++)
+		for (int i = 0; i < GameControl.control.CompanyServerData.Count;i++)
 		{
-			if(GameControl.control.CompanyServers[i].Name == "Ping")
+			if(GameControl.control.CompanyServerData[i].Name == "Ping")
 			{
-				for (int j = 0; j < GameControl.control.CompanyServers[i].Files.Count; j++)
+				for (int j = 0; j < GameControl.control.CompanyServerData[i].Files.Count; j++)
 				{
-					ListOfSites.Add(GameControl.control.CompanyServers[i].Files[j].Name);
+					ListOfSites.Add(GameControl.control.CompanyServerData[i].Files[j].Name);
 				}
 			}
 		}
@@ -73,16 +73,16 @@ public class Ping : MonoBehaviour
 
 	void EnterSearch2()
 	{
-		for (int i = 0; i < GameControl.control.CompanyServers.Count; i++)
+		for (int i = 0; i < GameControl.control.CompanyServerData.Count; i++)
 		{
-			if (GameControl.control.CompanyServers[i].Name == "Ping")
+			if (GameControl.control.CompanyServerData[i].Name == "Ping")
 			{
-				for (int j = 0; j < GameControl.control.CompanyServers[i].Files.Count; j++)
+				for (int j = 0; j < GameControl.control.CompanyServerData[i].Files.Count; j++)
 				{
-					if(Searched == GameControl.control.CompanyServers[i].Files[j].Name)
+					if(Searched == GameControl.control.CompanyServerData[i].Files[j].Name)
 					{
-						ib.Inputted = GameControl.control.CompanyServers[i].Files[j].Target;
-						ib.AddressBar = GameControl.control.CompanyServers[i].Files[j].Target;
+						ib.Inputted = GameControl.control.CompanyServerData[i].Files[j].Target;
+						ib.AddressBar = GameControl.control.CompanyServerData[i].Files[j].Target;
 						Reset();
 					}
 				}

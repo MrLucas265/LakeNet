@@ -10,11 +10,21 @@ public class CHMSystem
 	public string Location;
 	public string TargetLocation;
 
-	public CHMSystem(string name,string content, string location, string targetlocation)
+	public FileType Type;
+
+	public enum FileType
+	{
+		File,
+		Folder,
+		Directory
+	}
+
+	public CHMSystem(string name,string content, string location, string targetlocation,FileType type)
 	{
 		Name = name;
 		Content = content;
 		Location = location;
 		TargetLocation = targetlocation;
+		Type = type;
 	}
 }

@@ -70,7 +70,6 @@ public class GPU : MonoBehaviour
     // Use this for initialization
     void Start()
     {
-        HardwareController.hdcon.Load();
         CoolDown = 0.15f;
         UpdateCPUStats();
 
@@ -78,7 +77,7 @@ public class GPU : MonoBehaviour
         FanEff = 0.9f;
         MaxFanRPM = 4800;
 
-        MaxCPUSpeed = FactoryMaxSpeed * HardwareController.hdcon.CPUVoltage;
+        //MaxCPUSpeed = FactoryMaxSpeed * HardwareController.hdcon.CPUVoltage;
 
         MaxFlowRate = MaxFanRPM / FanSize * 2 * FanEff;
 
@@ -96,7 +95,7 @@ public class GPU : MonoBehaviour
 
     public void UpdateCPUStats()
     {
-        Voltage = HardwareController.hdcon.CPUVoltage;
+        //Voltage = HardwareController.hdcon.CPUVoltage;
     }
 
     // Update is called once per frame
@@ -107,10 +106,10 @@ public class GPU : MonoBehaviour
 
     public void OverclockMath()
     {
-        if (HardwareController.hdcon.CPUVoltage != 0)
-        {
-            MaxCPUSpeed = FactoryMaxSpeed * HardwareController.hdcon.CPUVoltage;
-        }
+       //if (HardwareController.hdcon.CPUVoltage != 0)
+       // {
+       //     MaxCPUSpeed = FactoryMaxSpeed * HardwareController.hdcon.CPUVoltage;
+       // }
     }
 
     void Update()

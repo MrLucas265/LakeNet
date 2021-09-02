@@ -14,7 +14,6 @@ public class VersionViewer : MonoBehaviour
 	public bool execute;
 
 	private Defalt defalt;
-	private CLI cmd;
 	private WebSec ws;
 	private ErrorProm ep;
 	private InternetBrowser ib;
@@ -61,7 +60,6 @@ public class VersionViewer : MonoBehaviour
 		ep = Prompts.GetComponent<ErrorProm>();
 		com = SysSoftware.GetComponent<Computer>();
 		trace = HackingSoftware.GetComponent<Tracer>();
-		cmd = SysSoftware.GetComponent<CLI>();
 		defalt = SysSoftware.GetComponent<Defalt>(); 
 		ib = AppSoftware.GetComponent<InternetBrowser>(); 
 		ws = AppSoftware.GetComponent<WebSec>();
@@ -72,8 +70,6 @@ public class VersionViewer : MonoBehaviour
 
 		CloseButton = new Rect (windowRect.width-23, 2, 21, 21);
 		ExecuteButton = new Rect (45, 100, 60, 24);
-
-		windowID = 99;
 	}
 
 	void Close()

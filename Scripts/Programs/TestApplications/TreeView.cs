@@ -41,6 +41,8 @@ public class TreeView : MonoBehaviour
 	public Rect DefaltBoxSetting;
 	public bool minimize;
 
+	private AppMan appman;
+
 	// Use this for initialization
 	void Start ()
 	{
@@ -51,6 +53,8 @@ public class TreeView : MonoBehaviour
 		noti = Prompts.GetComponent<NotfiPrompt>();
 		native_height = Customize.cust.native_height;
 		native_width = Customize.cust.native_width;
+
+		appman = SysSoftware.GetComponent<AppMan>();
 
 		CloseButton = new Rect(178,1,21,21);
 		MiniButton = new Rect(157,1,21,21);
@@ -128,7 +132,7 @@ public class TreeView : MonoBehaviour
 		}
 		for (int i = 0; i < GameControl.control.ProgramFiles.Count; i++) 
 		{
-			if (GameControl.control.ProgramFiles [i].Type == ProgramSystem.ProgramType.Exe)
+			if (GameControl.control.ProgramFiles [i].Extension == ProgramSystem.FileExtension.Exe)
 			{
 				ProgramTarget.Add (GameControl.control.ProgramFiles [i].Target);
 				ProgramNames.Add (GameControl.control.ProgramFiles [i].Name);
@@ -157,7 +161,7 @@ public class TreeView : MonoBehaviour
 	{
 		if (!InfoNames.Contains("Programs")) 
 		{
-			GameControl.control.ProgramInfo.Add(new CHMSystem ("Programs", "","Main Menu","Programs"));
+			GameControl.control.ProgramInfo.Add(new CHMSystem ("Programs", "","Main Menu","Programs",CHMSystem.FileType.Directory));
 		}
 		if (!InfoNames.Contains("Notepad"))
 		{
@@ -178,10 +182,10 @@ public class TreeView : MonoBehaviour
 				string Open = "";
 				Open = "To open a file you can double click where the file is located in gateway or just click open file in notepad";
 
-				GameControl.control.ProgramInfo.Add(new CHMSystem (Name, "","Programs",Name));
-				GameControl.control.ProgramInfo.Add(new CHMSystem ("Description", Desc,Name,""));
-				GameControl.control.ProgramInfo.Add(new CHMSystem ("How to save", Save,Name,""));
-				GameControl.control.ProgramInfo.Add(new CHMSystem ("How to open", Open,Name,""));
+				GameControl.control.ProgramInfo.Add(new CHMSystem (Name, "","Programs",Name, CHMSystem.FileType.Folder));
+				GameControl.control.ProgramInfo.Add(new CHMSystem ("Description", Desc,Name,"", CHMSystem.FileType.Folder));
+				GameControl.control.ProgramInfo.Add(new CHMSystem ("How to save", Save,Name,"", CHMSystem.FileType.Folder));
+				GameControl.control.ProgramInfo.Add(new CHMSystem ("How to open", Open,Name,"", CHMSystem.FileType.Folder));
 
 				DisplayNotification();
 			}
@@ -192,11 +196,11 @@ public class TreeView : MonoBehaviour
 	{
 		if (!InfoNames.Contains("Commands")) 
 		{
-			GameControl.control.ProgramInfo.Add(new CHMSystem ("Commands", "","Main Menu","Commands"));
+			GameControl.control.ProgramInfo.Add(new CHMSystem ("Commands", "","Main Menu","Commands", CHMSystem.FileType.Folder));
 		}
 		if (!InfoNames.Contains("Network")) 
 		{
-			GameControl.control.ProgramInfo.Add(new CHMSystem ("Network", "","Commands","Network"));
+			GameControl.control.ProgramInfo.Add(new CHMSystem ("Network", "","Commands","Network", CHMSystem.FileType.Folder));
 		}
 
 		if (!InfoNames.Contains("connect"))
@@ -212,8 +216,8 @@ public class TreeView : MonoBehaviour
 				string Desc = "";
 				Desc = Name + " is used to establish a connection to a remote gateway or website by typing an address or ip";
 
-				GameControl.control.ProgramInfo.Add(new CHMSystem (Name, "","Network",Name));
-				GameControl.control.ProgramInfo.Add(new CHMSystem ("Description", Desc,Name,""));
+				GameControl.control.ProgramInfo.Add(new CHMSystem (Name, "","Network",Name, CHMSystem.FileType.Folder));
+				GameControl.control.ProgramInfo.Add(new CHMSystem ("Description", Desc,Name,"", CHMSystem.FileType.Folder));
 
 				DisplayNotification();
 			}
@@ -232,8 +236,8 @@ public class TreeView : MonoBehaviour
 				string Desc = "";
 				Desc = "To use " + Name + " you have to type in a file name that is found on a remote server like this " + Name + "^testfile";
 
-				GameControl.control.ProgramInfo.Add(new CHMSystem (Name, "","Network",Name));
-				GameControl.control.ProgramInfo.Add(new CHMSystem ("Description", Desc,Name,""));
+				GameControl.control.ProgramInfo.Add(new CHMSystem (Name, "","Network",Name, CHMSystem.FileType.Folder));
+				GameControl.control.ProgramInfo.Add(new CHMSystem ("Description", Desc,Name,"", CHMSystem.FileType.Folder));
 
 				DisplayNotification();
 			}
@@ -252,8 +256,8 @@ public class TreeView : MonoBehaviour
 				string Desc = "";
 				Desc = "To use " + Name + " you have to type in a file name that is found on your local system like this " + Name + "^testfile";
 
-				GameControl.control.ProgramInfo.Add(new CHMSystem (Name, "","Network",Name));
-				GameControl.control.ProgramInfo.Add(new CHMSystem ("Description", Desc,Name,""));
+				GameControl.control.ProgramInfo.Add(new CHMSystem (Name, "","Network",Name, CHMSystem.FileType.Folder));
+				GameControl.control.ProgramInfo.Add(new CHMSystem ("Description", Desc,Name,"", CHMSystem.FileType.Folder));
 
 				DisplayNotification();
 			}
@@ -272,8 +276,8 @@ public class TreeView : MonoBehaviour
 				string Desc = "";
 				Desc = Name + " or list can be used as a local or remote command by -l^" + Name + " or -r^"+ Name;
 
-				GameControl.control.ProgramInfo.Add(new CHMSystem (Name, "","Commands",Name));
-				GameControl.control.ProgramInfo.Add(new CHMSystem ("Description", Desc,Name,""));
+				GameControl.control.ProgramInfo.Add(new CHMSystem (Name, "","Commands",Name, CHMSystem.FileType.Folder));
+				GameControl.control.ProgramInfo.Add(new CHMSystem ("Description", Desc,Name,"", CHMSystem.FileType.File));
 
 				DisplayNotification();
 			}
@@ -298,7 +302,7 @@ public class TreeView : MonoBehaviour
 		{
 			if (GUI.Button (new Rect (CloseButton), "X", com.Skin [GameControl.control.GUIID].customStyles [0]))
 			{
-				show = false;
+				appman.SelectedApp = "CHM";
 			}
 		} 
 		else 

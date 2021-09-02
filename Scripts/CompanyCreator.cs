@@ -19,21 +19,10 @@ public class CompanyCreator : MonoBehaviour
     public GatewaySystem TempGateway;
     public MotherboardSystem TempMotherboard;
     public List<ProgramSystem> TempFiles = new List<ProgramSystem>();
+    public List<BankSystem> BankAccounts = new List<BankSystem>();
     public ProgramSystem TempFiles1;
     public List<Texture2D> Faces = new List<Texture2D>();
-
-    public List<string> CollageClasses = new List<string>();
-    public List<string> CollageGrades = new List<string>();
-
-    public List<string> UniClasses = new List<string>();
-    public List<string> UniGrades = new List<string>();
-
-    public List<CollageSystem> TempCollage = new List<CollageSystem>();
-    public List<UniversitySystem> TempUni = new List<UniversitySystem>();
-
-    public CollageSystem TempCollage1;
-    public UniversitySystem TempUni1;
-
+    public ServerSystem TempServerInfo;
     public List<WebSecSystem> websec = new List<WebSecSystem>();
 
     public int Ammount;
@@ -45,17 +34,15 @@ public class CompanyCreator : MonoBehaviour
 
     public NamesList NamesList;
 
-    public int SelectedFirstName;
-    public int SelectedLastName;
-
-    public string SelectedClass;
-    public string SelectedGrade;
+    public int SelectedName;
 
     public int RandomFileCount;
     public int RandomFileCount1;
 
-    public int For1;
-    public int For2;
+    public List<InfectionSystem> BlankInfections = new List<InfectionSystem>();
+    public List<ProgramSystem.FileType> BlankFileType = new List<ProgramSystem.FileType>();
+
+    public int RandomAmountOfServers;
 
     // Use this for initialization
     void Start()
@@ -66,46 +53,32 @@ public class CompanyCreator : MonoBehaviour
         NamesList.NameListResource();
         Ammount = 10;
         PopulateMotherboard();
+        PopulateFiles();
+        websec.Add(new WebSecSystem(WebSecSystem.Server.Unicom, "Password", 1, "", 0, 0, WebSecSystem.SecType.UAC));
     }
 
     // Update is called once per frame
     void Update()
     {
+
+        if (PersonController.control.People.Count <= 0)
+        {
+            AddNewPeople = true;
+        }
         if (AddNewPeople == true)
         {
             for (int i = 0; i <= Ammount; i++)
             {
-                For1 = i;
                 PopulateBasicInformation();
                 PopulateDateOfBirth();
                 PopulateBankInformation();
-                if (PersonController.control.Orgnizations[i].Server.Count == 0)
-                {
-                    PopulateFiles();
-                    PopulateServerInfo();
-                }
-                //PopulateAcademicInformation();
-                //Photo = Faces[Random.Range(0, 800)];
+                PopulateServerInfo();
                 TempGateway.Name = Name + "'s Gateway";
-                //TempBankDetails
-
-                PersonController.control.Orgnizations.Add(new OrgnizationSystem(Name,"",StringGenerator.RandomNumberChar(9,9),TempDOB,OrgnizationSystem.OrgType.Medical, TempServer));
-
-                //PersonController.control.PeoplesName.Add(Name);
+                PersonController.control.Orgnizations.Add(new OrgnizationSystem(Name, "", StringGenerator.RandomNumberChar(9, 9), TempDOB, OrgnizationSystem.OrgType.Medical, TempServer, TempBankDetails));
                 Count = i;
                 ResetAllInformation();
             }
-
         }
-
-        //if(Count >= PersonController.control.Orgnizations.Count-1)
-        //{
-        //    PopulateRandomFiles();
-        //    //if (RandomFileCount >= TempFiles.Count - 1)
-        //    //{
-        //    //    TempFiles.RemoveRange(0, TempFiles.Count);
-        //    //}
-        //}
 
         if (WipeData == true)
         {
@@ -116,32 +89,30 @@ public class CompanyCreator : MonoBehaviour
         if (Count >= Ammount)
         {
             AddNewPeople = false;
-            //PopulateRandomFiles();
             Count = 0;
-            PersonController.control.People.RemoveAt(PersonController.control.People.Count - 1);
-            for (int i = 0; i < PersonController.control.People.Count; i++)
-            {
-                if (PersonController.control.People[i].Name != PersonController.control.People[i].BankDetails.AccountName)
-                {
-                    PersonController.control.People[i].BankDetails.AccountName = PersonController.control.People[i].Name;
-                }
-            }
+            PersonController.control.Orgnizations.RemoveAt(PersonController.control.Orgnizations.Count - 1);
         }
     }
 
     void PopulateServerInfo()
     {
-        websec.Add(new WebSecSystem(WebSecSystem.Server.Unicom, "Password", 1, "", 0, 0, WebSecSystem.SecType.UAC));
-        TempServer.Add(new ServerSystem("Test", TempGateway, websec, ServerSystem.ServerType.Medical));
+        for (int i = 0; i < RandomAmountOfServers;i++)
+        {
+            TempServerInfo.Name = "Test " + Random.Range(0, 100);
+            TempServerInfo.Address = "";
+            TempServerInfo.Gateway = TempGateway;
+            TempServerInfo.Security = websec;
+            TempServerInfo.Type = ServerSystem.ServerType.Backup;
+            TempServer.Add(new ServerSystem(TempServerInfo.Name, TempServerInfo.Gateway, TempServerInfo.Security, TempServerInfo.Type));
+        }
     }
 
     void PopulateBasicInformation()
     {
         PID = StringGenerator.RandomNumberChar(8, 8);
-        SelectedFirstName = Random.Range(0, NamesList.Names.Count - 1);
-        SelectedLastName = Random.Range(0, NamesList.Names.Count - 1);
+        //SelectedName = Random.Range(0, WebSecSystem.Server.Academics);
 
-        Name = NamesList.Names[SelectedFirstName].Trim() + " " + NamesList.Names[SelectedLastName].Trim();
+        //Name = NamesList.Names[SelectedFirstName].Trim() + " " + NamesList.Names[SelectedLastName].Trim();
         PhoneNumber = "12345678";
         IPAddress = "127.0.0.1";
     }
@@ -173,58 +144,46 @@ public class CompanyCreator : MonoBehaviour
         TempDOB = new DOBSystem(TempDOB.Day, TempDOB.Month, TempDOB.Year, TempDOB.Age);
     }
 
+    void PopulateBankInformation()
+    {
+        //TempBankDetails.AccountName = Name;
+        //TempBankDetails.AccountNumber = StringGenerator.RandomNumberChar(9,9);
+        //TempBankDetails.AccountPass = StringGenerator.RandomMixedChar(6,12);
+        //TempBankDetails.BankIP = "127.0.0.1";
+        //TempBankDetails.BankName = "LEC Bank";
+        //TempBankDetails.CreditRating = 1;
+        //TempBankDetails.Loan = 0;
+        //TempBankDetails.LoanIntrest = 1;
+        //TempBankDetails.AccountIntrest = Random.Range(0, 5);
+        //TempBankDetails.AccountBalance = Random.Range(0, 50000);
+        //TempBankDetails = new BankSystem(TempBankDetails.AccountName, TempBankDetails.AccountNumber, TempBankDetails.AccountPass, TempBankDetails.BankIP, TempBankDetails.BankName,
+        //    TempBankDetails.CreditRating, TempBankDetails.Loan, TempBankDetails.LoanIntrest, TempBankDetails.AccountIntrest, TempBankDetails.AccountBalance);
+    }
+
     void PopulateFiles()
     {
         TempGateway.SelectedOS.Name = OperatingSystems.OSName.AppatureOS;
-        TempFiles.Add(new ProgramSystem("C:/", "System", "", "", "Gateway", "C:/", 0, 0, 0, 60, 100, 0, false, ProgramSystem.ProgramType.Dir));
-        TempFiles.Add(new ProgramSystem("Downloads", "", "", "", "C:/", "C:/Downloads", 0, 0, 0, 0, 0, 0, false, ProgramSystem.ProgramType.Fdl));
-        TempFiles.Add(new ProgramSystem("Documents", "", "", "", "C:/", "C:/Documents", 0, 0, 0, 0, 0, 0, false, ProgramSystem.ProgramType.Fdl));
-        TempFiles.Add(new ProgramSystem("Program Files", "", "", "", "C:/", "C:/Programs", 0, 0, 0, 0, 0, 0, false, ProgramSystem.ProgramType.Fdl));
-        TempFiles.Add(new ProgramSystem("System Files", "", "", "", "C:/", "C:/System", 0, 0, 0, 0, 0, 0, false, ProgramSystem.ProgramType.Fdl));
-        TempFiles.Add(new ProgramSystem("" + TempGateway.SelectedOS.Name, "", "", "", "C:/System", "", 0, 0, 10, 0, 100, 1, false, ProgramSystem.ProgramType.OS));
+        TempGateway.Files.FileList.Add(new ProgramSystem("C:/", "System", "", "", "", "", "Gateway", "C:/", "", "", ProgramSystem.FileExtension.Dir, ProgramSystem.FileExtension.Null, 0, 0, 60, 0, 0, 0, 0, 100, 0, 0, 0, 0, 0, 0, 0, 0, false, false, false, false, BlankInfections, BlankFileType));
+        TempGateway.Files.FileList.Add(new ProgramSystem("Downloads", "", "", "", "", "", "C:/", "C:/Downloads", "", "", ProgramSystem.FileExtension.Fdl, ProgramSystem.FileExtension.Null, 0, 0, 0, 0, 0, 0, 0, 100, 0, 0, 0, 0, 0, 0, 0, 0, false, false, false, false, BlankInfections, BlankFileType));
+        TempGateway.Files.FileList.Add(new ProgramSystem("Documents", "", "", "", "", "", "C:/", "C:/Documents", "", "", ProgramSystem.FileExtension.Fdl, ProgramSystem.FileExtension.Null, 0, 0, 0, 0, 0, 0, 0, 100, 0, 0, 0, 0, 0, 0, 0, 0, false, false, false, false, BlankInfections, BlankFileType));
+        TempGateway.Files.FileList.Add(new ProgramSystem("Programs", "", "", "", "", "", "C:/", "C:/Programs", "", "", ProgramSystem.FileExtension.Fdl, ProgramSystem.FileExtension.Null, 0, 0, 0, 0, 0, 0, 0, 100, 0, 0, 0, 0, 0, 0, 0, 0, false, false, false, false, BlankInfections, BlankFileType));
+        TempGateway.Files.FileList.Add(new ProgramSystem("System", "", "", "", "", "", "C:/", "C:/System", "", "", ProgramSystem.FileExtension.Fdl, ProgramSystem.FileExtension.Null, 0, 0, 0, 0, 0, 0, 0, 100, 0, 0, 0, 0, 0, 0, 0, 0, false, false, false, false, BlankInfections, BlankFileType));
+        TempGateway.Files.FileList.Add(new ProgramSystem("" + TempGateway.SelectedOS.Name, "", "", "", "", "", "C:/System", "", "", "", ProgramSystem.FileExtension.OS, ProgramSystem.FileExtension.Null, 0, 0, 10, 0, 0, 0, 0, 100, 1, 0, 0, 0, 0, 0, 0, 0, false, false, false, false, BlankInfections, BlankFileType));
+        //TempGateway.Add(new FileSystem(TempFiles, null,null));
         TempGateway.Motherboard.InstalledStorageDevice[0].UsedSpace += 60;
         TempGateway.Motherboard.InstalledStorageDevice[0].FreeSpace = GameControl.control.Gateway.InstalledStorageDevice[0].Capacity - GameControl.control.Gateway.InstalledStorageDevice[0].UsedSpace;
-
-        for (int i = 0; i < PersonController.control.Orgnizations.Count; i++)
-        {
-            for (int j = 0; j < PersonController.control.Orgnizations[i].Server.Count; j++)
-            {
-                if (TempFiles.Count > 0)
-                {
-                    for (int l = 0; l < TempFiles.Count; l++)
-                    {
-                        RandomFileCount = l;
-                        PersonController.control.Orgnizations[i].Server[j].Gateway.Files.Files.Add(TempFiles[l]);
-                    }
-                }
-            }
-        }
     }
 
     void PopulateMotherboard()
     {
-        TempGateway.Motherboard.InstalledCPU.Add(new CPUSystem("Zion Z-14", "Zion", "Z-14", "140", 32, 1, 0.5f, 0.1f, 0.5f, 0, 0, 0, 0, 0, 1, 0.01f, 0, 100, 100, 0, "", 0, 20, 0.0025f,0,0, 0));
-        TempGateway.Motherboard.InstalledGPU.Add(new GPUSystem("Qividia 970", "PCI-E", 970, 2, 0.1f, 2f, 256, 0, 0, 0, 1, 0.01f, 100, 100, 0, 120, 0.0025f));
-        TempGateway.Motherboard.InstalledRAM.Add(new RamSystem("Vortex 2GB", "DDR1", 0, 2048, 0, 0, 100, 0.01f, 100, 100, 0, 0.0025f,0));
-        TempGateway.Motherboard.InstalledStorageDevice.Add(new StorageDevice("Server 9001", "", "", "", 0.133f, 0, 9001, 9001, 15, 0.001f, 100, 100, 0, 0.0025f, 0.14f, StorageDevice.StorageType.HDD,0,0,0));
-        TempGateway.Motherboard.InstalledPSU.Add(new PowerSupplySystem("Toughpower-2pack", "", 450, 0, 0, 0.01f, 100, 100, 0, 0.0025f));
-        TempGateway.Motherboard.InstalledModem.Add(new ModemSystem("TUGs Basic Modem", "", "", "", 0.56f, 0.56f, 0.28f, 0, 15, 0.01f, 100, 100, 0, 0.0025f, 50, 25, ModemSystem.ModemConnectionType.DialUp));
-    }
+        string IPAddress = StringGenerator.RandomNumberChar(3, 3) + "." + StringGenerator.RandomNumberChar(3, 3) + "." + StringGenerator.RandomNumberChar(3, 3) + "." + StringGenerator.RandomNumberChar(3, 3);
 
-    void PopulateBankInformation()
-    {
-        TempBankDetails.AccountName = Name;
-        TempBankDetails.AccountNumber = StringGenerator.RandomNumberChar(9, 9);
-        TempBankDetails.AccountPass = StringGenerator.RandomMixedChar(6, 12);
-        TempBankDetails.BankIP = "127.0.0.1";
-        TempBankDetails.BankName = "LEC Bank";
-        TempBankDetails.CreditRating = 1;
-        TempBankDetails.Loan = 0;
-        TempBankDetails.LoanIntrest = 1;
-        TempBankDetails.AccountIntrest = Random.Range(0, 5);
-        TempBankDetails.AccountBalance = Random.Range(0, 50000);
-        TempBankDetails = new BankSystem(TempBankDetails.AccountName, TempBankDetails.AccountNumber, TempBankDetails.AccountPass, TempBankDetails.BankIP, TempBankDetails.BankName,
-            TempBankDetails.CreditRating, TempBankDetails.Loan, TempBankDetails.LoanIntrest, TempBankDetails.AccountIntrest, TempBankDetails.AccountBalance);
+        TempGateway.Motherboard.InstalledCPU.Add(new CPUSystem("Zion Z-14", "Zion", "Z-14", "140", 32, 1, 0.5f, 0.1f, 0.5f, 0, 0, 0, 0, 0, 1, 0.01f, 0, 100, 100, 0, "", 0, 20, 0.0025f, 0, 0, 0));
+        TempGateway.Motherboard.InstalledGPU.Add(new GPUSystem("Qividia 970", "PCI-E", 970, 2, 0.1f, 2f, 256, 0, 0, 0, 1, 0.01f, 100, 100, 0, 120, 0.0025f));
+        TempGateway.Motherboard.InstalledRAM.Add(new RamSystem("Vortex 2GB", "DDR1", 0, 2048, 0, 0, 100, 0.01f, 100, 100, 0, 0.0025f, 0));
+        TempGateway.Motherboard.InstalledStorageDevice.Add(new StorageDevice("EasternVirtual 128", "", "", "", 0.133f, 0, 128, 128, 15, 0.001f, 100, 100, 0, 0.0025f, 0.14f, 0, 1, StorageDevice.StorageType.HDD, 0, 0, 0, null));
+        TempGateway.Motherboard.InstalledPSU.Add(new PowerSupplySystem("Toughpower-2pack", "", 450, 0, 0, 0.01f, 100, 100, 0, 0.0025f));
+        TempGateway.Motherboard.InstalledModem.Add(new ModemSystem("TUGs Basic Modem", "", "", "", 0.56f, 0.56f, 0.56f, 0.28f, 0, 15, 0.01f, 100, 100, 0, 0.0025f, 50, 25, IPAddress, ModemSystem.ModemConnectionType.DialUp));
     }
 
     void PopulateGatewayInformation()
@@ -245,16 +204,22 @@ public class CompanyCreator : MonoBehaviour
         PhoneNumber = "";
         IPAddress = "";
 
-        TempBankDetails.AccountName = "";
-        TempBankDetails.AccountNumber = "";
-        TempBankDetails.AccountPass = "";
-        TempBankDetails.BankIP = "";
-        TempBankDetails.BankName = "";
-        TempBankDetails.CreditRating = 0;
-        TempBankDetails.Loan = 0;
-        TempBankDetails.LoanIntrest = 0;
-        TempBankDetails.AccountIntrest = 0;
-        TempBankDetails.AccountBalance = 0;
+        //TempBankDetails.AccountName = "";
+        //TempBankDetails.AccountNumber = "";
+        //TempBankDetails.AccountPass = "";
+        //TempBankDetails.BankIP = "";
+        //TempBankDetails.BankName = "";
+        //TempBankDetails.CreditRating = 0;
+        //TempBankDetails.Loan = 0;
+        //TempBankDetails.LoanIntrest = 0;
+        //TempBankDetails.AccountIntrest = 0;
+        //TempBankDetails.AccountBalance = 0;
+
+        TempServerInfo.Name = "";
+        TempServerInfo.Address = "";
+        TempServerInfo.Gateway = null;
+        TempServerInfo.Security = null;
+        TempServerInfo.Type = ServerSystem.ServerType.Backup;
 
         //TempAcademicDetails1.CollageQualifications.Clear();
         //TempAcademicDetails1.UniversityQualifications.Clear();

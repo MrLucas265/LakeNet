@@ -58,7 +58,7 @@ public class ShutdownProm : MonoBehaviour
 	void Start () 
 	{
 		Puter = GameObject.Find("System");
-        Signout = GameObject.Find("Signout");
+		Signout = GameObject.Find("Signout");
         //jd = GetComponent<JailDew>();
         //uc = GetComponent<Unicom>();
         //test = GetComponent<Test>();
@@ -145,6 +145,47 @@ public class ShutdownProm : MonoBehaviour
 		}
 	}
 
+	public void Shutdown()
+	{
+		if (!AS.isPlaying)
+		{
+			sc.SoundSelect = 2;
+			sc.PlaySound();
+			GameControl.control.Gateway.Status.Shutdown = true;
+			shutdown = true;
+			//Cursor.visible = true;
+		}
+	}
+
+	public void Restart()
+	{
+		if (!AS.isPlaying)
+		{
+			sc.SoundSelect = 2;
+			sc.PlaySound();
+			GameControl.control.Gateway.Status.Booted = false;
+			GameControl.control.Gateway.Status.Terminal = false;
+			Application.LoadLevel(1);
+			//Cursor.visible = true;
+		}
+	}
+
+	public void SignOutUI()
+	{
+		sc.SoundSelect = 2;
+		sc.PlaySound();
+		SignMan.enabled = true;
+		this.enabled = false;
+		//Cursor.visible = true;
+	}
+
+	public void SignOut()
+	{
+		GameControl.control.Gateway.Status.Terminal = false;
+		GameControl.control.Gateway.Status.Booted = false;
+		Application.LoadLevel(0);
+	}
+
 	void DoMyWindow(int WindowID)
 	{
 		if (CloseButton.Contains (Event.current.mousePosition)) 
@@ -152,7 +193,6 @@ public class ShutdownProm : MonoBehaviour
 			if (GUI.Button (new Rect (CloseButton), "X", com.Skin [GameControl.control.GUIID].customStyles [0])) 
 			{
 				show = false;
-				this.enabled = false;
 			}
 		} 
 		else
@@ -179,10 +219,7 @@ public class ShutdownProm : MonoBehaviour
 		GUI.contentColor = Color.white;
 		if (GUI.Button (new Rect (215, 40, 32, 32), logIcon, com.Skin [GameControl.control.GUIID].customStyles [DesktopStyle])) 
 		{
-            sc.SoundSelect = 2;
-            sc.PlaySound();
-            SignMan.enabled = true;
-            this.enabled = false;
+			SignOutUI();
 		}
 		GUI.backgroundColor = RestartColor;
 		GUI.contentColor = com.colors[Customize.cust.FontColorInt];
@@ -190,8 +227,7 @@ public class ShutdownProm : MonoBehaviour
 		GUI.contentColor = Color.white;
 		if (GUI.Button (new Rect (125, 40, 32, 32), restartIcon, com.Skin [GameControl.control.GUIID].customStyles [DesktopStyle])) 
 		{
-			GameControl.control.Booted = false;
-			Application.LoadLevel (1);
+			Restart();
 		}
 		GUI.backgroundColor = ShutdownColor;
 		GUI.contentColor = com.colors[Customize.cust.FontColorInt];
@@ -199,16 +235,10 @@ public class ShutdownProm : MonoBehaviour
 		GUI.contentColor = Color.white;
 		if (GUI.Button (new Rect (35, 40, 32, 32), sdIcon, com.Skin [GameControl.control.GUIID].customStyles [DesktopStyle]))
 		{
-            //SignMan.enabled = true;
-            //this.show = false;
-            //SignMan.SignoutMessage = "Shutting Down.";
-            if (!AS.isPlaying)
-			{
-				sc.SoundSelect = 2;
-				sc.PlaySound();
-                GameControl.control.Shutdown = true;
-				shutdown = true;
-			}
+			//SignMan.enabled = true;
+			//this.show = false;
+			//SignMan.SignoutMessage = "Shutting Down.";
+			Shutdown();
 		}
 	}
 }

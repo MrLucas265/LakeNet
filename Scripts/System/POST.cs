@@ -115,7 +115,7 @@ public class POST : MonoBehaviour
 			harddrives.enabled = true;
 		}
 
-		if (GameControl.control.logged == true) 
+		if (GameControl.control.Gateway.Status.Booting == true) 
 		{
 			cooldown = 0.16f;
 			cooldown1 = 0.16f;
@@ -128,9 +128,15 @@ public class POST : MonoBehaviour
 		if (Input.GetKeyDown (KeyCode.Delete)) 
 		{
 			BIOS();
+			GameControl.control.Gateway.Status.BIOS = true;
 		}
 
 		if (Input.GetKeyDown (KeyCode.Alpha8)) 
+		{
+			OScheck.ChangeOS = true;
+		}
+
+		if(GameControl.control.SelectedOS.Name == OperatingSystems.OSName.SafeMode && GameControl.control.Gateway.Status.Terminal == false)
 		{
 			OScheck.ChangeOS = true;
 		}
@@ -244,9 +250,9 @@ public class POST : MonoBehaviour
 			ProfileController.procon.ShowTOS = false;
 			break;
 		case 3:
-			BootInfo.Add (HardwareController.hdcon.Motherboard [0] + " BIOS Version 0.1");
+			//BootInfo.Add (HardwareController.hdcon.Motherboard [0] + " BIOS Version 0.1");
 			BootInfo.Add ("");
-			HardwareController.hdcon.CPUCheck = true;
+			//HardwareController.hdcon.CPUCheck = true;
 			//ProfileController.procon.Save ();
 			//GameControl.control.Save ();
 			//HardwareController.hdcon.Save();
@@ -335,6 +341,7 @@ public class POST : MonoBehaviour
 				BootInfo.Add("Secondary Slave : None");
 				break;
 			case 8:
+					SaveFunction();
 				break;
 			case 9:
 				break;
@@ -346,6 +353,8 @@ public class POST : MonoBehaviour
                 OScheck.show = true;
 				this.enabled = false;
 				OScheck.enabled = true;
+
+				GameControl.control.Gateway.Status.POST = false;
 
 //				if (ProfileController.procon.Profiles.Count <= 1)
 //				{
@@ -360,6 +369,14 @@ public class POST : MonoBehaviour
 				break;
 			}
 		}
+	}
+
+	void SaveFunction()
+	{
+		GameControl.control.Save();
+		ProfileController.procon.Save();
+		Customize.cust.Save();
+		PersonController.control.Save();
 	}
 
 	void OnGUI()

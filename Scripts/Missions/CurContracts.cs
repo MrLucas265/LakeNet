@@ -61,10 +61,10 @@ public class CurContracts : MonoBehaviour
 		//GameControl.control.LoginPass.Add(def.GetRandomString(12,12));
 	}
 
-    int GetMissionTypeCount()
-    {
-        return GameControl.control.MissionType.Count;
-    }
+    //int GetMissionTypeCount()
+    //{
+    //    return GameControl.control.MissionType.Count;
+    //}
 
 	void SendContractorEmail()
 	{
@@ -76,7 +76,7 @@ public class CurContracts : MonoBehaviour
         GameControl.control.EmailData.Add (new EmailSystem (EmailSubject,"www.reva.com", GameControl.control.Time.FullDate, EmailContent, 0, 0, 0, false,EmailSystem.EmailType.New));
 
 		GameControl.control.StoredLogins.Add (new LoginSystem ("LEC Bank", StringGenerator.RandomNumberChar(6, 6), StringGenerator.RandomMixedChar(15, 15), 0));
-		GameControl.control.MyBankDetails.Add (new BankSystem("192.168.56.91","LEC Bank",GameControl.control.StoredLogins[0].Username,GameControl.control.StoredLogins[1].Username,GameControl.control.StoredLogins[1].Password,0,1,0,0,1));
+		//GameControl.control.MyBankDetails.Add (new BankSystem("192.168.56.91","LEC Bank",GameControl.control.StoredLogins[0].Username,GameControl.control.StoredLogins[1].Username,GameControl.control.StoredLogins[1].Password,0,1,0,0,1));
 		EmailSender = "www.reva.com";
 		EmailSubject = "LEC Bank Account Details";
 		EmailContent = "Due to being a new member of our group we have created a new LEC Account for you as you complete contracts funds will automatically go there." +
@@ -99,7 +99,16 @@ public class CurContracts : MonoBehaviour
 
     void RemoveMission()
     {
-		GameControl.control.MyBankDetails[GameControl.control.SelectedBank].AccountBalance += GameControl.control.Contracts[Select].Cash;
+		for (int i = 0; i < GameControl.control.BankData.Count; i++)
+		{
+			for (int j = 0; j < GameControl.control.BankData[i].Accounts.Count; j++)
+			{
+				if (GameControl.control.BankData[i].Accounts[j].Primary == true)
+				{
+					GameControl.control.BankData[i].Accounts[j].AccountBalance += GameControl.control.Contracts[Select].Cash;
+				}
+			}
+		}
 		GameControl.control.Rep[0].CurrentRep += GameControl.control.Contracts[Select].Rep;
 		SendContractorEmail();
 		//GameControl.control.EmailData.RemoveAt(email.ContractSelect);
@@ -115,7 +124,16 @@ public class CurContracts : MonoBehaviour
 
 	void RemoveFirstMission()
 	{
-		GameControl.control.MyBankDetails[GameControl.control.SelectedBank].AccountBalance += GameControl.control.Contracts[Select].Cash;
+		for (int i = 0; i < GameControl.control.BankData.Count; i++)
+		{
+			for (int j = 0; j < GameControl.control.BankData[i].Accounts.Count; j++)
+			{
+				if (GameControl.control.BankData[i].Accounts[j].Primary == true)
+				{
+					GameControl.control.BankData[i].Accounts[j].AccountBalance += GameControl.control.Contracts[Select].Cash;
+				}
+			}
+		}
 		GameControl.control.Rep[0].CurrentRep += GameControl.control.Contracts[Select].Rep;
 		//GameControl.control.EmailData.RemoveAt(email.ContractSelect);
 		//		email.Contracts.RemoveAt(email.ContractSelect);
@@ -139,9 +157,18 @@ public class CurContracts : MonoBehaviour
 
 	void RemoteFileCheck()
 	{
-		for (int i = 0; i < GameControl.control.WebsiteFiles.Count; i++) 
+		if(GameControl.control.CompanyServerData.Count > 0)
 		{
-			FileNames.Add (GameControl.control.WebsiteFiles [i].Name);
+			for (int Index = 0; Index < GameControl.control.CompanyServerData.Count; Index++)
+			{
+				if (GameControl.control.CompanyServerData[Index].Files.Count > 0)
+				{
+					for (int i = 0; i < GameControl.control.CompanyServerData[Index].Files.Count; i++)
+					{
+						FileNames.Add(GameControl.control.CompanyServerData[Index].Files[i].Name);
+					}
+				}
+			}
 		}
 	}
 
@@ -522,17 +549,17 @@ public class CurContracts : MonoBehaviour
 			break;
 
 
-		case MissionSystem.MissionType.TCopy:
-			if(GameControl.control.MyFiles.Contains(GameControl.control.Contracts[Select].File))
-			{
-				RemoveMission();
-				GameControl.control.StoryMis[3] = true;
-			}
-			else
-			{
+		//case MissionSystem.MissionType.TCopy:
+		//	if(GameControl.control.MyFiles.Contains(GameControl.control.Contracts[Select].File))
+		//	{
+		//		RemoveMission();
+		//		GameControl.control.StoryMis[3] = true;
+		//	}
+		//	else
+		//	{
 
-			}
-			break;
+		//	}
+		//	break;
 
             case MissionSystem.MissionType.UniUpgrade:
                 int IndexPerson = PersonController.control.PeoplesName.IndexOf(GameControl.control.Contracts[Select].Target);

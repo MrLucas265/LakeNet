@@ -48,13 +48,11 @@ public class Computer : MonoBehaviour
 	private InstallPrompt ip;
 	private AppMan appman;
 	private ConfirmPrompt cp;
-	private CLICommands clic;
+	private CLICommandsV2 clic;
 	private Notepad note;
 
 	private SoundControl sc;
 	private FileUtility fu;
-
-	private DiskMan dm;
 
 	public float w;
 	public float h;
@@ -117,6 +115,7 @@ public class Computer : MonoBehaviour
 	public string FileName;
 	public string FileType;
 	public string FileTarget;
+	public string FileCopyLocation;
 	public string FileContent;
 	public float FileVersion;
 	public float FileSize;
@@ -161,10 +160,21 @@ public class Computer : MonoBehaviour
     public string DetailsFileFree;
     public string DetailsFileContains;
     public string DetailsFileCreatedDateTime;
+	public string DetailsTarget;
 
-    public string DetailSelectedMenu;
+	public ProgramSystem OldProgramDetails;
+	public ProgramSystem NewProgramDetails;
 
-    void Start()
+	public string DetailSelectedMenu;
+
+	public List<InfectionSystem> BlankInfections = new List<InfectionSystem>();
+	public List<ProgramSystem.FileType> BlankFileType = new List<ProgramSystem.FileType>();
+
+	public List<ProgramSystem> HeldFile = new List<ProgramSystem>();
+
+	public int SelectedDocument;
+
+	void Start()
     {
 		Prompts = GameObject.Find("Prompts");
 		apps = GameObject.Find("Applications");
@@ -175,8 +185,7 @@ public class Computer : MonoBehaviour
 		ct = GetComponent<CustomTheme>();
 		def = GetComponent<Defalt>();
 		sc = GetComponent<SoundControl>();
-		dm = GetComponent<DiskMan>();
-		clic = GetComponent<CLICommands>();
+		clic = GetComponent<CLICommandsV2>();
 		appman = GetComponent<AppMan>();
 		fu = GetComponent<FileUtility>();
 		note = apps.GetComponent<Notepad>();
@@ -187,8 +196,6 @@ public class Computer : MonoBehaviour
 
 		native_height = Customize.cust.native_height;
 		native_width = Customize.cust.native_width;
-
-		SetColors();
 
 		ComAddress = "Gateway";
 		TitleName = "Gateway";
@@ -229,32 +236,47 @@ public class Computer : MonoBehaviour
         DetailsCloseButton = new Rect(DetailswindowRect.width-23, 1, 22, 22);
     }
 
-	void SetColors()
+	public void SetColors()
 	{
-		Color32 Fontcolor;
-		Fontcolor.r = (byte)Customize.cust.FontR;
-		Fontcolor.g = (byte)Customize.cust.FontG;
-		Fontcolor.b = (byte)Customize.cust.FontB;
-		Fontcolor.a = (byte)Customize.cust.FontA;
-		colors[1] = Fontcolor;
+		SetFontColor();
 
-		Color32 ButtonColor;
-		ButtonColor.r = (byte)Customize.cust.ButtonR;
-		ButtonColor.g = (byte)Customize.cust.ButtonG;
-		ButtonColor.b = (byte)Customize.cust.ButtonB;
-		ButtonColor.a = (byte)Customize.cust.ButtonA;
-		colors[2] = ButtonColor;
+		SetButtonColor();
 
-		Color32 WindowColor;
-		WindowColor.r = (byte)Customize.cust.WindowR;
-		WindowColor.g = (byte)Customize.cust.WindowG;
-		WindowColor.b = (byte)Customize.cust.WindowB;
-		WindowColor.a = (byte)Customize.cust.WindowA;
-		colors[3] = WindowColor;
+		SetWindowColor();
 
 	}
 
-    void Update()
+	public void SetFontColor()
+	{
+		Color32 Fontcolor;
+		Fontcolor.r = (byte)GameControl.control.SelectedOS.Colour.Font.Red;
+		Fontcolor.g = (byte)GameControl.control.SelectedOS.Colour.Font.Green;
+		Fontcolor.b = (byte)GameControl.control.SelectedOS.Colour.Font.Blue;
+		Fontcolor.a = (byte)GameControl.control.SelectedOS.Colour.Font.Alpha;
+		colors[1] = Fontcolor;
+	}
+
+	public void SetButtonColor()
+	{
+		Color32 ButtonColor;
+		ButtonColor.r = (byte)GameControl.control.SelectedOS.Colour.Button.Red;
+		ButtonColor.g = (byte)GameControl.control.SelectedOS.Colour.Button.Green;
+		ButtonColor.b = (byte)GameControl.control.SelectedOS.Colour.Button.Blue;
+		ButtonColor.a = (byte)GameControl.control.SelectedOS.Colour.Button.Alpha;
+		colors[2] = ButtonColor;
+	}
+
+	public void SetWindowColor()
+	{
+		Color32 WindowColor;
+		WindowColor.r = (byte)GameControl.control.SelectedOS.Colour.Window.Red;
+		WindowColor.g = (byte)GameControl.control.SelectedOS.Colour.Window.Green;
+		WindowColor.b = (byte)GameControl.control.SelectedOS.Colour.Window.Blue;
+		WindowColor.a = (byte)GameControl.control.SelectedOS.Colour.Window.Alpha;
+		colors[3] = WindowColor;
+	}
+
+	void Update()
     {
 		w = GameControl.control.wh;
 		h = GameControl.control.wh;
@@ -327,12 +349,21 @@ public class Computer : MonoBehaviour
         }
 
 
-        if (Input.GetMouseButtonUp(0) || Input.GetMouseButtonUp(1) || Input.GetMouseButtonUp(2))
+        if (Input.GetMouseButtonUp(1))
 		{
-			if (!ContextwindowRect.Contains(Event.current.mousePosition))
+			if (!windowRect.Contains(Event.current.mousePosition))
 			{
 				CloseContextMenu();
 			}
+			else
+			{
+				ContextPos();
+			}
+		}
+
+		if (Input.GetMouseButtonUp(0) || Input.GetMouseButtonUp(2))
+		{
+			CloseContextMenu();
 		}
 	}
 
@@ -376,15 +407,15 @@ public class Computer : MonoBehaviour
 				}
 			}
 		}
-		if (FileIndex != -1) 
+		if (FileIndex != -1)
 		{
 			if (ComAddress.Length > 3)
 			{
-				GameControl.control.ProgramFiles.Add (new ProgramSystem (FolderName, "", "", "", ComAddress, "" + ComAddress +  "/" + FolderName, 0,0,0,0,0,0, false, ProgramSystem.ProgramType.Fdl));
-			} 
-			else 
+				GameControl.control.ProgramFiles.Add(new ProgramSystem(FolderName, "", "", "", "", "", ComAddress, "" + ComAddress + "/" + FolderName, "", "", ProgramSystem.FileExtension.Fdl, ProgramSystem.FileExtension.Null, 0, 0, 0, 0, 0, 0, 0, 0, 0f, 0, 0, 0, 0, 0, 0, 0, false, false, false, false, BlankInfections, BlankFileType));
+			}
+			else
 			{
-				GameControl.control.ProgramFiles.Add (new ProgramSystem (FolderName, "", "", "", ComAddress, "" + ComAddress +  "" + FolderName, 0,0,0,0,0,0, false, ProgramSystem.ProgramType.Fdl));
+				GameControl.control.ProgramFiles.Add(new ProgramSystem(FolderName, "", "", "", "", "", ComAddress, "" + ComAddress + "" + FolderName, "", "", ProgramSystem.FileExtension.Fdl, ProgramSystem.FileExtension.Null, 0, 0, 0, 0, 0, 0, 0, 0, 0f, 0, 0, 0, 0, 0, 0, 0, false, false, false, false, BlankInfections, BlankFileType));
 			}
 			FolderName = "";
 			MenuSelected = 0;
@@ -398,7 +429,7 @@ public class Computer : MonoBehaviour
         {
             if (GameControl.control.ProgramFiles[Index].Name == OldName)
             {
-                if (GameControl.control.ProgramFiles[Index].Type == ProgramSystem.ProgramType.Fdl)
+                if (GameControl.control.ProgramFiles[Index].Extension == ProgramSystem.FileExtension.Fdl)
                 {
                     OldFileLocation = GameControl.control.ProgramFiles[Index].Target;
 
@@ -434,7 +465,7 @@ public class Computer : MonoBehaviour
 		{
 			if (GameControl.control.ProgramFiles [Index].Name == OldName) 
 			{
-				if (GameControl.control.ProgramFiles [Index].Type == ProgramSystem.ProgramType.Fdl) 
+				if (GameControl.control.ProgramFiles [Index].Extension == ProgramSystem.FileExtension.Fdl) 
 				{
 					OldFileLocation = GameControl.control.ProgramFiles[Index].Target;
 
@@ -501,36 +532,33 @@ public class Computer : MonoBehaviour
 
 	void CopySystem()
 	{
-		for (int Index = 0; Index < GameControl.control.ProgramFiles.Count; Index++) 
+		for (int Index = 0; Index < GameControl.control.ProgramFiles.Count; Index++)
 		{
-			if (GameControl.control.ProgramFiles[Index].Name == PageFile[SelectedProgram].Name)
+			if (GameControl.control.ProgramFiles[Index].Name == PageFile[SelectedProgram].Name && GameControl.control.ProgramFiles[Index].Location == PageFile[SelectedProgram].Location)
 			{
-				if (GameControl.control.ProgramFiles[Index].Location == PageFile[SelectedProgram].Location)
-				{
-					FileIndex = Index;
-					FileName = GameControl.control.ProgramFiles[Index].Name;
-					FileSize = GameControl.control.ProgramFiles[Index].Used;
-					FileContent = GameControl.control.ProgramFiles[Index].Content;
-					FileTarget = GameControl.control.ProgramFiles[Index].Target;
-					FileVersion = GameControl.control.ProgramFiles[Index].Version;
-					FileType = GameControl.control.ProgramFiles[Index].Type.ToString();
-				}
+				FileIndex = Index;
+				FileName = GameControl.control.ProgramFiles[Index].Name;
+				FileSize = GameControl.control.ProgramFiles[Index].Used;
+				FileContent = GameControl.control.ProgramFiles[Index].Content;
+				FileTarget = GameControl.control.ProgramFiles[Index].Target;
+				FileVersion = GameControl.control.ProgramFiles[Index].Version;
+				FileType = GameControl.control.ProgramFiles[Index].Extension.ToString();
 			}
 		}
 	}
 
 	void PasteSystem()
 	{
-		if (fu.ProgramHandle.Count <= 0) 
+		if (fu.ProgramHandle.Count <= 0)
 		{
-			if (FileIndex != -1) 
+			if (FileIndex != -1)
 			{
 				string FileLocation = ComAddress;
-                fu.Local = true;
-				fu.ProgramHandle.Add (new FileUtilitySystem ("Paste", FileName, FileLocation,"", FileTarget,FileContent,FileType, false, true, true, false,FileVersion,0,0, 0, 0, 0, 0, 0, FileSize, 0, 0, 0, FileUtilitySystem.ProgramType.Paste));
-				fu.AddWindow ();
+				fu.Local = true;
+				fu.ProgramHandle.Add(new FileUtilitySystem("Paste", FileName, FileLocation,"", "", FileTarget, FileContent, FileType, false, true, true, false, FileVersion, 0, 0, 0, 0, 0, 0, 0, FileSize, 0, 0, 0, FileUtilitySystem.ProgramType.Paste));
+				fu.AddWindow();
 			}
-		} 
+		}
 	}
 
 	void Refresh()
@@ -550,9 +578,16 @@ public class Computer : MonoBehaviour
 
 	void OpenExe()
 	{
-		PlayClickSound ();
-        appman.ProgramName = PageFile[SelectedProgram].Name;
-        appman.SelectedApp = PageFile [SelectedProgram].Target;
+		PlayClickSound();
+		appman.ProgramName = PageFile[SelectedProgram].Name;
+		appman.SelectedApp = PageFile[SelectedProgram].Target;
+		SelectedProgram = -1;
+	}
+
+	void OpenRealExe()
+	{
+		PlayClickSound();
+		System.Diagnostics.Process.Start(PageFile[SelectedProgram].Target);
 		SelectedProgram = -1;
 	}
 
@@ -563,27 +598,38 @@ public class Computer : MonoBehaviour
 		{
 			if(PageFile [SelectedProgram].Name == GameControl.control.ProgramFiles[i].Name && PageFile [SelectedProgram].Location == GameControl.control.ProgramFiles[i].Location)
 			{
-				note.SelectedDocument = i;
+				SelectedDocument = i;
 			}
 		}
-		if (note.show == true && note.enabled == true)
+		if (appman.isDocumentReadingRunning == true)
 		{
-			note.CurrentWorkingTitle = PageFile [SelectedProgram].Name;
-			note.TypedTitle = PageFile [SelectedProgram].Name;
-			note.TypedText = PageFile [SelectedProgram].Content;
-			note.SaveLocation = PageFile [SelectedProgram].Location;
-			note.ShowFileContent = true;
+			ReadText(PageFile[SelectedProgram].Name, PageFile[SelectedProgram].Content, PageFile[SelectedProgram].Location);
 		}
-		if (note.show == false || note.enabled == false) 
+		if (appman.isDocumentReadingRunning == false) 
 		{
-			appman.SelectedApp = "Notepad";
-			note.CurrentWorkingTitle = PageFile [SelectedProgram].Name;
-			note.TypedTitle = PageFile [SelectedProgram].Name;
-			note.TypedText = PageFile [SelectedProgram].Content;
-			note.SaveLocation = PageFile [SelectedProgram].Location;
-			note.ShowFileContent = true;
+			for(int i = 0; i < GameControl.control.DefaultLaunchedPrograms.Count;i++)
+			{
+				for (int j = 0; j < GameControl.control.DefaultLaunchedPrograms[i].Type.Count; j++)
+				{
+					if (GameControl.control.DefaultLaunchedPrograms[i].Type[j] == ProgramSystem.FileType.DocumentReaders)
+					{
+						appman.SelectedApp = GameControl.control.DefaultLaunchedPrograms[i].Target;
+					}
+				}
+			}
+			ReadText(PageFile[SelectedProgram].Name, PageFile[SelectedProgram].Content, PageFile[SelectedProgram].Location);
 		}
 		SelectedProgram = -1;
+	}
+
+	void ReadText(string filename,string content,string location)
+	{
+		appman.filename = filename;
+		appman.content = content;
+		appman.location = location;
+		appman.selecteddocument = SelectedDocument;
+		appman.showfilecontent = true;
+		SelectedDocument = -1;
 	}
 
 	void OpenIns()
@@ -642,7 +688,7 @@ public class Computer : MonoBehaviour
 
 	void AddContextOptions()
 	{
-		if (PageFile [SelectedProgram].Type == ProgramSystem.ProgramType.Exe)
+		if (PageFile [SelectedProgram].Extension == ProgramSystem.FileExtension.Exe)
 		{
 			ContextMenuOptions.Add ("Run");
 			if (!ContextMenuOptions.Contains("Paste") && FileName != "")
@@ -663,7 +709,28 @@ public class Computer : MonoBehaviour
 			ContextMenuOptions.Add ("Create Icon");
 			ContextMenuOptions.Add ("Details");
 		}
-		if (PageFile [SelectedProgram].Type == ProgramSystem.ProgramType.Txt)
+		if (PageFile[SelectedProgram].Extension == ProgramSystem.FileExtension.Real)
+		{
+			ContextMenuOptions.Add("Run");
+			if (!ContextMenuOptions.Contains("Paste") && FileName != "")
+			{
+				ContextMenuOptions.Add("Paste");
+			}
+			ContextMenuOptions.Add("Copy");
+			ContextMenuOptions.Add("Rename");
+			if (!GameControl.control.QuickLaunchNames.Contains(PageFile[SelectedProgram].Name))
+			{
+				ContextMenuOptions.Add("Pin to QL");
+			}
+			else
+			{
+				ContextMenuOptions.Add("Unpin from QL");
+			}
+			ContextMenuOptions.Add("Delete");
+			ContextMenuOptions.Add("Create Icon");
+			ContextMenuOptions.Add("Details");
+		}
+		if (PageFile [SelectedProgram].Extension == ProgramSystem.FileExtension.Txt)
 		{
 			ContextMenuOptions.Add ("Read");
 			if (!ContextMenuOptions.Contains("Paste") && FileName != "")
@@ -676,7 +743,7 @@ public class Computer : MonoBehaviour
 			ContextMenuOptions.Add ("Create Icon");
 			ContextMenuOptions.Add ("Details");
 		}
-		if (PageFile [SelectedProgram].Type == ProgramSystem.ProgramType.Ins)
+		if (PageFile [SelectedProgram].Extension == ProgramSystem.FileExtension.Ins)
 		{
 			ContextMenuOptions.Add ("Install");
 			if (!ContextMenuOptions.Contains("Paste") && FileName != "")
@@ -689,13 +756,13 @@ public class Computer : MonoBehaviour
 			ContextMenuOptions.Add ("Create Icon");
 			ContextMenuOptions.Add ("Details");
 		}
-		if (PageFile [SelectedProgram].Type == ProgramSystem.ProgramType.Dir)
+		if (PageFile [SelectedProgram].Extension == ProgramSystem.FileExtension.Dir)
 		{
 			ContextMenuOptions.Add ("Open");
 			ContextMenuOptions.Add ("Create Icon");
 			ContextMenuOptions.Add ("Details");
 		}
-		if (PageFile [SelectedProgram].Type == ProgramSystem.ProgramType.Fdl) 
+		if (PageFile [SelectedProgram].Extension == ProgramSystem.FileExtension.Fdl) 
 		{
 			ContextMenuOptions.Add ("Open");
 			if (!ContextMenuOptions.Contains("Paste") && FileName != "")
@@ -708,7 +775,7 @@ public class Computer : MonoBehaviour
 			ContextMenuOptions.Add ("Create Icon");
 			ContextMenuOptions.Add ("Details");
 		}
-		if (PageFile [SelectedProgram].Type == ProgramSystem.ProgramType.File) 
+		if (PageFile [SelectedProgram].Extension == ProgramSystem.FileExtension.File) 
 		{
 			ContextMenuOptions.Add ("Copy");
 			if (!ContextMenuOptions.Contains("Paste") && FileName != "")
@@ -790,30 +857,40 @@ public class Computer : MonoBehaviour
 
         if (GUI.Button(new Rect(2, 300-24, 40, 22), "Apply"))
         {
-            if (DetailsFileName != OldName)
-            {
-                NewName = DetailsFileName;
-                DetailsFileRename();
-                CloseDetailsMenu();
-            }
-        }
+			for(int i = 0; i < GameControl.control.ProgramFiles.Count;i++)
+			{
+				if(OldProgramDetails.Name == GameControl.control.ProgramFiles[i].Name)
+				{
+					if(OldProgramDetails.Location == GameControl.control.ProgramFiles[i].Location)
+					{
+						GameControl.control.ProgramFiles[OldProgramDetails.Int1] = NewProgramDetails;
+					}
+				}
+			}
+			CloseDetailsMenu();
+		}
     }
 
     void DetailsMenuGeneral()
     {
-        if (DetailsFileLocation != null)
-        {
-            GUI.TextField(new Rect(1, 120, 150, 22), DetailsFileLocation);
-        }
+		NewProgramDetails.Name = GUI.TextField(new Rect(1, 55, 198, 22), NewProgramDetails.Name);
 
-        DetailsFileName = GUI.TextField(new Rect(1, 55, 175, 22), DetailsFileName);
-
-        GUI.Label(new Rect(1, 80, 200, 22), "Type: " + DetailsFileType);
+        GUI.Label(new Rect(1, 80, 200, 22), "File type: " + NewProgramDetails.Extension);
         GUI.Label(new Rect(1, 100, 200, 22), "File Location: ");
-        GUI.Label(new Rect(1, 140, 200, 22), "Size: " + DetailsFileSize);
+		if (NewProgramDetails.Location != null)
+		{
+			GUI.TextField(new Rect(1, 120, 198, 22), NewProgramDetails.Location);
+		}
+		GUI.Label(new Rect(1, 140, 200, 22), "Size: " + NewProgramDetails.Used);
         GUI.Label(new Rect(1, 160, 200, 22), "Contains: " + DetailsFileContains);
-        GUI.Label(new Rect(1, 180, 200, 22), "Creation Date: " + DetailsFileCreatedDateTime);
-    }
+        GUI.Label(new Rect(1, 180, 200, 22), "Creation Date: " + NewProgramDetails.Date);
+		GUI.Label(new Rect(1, 200, 200, 22), "File Target: ");
+
+		if (NewProgramDetails.Target != null)
+		{
+			NewProgramDetails.Target = GUI.TextField(new Rect(1, 220, 198, 22), NewProgramDetails.Target);
+		}
+	}
 
     void DetailsMenuIcon()
     {
@@ -844,13 +921,13 @@ public class Computer : MonoBehaviour
 		switch (SelectedOption) 
 		{
 		case "Open":
-			switch (PageFile [SelectedProgram].Type) 
+			switch (PageFile [SelectedProgram].Extension) 
 			{
-			case ProgramSystem.ProgramType.Fdl:
+			case ProgramSystem.FileExtension.Fdl:
 				OpenFld();
 				CloseContextMenu();
 				break;
-			case ProgramSystem.ProgramType.Dir:
+			case ProgramSystem.FileExtension.Dir:
 				OpenFld();
 				CloseContextMenu();
 				break;
@@ -873,9 +950,17 @@ public class Computer : MonoBehaviour
 			CloseContextMenu();
 			break;
 		case "Run":
-			OpenExe();
-			PlayClickSound ();
-			CloseContextMenu();
+			switch (PageFile[SelectedProgram].Extension)
+			{
+			case ProgramSystem.FileExtension.Exe:
+				OpenExe();
+				CloseContextMenu();
+				break;
+			case ProgramSystem.FileExtension.Real:
+				OpenRealExe();
+				CloseContextMenu();
+				break;
+			}
 			break;
 		case "Install":
 			OpenIns();
@@ -920,32 +1005,35 @@ public class Computer : MonoBehaviour
 
     void Details()
     {
-        if (PageFile[SelectedProgram].Type == ProgramSystem.ProgramType.Dir)
-        {
-            SelectedFileName = PageFile[SelectedProgram].Name + " " + PageFile[SelectedProgram].Sender;
-            OldName = PageFile[SelectedProgram].Sender;
-            NewName = PageFile[SelectedProgram].Sender;
-            DetailsFileName = OldName;
-            DetailsFileType = PageFile[SelectedProgram].Type.ToString();
-            DetailsFileSize = PageFile[SelectedProgram].Used.ToString();
-            DetailsFileFree = PageFile[SelectedProgram].Capacity.ToString();
-            DetailsFileCreatedDateTime = PageFile[SelectedProgram].Date;
-            PlayClickSound();
-            ShowDetails = true;
-        }
-        else
-        {
-            SelectedFileName = PageFile[SelectedProgram].Name;
-            OldName = PageFile[SelectedProgram].Name;
-            NewName = PageFile[SelectedProgram].Name;
-            DetailsFileName = OldName;
-            DetailsFileType = PageFile[SelectedProgram].Type.ToString();
-            DetailsFileLocation = PageFile[SelectedProgram].Location;
-            DetailsFileSize = PageFile[SelectedProgram].Used.ToString();
-            DetailsFileCreatedDateTime = PageFile[SelectedProgram].Date;
-            PlayClickSound();
-            ShowDetails = true;
-        }
+		int Selected = 0;
+
+		for(int i = 0; i < GameControl.control.ProgramFiles.Count; i++)
+		{
+			if(PageFile[SelectedProgram].Name == GameControl.control.ProgramFiles[i].Name)
+			{
+				if (PageFile[SelectedProgram].Location == GameControl.control.ProgramFiles[i].Location)
+				{
+					Selected = i;
+				}
+			}
+		}
+
+		OldProgramDetails = new ProgramSystem(PageFile[SelectedProgram].Name, PageFile[SelectedProgram].Sender, PageFile[SelectedProgram].Creator, PageFile[SelectedProgram].Date, PageFile[SelectedProgram].Content,
+			PageFile[SelectedProgram].Description, PageFile[SelectedProgram].Location, PageFile[SelectedProgram].Target, PageFile[SelectedProgram].IconLocation, PageFile[SelectedProgram].PictureLocation, PageFile[SelectedProgram].Extension,
+			PageFile[SelectedProgram].FileInstallExtension, PageFile[SelectedProgram].Encryption, PageFile[SelectedProgram].Free, PageFile[SelectedProgram].Used, PageFile[SelectedProgram].Capacity,
+			PageFile[SelectedProgram].GPUUsage, PageFile[SelectedProgram].CPUUsage, PageFile[SelectedProgram].RAMUsage, PageFile[SelectedProgram].Health, PageFile[SelectedProgram].Version, PageFile[SelectedProgram].Price,
+			PageFile[SelectedProgram].Value, PageFile[SelectedProgram].PermisionLevel, Selected, PageFile[SelectedProgram].Int2, PageFile[SelectedProgram].Int3, PageFile[SelectedProgram].IntState,
+			PageFile[SelectedProgram].Infected, PageFile[SelectedProgram].Bool1, PageFile[SelectedProgram].Bool2, PageFile[SelectedProgram].Bool3, PageFile[SelectedProgram].Infections, PageFile[SelectedProgram].Type);
+
+		NewProgramDetails = new ProgramSystem(PageFile[SelectedProgram].Name, PageFile[SelectedProgram].Sender, PageFile[SelectedProgram].Creator, PageFile[SelectedProgram].Date, PageFile[SelectedProgram].Content,
+			PageFile[SelectedProgram].Description, PageFile[SelectedProgram].Location, PageFile[SelectedProgram].Target, PageFile[SelectedProgram].IconLocation, PageFile[SelectedProgram].PictureLocation, PageFile[SelectedProgram].Extension,
+			PageFile[SelectedProgram].FileInstallExtension, PageFile[SelectedProgram].Encryption, PageFile[SelectedProgram].Free, PageFile[SelectedProgram].Used, PageFile[SelectedProgram].Capacity,
+			PageFile[SelectedProgram].GPUUsage, PageFile[SelectedProgram].CPUUsage, PageFile[SelectedProgram].RAMUsage, PageFile[SelectedProgram].Health, PageFile[SelectedProgram].Version, PageFile[SelectedProgram].Price,
+			PageFile[SelectedProgram].Value, PageFile[SelectedProgram].PermisionLevel, PageFile[SelectedProgram].Int1, PageFile[SelectedProgram].Int2, PageFile[SelectedProgram].Int3, PageFile[SelectedProgram].IntState,
+			PageFile[SelectedProgram].Infected, PageFile[SelectedProgram].Bool1, PageFile[SelectedProgram].Bool2, PageFile[SelectedProgram].Bool3, PageFile[SelectedProgram].Infections, PageFile[SelectedProgram].Type);
+
+		PlayClickSound();
+		ShowDetails = true;
     }
 
     void ProgramExecution()
@@ -956,9 +1044,9 @@ public class Computer : MonoBehaviour
 		{
 			if (PageFile[scrollsize].Location == ComAddress)
 			{
-				switch(PageFile [scrollsize].Type)
+				switch(PageFile [scrollsize].Extension)
 				{
-				case ProgramSystem.ProgramType.Dir:
+				case ProgramSystem.FileExtension.Dir:
 					if (SelectedProgram == scrollsize) 
 					{
 						GUI.DrawTexture (new Rect (0, 21 * scrollsize, 20, 20), IconHighlight [0]);
@@ -968,11 +1056,12 @@ public class Computer : MonoBehaviour
 						GUI.DrawTexture (new Rect (0, 21 * scrollsize, 20, 20), Icon [0]);
 					}
 
-					if (dm.UsedSpace [scrollsize] == 0 && dm.FreeSpace [scrollsize] == 0)
-					{
-						dm.FreeSpace [scrollsize] = dm.DriveCapacity[scrollsize];
-					}
-                    if (GUI.Button (new Rect (21, 21 * scrollsize, 250, 20), "" + PageFile [scrollsize].Name + " " + "(" + PageFile [scrollsize].Sender + ")" + " " + dm.FreeSpace[scrollsize].ToString("F2") + " free of " + PageFile[scrollsize].Capacity) || Event.current.type == EventType.keyDown && Event.current.keyCode == KeyCode.Return) 
+					//if (dm.UsedSpace [scrollsize] == 0 && dm.FreeSpace [scrollsize] == 0)
+					//{
+					//	dm.FreeSpace [scrollsize] = dm.DriveCapacity[scrollsize];
+					//}
+
+                    if (GUI.Button (new Rect (21, 21 * scrollsize, 250, 20), "" + PageFile [scrollsize].Name + " " + "(" + PageFile [scrollsize].Sender + ")" + " " + PageFile[scrollsize].Free.ToString("F2") + " free of " + PageFile[scrollsize].Capacity) || Event.current.type == EventType.keyDown && Event.current.keyCode == KeyCode.Return) 
 					{
 						if (Input.GetMouseButtonUp (0)) 
 						{
@@ -994,16 +1083,13 @@ public class Computer : MonoBehaviour
 							SelectedProgram = scrollsize;
 							if (new Rect (21,21 * SelectedProgram, 200, 20).Contains (Event.current.mousePosition))
 							{
-								ContextwindowRect.x = Input.mousePosition.x;
-								ContextwindowRect.y = Screen.height - Input.mousePosition.y;
-								ShowContext = true;
-								GUI.BringWindowToFront(98);
+								ContextPos();
 							}
 						}
 					}
 					break;
 
-				case ProgramSystem.ProgramType.Fdl:
+				case ProgramSystem.FileExtension.Fdl:
 
 					if (GUI.Button (new Rect (21, 21 * scrollsize, 100, 20), "" + PageFile [scrollsize].Name)) 
 					{
@@ -1027,10 +1113,7 @@ public class Computer : MonoBehaviour
 							SelectedProgram = scrollsize;
 							if (new Rect (21,21 * SelectedProgram, 100, 20).Contains (Event.current.mousePosition))
 							{
-								ContextwindowRect.x = Input.mousePosition.x;
-								ContextwindowRect.y = Screen.height - Input.mousePosition.y;
-								ShowContext = true;
-								GUI.BringWindowToFront(98);
+								ContextPos();
 							}
 						}
 					}
@@ -1046,7 +1129,7 @@ public class Computer : MonoBehaviour
 
 					break;
 
-				case ProgramSystem.ProgramType.Txt:
+				case ProgramSystem.FileExtension.Txt:
 
 					if (SelectedProgram == scrollsize) 
 					{
@@ -1080,16 +1163,13 @@ public class Computer : MonoBehaviour
 							SelectedProgram = scrollsize;
 							if (new Rect (21,21 * SelectedProgram, 100, 20).Contains (Event.current.mousePosition))
 							{
-								ContextwindowRect.x = Input.mousePosition.x;
-								ContextwindowRect.y = Screen.height - Input.mousePosition.y;
-								ShowContext = true;
-								GUI.BringWindowToFront(98);
+								ContextPos();
 							}
 						}
 					}
 					break;
 
-				case ProgramSystem.ProgramType.File:
+				case ProgramSystem.FileExtension.File:
 					if (SelectedProgram == scrollsize) 
 					{
 						GUI.DrawTexture (new Rect (0, 21 * scrollsize, 20, 20), IconHighlight [4]);
@@ -1111,10 +1191,7 @@ public class Computer : MonoBehaviour
 							SelectedProgram = scrollsize;
 							if (new Rect (21,21 * SelectedProgram, 100, 20).Contains (Event.current.mousePosition))
 							{
-								ContextwindowRect.x = Input.mousePosition.x;
-								ContextwindowRect.y = Screen.height - Input.mousePosition.y;
-								ShowContext = true;
-								GUI.BringWindowToFront(98);
+								ContextPos();
 							}
 						}
 					}
@@ -1130,7 +1207,7 @@ public class Computer : MonoBehaviour
 					}
 					break;
 
-				case ProgramSystem.ProgramType.Exe:
+				case ProgramSystem.FileExtension.Exe:
 					if (SelectedProgram == scrollsize) 
 					{
 						GUI.DrawTexture (new Rect (0, 21 * scrollsize, 20, 20), IconHighlight [2]);
@@ -1156,19 +1233,16 @@ public class Computer : MonoBehaviour
 							}
 							LastClick = Time.time;
 						}
-						if (Input.GetMouseButtonUp (1)) 
-						{
-							SelectedProgram = scrollsize;
-							if (new Rect (21,21 * SelectedProgram, 100, 20).Contains (Event.current.mousePosition))
+							if (Input.GetMouseButtonUp(1))
 							{
-								ContextwindowRect.x = Input.mousePosition.x;
-								ContextwindowRect.y = Screen.height - Input.mousePosition.y;
-								ShowContext = true;
-								GUI.BringWindowToFront(98);
+								SelectedProgram = scrollsize;
+								if (new Rect(21, 21 * SelectedProgram, 100, 20).Contains(Event.current.mousePosition))
+								{
+									ContextPos();
+								}
 							}
 						}
-					}
-					if (GUI.Button (new Rect (122, 21 * scrollsize,50,20), "" + PageFile[scrollsize].Used)) 
+						if (GUI.Button (new Rect (122, 21 * scrollsize,50,20), "" + PageFile[scrollsize].Used)) 
 					{
 						if (Time.time - LastClick < 0.5) 
 						{
@@ -1184,7 +1258,7 @@ public class Computer : MonoBehaviour
 						}
 						LastClick = Time.time;
 					}
-					if (GUI.Button (new Rect (173, 21 * scrollsize,50,20), "" + PageFile[scrollsize].Version)) 
+					if (GUI.Button (new Rect (173, 21 * scrollsize,50,20), "" + PageFile[scrollsize].Version.ToString())) 
 					{
 						if (Time.time - LastClick < 0.5) 
 						{
@@ -1202,7 +1276,44 @@ public class Computer : MonoBehaviour
 					}
 						break;
 
-				case ProgramSystem.ProgramType.OS:
+					case ProgramSystem.FileExtension.Real:
+						if (SelectedProgram == scrollsize)
+						{
+							GUI.DrawTexture(new Rect(0, 21 * scrollsize, 20, 20), IconHighlight[2]);
+						}
+						else
+						{
+							GUI.DrawTexture(new Rect(0, 21 * scrollsize, 20, 20), Icon[2]);
+						}
+						if (GUI.Button(new Rect(21, 21 * scrollsize, 175, 20), "" + PageFile[scrollsize].Name))
+						{
+							if (Input.GetMouseButtonUp(0))
+							{
+								if (Time.time - LastClick < 0.5)
+								{
+									PlayClickSound();
+									SelectedProgram = scrollsize;
+									OpenRealExe();
+								}
+								else
+								{
+									PlayClickSound();
+									SelectedProgram = scrollsize;
+								}
+								LastClick = Time.time;
+							}
+							if (Input.GetMouseButtonUp(1))
+							{
+								SelectedProgram = scrollsize;
+								if (new Rect(21, 21 * SelectedProgram, 100, 20).Contains(Event.current.mousePosition))
+								{
+									ContextPos();
+								}
+							}
+						}
+						break;
+
+					case ProgramSystem.FileExtension.OS:
 					GUI.DrawTexture (new Rect(0, 21 * scrollsize, 20, 20), Icon [3]);
 					if (GUI.Button(new Rect(21, 21 * scrollsize, 100, 20), "" + PageFile[scrollsize].Name))
 					{
@@ -1212,45 +1323,31 @@ public class Computer : MonoBehaviour
 					{
 
 					}
-					if (GUI.Button (new Rect (173, 21 * scrollsize,50,20), "" + PageFile[scrollsize].Version)) 
+					if (GUI.Button (new Rect (173, 21 * scrollsize,50,20), "" + PageFile[scrollsize].Version.ToString())) 
 					{
 
 					}
 					break;
 
-				case ProgramSystem.ProgramType.Ins:
+				case ProgramSystem.FileExtension.Ins:
 					GUI.DrawTexture (new Rect(0, 21 * scrollsize, 20, 20), Icon [3]);
 					if (GUI.Button (new Rect (21, 21 * scrollsize,100,20), "" + PageFile[scrollsize].Name)) 
 					{
 						if (Input.GetMouseButtonUp (0)) 
 						{
-							if (new Rect (21,21 * SelectedProgram, 100, 20).Contains (Event.current.mousePosition))
+							if (Time.time - LastClick < 0.5)
 							{
-								if (Time.time - LastClick < 0.5) 
-								{
-									PlayClickSound ();
-									SelectedProgram = scrollsize;
-									OpenIns();
+								PlayClickSound();
+								SelectedProgram = scrollsize;
+								OpenIns();
 
-								} 
-								else 
-								{
-									PlayClickSound();
-									SelectedProgram = scrollsize;
-								}
-								LastClick = Time.time;
 							}
-						}
-						if (Input.GetMouseButtonUp (1)) 
-						{
-							SelectedProgram = scrollsize;
-							if (new Rect (21,21 * SelectedProgram, 100, 20).Contains (Event.current.mousePosition))
+							else
 							{
-								ContextwindowRect.x = Input.mousePosition.x;
-								ContextwindowRect.y = Screen.height - Input.mousePosition.y;
-								ShowContext = true;
-								GUI.BringWindowToFront(98);
+								PlayClickSound();
+								SelectedProgram = scrollsize;
 							}
+							LastClick = Time.time;
 						}
 					}
 					if (GUI.Button (new Rect (122, 21 * scrollsize,50,20), "" + PageFile[scrollsize].Used)) 
@@ -1269,7 +1366,7 @@ public class Computer : MonoBehaviour
 						}
 						LastClick = Time.time;
 					}
-					if (GUI.Button (new Rect (173, 21 * scrollsize,50,20), "" + PageFile[scrollsize].Version)) 
+					if (GUI.Button (new Rect (173, 21 * scrollsize,50,20), "" + PageFile[scrollsize].Version.ToString())) 
 					{
 						if (Time.time - LastClick < 0.5) 
 						{
@@ -1367,10 +1464,7 @@ public class Computer : MonoBehaviour
 								{
 									ContextMenuOptions.Add("Details");
 								}
-								ContextwindowRect.x = Input.mousePosition.x;
-								ContextwindowRect.y = Screen.height - Input.mousePosition.y;
-								ShowContext = true;
-								GUI.BringWindowToFront(98);
+								ContextPos();
 							}
 						}
 					}
@@ -1396,10 +1490,7 @@ public class Computer : MonoBehaviour
 							{
 								ContextMenuOptions.Add("Details");
 							}
-							ContextwindowRect.x = Input.mousePosition.x;
-							ContextwindowRect.y = Screen.height - Input.mousePosition.y;
-							ShowContext = true;
-							GUI.BringWindowToFront(98);
+							ContextPos();
 						}
 					}
 				}
@@ -1517,13 +1608,13 @@ public class Computer : MonoBehaviour
 			{
 				if (SelectedProgram >= 0)
 				{
-					if (PageFile[SelectedProgram].Type == ProgramSystem.ProgramType.Exe)
+					if (PageFile[SelectedProgram].Extension == ProgramSystem.FileExtension.Exe)
 					{
 						PlayClickSound();
 						appman.SelectedApp = PageFile[SelectedProgram].Target;
 						SelectedProgram = -1;
 					}
-					if (PageFile[SelectedProgram].Type == ProgramSystem.ProgramType.Fdl)
+					if (PageFile[SelectedProgram].Extension == ProgramSystem.FileExtension.Fdl)
 					{
 						PlayClickSound();
 						History.Add(ComAddress);
@@ -1532,7 +1623,7 @@ public class Computer : MonoBehaviour
 						SelectedProgram = -1;
 						MenuSelected = 0;
 					}
-					if (PageFile[SelectedProgram].Type == ProgramSystem.ProgramType.Dir)
+					if (PageFile[SelectedProgram].Extension == ProgramSystem.FileExtension.Dir)
 					{
 						PlayClickSound();
 						History.Add(ComAddress);
@@ -1541,7 +1632,7 @@ public class Computer : MonoBehaviour
 						SelectedProgram = -1;
 						MenuSelected = 0;
 					}
-					if (PageFile[SelectedProgram].Type == ProgramSystem.ProgramType.Txt)
+					if (PageFile[SelectedProgram].Extension == ProgramSystem.FileExtension.Txt)
 					{
 						PlayClickSound();
 						OpenTxt();
@@ -1669,6 +1760,17 @@ public class Computer : MonoBehaviour
         }
 	}
 
+
+	void ContextPos()
+	{
+		if(SelectedProgram > -1)
+		{
+			ContextwindowRect.x = Input.mousePosition.x;
+			ContextwindowRect.y = Screen.height - Input.mousePosition.y;
+			ShowContext = true;
+			GUI.BringWindowToFront(98);
+		}
+	}
 
 	void ToolBar()
 	{

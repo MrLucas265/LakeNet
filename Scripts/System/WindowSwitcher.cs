@@ -18,6 +18,11 @@ public class WindowSwitcher : MonoBehaviour
         os = GetComponent<OS>();
         appman = GetComponent<AppMan>();
     }
+
+    public void SwitchWindow()
+    {
+
+    }
 	
 	// Update is called once per frame
 	void Update ()
@@ -26,16 +31,19 @@ public class WindowSwitcher : MonoBehaviour
 		{
             if (Input.GetKeyDown(KeyCode.Return))
             {
-                if (SelectedProgram >= tasks.RunningTasks.Count - 1)
+                if (SelectedProgram >= tasks.RunningTasks.Count-1)
                 {
+                    SelectedProgram = tasks.RunningTasks.Count - 1;
+                    SelectedWindowID = tasks.RunningTasks[SelectedProgram].RunningApplicationsWindowID;
+                    changeWindow = true;
                     SelectedProgram = 0;
                 }
                 else
                 {
+                    SelectedWindowID = tasks.RunningTasks[SelectedProgram].RunningApplicationsWindowID;
+                    changeWindow = true;
                     SelectedProgram++;
                 }
-                SelectedWindowID = tasks.RunningTasks[SelectedProgram].RunningApplicationsWindowID;
-                changeWindow = true;
             }
 
             if (Input.GetKeyDown(KeyCode.T))
@@ -49,6 +57,16 @@ public class WindowSwitcher : MonoBehaviour
             //}
 
             if (Input.GetKeyDown(KeyCode.P))
+            {
+                os.RunControlPanel();
+            }
+
+            if (Input.GetKeyDown(KeyCode.H))
+            {
+                os.RunHelpMenu();
+            }
+
+            if (Input.GetKeyDown(KeyCode.M))
             {
                 os.RunProgramManager();
             }

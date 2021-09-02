@@ -50,8 +50,10 @@ public class InstallPrompt : MonoBehaviour
     public bool AddToQuickList;
     public string FileLocation;
 
-    // Use this for initialization
-    void Start () 
+	public ProgramSystem HeldFile;
+
+	// Use this for initialization
+	void Start () 
 	{
 		Computer = GameObject.Find("System");
 		IconObject = GameObject.Find("IconObject");
@@ -161,8 +163,9 @@ public class InstallPrompt : MonoBehaviour
                 if (fu.ProgramHandle.Count <= 0)
                 {
                     fu.Local = true;
-                    fu.ProgramHandle.Add(new FileUtilitySystem("Installer", ProgramName, FileLocation, "", ProgramTarget, "", ProgramType, false, true, true, false, ProgramVersion, 0, 0, 0, 0, 0, 0, 0, Size, 0, 0, 0, FileUtilitySystem.ProgramType.Installer));
-                    fu.AddWindow();
+					fu.ProgramHandle.Add(new FileUtilitySystem("Installer", ProgramName, FileLocation,"", "", ProgramTarget, "", ProgramType, false, true, true, false, ProgramVersion, 0, 0, 0, 0, 0, 0, 0, Size, 0, 0, 0, FileUtilitySystem.ProgramType.Installer));
+					//fu.ProgramHandle.Add(new FileUtilitySystem("Installer", ProgramName, FileLocation, "", ProgramTarget, "", ProgramType, false, true, true, false, ProgramVersion, 0, 0, 0, 0, 0, 0, 0, Size, 0, 0, 0, FileUtilitySystem.ProgramType.Installer));
+					fu.AddWindow();
                 }
 				ShowMenu1 = false;
 				show = false;

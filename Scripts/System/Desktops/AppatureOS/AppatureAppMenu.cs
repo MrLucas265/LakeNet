@@ -22,7 +22,6 @@ public class AppatureAppMenu : MonoBehaviour
 	private DirSearch ds;
 	private Favs fav;
 	private TreeView tv;
-	private CLI cmd;
 	private SystemMap sm;
 	private MonitorBypass mPass;
 	private WebSecViewer wsv;
@@ -65,7 +64,8 @@ public class AppatureAppMenu : MonoBehaviour
 	private Rect Console;
 	private Rect LogoutButton;
 	private Rect SettingsButton;
-	private  Rect ShowAllButton;
+	private Rect ShowAllButton;
+	private Rect SpeakerButton;
 
 	private Rect SearchButton;
 	private Rect SearchBar;
@@ -117,6 +117,7 @@ public class AppatureAppMenu : MonoBehaviour
 	public Texture2D HUDAnaIcon;
 	public Texture2D SearchIcon;
 	public Texture2D SettingsIcon;
+	public Texture2D[] SpeakerIcon;
 	public bool ShowShutdown;
 
 	void Start () 
@@ -137,7 +138,6 @@ public class AppatureAppMenu : MonoBehaviour
 		ds = SysSoftware.GetComponent<DirSearch>();
 		tv = SysSoftware.GetComponent<TreeView>();
 		al = AppSoftware.GetComponent<AccLog>();
-		cmd = SysSoftware.GetComponent<CLI>();
 		sm = AppSoftware.GetComponent<SystemMap>();
 		clk = SysSoftware.GetComponent<Clock>();
 		defalt = SysSoftware.GetComponent<Defalt>();
@@ -154,51 +154,6 @@ public class AppatureAppMenu : MonoBehaviour
 		UpdateUI();
 
 		windowID = appmenu.windowID;
-	}
-
-	void Test()
-	{
-		GameControl.control.ProgramFiles.Add(new ProgramSystem("Calculator","","","","C:/Programs","Calculator",0,0,2,0,100,10,false,ProgramSystem.ProgramType.Exe));
-
-		GameControl.control.ProgramFiles.Add(new ProgramSystem("Music Player","","","","C:/Programs","Music Player",0,0,2,0,100,10,false,ProgramSystem.ProgramType.Exe));
-		//GameControl.control.QuickProgramList.Add(new ProgramSystem("Calculator","","","","C:/Programs","Calculator",0,0,2,0,100,10,false,ProgramSystem.ProgramType.Exe));
-
-		GameControl.control.ProgramFiles.Add(new ProgramSystem("Net Viewer","","","","C:/Programs","Net Viewer",0,0,2,0,100,10,false,ProgramSystem.ProgramType.Exe));
-		GameControl.control.QuickProgramList.Add(new ProgramSystem("Net Viewer","","","","C:/Programs","Net Viewer",0,0,2,0,100,10,false,ProgramSystem.ProgramType.Exe));
-
-		//GameControl.control.ProgramFiles.Add(new ProgramSystem("Firefox","","","","C:/Programs","Firefox",0,0,2,0,100,10,false,ProgramSystem.ProgramType.Exe));
-		//GameControl.control.QuickProgramList.Add(new ProgramSystem("Firefox","","","","C:/Programs","Firefox",0,0,2,0,100,10,false,ProgramSystem.ProgramType.Exe));
-
-		//GameControl.control.ProgramFiles.Add(new ProgramSystem("IE","","","","C:/Programs","IE",0,0,2,0,100,10,false,ProgramSystem.ProgramType.Exe));
-		//GameControl.control.QuickProgramList.Add(new ProgramSystem("IE","","","","C:/Programs","IE",0,0,2,0,100,10,false,ProgramSystem.ProgramType.Exe));
-
-		GameControl.control.ProgramFiles.Add(new ProgramSystem("Remote Viewer","","","","C:/Programs","Remote Viewer",0,0,2,0,100,10,false,ProgramSystem.ProgramType.Exe));
-		//GameControl.control.QuickProgramList.Add(new ProgramSystem("Remote Viewer","","","","C:/Programs","Remote Viewer",0,0,2,0,100,10,false,ProgramSystem.ProgramType.Exe));
-
-		GameControl.control.ProgramFiles.Add(new ProgramSystem("Notepad","","","","C:/Programs","Notepad",0,0,2,0,100,10,false,ProgramSystem.ProgramType.Exe));
-		//GameControl.control.QuickProgramList.Add(new ProgramSystem("Notepad","","","","C:/Programs","Notepad",0,0,2,0,100,10,false,ProgramSystem.ProgramType.Exe));
-
-		GameControl.control.ProgramFiles.Add(new ProgramSystem("CLI","","","","C:/Programs","Command Line",0,0,2,0,100,10,false,ProgramSystem.ProgramType.Exe));
-		GameControl.control.QuickProgramList.Add(new ProgramSystem("CLI","","","","C:/Programs","Command Line",0,0,2,0,100,10,false,ProgramSystem.ProgramType.Exe));
-
-		GameControl.control.ProgramFiles.Add(new ProgramSystem("Task Viewer","","","","C:/Programs","Task Viewer",0,0,2,0,100,10,false,ProgramSystem.ProgramType.Exe));
-		GameControl.control.QuickProgramList.Add(new ProgramSystem("Task Viewer","","","","C:/Programs","Task Viewer",0,0,2,0,100,10,false,ProgramSystem.ProgramType.Exe));
-
-		GameControl.control.ProgramFiles.Add(new ProgramSystem("Version","","","","C:/Programs","Version",0,0,2,0,100,10,false,ProgramSystem.ProgramType.Exe));
-
-		Test2();
-	}
-
-	void Test2()
-	{
-		GameControl.control.ProgramFiles.Add(new ProgramSystem("Disk Manager","","","","C:/Programs","Disk Manager",0,0,2,0,100,10,false,ProgramSystem.ProgramType.Exe));
-		GameControl.control.QuickProgramList.Add(new ProgramSystem("Disk Manager","","","","C:/Programs","Disk Manager",0,0,2,0,100,10,false,ProgramSystem.ProgramType.Exe));
-
-		GameControl.control.ProgramFiles.Add(new ProgramSystem("Mail","","","","C:/Programs","Email",0,0,2,0,100,10,false,ProgramSystem.ProgramType.Exe));
-		GameControl.control.QuickProgramList.Add(new ProgramSystem("Mail","","","","C:/Programs","Email",0,0,2,0,100,10,false,ProgramSystem.ProgramType.Exe));
-
-		GameControl.control.ProgramFiles.Add(new ProgramSystem("Gateway","","","","C:/Programs","Computer",0,0,2,0,100,10,false,ProgramSystem.ProgramType.Exe));
-		GameControl.control.QuickProgramList.Add(new ProgramSystem("Gateway","","","","C:/Programs","Computer",0,0,2,0,100,10,false,ProgramSystem.ProgramType.Exe));
 	}
 
 	void UpdateUI()
@@ -225,8 +180,10 @@ public class AppatureAppMenu : MonoBehaviour
 
 		SystemButtonsY = Group.y + 265;
 
-		LogoutButton = new Rect(130 * Scale, SystemButtonsY - -0,20 * Scale,20 * Scale);
-		SettingsButton = new Rect (130 * Scale, SystemButtonsY - 24, 20 * Scale, 20 * Scale);
+		SpeakerButton = new Rect(110 * Scale, SystemButtonsY - 24, 20 * Scale, 20 * Scale);
+
+		LogoutButton = new Rect(135 * Scale, SystemButtonsY - -0,20 * Scale,20 * Scale);
+		SettingsButton = new Rect (135 * Scale, SystemButtonsY - 24, 20 * Scale, 20 * Scale);
 
 		SearchButton = new Rect(85 * Scale,SystemButtonsY,20 * Scale,20 * Scale);
 		SearchBar = new Rect(5 * Scale,SystemButtonsY,75 * Scale,20 * Scale);
@@ -249,7 +206,7 @@ public class AppatureAppMenu : MonoBehaviour
 
 		for (int b = 0; b < GameControl.control.ProgramFiles.Count; b++) 
 		{
-			if (GameControl.control.ProgramFiles[b].Type == ProgramSystem.ProgramType.Exe) 
+			if (GameControl.control.ProgramFiles[b].Extension == ProgramSystem.FileExtension.Exe) 
 			{
 				ListOfPrograms.Add(GameControl.control.ProgramFiles[b].Name);
 				ListOfProgramTargets.Add(GameControl.control.ProgramFiles[b].Target);
@@ -264,7 +221,7 @@ public class AppatureAppMenu : MonoBehaviour
 
 		for (int b = 0; b < GameControl.control.ProgramFiles.Count; b++) 
 		{
-			if (GameControl.control.ProgramFiles[b].Type == ProgramSystem.ProgramType.Exe) 
+			if (GameControl.control.ProgramFiles[b].Extension == ProgramSystem.FileExtension.Exe) 
 			{
 				ListOfSites.Add(GameControl.control.ProgramFiles[b].Name);
 				ListOfTargets.Add(GameControl.control.ProgramFiles[b].Target);
@@ -324,6 +281,46 @@ public class AppatureAppMenu : MonoBehaviour
 		}
 	}
 
+	void SpeakerUI()
+	{
+		if (Customize.cust.Volume <= 0)
+		{
+			if (GUI.Button(new Rect(SpeakerButton), SpeakerIcon[0], com.Skin[GameControl.control.GUIID].customStyles[DesktopStyle]))
+			{
+				PlayClickSound();
+				appman.SelectedApp = "Volume Controller";
+				Close();
+			}
+		}
+		else if (Customize.cust.Volume > 0 && Customize.cust.Volume < 0.32f)
+		{
+			if (GUI.Button(new Rect(SpeakerButton), SpeakerIcon[1], com.Skin[GameControl.control.GUIID].customStyles[DesktopStyle]))
+			{
+				PlayClickSound();
+				appman.SelectedApp = "Volume Controller";
+				Close();
+			}
+		}
+		else if (Customize.cust.Volume < 0.64f)
+		{
+			if (GUI.Button(new Rect(SpeakerButton), SpeakerIcon[2], com.Skin[GameControl.control.GUIID].customStyles[DesktopStyle]))
+			{
+				PlayClickSound();
+				appman.SelectedApp = "Volume Controller";
+				Close();
+			}
+		}
+		else if (Customize.cust.Volume > 0.64f)
+		{
+			if (GUI.Button(new Rect(SpeakerButton), SpeakerIcon[3], com.Skin[GameControl.control.GUIID].customStyles[DesktopStyle]))
+			{
+				PlayClickSound();
+				appman.SelectedApp = "Volume Controller";
+				Close();
+			}
+		}
+	}
+
 	void ShowAppMenu(int WindowID)
 	{
 		if (show == true) 
@@ -345,7 +342,9 @@ public class AppatureAppMenu : MonoBehaviour
 
 			GUI.backgroundColor = com.colors[Customize.cust.ButtonColorInt];
 
-			if(GUI.Button(new Rect(SettingsButton),SettingsIcon,com.Skin [GameControl.control.GUIID].customStyles [DesktopStyle]))
+			SpeakerUI();
+
+			if (GUI.Button(new Rect(SettingsButton),SettingsIcon,com.Skin [GameControl.control.GUIID].customStyles [DesktopStyle]))
 			{
 				PlayClickSound();
                 appman.ProgramName = "System Panel";
@@ -361,7 +360,7 @@ public class AppatureAppMenu : MonoBehaviour
                 Close();
 			}
 
-			if(GUI.Button(new Rect(SearchButton), SearchIcon,com.Skin [GameControl.control.GUIID].customStyles [DesktopStyle]))
+			if (GUI.Button(new Rect(SearchButton), SearchIcon,com.Skin [GameControl.control.GUIID].customStyles [DesktopStyle]))
 			{
 				ActivateSearch();
 			}
@@ -445,8 +444,8 @@ public class AppatureAppMenu : MonoBehaviour
 						{
 							if(GUI.Button(new Rect(0 * Scale,scrollsize * ButtonHeight,100 * Scale,ButtonHeight - 1),ListOfSites[scrollsize]))
 							{
-                                appman.ProgramName = ListOfPrograms[scrollsize];
-                                appman.SelectedApp = ListOfProgramTargets[scrollsize];
+                                appman.ProgramName = ListOfSites[scrollsize];
+                                appman.SelectedApp = ListOfTargets[scrollsize];
                             }
 						}
 					}

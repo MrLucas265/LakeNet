@@ -198,7 +198,7 @@ public class ErrorProm : MonoBehaviour
         {
             if (GUI.Button(new Rect(100, 125, 50, 20), "Restart Now"))
             {
-                GameControl.control.Booted = false;
+                GameControl.control.Gateway.Status.Booted = false;
                 Application.LoadLevel(1);
             }
 

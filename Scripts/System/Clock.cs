@@ -34,7 +34,11 @@ public class Clock : MonoBehaviour
     void Update()
     {
         GameControl.control.Time.Miniutes += GameControl.control.TimeMulti * Time.deltaTime;
-        autosave += 1 * Time.deltaTime;
+
+        if(Customize.cust.EnableAutoSave)
+        {
+            autosave += 1 * Time.deltaTime;
+        }
 
 
         CurrentTime();
@@ -44,7 +48,7 @@ public class Clock : MonoBehaviour
             UpdateMiniutes();
         }
 
-        if (autosave >= 1)
+        if (autosave >= Customize.cust.AutoSaveTime)
         {
             Screen.fullScreen = Customize.cust.FullScreen;
             QualitySettings.antiAliasing = Customize.cust.AA;
@@ -60,7 +64,7 @@ public class Clock : MonoBehaviour
 		GameControl.control.Save();
 		ProfileController.procon.Save();
 		Customize.cust.Save();
-		HardwareController.hdcon.Save();
+        PersonController.control.Save();
 	}
 
 	void TimeFormat()
@@ -86,7 +90,16 @@ public class Clock : MonoBehaviour
             {
                 if(GameControl.control.Plans[i].Due.Day == GameControl.control.Time.Day)
                 {
-                    GameControl.control.MyBankDetails[GameControl.control.SelectedBank].AccountBalance -= GameControl.control.Plans[i].Price;
+                    for (int j = 0; j < GameControl.control.BankData.Count; j++)
+                    {
+                        for (int k = 0; k < GameControl.control.BankData[j].Accounts.Count; k++)
+                        {
+                            if (GameControl.control.BankData[j].Accounts[k].Primary == true)
+                            {
+                                GameControl.control.BankData[j].Accounts[k].AccountBalance -= GameControl.control.Plans[i].Price;
+                            }
+                        }
+                    }
 
                     GameControl.control.EmailData.Add(new EmailSystem("Monthly Plan",
     GameControl.control.Plans[i].Company, GameControl.control.Time.FullDate,

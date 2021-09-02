@@ -38,7 +38,8 @@ public class BlueCrash : MonoBehaviour
 
 		if (Timer <= 0)
 		{
-			GameControl.control.Booted = false;
+			GameControl.control.Gateway.Status.Booted = false;
+			GameControl.control.Gateway.Status.Terminal = false;
 			Application.LoadLevel(1);
 		}
 	}

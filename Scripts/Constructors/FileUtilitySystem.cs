@@ -8,6 +8,7 @@ public class FileUtilitySystem
 	public string Name;
 	public string FileName;
 	public string Location;
+	public string ServerLocationName;
 	public string Target;
 	public string FileTarget;
 	public string FileType;
@@ -35,19 +36,22 @@ public class FileUtilitySystem
 	{
 		Upload,
 		RemoteDelete,
+		RemoteDelete1,
 		LocalDelete,
 		LocalFolderDelete,
 		Download,
+		Download1,
         DownloadProgram,
         Installer,
 		Paste
 	}
 
-	public FileUtilitySystem (string name,string filename,string location,string target,string filetarget,string filecontent,string filetype,bool minimize,bool start,bool show,bool done,float fileversion,float percentage,float timeremainseconds,float timeremainuiseconds, float timeremainmin, float timeremainhour, float itemtemain, float ourfilesize, float filesize,float count,float timer,float starttime, ProgramType type) //,Texture2D icon)
+	public FileUtilitySystem (string name,string filename,string location,string serverlocationname,string target,string filetarget,string filecontent,string filetype,bool minimize,bool start,bool show,bool done,float fileversion,float percentage,float timeremainseconds,float timeremainuiseconds, float timeremainmin, float timeremainhour, float itemtemain, float ourfilesize, float filesize,float count,float timer,float starttime, ProgramType type) //,Texture2D icon)
 	{
 		Name = name;
 		FileName = filename;
 		Location = location;
+		ServerLocationName = serverlocationname;
 		Target = target;
 		FileTarget = filetarget;
 		FileContent = filecontent;

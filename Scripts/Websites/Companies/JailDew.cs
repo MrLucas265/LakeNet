@@ -8,7 +8,6 @@ public class JailDew : MonoBehaviour
 	public List<string> EmailSubject = new List<string>();
 	public List<string> NoteTitle = new List<string>();
 
-	public bool logged;
 	public bool showMenu;
 
 	public int Select;
@@ -62,7 +61,12 @@ public class JailDew : MonoBehaviour
     public List<UACSystem> Accounts = new List<UACSystem>();
 
 	public List<RemoteFileSystem> PageFile1 = new List<RemoteFileSystem>();
-	public List<RemoteFileSystem> PageFile2 = new List<RemoteFileSystem>();
+	public List<ProgramSystem> PageFile2 = new List<ProgramSystem>();
+
+	public List<InfectionSystem> BlankInfections = new List<InfectionSystem>();
+	public List<ProgramSystem.FileType> BlankFileType = new List<ProgramSystem.FileType>();
+
+	public UACSystem LoggedInAs;
 
 	void Start()
 	{
@@ -134,85 +138,101 @@ public class JailDew : MonoBehaviour
             PasswordSetup();
         }
 
-		if (WebsiteCount <= GameControl.control.WebsiteFiles.Count)
+		if (GameControl.control.CompanyServerData.Count > 0)
 		{
-			for (int i = 0; i < GameControl.control.WebsiteFiles.Count; i++) 
+			for (int Index = 0; Index < GameControl.control.CompanyServerData.Count; Index++)
 			{
-				if (GameControl.control.WebsiteFiles [i].Location == "Jaildew Public") 
+				if (GameControl.control.CompanyServerData[Index].Name == "Jaildew")
 				{
-					PublicFileCount++;
+					PublicFileCount = 0;
+					PrivateFileCount = 0;
+					if (GameControl.control.CompanyServerData[Index].Files.Count > 0)
+					{
+						for (int i = 0; i < GameControl.control.CompanyServerData[Index].Files.Count; i++)
+						{
+							if (GameControl.control.CompanyServerData[Index].Files[i].Description == "Public")
+							{
+								PublicFileCount++;
+							}
+							if (GameControl.control.CompanyServerData[Index].Files[i].Description == "Private")
+							{
+								PrivateFileCount++;
+							}
+						}
+					}
 				}
-
-				if (GameControl.control.WebsiteFiles [i].Location == "Jaildew Private") 
-				{
-					PrivateFileCount++;
-				}
-				WebsiteCount++;
 			}
-		}
-
-		if (WebsiteCount == GameControl.control.WebsiteFiles.Count)
-		{
-			GenFiles = true;
 		}
 
 		if (PublicFileCount <= MaxPublicFiles || PrivateFileCount <= MaxPrivateFiles) 
 		{
-			if (GenFiles == true)
-			{
-				FileSystemGenerator();
-			}
+			GenFiles = true;
 		}
 
-		if (PublicCount == MaxPublicFiles && PrivateCount == MaxPrivateFiles)
+		if (GenFiles == true)
+		{
+			FileSystemGenerator();
+		}
+
+		if (PublicCount == MaxPublicFiles || PrivateCount == MaxPrivateFiles)
 		{
 			GenFiles = false;
 		}
 	}
 
-	void FileCheck()
+	void PasswordSetup()
 	{
-		PageFile.RemoveRange(0, PageFile.Count);
-
-		for (int i = 0; i < GameControl.control.WebsiteFiles.Count; i++)
+		if(Accounts.Count > 0)
 		{
-			if (GameControl.control.WebsiteFiles[i].Location == ib.CurrentLocation)
+			for (int j = 0; j < Accounts.Count; j++)
 			{
-				PageFile.Add(GameControl.control.WebsiteFiles[i]);
+				if (Accounts[j].UserName == LoggedInAs.UserName)
+				{
+					if (ib.CurrentSecurity.Count > 0)
+					{
+						for (int i = 0; i < ib.CurrentSecurity.Count; i++)
+						{
+							if (ib.CurrentSecurity[i].Type == WebSecSystem.SecType.UAC)
+							{
+								if (ib.CurrentSecurity[i].Level > 3)
+								{
+									Accounts[j].Password = StringGenerator.RandomMixedChar(8, 8);
+
+								}
+								else
+								{
+									Accounts[j].Password = pl.PasswordWords[Random.Range(0, pl.PasswordWords.Count)].Trim();
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+		else
+		{
+			if (ib.CurrentSecurity.Count > 0)
+			{
+				for (int i = 0; i < ib.CurrentSecurity.Count; i++)
+				{
+					if (ib.CurrentSecurity[i].Type == WebSecSystem.SecType.UAC)
+					{
+						if (ib.CurrentSecurity[i].Level > 3)
+						{
+							Accounts.Add(new UACSystem("Admin", StringGenerator.RandomMixedChar(8, 8), "", "123.456.789","", false, UACSystem.AccountType.Admin));
+							Accounts.Add(new UACSystem("SysAdmin", StringGenerator.RandomMixedChar(8, 8), "", "123.456.789", "", false, UACSystem.AccountType.Admin));
+
+						}
+						else
+						{
+							Accounts.Add(new UACSystem("Admin", pl.PasswordWords[Random.Range(0, pl.PasswordWords.Count)].Trim(), "", "123.456.789","", false, UACSystem.AccountType.Admin));
+							Accounts.Add(new UACSystem("SysAdmin", pl.PasswordWords[Random.Range(0, pl.PasswordWords.Count)].Trim(), "", "123.456.789", "", false, UACSystem.AccountType.Admin));
+						}
+					}
+				}
 			}
 		}
 	}
-
-	void PasswordSetup()
-	{
-        for(int i = 0; i < ib.CurrentSecurity.Count; i++)
-        {
-            if(ib.CurrentSecurity[i].Type == WebSecSystem.SecType.UAC)
-            {
-                if(ib.CurrentSecurity[i].Level > 3)
-                {
-                    SiteAdminPass = StringGenerator.RandomMixedChar(8, 8);
-                    Accounts.Add(new UACSystem("Admin", SiteAdminPass, "", "123.456.789", UACSystem.AccountType.Admin));
-
-                }
-                else
-                {
-                    int Index = Random.Range(0, pl.PasswordWords.Count);
-                    SiteAdminPass = pl.PasswordWords[Index].Trim();
-                    Accounts.Add(new UACSystem("Admin", SiteAdminPass, "", "123.456.789", UACSystem.AccountType.Admin));
-                }
-            }
-        }
-        //if (ws.SecLevel > 3)
-        //{
-        //	SiteAdminPass = GetRandomString (8, 8);
-        //}
-        //else
-        //{
-        //	int Index = Random.Range(0, pl.Words1.Count);
-        //	SiteAdminPass = pl.Words1[Index];
-        //}
-    }
 
 	public void FileSystemGenerator()
 	{
@@ -225,7 +245,25 @@ public class JailDew : MonoBehaviour
 			{
 				if (PublicCount <= MaxPublicFiles)
 				{
-					GameControl.control.WebsiteFiles.Add (new ProgramSystem (FileName, "", "", "", "Jaildew Public", "", 0, 0, FileSize, 0, 100, 0, false, ProgramSystem.ProgramType.File));
+					for(int CompanyIndex = 0; CompanyIndex < GameControl.control.CompanyServerData.Count; CompanyIndex++)
+					{
+						switch(GameControl.control.CompanyServerData[CompanyIndex].Name)
+						{
+							case "Jaildew":
+								for (int CompanyPageIndex = 0; CompanyPageIndex < GameControl.control.CompanyServerData[CompanyIndex].WebPages.Count; CompanyPageIndex++)
+								{
+									switch(GameControl.control.CompanyServerData[CompanyIndex].WebPages[CompanyPageIndex].Name)
+									{
+										case "Temp Files":
+											string FileLocation = GameControl.control.CompanyServerData[CompanyIndex].WebPages[CompanyPageIndex].Target;
+											//GameControl.control.WebsiteFiles.Add(new ProgramSystem(FileName, "", "", "", "", "", "Jaildew Public", "", "", "", ProgramSystem.FileExtension.File, ProgramSystem.FileExtension.Null, 0, 0, FileSize, 0, 0, 0, 0, 100, 0, 0, 0, 0, 0, 0, 0, 0, false, false, false, false, BlankInfections, BlankFileType));
+											GameControl.control.CompanyServerData[CompanyIndex].Files.Add(new ProgramSystem(FileName, "", "", "", "", "Public", FileLocation, "", "", "", ProgramSystem.FileExtension.File, ProgramSystem.FileExtension.Null, 0, 0, FileSize, 0, 0, 0, 0, 100, 0, 0, 0, 0, 0, 0, 0, 0, false, false, false, false, BlankInfections, BlankFileType));
+										break;
+									}
+								}
+							break;
+						}
+					}
 					PublicCount++;
 				}
 			}
@@ -233,7 +271,24 @@ public class JailDew : MonoBehaviour
 			{
 				if (PrivateCount <= MaxPrivateFiles)
 				{
-					GameControl.control.WebsiteFiles.Add (new ProgramSystem (FileName, "", "", "", "Jaildew Private", "", 0, 0, FileSize, 0, 100, 0, false, ProgramSystem.ProgramType.File));
+					for (int CompanyIndex = 0; CompanyIndex < GameControl.control.CompanyServerData.Count; CompanyIndex++)
+					{
+						switch (GameControl.control.CompanyServerData[CompanyIndex].Name)
+						{
+							case "Jaildew":
+								for (int CompanyPageIndex = 0; CompanyPageIndex < GameControl.control.CompanyServerData[CompanyIndex].WebPages.Count; CompanyPageIndex++)
+								{
+									switch (GameControl.control.CompanyServerData[CompanyIndex].WebPages[CompanyPageIndex].Name)
+									{
+										case "Internal Files":
+											string FileLocation = GameControl.control.CompanyServerData[CompanyIndex].WebPages[CompanyPageIndex].Target;
+											GameControl.control.CompanyServerData[CompanyIndex].Files.Add(new ProgramSystem(FileName, "", "", "", "", "Private", FileLocation, "", "", "", ProgramSystem.FileExtension.File, ProgramSystem.FileExtension.Null, 0, 0, FileSize, 0, 0, 0, 0, 100, 0, 0, 0, 0, 0, 0, 0, 0, false, false, false, false, BlankInfections, BlankFileType));
+											break;
+									}
+								}
+								break;
+						}
+					}
 					PrivateCount++;
 				}
 			}
@@ -253,22 +308,51 @@ public class JailDew : MonoBehaviour
 
 	}
 
-    public void SignOut()
+	void Home()
+	{
+		if (ib.AddressBar == "www.jaildew.com")
+		{
+			ib.AddressBar = "www.jaildew.com/home";
+		}
+	}
+
+	void ResetLoggedInData()
+	{
+		LoggedInAs.UserName = "";
+		LoggedInAs.Password = "";
+		LoggedInAs.IP = "";
+		LoggedInAs.LoggedInIP = "";
+		LoggedInAs.Type = UACSystem.AccountType.AccessPrivilages0;
+	}
+
+	public void SignOut()
     {
-        trace.stopping = true;
+		PasswordSetup();
+		if(Accounts.Count > 0)
+		{
+			for (int i = 0; i < Accounts.Count; i++)
+			{
+				if (LoggedInAs.UserName == Accounts[i].UserName)
+				{
+					Accounts[i].LoggedIn = false;
+					Accounts[i].LoggedInIP = "";
+					ResetLoggedInData();
+					//LoggedInAs = null;
+				}
+			}
+		}
+        //trace.stopping = true;
         ib.Username = "";
         ib.showAddressBar = true;
-        ib.AddressBar = "www.jaildew.com";
-        logged = false;
+        ib.AddressBar = "www.jaildew.com/home";
         UsrName = "";
         password = "";
-        PasswordSetup();
-        sm.Disconnect();
+        //sm.Disconnect();
     }
 
     public void FileDownload()
     {
-        clic.CommandLine = "dl▓" + PageFile[Select].Name;
+        clic.CommandLine = "dl▓" + PageFile2[Select].Name;
         clic.CheckInput();
         clic.CommandLine = "";
         Select = -1;
@@ -277,7 +361,7 @@ public class JailDew : MonoBehaviour
 
     public void FileDelete()
     {
-        clic.CommandLine = "-r▓rm▓" + PageFile[Select].Name;
+        clic.CommandLine = "-r▓rm▓" + PageFile2[Select].Name;
         clic.CheckInput();
         clic.CommandLine = "";
         Select = -1;
@@ -288,24 +372,23 @@ public class JailDew : MonoBehaviour
 	{
 		GUI.backgroundColor = buttonColor;
 		GUI.contentColor = fontColor;
-		WebsiteStuff1();
-		WebsiteStuff();
+		NewWebsiteStuff();
 	}
 
-	void Refresh()
+	void RefreshPage()
 	{
 		PageFile1.RemoveRange(0, PageFile1.Count);
-		for (int Index = 0; Index < GameControl.control.CompanyServers.Count; Index++)
+		for (int Index = 0; Index < GameControl.control.CompanyServerData.Count; Index++)
 		{
-			if(GameControl.control.CompanyServers[Index].Name == "Jaildew")
+			if(GameControl.control.CompanyServerData[Index].Name == "Jaildew")
 			{
-				for (int i = 0; i < GameControl.control.CompanyServers[Index].WebPages.Count; i++)
+				for (int i = 0; i < GameControl.control.CompanyServerData[Index].WebPages.Count; i++)
 				{
-					if (GameControl.control.CompanyServers[Index].WebPages[i].Location == ib.AddressBar)
+					if (GameControl.control.CompanyServerData[Index].WebPages[i].Location == ib.AddressBar)
 					{
-						if (!PageFile1.Contains(GameControl.control.CompanyServers[Index].WebPages[i]))
+						if (!PageFile1.Contains(GameControl.control.CompanyServerData[Index].WebPages[i]))
 						{
-							PageFile1.Add(GameControl.control.CompanyServers[Index].WebPages[i]);
+							PageFile1.Add(GameControl.control.CompanyServerData[Index].WebPages[i]);
 						}
 					}
 				}
@@ -316,17 +399,20 @@ public class JailDew : MonoBehaviour
 	void RefreshFiles()
 	{
 		PageFile2.RemoveRange(0, PageFile2.Count);
-		for (int Index = 0; Index < GameControl.control.CompanyServers.Count; Index++)
+		for (int Index = 0; Index < GameControl.control.CompanyServerData.Count; Index++)
 		{
-			if (GameControl.control.CompanyServers[Index].Name == "Jaildew")
+			if (GameControl.control.CompanyServerData[Index].Name == "Jaildew")
 			{
-				for (int i = 0; i < GameControl.control.CompanyServers[Index].Files.Count; i++)
+				if(GameControl.control.CompanyServerData[Index].Files.Count > 0)
 				{
-					if (GameControl.control.CompanyServers[Index].Files[i].Location == ib.AddressBar)
+					for (int i = 0; i < GameControl.control.CompanyServerData[Index].Files.Count; i++)
 					{
-						if (!PageFile2.Contains(GameControl.control.CompanyServers[Index].Files[i]))
+						if (GameControl.control.CompanyServerData[Index].Files[i].Location == ib.AddressBar)
 						{
-							PageFile2.Add(GameControl.control.CompanyServers[Index].Files[i]);
+							if (!PageFile2.Contains(GameControl.control.CompanyServerData[Index].Files[i]))
+							{
+								PageFile2.Add(GameControl.control.CompanyServerData[Index].Files[i]);
+							}
 						}
 					}
 				}
@@ -334,12 +420,40 @@ public class JailDew : MonoBehaviour
 		}
 	}
 
-	void WebsiteStuff1()
+	void Request()
 	{
-		Refresh();
+		if (PageFile1.Count > 0)
+		{
+			for (int i = 0; i < PageFile1.Count; i++)
+			{
+				clic.PastCommands.Add("#" + i + " " + PageFile1[i].Target);
+			}
+		}
+
+		if (PageFile2.Count > 0)
+		{
+			for (int i = 0; i < PageFile2.Count; i++)
+			{
+				clic.PastCommands.Add("#" + i + " " + PageFile2[i].Name);
+			}
+		}
+
+		ib.Request = false;
+	}
+
+	void NewWebsiteStuff()
+	{
+		Home();
+		RefreshPage();
 		RefreshFiles();
 		if (PageFile1.Count > 0)
 		{
+			if (ib.Request == true)
+			{
+				Request();
+			}
+
+
 			for (int i = 0; i < PageFile1.Count; i++)
 			{
 				if (GUI.Button(new Rect(10, 35 + 30 * i, 100, 22), PageFile1[i].Name))
@@ -350,50 +464,52 @@ public class JailDew : MonoBehaviour
 			}
 		}
 
-		OldCheck();
+		NewCheck();
+		WebsiteStuff();
 	}
 
-	void OldCheck()
+	void NewCheck()
 	{
 		if (ib.AddressBar == "www.jaildew.com/tempfiles")
 		{
-			ib.CurrentLocation = "Jaildew Public";
-			FileCheck();
+			ib.CurrentLocation = "Jaildew";
+
+			if (ib.Request == true)
+			{
+				Request();
+			}
 
 			GUI.Label(new Rect(115, 50, 500, 500), "File Name");
 			GUI.Label(new Rect(200, 50, 500, 500), "Size");
 
 			if (showMenu == true)
 			{
-				if (GUI.Button(new Rect(10, 105, 100, 20), "Delete " + PageFile[Select].Name))
+				if (GUI.Button(new Rect(10, 105, 100, 20), "Delete " + PageFile2[Select].Name))
 				{
 					FileDelete();
 				}
-				if (GUI.Button(new Rect(10, 145, 100, 20), "Download " + PageFile[Select].Name))
+				if (GUI.Button(new Rect(10, 145, 100, 20), "Download " + PageFile2[Select].Name))
 				{
 					FileDownload();
 				}
 			}
 			scrollpos = GUI.BeginScrollView(new Rect(130, 75, 150, 100), scrollpos, new Rect(0, 0, 0, scrollsize * 20));
 
-			if (scrollsize > PageFile.Count)
+			if (scrollsize > PageFile2.Count)
 			{
 				scrollsize = 0;
 			}
 
-			if (PageFile.Count > 0)
+			if (PageFile2.Count > 0)
 			{
-				for (scrollsize = 0; scrollsize < PageFile.Count; scrollsize++)
+				for (scrollsize = 0; scrollsize < PageFile2.Count; scrollsize++)
 				{
-					if (PageFile[scrollsize].Location == "Jaildew Public")
+					if (GUI.Button(new Rect(3, scrollsize * 20, 80, 20), "" + PageFile2[scrollsize].Name))
 					{
-						if (GUI.Button(new Rect(3, scrollsize * 20, 80, 20), "" + PageFile[scrollsize].Name))
-						{
-							showMenu = true;
-							Select = scrollsize;
-						}
-						GUI.Button(new Rect(85, scrollsize * 20, 40, 20), "" + PageFile[scrollsize].Used);
+						showMenu = true;
+						Select = scrollsize;
 					}
+					GUI.Button(new Rect(85, scrollsize * 20, 40, 20), "" + PageFile2[scrollsize].Used);
 				}
 
 			}
@@ -406,34 +522,14 @@ public class JailDew : MonoBehaviour
 	{
 		switch (ib.AddressBar)
 		{
-			case "www.jaildew.com/filesystem":
-				if (logged == true)
+			case "www.jaildew.com/internal/files":
+				if (LoggedInAs.LoggedIn == true)
 				{
-					FileCheck();
-					if (GUI.Button(new Rect(5, 55, 100, 20), "Back"))
-					{
-						ib.AddressBar = "www.jaildew.com/internal";
-					}
-
-					ib.CurrentLocation = "Jaildew Private";
+					ib.CurrentLocation = "Jaildew";
 
 					if (ib.Request == true)
 					{
-						int FileCount;
-						//string FileLocation = "becassystems Private";
-						for (FileCount = 0; FileCount < PageFile.Count; FileCount++)
-						{
-							//ib.DirContents.Add (GameControl.control.becassystemsPublicFileSystem [FileCount].Name);
-							if (PageFile[FileCount].Location == ib.CurrentLocation)
-							{
-								clic.PastCommands.Add(PageFile[FileCount].Name);
-							}
-						}
-
-						if (FileCount >= PageFile.Count)
-						{
-							ib.Request = false;
-						}
+						Request();
 					}
 
 					GUI.Label(new Rect(115, 50, 500, 500), "File Name");
@@ -441,136 +537,79 @@ public class JailDew : MonoBehaviour
 
 					if (showMenu == true)
 					{
-						//					if(GUI.Button(new Rect(10, 105, 100, 20), "Delete " + GameControl.control.JaildewPublicFileName[Select].Name))
-						//					{
-						//
-						//					}
-						//					if(GUI.Button(new Rect(10,145,100,20),"Copy " + GameControl.control.JaildewPublicFileName[Select].Name))
-						//					{
-						//
-						//					}
+						if (GUI.Button(new Rect(10, 105, 100, 20), "Delete " + PageFile2[Select].Name))
+						{
+							FileDelete();
+						}
+						if (GUI.Button(new Rect(10, 145, 100, 20), "Download " + PageFile2[Select].Name))
+						{
+							FileDownload();
+						}
 					}
 					scrollpos = GUI.BeginScrollView(new Rect(130, 75, 150, 100), scrollpos, new Rect(0, 0, 0, scrollsize * 20));
-					for (scrollsize = 0; scrollsize < PageFile.Count; scrollsize++)
+
+					if (scrollsize > PageFile2.Count)
 					{
-						if (GUI.Button(new Rect(3, scrollsize * 20, 80, 20), "" + PageFile[scrollsize].Name))
-						{
-							showMenu = true;
-							Select = scrollsize;
-						}
-						GUI.Button(new Rect(85, scrollsize * 20, 40, 20), "" + PageFile[scrollsize].Used);
+						scrollsize = 0;
 					}
+
+					if (PageFile2.Count > 0)
+					{
+						for (scrollsize = 0; scrollsize < PageFile2.Count; scrollsize++)
+						{
+							if (GUI.Button(new Rect(3, scrollsize * 20, 80, 20), "" + PageFile2[scrollsize].Name))
+							{
+								showMenu = true;
+								Select = scrollsize;
+							}
+							GUI.Button(new Rect(85, scrollsize * 20, 40, 20), "" + PageFile2[scrollsize].Used);
+						}
+
+					}
+
 					GUI.EndScrollView();
 				}
 				break;
 
 			case "www.jaildew.com/login":
 
-				for (int i = 0; i < Accounts.Count; i++)
-				{
-					if (UsrName == Accounts[i].UserName)
-					{
-						ib.Username = UsrName;
-					}
-				}
-
-				UsrName = GUI.TextField(new Rect(85, 55, 120, 20), UsrName, 500);
-				password = GUI.TextField(new Rect(85, 75, 120, 20), password, 500);
+				UsrName = GUI.TextField(new Rect(85, 55, 120, 20), UsrName);
+				password = GUI.TextField(new Rect(85, 75, 120, 20), password);
 
 				GUI.Label(new Rect(3, 55, 500, 500), "User Name: ");
 				GUI.Label(new Rect(3, 75, 500, 500), "Password: ");
 				ib.showAddressBar = false;
 
-				if (prog.Running == false)
+				if (GUI.Button(new Rect(10, 100, 100, 20), "< Back"))
 				{
-					if (GUI.Button(new Rect(245, 30, 50, 20), "Back"))
-					{
-						trace.UpdateTimer = false;
-						ib.showAddressBar = true;
-						logged = false;
-						UsrName = "";
-						password = "";
-						//sm.BounceIPs.Remove(sm.JaildewIP);
-						//sm.BouncedConnections.Remove(sm.JaildewPos);
-						ib.AddressBar = "www.jaildew.com";
-					}
+					ib.showAddressBar = true;
+					ib.AddressBar = "www.jaildew.com/home";
 				}
 
 				for (int i = 0; i < Accounts.Count; i++)
 				{
-					if (UsrName == Accounts[i].UserName && password == Accounts[i].Password)
+					if (UsrName == Accounts[i].UserName)
 					{
-						if (GUI.Button(new Rect(10, 125, 100, 20), "Login"))
+						ib.Username = UsrName;
+						ib.SiteAdminPass = Accounts[i].Password;
+
+						if (Accounts[i].Password == password)
 						{
-							ib.showAddressBar = false;
-							logged = true;
-							ib.AddressBar = "www.jaildew.com/internal";
-							trace.UpdateTimer = true;
-							//log.log.Add(GameControl.control.fullip);
+							if (GUI.Button(new Rect(10, 125, 100, 20), "Login"))
+							{
+								LoggedInAs = new UACSystem(Accounts[i].UserName, Accounts[i].Password, Accounts[i].AccountHolder, Accounts[i].IP, GameControl.control.Gateway.InstalledModem[0].ModemIP, true, UACSystem.AccountType.LoggedIn);
+								//trace.UpdateTimer = true;
+								ib.showAddressBar = false;
+								ib.AddressBar = "www.jaildew.com/internal";
+								//log.log.Add(GameControl.control.fullip);
+							}
 						}
 					}
 				}
 				break;
 
-			case "www.jaildew.com/documents/emails":
-				if (logged == true)
-				{
-					scrollpos = GUI.BeginScrollView(new Rect(115, 75, 125, 100), scrollpos, new Rect(0, 0, 0, scrollsize * 20));
-					for (scrollsize = 0; scrollsize < EmailSubject.Count; scrollsize++)
-					{
-						if (GUI.Button(new Rect(3, scrollsize * 20, 120, 20), "" + EmailSubject[scrollsize]))
-						{
-							tr.show = true;
-							tr.Title = EmailSubject[scrollsize];
-						}
-					}
-					GUI.EndScrollView();
-
-					if (GUI.Button(new Rect(245, 30, 50, 20), "Back"))
-					{
-						ib.AddressBar = "www.jaildew.com/internal";
-					}
-				}
-				break;
-
-			case "www.jaildew.com/documents":
-				if (logged == true)
-				{
-					if (GUI.Button(new Rect(10, 75, 100, 20), "Emails"))
-					{
-						ib.AddressBar = "www.jaildew.com/documents/emails";
-					}
-					if (GUI.Button(new Rect(10, 100, 100, 20), "Notes"))
-					{
-						ib.AddressBar = "www.jaildew.com/documents/notes";
-					}
-					if (GUI.Button(new Rect(10, 150, 100, 20), "Back"))
-					{
-						ib.AddressBar = "www.jaildew.com/internal";
-					}
-				}
-				break;
-
-			case "www.jaildew.com/internal":
-				if (logged == true)
-				{
-					if (GUI.Button(new Rect(10, 75, 100, 20), "File System"))
-					{
-						ib.AddressBar = "www.jaildew.com/filesystem";
-					}
-					if (GUI.Button(new Rect(10, 100, 100, 20), "Documents"))
-					{
-						ib.AddressBar = "www.jaildew.com/documents";
-					}
-					if (GUI.Button(new Rect(10, 125, 100, 20), "Logs"))
-					{
-						ib.AddressBar = "www.jaildew.com/logs";
-					}
-					if (GUI.Button(new Rect(10, 150, 100, 20), "Sign Out"))
-					{
-						SignOut();
-					}
-				}
+			case "www.jaildew.com/signout":
+				SignOut();
 				break;
 		}
 	}

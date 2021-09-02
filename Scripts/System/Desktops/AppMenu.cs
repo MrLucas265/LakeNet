@@ -12,14 +12,16 @@ public class AppMenu : MonoBehaviour
 	private AppatureAppMenu appatureAppMenu;
 	private TreeOSAppMenu treeOSAppMenu;
 	private IceOSAppMenu iceOSAppMenu;
+	private EthelOSAppMenu ethelOSAppMenu;
 
-    void Start () 
+	void Start () 
 	{
 		AppMenus = GameObject.Find("AppMenus");
 		//Desktop Enviros
 		appatureAppMenu = AppMenus.GetComponent<AppatureAppMenu>();
 		treeOSAppMenu = AppMenus.GetComponent<TreeOSAppMenu>();
 		iceOSAppMenu = AppMenus.GetComponent<IceOSAppMenu>();
+		ethelOSAppMenu = AppMenus.GetComponent<EthelOSAppMenu>();
 	}
 
 	void Update()
@@ -36,6 +38,18 @@ public class AppMenu : MonoBehaviour
 			{
 				appatureAppMenu.enabled = false;
 				appatureAppMenu.show = false;
+			}
+			break;
+		case OperatingSystems.OSName.EthelOS:
+			if (show == true) 
+			{
+				ethelOSAppMenu.enabled = true;
+				ethelOSAppMenu.show = true;
+			} 
+			else 
+			{
+				ethelOSAppMenu.enabled = false;
+				ethelOSAppMenu.show = false;
 			}
 			break;
 		case OperatingSystems.OSName.TreeOS:

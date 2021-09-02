@@ -86,12 +86,14 @@ public class ProfileController : MonoBehaviour
 		
 	}
 
-	public void DeleteProfile()
+	public void DeleteProfile(int Selected)
 	{
-		ProfileID.RemoveAt(SelectedProfile);
-		PasswordHint.RemoveAt(SelectedProfile);
-		ProfilePassWord.RemoveAt(SelectedProfile);
-		Profiles.RemoveAt(SelectedProfile);
+		Profiles.RemoveAt(Selected);
+		ProfilePassWord.RemoveAt(Selected);
+		PasswordHint.RemoveAt(Selected);
+		ProfileID.RemoveAt(Selected);
+		ProfilePic.RemoveAt(Selected);
+		SelectedOS.RemoveAt(Selected);
 	}
 
 	public void Save()

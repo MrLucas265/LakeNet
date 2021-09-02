@@ -8,9 +8,9 @@ public class CompanyServerSystem
     public string Name;
     public string IP;
     public List<RemoteFileSystem> WebPages = new List<RemoteFileSystem>();
-    public List<RemoteFileSystem> Files = new List<RemoteFileSystem>();
-    public List<RemoteFileSystem> QuickList = new List<RemoteFileSystem>();
-    public List<RemoteFileSystem> DesktopList = new List<RemoteFileSystem>();
+    public List<ProgramSystem> Files = new List<ProgramSystem>();
+    public List<ProgramSystem> QuickList = new List<ProgramSystem>();
+    public List<ProgramSystem> DesktopList = new List<ProgramSystem>();
     public ServerType Type;
 
     public enum ServerType
@@ -22,7 +22,7 @@ public class CompanyServerSystem
         PhoneServer
     }
 
-    public CompanyServerSystem(string name,string ip, List<RemoteFileSystem> webpages, List<RemoteFileSystem> files, List<RemoteFileSystem> quicklist, List<RemoteFileSystem> desktoplist, ServerType type)
+    public CompanyServerSystem(string name,string ip, List<RemoteFileSystem> webpages, List<ProgramSystem> files, List<ProgramSystem> quicklist, List<ProgramSystem> desktoplist, ServerType type)
     {
         Name = name;
         IP = ip;

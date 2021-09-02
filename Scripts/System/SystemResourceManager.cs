@@ -55,7 +55,7 @@ public class SystemResourceManager : MonoBehaviour
 		this.enabled = false;
 	}
 
-	public void AddProgramUsage()
+	public void AddProgramUsage(string ProgramName, string ApplicationName)
 	{
 		float CPUUsagePercent = 0;
 		CPUUsagePercent = CPUUsage / GameControl.control.Gateway.InstalledCPU[0].MaxSpeed * 100;
@@ -131,7 +131,9 @@ public class SystemResourceManager : MonoBehaviour
 		NetworkUsage = 0;
 		SelectedProgramsWindowID = 0;
 		SelectedProgram = 0;
-		
+		ProgramName = "";
+		ApplicationName = "";
+
 	}
 
 	public void RemoveProgramUsage()

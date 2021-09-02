@@ -161,7 +161,7 @@ public class CLIV3 : MonoBehaviour
     void DoMyWindow(int WindowID)
     {
 
-        if (boot.Terminal == false)
+        if (GameControl.control.Gateway.Status.Terminal == false)
         {
             if (CloseButton.Contains(Event.current.mousePosition))
             {
@@ -259,7 +259,7 @@ public class CLIV3 : MonoBehaviour
         //Customize.cust.TerminalTextPosMod = SMod * User.Length;
 
 
-        if (boot.Terminal == true)
+        if (GameControl.control.Gateway.Status.Terminal == true)
         {
             GUI.contentColor = Color.white;
 

@@ -51,6 +51,9 @@ public class Notepad : MonoBehaviour
 
 	public List<ProgramSystem> Files = new List<ProgramSystem>();
 
+	public List<InfectionSystem> BlankInfections = new List<InfectionSystem>();
+	public List<ProgramSystem.FileType> BlankFileType = new List<ProgramSystem.FileType>();
+
 	void Start ()
 	{
 		SysSoftware = GameObject.Find("System");
@@ -66,11 +69,6 @@ public class Notepad : MonoBehaviour
 
 		windowRect.width = 300;
 		windowRect.height = 300;
-
-		if (GameControl.control.SoftwareVersion [1] == 0) 
-		{
-			GameControl.control.SoftwareVersion [1] = 1;
-		}
 	}
 
 	void PosCheck()
@@ -128,14 +126,14 @@ public class Notepad : MonoBehaviour
 			{
 				if (GameControl.control.ProgramFiles[SelectedDocument].Name != TypedTitle)
 				{
-					GameControl.control.ProgramFiles.Insert(0,new ProgramSystem(TypedTitle,"",GameControl.control.Time.DayName,TypedText,SaveLocation,"",0,0,FileSize,0,100,0,false,ProgramSystem.ProgramType.Txt));
+					GameControl.control.ProgramFiles.Insert(0,new ProgramSystem(TypedTitle, "", "", GameControl.control.Time.DayName, TypedText, "", SaveLocation,"", "", "", ProgramSystem.FileExtension.Txt, ProgramSystem.FileExtension.Null, 0, 0, FileSize, 0, 0, 0, 0, 100, 0f, 0, 0, 0, 0, 0, 0, 0, false, false, false, false, BlankInfections, BlankFileType));
 					GameControl.control.ProgramFiles[0].Used = FileSize;
 				}
 			}
 		} 
 		else 
 		{
-			GameControl.control.ProgramFiles.Insert(0,new ProgramSystem(TypedTitle,"", GameControl.control.Time.DayName,TypedText,SaveLocation,"",0,0,FileSize,0,100,0,false,ProgramSystem.ProgramType.Txt));
+			GameControl.control.ProgramFiles.Insert(0, new ProgramSystem(TypedTitle, "", "", GameControl.control.Time.DayName, TypedText, "", SaveLocation, "", "", "", ProgramSystem.FileExtension.Txt, ProgramSystem.FileExtension.Null, 0, 0, FileSize, 0, 0, 0, 0, 100, 0f, 0, 0, 0, 0, 0, 0, 0, false, false, false, false, BlankInfections, BlankFileType));
 			GameControl.control.ProgramFiles[0].Used = FileSize;
 		}
 	}
@@ -148,7 +146,7 @@ public class Notepad : MonoBehaviour
 		Files.RemoveRange(0, Files.Count);
 		for (int i = 0; i < GameControl.control.ProgramFiles.Count; i++)
 		{
-			if (GameControl.control.ProgramFiles[i].Type == ProgramSystem.ProgramType.Txt)
+			if (GameControl.control.ProgramFiles[i].Extension == ProgramSystem.FileExtension.Txt)
 			{
 				if (Name.Contains (GameControl.control.ProgramFiles [i].Name)) 
 				{

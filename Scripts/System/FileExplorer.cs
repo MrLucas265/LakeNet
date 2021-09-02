@@ -42,14 +42,12 @@ public class FileExplorer : MonoBehaviour
 	private InstallPrompt ip;
 	private AppMan appman;
 	private ConfirmPrompt cp;
-	private CLICommands clic;
+	private CLICommandsV2 clic;
 	private Notepadv2 note;
 	private Computer com;
 
 	private SoundControl sc;
 	private FileUtility fu;
-
-	private DiskMan dm;
 
 	public float w;
 	public float h;
@@ -141,7 +139,10 @@ public class FileExplorer : MonoBehaviour
 	public string SelectedFileType;
 	public string SelectedFolderLocation;
 
-    void Start()
+	public List<InfectionSystem> BlankInfections = new List<InfectionSystem>();
+	public List<ProgramSystem.FileType> BlankFileType = new List<ProgramSystem.FileType>();
+
+	void Start()
     {
         SetPos();
 
@@ -154,8 +155,7 @@ public class FileExplorer : MonoBehaviour
 		ct = GetComponent<CustomTheme>();
 		def = GetComponent<Defalt>();
 		sc = GetComponent<SoundControl>();
-		dm = GetComponent<DiskMan>();
-		clic = GetComponent<CLICommands>();
+		clic = GetComponent<CLICommandsV2>();
 		appman = GetComponent<AppMan>();
 		fu = GetComponent<FileUtility>();
 		note = apps.GetComponent<Notepadv2>();
@@ -293,11 +293,11 @@ public class FileExplorer : MonoBehaviour
 		{
 			if (ComAddress.Length > 3)
 			{
-				GameControl.control.ProgramFiles.Add (new ProgramSystem (FolderName, "", "", "", ComAddress, "" + ComAddress +  "/" + FolderName, 0,0,0,0,0,0, false, ProgramSystem.ProgramType.Fdl));
+				GameControl.control.ProgramFiles.Add(new ProgramSystem(FolderName, "", "", "", "", "", ComAddress, "" + ComAddress + "/" + FolderName, "", "", ProgramSystem.FileExtension.Fdl, ProgramSystem.FileExtension.Null, 0, 0, 0, 0, 0, 0, 0, 0, 0f, 0, 0, 0, 0, 0, 0, 0, false, false, false, false, BlankInfections, BlankFileType));
 			} 
 			else 
 			{
-				GameControl.control.ProgramFiles.Add (new ProgramSystem (FolderName, "", "", "", ComAddress, "" + ComAddress +  "" + FolderName, 0,0,0,0,0,0, false, ProgramSystem.ProgramType.Fdl));
+				GameControl.control.ProgramFiles.Add(new ProgramSystem(FolderName, "", "", "", "", "", ComAddress, "" + ComAddress + "" + FolderName, "", "", ProgramSystem.FileExtension.Fdl, ProgramSystem.FileExtension.Null, 0, 0, 0, 0, 0, 0, 0, 0, 0f, 0, 0, 0, 0, 0, 0, 0, false, false, false, false, BlankInfections, BlankFileType));
 			}
 			FolderName = "";
 			MenuSelected = 0;
@@ -311,7 +311,7 @@ public class FileExplorer : MonoBehaviour
 		{
 			if (GameControl.control.ProgramFiles [Index].Name == OldName) 
 			{
-				if (GameControl.control.ProgramFiles [Index].Type == ProgramSystem.ProgramType.Fdl) 
+				if (GameControl.control.ProgramFiles [Index].Extension == ProgramSystem.FileExtension.Fdl) 
 				{
 					OldFileLocation = GameControl.control.ProgramFiles[Index].Target;
 
@@ -380,18 +380,18 @@ public class FileExplorer : MonoBehaviour
 		}
 	}
 
-	void PasteSystem()
-	{
-		if (fu.ProgramHandle.Count <= 0) 
-		{
-			if (FileIndex != -1) 
-			{
-				string FileLocation = ComAddress;
-				fu.ProgramHandle.Add (new FileUtilitySystem ("Paste", FileName, FileLocation,"", "","","", false, true, true, false, 0,0, 0, 0, 0, 0, 0, 0, FileSize, 0, 0, 0, FileUtilitySystem.ProgramType.Paste));
-				fu.AddWindow ();
-			}
-		} 
-	}
+	//void PasteSystem()
+	//{
+	//	if (fu.ProgramHandle.Count <= 0) 
+	//	{
+	//		if (FileIndex != -1) 
+	//		{
+	//			string FileLocation = ComAddress;
+	//			fu.ProgramHandle.Add (new FileUtilitySystem ("Paste", FileName, FileLocation,"", "","","", false, true, true, false, 0,0, 0, 0, 0, 0, 0, 0, FileSize, 0, 0, 0, FileUtilitySystem.ProgramType.Paste));
+	//			fu.AddWindow ();
+	//		}
+	//	} 
+	//}
 
 	void Refresh()
 	{
@@ -415,36 +415,77 @@ public class FileExplorer : MonoBehaviour
 		SelectedProgram = -1;
 	}
 
+	//void OpenTxt()
+	//{
+	//	PlayClickSound ();
+	//	for (int i = 0; i < GameControl.control.ProgramFiles.Count; i++)
+	//	{
+	//		if(PageFile [SelectedProgram].Name == GameControl.control.ProgramFiles[i].Name && PageFile [SelectedProgram].Location == GameControl.control.ProgramFiles[i].Location)
+	//		{
+	//			note.SelectedDocument = i;
+	//		}
+	//	}
+	//	if (note.show == true && note.enabled == true)
+	//	{
+	//		note.CurrentWorkingTitle = PageFile [SelectedProgram].Name;
+	//		note.TypedTitle = PageFile [SelectedProgram].Name;
+	//		note.TypedText = PageFile [SelectedProgram].Content;
+	//		note.SaveLocation = PageFile [SelectedProgram].Location;
+	//		note.ShowFileContent = true;
+	//	}
+	//	if (note.show == false || note.enabled == false) 
+	//	{
+	//		appman.SelectedApp = "Notepad";
+	//		note.CurrentWorkingTitle = PageFile [SelectedProgram].Name;
+	//		note.TypedTitle = PageFile [SelectedProgram].Name;
+	//		note.TypedText = PageFile [SelectedProgram].Content;
+	//		note.SaveLocation = PageFile [SelectedProgram].Location;
+	//		note.ShowFileContent = true;
+	//	}
+	//	SelectedProgram = -1;
+	//	appman.SelectedApp = "File Explorer";
+	//	SelectedFileType = "";
+	//}
+
 	void OpenTxt()
 	{
-		PlayClickSound ();
+		PlayClickSound();
 		for (int i = 0; i < GameControl.control.ProgramFiles.Count; i++)
 		{
-			if(PageFile [SelectedProgram].Name == GameControl.control.ProgramFiles[i].Name && PageFile [SelectedProgram].Location == GameControl.control.ProgramFiles[i].Location)
+			if (PageFile[SelectedProgram].Name == GameControl.control.ProgramFiles[i].Name && PageFile[SelectedProgram].Location == GameControl.control.ProgramFiles[i].Location)
 			{
-				note.SelectedDocument = i;
+				appman.selecteddocument = i;
 			}
 		}
-		if (note.show == true && note.enabled == true)
+		if (appman.isDocumentReadingRunning == true)
 		{
-			note.CurrentWorkingTitle = PageFile [SelectedProgram].Name;
-			note.TypedTitle = PageFile [SelectedProgram].Name;
-			note.TypedText = PageFile [SelectedProgram].Content;
-			note.SaveLocation = PageFile [SelectedProgram].Location;
-			note.ShowFileContent = true;
+			ReadText(PageFile[SelectedProgram].Name, PageFile[SelectedProgram].Content, PageFile[SelectedProgram].Location);
 		}
-		if (note.show == false || note.enabled == false) 
+		if (appman.isDocumentReadingRunning == false)
 		{
-			appman.SelectedApp = "Notepad";
-			note.CurrentWorkingTitle = PageFile [SelectedProgram].Name;
-			note.TypedTitle = PageFile [SelectedProgram].Name;
-			note.TypedText = PageFile [SelectedProgram].Content;
-			note.SaveLocation = PageFile [SelectedProgram].Location;
-			note.ShowFileContent = true;
+			for (int i = 0; i < GameControl.control.DefaultLaunchedPrograms.Count; i++)
+			{
+				for (int j = 0; j < GameControl.control.DefaultLaunchedPrograms[i].Type.Count; j++)
+				{
+					if (GameControl.control.DefaultLaunchedPrograms[i].Type[j] == ProgramSystem.FileType.DocumentReaders)
+					{
+						appman.SelectedApp = GameControl.control.DefaultLaunchedPrograms[i].Target;
+					}
+				}
+			}
+			ReadText(PageFile[SelectedProgram].Name, PageFile[SelectedProgram].Content, PageFile[SelectedProgram].Location);
 		}
 		SelectedProgram = -1;
 		appman.SelectedApp = "File Explorer";
 		SelectedFileType = "";
+	}
+
+	void ReadText(string filename, string content, string location)
+	{
+		appman.filename = filename;
+		appman.content = content;
+		appman.location = location;
+		appman.showfilecontent = true;
 	}
 
 	void OpenIns()
@@ -503,7 +544,7 @@ public class FileExplorer : MonoBehaviour
 
 	void AddContextOptions()
 	{
-		if (PageFile [SelectedProgram].Type == ProgramSystem.ProgramType.Exe)
+		if (PageFile [SelectedProgram].Extension == ProgramSystem.FileExtension.Exe)
 		{
 			ContextMenuOptions.Add ("Open");
 			ContextMenuOptions.Add ("Copy");
@@ -520,7 +561,7 @@ public class FileExplorer : MonoBehaviour
 			ContextMenuOptions.Add ("Create Icon");
 			ContextMenuOptions.Add ("Details");
 		}
-		else if (PageFile [SelectedProgram].Type == ProgramSystem.ProgramType.Dir)
+		else if (PageFile [SelectedProgram].Extension == ProgramSystem.FileExtension.Dir)
 		{
 			ContextMenuOptions.Add ("Open");
 			ContextMenuOptions.Add ("Create Icon");
@@ -562,25 +603,25 @@ public class FileExplorer : MonoBehaviour
 		switch (SelectedOption) 
 		{
 		case "Open":
-			switch (PageFile [SelectedProgram].Type) 
+			switch (PageFile [SelectedProgram].Extension) 
 			{
-			case ProgramSystem.ProgramType.Txt:
+			case ProgramSystem.FileExtension.Txt:
 				OpenTxt ();
 				CloseContextMenu();
 				break;
-			case ProgramSystem.ProgramType.Fdl:
+			case ProgramSystem.FileExtension.Fdl:
 				OpenFld();
 				CloseContextMenu();
 				break;
-			case ProgramSystem.ProgramType.Ins:
+			case ProgramSystem.FileExtension.Ins:
 				OpenIns();
 				CloseContextMenu();
 				break;
-			case ProgramSystem.ProgramType.Exe:
+			case ProgramSystem.FileExtension.Exe:
 				OpenExe();
 				CloseContextMenu();
 				break;
-			case ProgramSystem.ProgramType.Dir:
+			case ProgramSystem.FileExtension.Dir:
 				OpenFld();
 				CloseContextMenu();
 				break;
@@ -630,9 +671,9 @@ public class FileExplorer : MonoBehaviour
 		{
 			if (PageFile[scrollsize].Location == ComAddress)
 			{
-				switch (PageFile[scrollsize].Type)
+				switch (PageFile[scrollsize].Extension)
 				{
-				case ProgramSystem.ProgramType.Dir:
+				case ProgramSystem.FileExtension.Dir:
 					if (SelectedProgram == scrollsize)
 					{
 						GUI.DrawTexture(new Rect(0, 21 * scrollsize, 20, 20), IconHighlight[0]);
@@ -641,12 +682,7 @@ public class FileExplorer : MonoBehaviour
 					{
 						GUI.DrawTexture(new Rect(0, 21 * scrollsize, 20, 20), Icon[0]);
 					}
-
-					if (dm.UsedSpace[scrollsize] == 0 && dm.FreeSpace[scrollsize] == 0)
-					{
-						dm.FreeSpace[scrollsize] = dm.DriveCapacity[scrollsize];
-					}
-					if (GUI.Button(new Rect(21, 21 * scrollsize, 250, 20), "" + PageFile[scrollsize].Name + " " + "(" + PageFile[scrollsize].Sender + ")" + " " + dm.FreeSpace[scrollsize] + " free of " + PageFile[scrollsize].Capacity) || Event.current.type == EventType.keyDown && Event.current.keyCode == KeyCode.Return)
+					if (GUI.Button(new Rect(21, 21 * scrollsize, 250, 20), "" + PageFile[scrollsize].Name + " " + "(" + PageFile[scrollsize].Sender + ")" + " " + PageFile[scrollsize].Free.ToString("F2") + " free of " + PageFile[scrollsize].Capacity) || Event.current.type == EventType.keyDown && Event.current.keyCode == KeyCode.Return)
 					{
 						if (Input.GetMouseButtonUp(0))
 						{
@@ -677,7 +713,7 @@ public class FileExplorer : MonoBehaviour
 					}
 				break;
 
-				case ProgramSystem.ProgramType.Fdl:
+				case ProgramSystem.FileExtension.Fdl:
 
 					if (GUI.Button(new Rect(21, 21 * scrollsize, 100, 20), "" + PageFile[scrollsize].Name))
 					{
@@ -720,7 +756,7 @@ public class FileExplorer : MonoBehaviour
 
 				break;
 
-				case ProgramSystem.ProgramType.Txt:
+				case ProgramSystem.FileExtension.Txt:
 					if (SelectedFileType == "Text")
 					{
 						if (SelectedProgram == scrollsize)
@@ -765,7 +801,7 @@ public class FileExplorer : MonoBehaviour
 					}
 				break;
 
-				case ProgramSystem.ProgramType.File:
+				case ProgramSystem.FileExtension.File:
 					if (SelectedFileType == "File")
 					{
 						if (SelectedProgram == scrollsize)
@@ -809,7 +845,7 @@ public class FileExplorer : MonoBehaviour
 					}
 					break;
 
-				case ProgramSystem.ProgramType.Exe:
+				case ProgramSystem.FileExtension.Exe:
 				if (SelectedFileType == "Exe")
 				{
 					if (SelectedProgram == scrollsize)
@@ -884,7 +920,7 @@ public class FileExplorer : MonoBehaviour
 				}
 				break;
 
-				case ProgramSystem.ProgramType.OS:
+				case ProgramSystem.FileExtension.OS:
 					if (SelectedFileType == "OS")
 					{
 						GUI.DrawTexture(new Rect(0, 21 * scrollsize, 20, 20), Icon[3]);
@@ -903,7 +939,7 @@ public class FileExplorer : MonoBehaviour
 					}
 				break;
 
-				case ProgramSystem.ProgramType.Ins:
+				case ProgramSystem.FileExtension.Ins:
 					if (SelectedFileType == "Ins")
 					{
 						GUI.DrawTexture(new Rect(0, 21 * scrollsize, 20, 20), Icon[3]);
@@ -978,6 +1014,13 @@ public class FileExplorer : MonoBehaviour
 			}	
 		}
 		GUI.EndScrollView();
+	}
+
+	public void SetFileExplorerData(string selectedFileType, string titleName, string program)
+	{
+		SelectedFileType = selectedFileType;
+		TitleName = titleName;
+		Program = program;
 	}
 
 	void DoMyWindow(int WindowID)
@@ -1135,13 +1178,13 @@ public class FileExplorer : MonoBehaviour
 			{
 				if (SelectedProgram >= 0)
 				{
-					if (PageFile[SelectedProgram].Type == ProgramSystem.ProgramType.Exe)
+					if (PageFile[SelectedProgram].Extension == ProgramSystem.FileExtension.Exe)
 					{
 						PlayClickSound();
 						appman.SelectedApp = PageFile[SelectedProgram].Target;
 						SelectedProgram = -1;
 					}
-					if (PageFile[SelectedProgram].Type == ProgramSystem.ProgramType.Fdl)
+					if (PageFile[SelectedProgram].Extension == ProgramSystem.FileExtension.Fdl)
 					{
 						PlayClickSound();
 						History.Add(ComAddress);
@@ -1150,7 +1193,7 @@ public class FileExplorer : MonoBehaviour
 						SelectedProgram = -1;
 						MenuSelected = 0;
 					}
-					if (PageFile[SelectedProgram].Type == ProgramSystem.ProgramType.Dir)
+					if (PageFile[SelectedProgram].Extension == ProgramSystem.FileExtension.Dir)
 					{
 						PlayClickSound();
 						History.Add(ComAddress);
@@ -1159,7 +1202,7 @@ public class FileExplorer : MonoBehaviour
 						SelectedProgram = -1;
 						MenuSelected = 0;
 					}
-					if (PageFile[SelectedProgram].Type == ProgramSystem.ProgramType.Txt)
+					if (PageFile[SelectedProgram].Extension == ProgramSystem.FileExtension.Txt)
 					{
 						PlayClickSound();
 						OpenTxt();
@@ -1377,7 +1420,7 @@ public class FileExplorer : MonoBehaviour
 			}
 			if (GUI.Button (new Rect (193, 23, 40, 20), "Paste")) 
 			{
-				PasteSystem();
+				//PasteSystem();
 				PlayClickSound();
 			}
 			break;

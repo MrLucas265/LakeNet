@@ -54,7 +54,7 @@ public class IceOSLogout : MonoBehaviour
         }
         if (Timer <= 0)
 		{
-            GameControl.control.Booted = false;
+            GameControl.control.Gateway.Status.Booted = false;
             Application.LoadLevel(0);
         }
 	}

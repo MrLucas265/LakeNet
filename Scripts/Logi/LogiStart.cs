@@ -19,84 +19,94 @@ public class LogiStart : MonoBehaviour
     public int blue;
     public int alpha;
 
+    public bool Enabled;
+
 
     // Use this for initialization
     void Start()
     {
-        LogitechGSDK.LogiLcdInit("14K3N37", 3);
+        Enabled = false;
+
+        if(Enabled == true)
+        {
+            LogitechGSDK.LogiLcdInit("14K3N37", 3);
+        }
 
     }
     // Update is called once per frame
     void Update()
     {
-        int StoredPage = GameControl.control.LCDPage;
-
-        if(GameControl.control.Shutdown == true)
+        if (Enabled == true)
         {
-            LogitechGSDK.LogiLcdShutdown();
-        }
+            int StoredPage = GameControl.control.LCDPage;
 
-        //BUTTON TEST
-        String colorButtons = "";
-        String monoButtons = "";
-        if (LogitechGSDK.LogiLcdIsButtonPressed(LogitechGSDK.LOGI_LCD_COLOR_BUTTON_CANCEL))
-            colorButtons += "Cancel";
-        if (LogitechGSDK.LogiLcdIsButtonPressed(LogitechGSDK.LOGI_LCD_COLOR_BUTTON_DOWN))
-            colorButtons += "Down";
-        if (LogitechGSDK.LogiLcdIsButtonPressed(LogitechGSDK.LOGI_LCD_COLOR_BUTTON_LEFT))
-        {
-            colorButtons += "Left";
-            GameControl.control.LCDPage--;
-        }
-        if (LogitechGSDK.LogiLcdIsButtonPressed(LogitechGSDK.LOGI_LCD_COLOR_BUTTON_MENU))
-            colorButtons += "Menu";
-        if (LogitechGSDK.LogiLcdIsButtonPressed(LogitechGSDK.LOGI_LCD_COLOR_BUTTON_OK))
-            colorButtons += "Ok";
-        if (LogitechGSDK.LogiLcdIsButtonPressed(LogitechGSDK.LOGI_LCD_COLOR_BUTTON_RIGHT))
-        {
-            colorButtons += "Right";
-            GameControl.control.LCDPage++;
-        }
-        if (LogitechGSDK.LogiLcdIsButtonPressed(LogitechGSDK.LOGI_LCD_COLOR_BUTTON_UP))
-            colorButtons += "Up";
-        if (LogitechGSDK.LogiLcdIsButtonPressed(LogitechGSDK.LOGI_LCD_MONO_BUTTON_0))
-            monoButtons += "Button 0";
-        if (LogitechGSDK.LogiLcdIsButtonPressed(LogitechGSDK.LOGI_LCD_MONO_BUTTON_1))
-            monoButtons += "Button 1";
-        if (LogitechGSDK.LogiLcdIsButtonPressed(LogitechGSDK.LOGI_LCD_MONO_BUTTON_2))
-            monoButtons += "Button 2";
-        if (LogitechGSDK.LogiLcdIsButtonPressed(LogitechGSDK.LOGI_LCD_MONO_BUTTON_3))
-            monoButtons += "Button 3";
-
-        // LogitechGSDK.LogiLcdMonoSetText(0, monoButtons);
-        // LogitechGSDK.LogiLcdColorSetText(5, colorButtons, 255, 255, 0);
-
-        if (GameControl.control.LCDPage < 0)
-        {
-            GameControl.control.LCDPage = 0;
-        }
-
-        if (GameControl.control.LCDPage != StoredPage)
-        {
-            for (int i = 0; i < 8; i++)
+            if (GameControl.control.Gateway.Status.Shutdown == true)
             {
-                LogitechGSDK.LogiLcdColorSetText(i, "", 0, 0, 0);
+                LogitechGSDK.LogiLcdShutdown();
             }
-        }
 
-        if (GameControl.control.ChangeColor == true)
-        {
-
-            Timer -= 1 * Time.deltaTime;
-
-            if (Timer <= 0)
+            //BUTTON TEST
+            String colorButtons = "";
+            String monoButtons = "";
+            if (LogitechGSDK.LogiLcdIsButtonPressed(LogitechGSDK.LOGI_LCD_COLOR_BUTTON_CANCEL))
+                colorButtons += "Cancel";
+            if (LogitechGSDK.LogiLcdIsButtonPressed(LogitechGSDK.LOGI_LCD_COLOR_BUTTON_DOWN))
+                colorButtons += "Down";
+            if (LogitechGSDK.LogiLcdIsButtonPressed(LogitechGSDK.LOGI_LCD_COLOR_BUTTON_LEFT))
             {
-                Timer = 1;
-                RaveParty();
+                colorButtons += "Left";
+                GameControl.control.LCDPage--;
             }
-        }
+            if (LogitechGSDK.LogiLcdIsButtonPressed(LogitechGSDK.LOGI_LCD_COLOR_BUTTON_MENU))
+                colorButtons += "Menu";
+            if (LogitechGSDK.LogiLcdIsButtonPressed(LogitechGSDK.LOGI_LCD_COLOR_BUTTON_OK))
+                colorButtons += "Ok";
+            if (LogitechGSDK.LogiLcdIsButtonPressed(LogitechGSDK.LOGI_LCD_COLOR_BUTTON_RIGHT))
+            {
+                colorButtons += "Right";
+                GameControl.control.LCDPage++;
+            }
+            if (LogitechGSDK.LogiLcdIsButtonPressed(LogitechGSDK.LOGI_LCD_COLOR_BUTTON_UP))
+                colorButtons += "Up";
+            if (LogitechGSDK.LogiLcdIsButtonPressed(LogitechGSDK.LOGI_LCD_MONO_BUTTON_0))
+                monoButtons += "Button 0";
+            if (LogitechGSDK.LogiLcdIsButtonPressed(LogitechGSDK.LOGI_LCD_MONO_BUTTON_1))
+                monoButtons += "Button 1";
+            if (LogitechGSDK.LogiLcdIsButtonPressed(LogitechGSDK.LOGI_LCD_MONO_BUTTON_2))
+                monoButtons += "Button 2";
+            if (LogitechGSDK.LogiLcdIsButtonPressed(LogitechGSDK.LOGI_LCD_MONO_BUTTON_3))
+                monoButtons += "Button 3";
 
-        LogitechGSDK.LogiLcdUpdate();
+            // LogitechGSDK.LogiLcdMonoSetText(0, monoButtons);
+            // LogitechGSDK.LogiLcdColorSetText(5, colorButtons, 255, 255, 0);
+
+            if (GameControl.control.LCDPage < 0)
+            {
+                GameControl.control.LCDPage = 0;
+            }
+
+            if (GameControl.control.LCDPage != StoredPage)
+            {
+                for (int i = 0; i < 8; i++)
+                {
+                    LogitechGSDK.LogiLcdColorSetText(i, "", 0, 0, 0);
+                }
+            }
+
+            if (GameControl.control.ChangeColor == true)
+            {
+
+                Timer -= 1 * Time.deltaTime;
+
+                if (Timer <= 0)
+                {
+                    Timer = 1;
+                    RaveParty();
+                }
+            }
+
+            LogitechGSDK.LogiLcdUpdate();
+        }
     }
 
     void RandomColor()

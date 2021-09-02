@@ -4,6 +4,7 @@ using UnityEngine;
 using System.Text.RegularExpressions;
 using System.IO;
 using System.Linq;
+using UnityEditor;
 
 public class SystemPanel : MonoBehaviour 
 {
@@ -102,6 +103,11 @@ public class SystemPanel : MonoBehaviour
 
 	public string LocalScreenSaverMenu;
 
+	public List<ProgramSystem> DefaultLaunchOptions = new List<ProgramSystem>();
+
+	public string AutoSaveTimeString;
+
+	public string SelectedFilePath;
 
 	enum Menu
 	{
@@ -128,6 +134,9 @@ public class SystemPanel : MonoBehaviour
 		Background,
 		BackgroundSettings,
 		Dev,
+		DefaultProgram,
+		Autosave,
+		Documents,
 	}
 
 	Menu SelectedMenu;
@@ -163,6 +172,8 @@ public class SystemPanel : MonoBehaviour
 
 		windowRect.x = Screen.width-windowRect.width-1;
 		windowRect.y = 50;
+
+		AutoSaveTimeString = "" + Customize.cust.AutoSaveTime;
 	}
 
 	void SetPos()
@@ -213,30 +224,30 @@ public class SystemPanel : MonoBehaviour
 	public void SetFontColor()
 	{
 		Color32 Fontcolor;
-		Fontcolor.r = (byte)Customize.cust.FontR;
-		Fontcolor.g = (byte)Customize.cust.FontG;
-		Fontcolor.b = (byte)Customize.cust.FontB;
-		Fontcolor.a = (byte)Customize.cust.FontA;
+		Fontcolor.r = (byte)GameControl.control.SelectedOS.Colour.Font.Red;
+		Fontcolor.g = (byte)GameControl.control.SelectedOS.Colour.Font.Green;
+		Fontcolor.b = (byte)GameControl.control.SelectedOS.Colour.Font.Blue;
+		Fontcolor.a = (byte)GameControl.control.SelectedOS.Colour.Font.Alpha;
 		com.colors[1] = Fontcolor;
 	}
 
 	public void SetButtonColor()
 	{
 		Color32 ButtonColor;
-		ButtonColor.r = (byte)Customize.cust.ButtonR;
-		ButtonColor.g = (byte)Customize.cust.ButtonG;
-		ButtonColor.b = (byte)Customize.cust.ButtonB;
-		ButtonColor.a = (byte)Customize.cust.ButtonA;
+		ButtonColor.r = (byte)GameControl.control.SelectedOS.Colour.Button.Red;
+		ButtonColor.g = (byte)GameControl.control.SelectedOS.Colour.Button.Green;
+		ButtonColor.b = (byte)GameControl.control.SelectedOS.Colour.Button.Blue;
+		ButtonColor.a = (byte)GameControl.control.SelectedOS.Colour.Button.Alpha;
 		com.colors[2] = ButtonColor;
 	}
 
 	public void SetWindowColor()
 	{
 		Color32 WindowColor;
-		WindowColor.r = (byte)Customize.cust.WindowR;
-		WindowColor.g = (byte)Customize.cust.WindowG;
-		WindowColor.b = (byte)Customize.cust.WindowB;
-		WindowColor.a = (byte)Customize.cust.WindowA;
+		WindowColor.r = (byte)GameControl.control.SelectedOS.Colour.Window.Red;
+		WindowColor.g = (byte)GameControl.control.SelectedOS.Colour.Window.Green;
+		WindowColor.b = (byte)GameControl.control.SelectedOS.Colour.Window.Blue;
+		WindowColor.a = (byte)GameControl.control.SelectedOS.Colour.Window.Alpha;
 		com.colors[3] = WindowColor;
 	}
 	
@@ -349,24 +360,55 @@ public class SystemPanel : MonoBehaviour
 		}
 	}
 
+	public void OpenFileExplorerBackground()
+	{
+		GameControl.control.SelectedOS.FPC.BackgroundAddress = EditorUtility.OpenFilePanel("Select Background Pic", "", "png");
+		WWW www = new WWW("file:///" + GameControl.control.SelectedOS.FPC.BackgroundAddress);
+	}
+
+	public void OpenFileExplorerScreensaverBackground()
+	{
+		GameControl.control.SelectedOS.FPC.ScreenSaverBackgroundAddress = EditorUtility.OpenFilePanel("Select Screensaver Background", "", "png");
+		WWW www = new WWW("file:///" + GameControl.control.SelectedOS.FPC.ScreenSaverBackgroundAddress);
+	}
+
+	public void OpenFileExplorerScreensaverPic()
+	{
+		GameControl.control.SelectedOS.FPC.ScreenSaverPictureAddress = EditorUtility.OpenFilePanel("Select Screensaver Picture", "", "png");
+		WWW www = new WWW("file:///" + GameControl.control.SelectedOS.FPC.ScreenSaverPictureAddress);
+	}
+
+	public void OpenFileExplorerMouseCursor()
+	{
+		GameControl.control.SelectedOS.FPC.MouseCursorAddress = EditorUtility.OpenFilePanel("Select Mouse Cursor Image", "", "png");
+		WWW www = new WWW("file:///" + GameControl.control.SelectedOS.FPC.MouseCursorAddress);
+	}
+
 	public void ApplyBackgrounds()
 	{
-		Customize.cust.native_width = os.native_width;
-		Customize.cust.native_height = os.native_height;
-		Customize.cust.Save();
-		if (Customize.cust.CustomTexFileNames [4] != "") {
-			ct.enabled = true;
-			ct.Once = false;
-			ct.UpdatePics ();
-			os.pic [2] = ct.tex1 [4];
-			Customize.cust.UseCustomBG = true;
-			os.Index = 2;
-		} 
-		else
+		for(int i = 0; i < GameControl.control.OSName.Count;i++)
 		{
-			os.pic[2] = BackgroundPics[Customize.cust.SelectedBackground];
-			Customize.cust.UseCustomBG = true;
-			os.Index = 2;
+			if(GameControl.control.OSName[i].Title == GameControl.control.SelectedOS.Title && GameControl.control.OSName[i].Name == GameControl.control.SelectedOS.Name)
+			{
+				GameControl.control.OSName[i].FPC.BackgroundAddress = GameControl.control.SelectedOS.FPC.BackgroundAddress;
+				Customize.cust.CustomTexFileNames[4] = GameControl.control.SelectedOS.FPC.BackgroundAddress;
+				Customize.cust.native_width = os.native_width;
+				Customize.cust.native_height = os.native_height;
+				Customize.cust.Save();
+				if (Customize.cust.CustomTexFileNames[4] != "")
+				{
+					UpdateCustomThemes();
+					os.pic[2] = ct.tex1[4];
+					Customize.cust.UseCustomBG = true;
+					os.Index = 2;
+				}
+				else
+				{
+					os.pic[2] = BackgroundPics[GameControl.control.SelectedOS.SelectedBackground];
+					Customize.cust.UseCustomBG = true;
+					os.Index = 2;
+				}
+			}
 		}
 	}
 
@@ -375,9 +417,7 @@ public class SystemPanel : MonoBehaviour
 		Customize.cust.Save();
 		if (Customize.cust.CustomTexFileNames [3] != "")
 		{
-			ct.enabled = true;
-			ct.Once = false;
-			ct.UpdatePics ();
+			UpdateCustomThemes();
 			mouse.cursorImage = ct.tex1 [3];
 		}
 	}
@@ -425,7 +465,15 @@ public class SystemPanel : MonoBehaviour
 		GUI.backgroundColor = com.colors[Customize.cust.ButtonColorInt];
 		GUI.contentColor = com.colors[Customize.cust.FontColorInt];
 		GUI.DragWindow(new Rect(DefaltBoxSetting));
-		GUI.Box(new Rect(DefaltBoxSetting), "System Panel" + CatName);
+
+		if(CatName != "")
+		{
+			GUI.Box(new Rect(DefaltBoxSetting), "System Panel - " + CatName);
+		}
+		else
+		{
+			GUI.Box(new Rect(DefaltBoxSetting), "System Panel" + CatName);
+		}
 
 		SystemPanelUI();
 
@@ -535,6 +583,15 @@ public class SystemPanel : MonoBehaviour
 		case Menu.Notification:
 			Notifications();
 			break;
+		case Menu.DefaultProgram:
+			DefaultProgram();
+			break;
+		case Menu.Autosave:
+			AutoSave();
+			break;
+		case Menu.Documents:
+			Documents();
+			break;
 
 		}
 	}
@@ -549,84 +606,208 @@ public class SystemPanel : MonoBehaviour
 		if(GUI.Button(new Rect(113,30,100,20),"Theme"))
 		{
 			SelectedMenu = Menu.Theme;
-			CatName = " - Themes";
+			CatName = "Themes";
 		}
 	}
 
 	void Home()
 	{
-		if(GUI.Button(new Rect(3,30,100,20),"Display"))
+		if(GUI.Button(new Rect(3,30,110,20),"Display"))
 		{
 			SelectedMenu = Menu.Display;
-			CatName = " - Display";
+			CatName = "Display";
 		}
 
-		if(GUI.Button(new Rect(123,30,100,20),"Commands"))
+		if(GUI.Button(new Rect(123,30, 110, 20),"Commands"))
 		{
 			SelectedMenu = Menu.Commands;
-			CatName = " - Commands";
+			CatName = "Commands";
 		}
 
-		if(GUI.Button(new Rect(123,60,100,20),"Soundtrack"))
+		if(GUI.Button(new Rect(123,60, 110, 20),"Soundtrack"))
 		{
 			SelectedMenu = Menu.Soundtrack;
-			CatName = " - Soundtrack";
+			CatName = "Soundtrack";
 		}
 
-        if (GUI.Button(new Rect(123, 90, 100, 20), "Download"))
+        if (GUI.Button(new Rect(123, 90, 110, 20), "Download"))
         {
             SelectedMenu = Menu.Download;
-            CatName = " - Download";
+            CatName = "Download";
         }
 
-		if (GUI.Button(new Rect(123, 180, 100, 20), "Dev Settings"))
+		if (GUI.Button(new Rect(123, 120, 110, 20), "Default Program"))
 		{
-			SelectedMenu = Menu.Dev;
-			CatName = " - Dev Settings";
+			SelectedMenu = Menu.DefaultProgram;
+			CatName = "Default Program";
+		}
+
+		if (GUI.Button(new Rect(123, 150, 110, 20), "Autosave"))
+		{
+			SelectedMenu = Menu.Autosave;
+			CatName = "Autosave";
+		}
+
+		if(GameControl.control.SelectedOS.DisableColourOption == false)
+		{
+			if (GUI.Button(new Rect(123, 180, 110, 20), "Dev Settings"))
+			{
+				SelectedMenu = Menu.Dev;
+				CatName = "Dev Settings";
+			}
 		}
 
         //		if(GUI.Button(new Rect(123,60,100,20),"Web Browser"))
         //		{
         //			SelectedMenu = Menu.WebBrowser;
-        //			CatName = " - Web Browser";
+        //			CatName = "Web Browser";
         //		}
 
-        if (GUI.Button(new Rect(3,60,100,20),"Notfication"))
+        if (GUI.Button(new Rect(3,60, 110, 20),"Notfication"))
 		{
 			SelectedMenu = Menu.Notification;
-			CatName = " - Notfications";
+			CatName = "Notfications";
 		}
 
-		if(GUI.Button(new Rect(3,90,100,20),"Account"))
+		if(GUI.Button(new Rect(3,90, 110, 20),"Account"))
 		{
 			SelectedMenu = Menu.Account;
-			CatName = " - Account";
+			CatName = "Account";
 		}
 
-		if(GUI.Button(new Rect(3,120,100,20),"Mouse"))
+		if(GUI.Button(new Rect(3,120, 110, 20),"Mouse"))
 		{
 			SelectedMenu = Menu.Mouse;
-			CatName = " - Mouse Settings";
+			CatName = "Mouse Settings";
 		}
 
-		if(GUI.Button(new Rect(3,150,100,20),"Web Browser"))
+		if(GUI.Button(new Rect(3,150, 110, 20),"Web Browser"))
 		{
 			SelectedMenu = Menu.WebBrowser;
-			CatName = " - Web Browser";
+			CatName = "Web Browser";
 		}
 
 //		if(GUI.Button(new Rect(3,150,100,20),"Clock"))
 //		{
 //			SelectedMenu = Menu.Clock;
-//			CatName = " - Clock";
+//			CatName = "Clock";
 //		}
 
-		if(GUI.Button(new Rect(3,180,100,20),"Quick Launch"))
+		if(GUI.Button(new Rect(3,180, 110, 20),"Quick Launch"))
 		{
 			SelectedMenu = Menu.QuickLaunch;
-			CatName = " - Quick Launch";
+			CatName = "Quick Launch";
 			QuickLaunchScan();
 		}
+	}
+
+	void DefaultProgram()
+	{
+		if (GUI.Button(new Rect(2, 2, 20, 20), "<-"))
+		{
+			SelectedMenu = Menu.Home;
+			CatName = "Home";
+		}
+
+		if (GUI.Button(new Rect(3, 30, 100, 20), "Documents"))
+		{
+			SelectedMenu = Menu.Documents;
+			CatName = "Documents";
+		}
+
+	}
+
+	void AutoSave()
+	{
+		if (GUI.Button(new Rect(2, 2, 20, 20), "<-"))
+		{
+			SelectedMenu = Menu.Home;
+			CatName = "Home";
+		}
+
+		if(Customize.cust.EnableAutoSave == true)
+		{
+			if (GUI.Button(new Rect(3, 30, 150, 20), "Autosave Enabled"))
+			{
+				Customize.cust.EnableAutoSave = false;
+			}
+		}
+		else
+		{
+			if (GUI.Button(new Rect(3, 30, 150, 20), "Autosave Disabled"))
+			{
+				Customize.cust.EnableAutoSave = true;
+			}
+		}
+
+		if (AutoSaveTimeString == "")
+		{
+			AutoSaveTimeString = "1";
+		}
+		else
+		{
+			Customize.cust.AutoSaveTime = float.Parse(AutoSaveTimeString);
+		}
+
+		AutoSaveTimeString = GUI.TextField(new Rect(3, 60, 50, 21), "" + AutoSaveTimeString);
+		AutoSaveTimeString = Regex.Replace(AutoSaveTimeString, @"[^1-9]", "");
+	}
+
+	void Documents()
+	{
+		if (GUI.Button(new Rect(2, 2, 20, 20), "<-"))
+		{
+			SelectedMenu = Menu.DefaultProgram;
+			CatName = "Default Programs";
+		}
+
+		DefaultLaunchOptions.RemoveRange(0, DefaultLaunchOptions.Count);
+
+		for (int i = 0; i < GameControl.control.ProgramFiles.Count; i++)
+		{
+			for (int j = 0; j < GameControl.control.ProgramFiles[i].Type.Count; j++)
+			{
+				if (GameControl.control.ProgramFiles[i].Type[j] == ProgramSystem.FileType.DocumentReaders)
+				{
+					if(!DefaultLaunchOptions.Contains(GameControl.control.ProgramFiles[i]))
+					{
+						DefaultLaunchOptions.Add(GameControl.control.ProgramFiles[i]);
+					}
+				}
+			}
+		}
+
+		scrollpos = GUI.BeginScrollView(new Rect(5, 50, 150, 144), scrollpos, new Rect(0, 0, 0, scrollsize * 24));
+		for (scrollsize = 0; scrollsize < DefaultLaunchOptions.Count; scrollsize++)
+		{
+			if (GUI.Button(new Rect(0, scrollsize * 24, 100, 21), DefaultLaunchOptions[scrollsize].Name))
+			{
+				for (int i = 0; i < GameControl.control.DefaultLaunchedPrograms.Count; i++)
+				{
+					for (int j = 0; j < GameControl.control.DefaultLaunchedPrograms[i].Type.Count; j++)
+					{
+						if (GameControl.control.DefaultLaunchedPrograms[i].Type[j] == ProgramSystem.FileType.DocumentReaders)
+						{
+							GameControl.control.DefaultLaunchedPrograms.RemoveAt(i);
+							GameControl.control.DefaultLaunchedPrograms.Add(DefaultLaunchOptions[scrollsize]);
+						}
+					}
+				}
+			}
+		}
+		GUI.EndScrollView();
+
+		for (int i = 0; i < GameControl.control.DefaultLaunchedPrograms.Count; i++)
+		{
+			for (int j = 0; j < GameControl.control.DefaultLaunchedPrograms[i].Type.Count; j++)
+			{
+				if (GameControl.control.DefaultLaunchedPrograms[i].Type[j] == ProgramSystem.FileType.DocumentReaders)
+				{
+					GUI.Box(new Rect(175, 100, 100, 21), GameControl.control.DefaultLaunchedPrograms[i].Name);
+				}
+			}
+		}
+
 	}
 
 	void WebBrowser()
@@ -634,7 +815,7 @@ public class SystemPanel : MonoBehaviour
 		if(GUI.Button(new Rect(2,2,20,20),"<-"))
 		{
 			SelectedMenu = Menu.Home;
-			CatName = " - Home";
+			CatName = "Home";
 		}
 
 		GUI.Label (new Rect (5, 40, 200, 22),"Web Browsers Home Page");
@@ -646,7 +827,7 @@ public class SystemPanel : MonoBehaviour
         if (GUI.Button(new Rect(2, 2, 20, 20), "<-"))
         {
             SelectedMenu = Menu.Home;
-            CatName = " - Home";
+            CatName = "Home";
         }
 
         GUI.Label(new Rect(5, 40, 200, 22), "Download Location");
@@ -658,7 +839,7 @@ public class SystemPanel : MonoBehaviour
 		if(GUI.Button(new Rect(2,2,20,20),"<-"))
 		{
 			SelectedMenu = Menu.Home;
-			CatName = " - Home";
+			CatName = "Home";
 		}
 		if (Customize.cust.EnableSoundTrack == true)
 		{
@@ -694,7 +875,7 @@ public class SystemPanel : MonoBehaviour
 		if(GUI.Button(new Rect(2,2,20,20),"<-"))
 		{
 			SelectedMenu = Menu.Home;
-			CatName = " - Home";
+			CatName = "Home";
 		}
 
 		GUI.Box(new Rect(5,25,100,21),"Name");
@@ -739,7 +920,7 @@ public class SystemPanel : MonoBehaviour
 		if(GUI.Button(new Rect(2,2,20,20),"<-"))
 		{
 			SelectedMenu = Menu.Home;
-			CatName = " - Home";
+			CatName = "Home";
 		}
 
 		//GUI.Toggle (new Rect (3, 30, 100, 20), Customize.cust.SideNoti, "Side Notification");
@@ -783,7 +964,7 @@ public class SystemPanel : MonoBehaviour
 		if(GUI.Button(new Rect(2,2,20,20),"<-"))
 		{
 			SelectedMenu = Menu.Home;
-			CatName = " - Home";
+			CatName = "Home";
 		}
 		//Customize.cust.DoubleClickEnable = GUI.Toggle (new Rect (3, 30, 150, 20), Customize.cust.DoubleClickEnable, "Icon Double Click");
 		//Customize.cust.MouseSpeed = GUI.HorizontalSlider (new Rect (50, 65, 200, 20), Customize.cust.MouseSpeed, 0.05f, 2);
@@ -850,52 +1031,44 @@ public class SystemPanel : MonoBehaviour
 	{
 		if (showPics == false && showName == false && showPass == false) 
 		{
-			if(GUI.Button(new Rect(5,60,150,20),"Change Profile Pic"))
+			if(GUI.Button(new Rect(5,30,150,20),"Change Profile Pic"))
 			{
 				showPics = true;
+				CatName = "Profile Picture";
 			}
 
-			if(GUI.Button(new Rect(5,120,150,20),"Change Account Password"))
+			if(GUI.Button(new Rect(5,60, 150, 20),"Change Password"))
 			{
 				showPass = true;
+				CatName = "User Password";
 			}
 
-			if(GUI.Button(new Rect(5,90,150,20),"Change Account Name"))
+			if (GUI.Button(new Rect(5, 90, 150, 20), "Change Hint"))
 			{
-				ep.show = true;
-				ep.ErrorMsg = "This will create a new profile. You can manually change the profile file name to the name you wish. This only updates the Login List";
-				ep.ErrorTitle = "Account Name Warnning";
-				ep.playsound = true;
-                appman.SelectedApp = "Error Prompt";
-                showName = true;
+				showName = true;
+				CatName = "User Hint";
 			}
 
-			if(GUI.Button(new Rect(5,150,150,20),"Delete Profile Data"))
-			{
-				ep.show = true;
-				ep.ErrorMsg = "This will delete your saved profile. Are you sure you want to do this?";
-				ep.ErrorTitle = "Account Name Warnning";
-				ep.playsound = true;
-                appman.SelectedApp = "Error Prompt";
-            }
-
-			if(GUI.Button(new Rect(2,2,20,20),"<-"))
+			if (GUI.Button(new Rect(2,2,20,20),"<-"))
 			{
 				SelectedMenu = Menu.Home;
-				CatName = " - Home";
+				CatName = "Home";
 			}
 		}
 
 		if (showPics == true) 
 		{
+			GUI.contentColor = Color.white;
+
 			scrollpos = GUI.BeginScrollView(new Rect(5, 60, 50, 130), scrollpos, new Rect(0, 0, 0, scrollsize*32));
 			for (scrollsize = 0; scrollsize < GameControl.control.UserPic.Count; scrollsize++)
 			{
 				if(GUI.Button(new Rect(0, scrollsize * 32, 32, 32),GameControl.control.UserPic[scrollsize]))
 				{
 					Select = scrollsize;
-					ProfileController.procon.ProfileID[GameControl.control.ProfileID] = Select;
-					GameControl.control.ProfilePicID = ProfileController.procon.ProfileID[GameControl.control.ProfileID];
+					//ProfileController.procon.ProfileID[GameControl.control.ProfileID] = Select;
+					GameControl.control.ProfilePicID = ProfileController.procon.ProfilePic[GameControl.control.ProfileID];
+					ProfileController.procon.ProfilePic[GameControl.control.ProfileID] = Select;
 					ProfileController.procon.Save();
 					showPics = false;
 				}
@@ -905,23 +1078,25 @@ public class SystemPanel : MonoBehaviour
 			if(GUI.Button(new Rect(2,2,20,20),"<-"))
 			{
 				showPics = false;
+				CatName = "Account";
 			}
 		}
 
-		if (showName == true) 
+		if (showName == true)
 		{
-			if(GUI.Button(new Rect(5,100,60,20),"Set Name"))
+			if (GUI.Button(new Rect(5, 100, 60, 20), "Set Hint"))
 			{
-				ProfileController.procon.Profiles[GameControl.control.ProfileID] = TempName;
+				ProfileController.procon.PasswordHint[GameControl.control.ProfileID] = TempName;
 				ProfileController.procon.Save();
 			}
 
-			if(GUI.Button(new Rect(2,2,20,20),"<-"))
+			if (GUI.Button(new Rect(2, 2, 20, 20), "<-"))
 			{
 				showName = false;
+				CatName = "Account";
 			}
 
-			TempName = GUI.TextField(new Rect (5, 70, 150, 20), TempName);
+			TempName = GUI.TextField(new Rect(5, 70, 150, 20), TempName);
 
 		}
 
@@ -936,6 +1111,7 @@ public class SystemPanel : MonoBehaviour
 			if(GUI.Button(new Rect(2,2,20,20),"<-"))
 			{
 				showPass = false;
+				CatName = "Account";
 			}
 
 			TempPass = GUI.TextField(new Rect (5, 70, 150, 20), TempPass);
@@ -950,7 +1126,7 @@ public class SystemPanel : MonoBehaviour
 			if(GUI.Button(new Rect(2,2,20,20),"<-"))
 			{
 				SelectedMenu = Menu.Home;
-				CatName = " - Home";
+				CatName = "Home";
 			}
 
 			if(GUI.Button(new Rect(5,90,70,20),"Short Date"))
@@ -1032,7 +1208,7 @@ public class SystemPanel : MonoBehaviour
 		if(GUI.Button(new Rect(2,2,20,20),"<-"))
 		{
 			SelectedMenu = Menu.Home;
-			CatName = " - Home";
+			CatName = "Home";
 		}
 
 		if (Customize.cust.CustomThemeSelectorEnabled == true)
@@ -1040,48 +1216,48 @@ public class SystemPanel : MonoBehaviour
 			if(GUI.Button(new Rect(113,30,100,20),"Theme"))
 			{
 				SelectedMenu = Menu.Theme;
-				CatName = " - Themes";
+				CatName = "Themes";
 			}
 		}
 
-		if (Customize.cust.CustomThemeColorEnabled == true)
+		if (GameControl.control.SelectedOS.DisableColourOption == false)
 		{
 			if (GUI.Button (new Rect (3, 180, 100, 20), "Color"))
 			{
 				SelectedMenu = Menu.Color;
-				CatName = " - Color";
+				CatName = "Color";
 			}
 		}
 
 		if (GUI.Button (new Rect (3, 30, 100, 20), "Backgrounds"))
 		{
 			SelectedMenu = Menu.Background;
-			CatName = " - Backgrounds";
+			CatName = "Backgrounds";
 		}
 
 		if(GUI.Button(new Rect(3,120,100,20),"Screen Saver"))
 		{
 			SelectedMenu = Menu.ScreenSaver;
 			LocalScreenSaverMenu = "Main";
-			CatName = " - Screen Saver";
+			CatName = "Screen Saver";
 		}
 
 		if(GUI.Button(new Rect(3,60,100,20),"Settings"))
 		{
 			SelectedMenu = Menu.Settings;
-			CatName = " - Settings";
+			CatName = "Settings";
 		}
 
 		if (GUI.Button (new Rect (3, 150, 100, 20), "Font"))
 		{
 			SelectedMenu = Menu.Font;
-			CatName = " - Font Settings";
+			CatName = "Font Settings";
 		}
 
 		if (GUI.Button (new Rect (3, 90, 100, 20), "Scaling"))
 		{
 			SelectedMenu = Menu.Scaling;
-			CatName = " - Desktop Scaling";
+			CatName = "Desktop Scaling";
 		}
 	}
 
@@ -1090,6 +1266,7 @@ public class SystemPanel : MonoBehaviour
 		if(GUI.Button(new Rect(2,2,20,20),"<-"))
 		{
 			SelectedMenu = Menu.Display;
+			CatName = "Display";
 		}
 
 		if(GUI.Button(new Rect(5,50,55,20),"- Scale"))
@@ -1105,7 +1282,7 @@ public class SystemPanel : MonoBehaviour
 		if(GUI.Button(new Rect(5,72,45,20),"Apply"))
 		{
 			ep.Restart = true;
-			ep.ErrorTitle = "Attention - Update Scaling";
+			ep.ErrorTitle = "AttentionUpdate Scaling";
 			ep.ErrorMsg = "To update scaling you must restart the system";
 			ep.SoundSelect = 0;
 			ep.playsound = true;
@@ -1121,6 +1298,7 @@ public class SystemPanel : MonoBehaviour
 		if(GUI.Button(new Rect(2,2,20,20),"<-"))
 		{
 			SelectedMenu = Menu.Display;
+			CatName = "Display";
 		}
 
 		if(GUI.Button(new Rect(5,50,55,20),"- Font"))
@@ -1145,6 +1323,7 @@ public class SystemPanel : MonoBehaviour
 			if(GUI.Button(new Rect(2,2,20,20),"<-"))
 			{
 				SelectedMenu = Menu.Display;
+				CatName = "Display";
 			}
 
 			Customize.cust.ScreenSaverEnabled = GUI.Toggle (new Rect (5, 30, 200, 20), Customize.cust.ScreenSaverEnabled, "Enable/Disable Screen Saver");
@@ -1199,17 +1378,26 @@ public class SystemPanel : MonoBehaviour
 			}
 
 
-			if(GUI.Button(new Rect(5, 30, 100, 20),"Types"))
+			if(GUI.Button(new Rect(5, 30, 60, 20),"Types"))
 			{
 				LocalScreenSaverMenu = "Types";
 			}
 
+			if (GUI.Button(new Rect(70, 30, 100, 20), "Open FE SSBG"))
+			{
+				OpenFileExplorerScreensaverBackground();
+			}
+
+			if (GUI.Button(new Rect(180, 30, 100, 20), "Open FE SSPIC"))
+			{
+				OpenFileExplorerScreensaverPic();
+			}
 
 			GUI.Label (new Rect(5,80,300,200),"Custom ScreenSaver Picture");
-			Customize.cust.CustomTexFileNames[6] = GUI.TextField(new Rect (5, 100, 250, 20), Customize.cust.CustomTexFileNames[6]);
+			GameControl.control.SelectedOS.FPC.ScreenSaverPictureAddress = GUI.TextField(new Rect (5, 100, 250, 20), GameControl.control.SelectedOS.FPC.ScreenSaverPictureAddress); //6
 
 			GUI.Label (new Rect(5,130,300,200),"Custom ScreenSaver Background");
-			Customize.cust.CustomTexFileNames[5] = GUI.TextField(new Rect (5, 150, 250, 20), Customize.cust.CustomTexFileNames[5]);
+			GameControl.control.SelectedOS.FPC.ScreenSaverBackgroundAddress = GUI.TextField(new Rect (5, 150, 250, 20), GameControl.control.SelectedOS.FPC.ScreenSaverBackgroundAddress); //5
 
 			if(GUI.Button(new Rect(5, 180, 50, 20),"Apply"))
 			{
@@ -1241,22 +1429,36 @@ public class SystemPanel : MonoBehaviour
 		}
 	}
 
-	public void ApplyScreenSaver()
+	public void UpdateCustomThemes()
 	{
-		Customize.cust.Save();
-
 		ct.enabled = true;
 		ct.Once = false;
 		ct.UpdatePics();
+	}
 
-		if (Customize.cust.CustomTexFileNames [6] != "")
+	public void ApplyScreenSaver()
+	{
+		for (int i = 0; i < GameControl.control.OSName.Count; i++)
 		{
-			ss.ScreensaverPicture = ct.tex1 [6];
-		}
+			if (GameControl.control.OSName[i].Title == GameControl.control.SelectedOS.Title && GameControl.control.OSName[i].Name == GameControl.control.SelectedOS.Name)
+			{
+				GameControl.control.OSName[i].FPC.ScreenSaverBackgroundAddress = GameControl.control.SelectedOS.FPC.ScreenSaverBackgroundAddress;
+				GameControl.control.OSName[i].FPC.ScreenSaverPictureAddress = GameControl.control.SelectedOS.FPC.ScreenSaverPictureAddress;
+				Customize.cust.CustomTexFileNames[5] = GameControl.control.SelectedOS.FPC.ScreenSaverBackgroundAddress;
+				Customize.cust.CustomTexFileNames[6] = GameControl.control.SelectedOS.FPC.ScreenSaverPictureAddress;
+				Customize.cust.Save();
+				if (Customize.cust.CustomTexFileNames[6] != "")
+				{
+					UpdateCustomThemes();
+					ss.ScreensaverPicture = ct.tex1[6];
+				}
 
-		if (Customize.cust.CustomTexFileNames [5] != "")
-		{
-			ss.ScreensaverBackGround = ct.tex1 [5];
+				if (Customize.cust.CustomTexFileNames[5] != "")
+				{
+					UpdateCustomThemes();
+					ss.ScreensaverBackGround = ct.tex1[5];
+				}
+			}
 		}
 	}
 
@@ -1312,29 +1514,25 @@ public class SystemPanel : MonoBehaviour
 		if(GUI.Button(new Rect(2,2,20,20),"<-"))
 		{
 			SelectedMenu = Menu.Display;
+			CatName = "Display";
 		}
 
 		if(GUI.Button(new Rect(10,60,100,20),"Font"))
 		{
 			SelectedMenu = Menu.FontColor;
+			CatName = "Font Color";
 		}
 
 		if(GUI.Button(new Rect(10,90,100,20),"Buttons"))
 		{
 			SelectedMenu = Menu.ButtonColor;
+			CatName = "Button Color";
 		}
-
-//		path = GUI.TextField (new Rect (10, 150, 100, 20), path);
-//
-//		if(GUI.Button(new Rect(10,180,100,20),"Load File"))
-//		{
-//			LoadFile(path);
-//		}
-
 
 		if (GUI.Button (new Rect (10, 120, 100, 20), "Windows")) 
 		{
 			SelectedMenu = Menu.WindowColor;
+			CatName = "Window Color";
 		}
 	}
 
@@ -1343,6 +1541,7 @@ public class SystemPanel : MonoBehaviour
 		if(GUI.Button(new Rect(2,2,20,20),"<-"))
 		{
 			SelectedMenu = Menu.Color;
+			CatName = "Color";
 		}
 
 		SetFontColor();
@@ -1352,17 +1551,17 @@ public class SystemPanel : MonoBehaviour
 		GUI.Label(new Rect(5,100,300,300),"Blue");
 		GUI.Label(new Rect(5,120,300,300),"Alpha");
 
-		GUI.Label(new Rect(260,60,300,300),"" + Customize.cust.FontR.ToString("F0"));
-		GUI.Label(new Rect(260,80,300,300),"" + Customize.cust.FontG.ToString("F0"));
-		GUI.Label(new Rect(260,100,300,300),"" + Customize.cust.FontB.ToString("F0"));
-		GUI.Label(new Rect(260,120,300,300),"" + Customize.cust.FontA.ToString("F0"));
+		GUI.Label(new Rect(260,60,300,300),"" + GameControl.control.SelectedOS.Colour.Font.Red.ToString("F0"));
+		GUI.Label(new Rect(260,80,300,300),"" + GameControl.control.SelectedOS.Colour.Font.Green.ToString("F0"));
+		GUI.Label(new Rect(260,100,300,300),"" + GameControl.control.SelectedOS.Colour.Font.Blue.ToString("F0"));
+		GUI.Label(new Rect(260,120,300,300),"" + GameControl.control.SelectedOS.Colour.Font.Alpha.ToString("F0"));
 
 		GUI.contentColor = Color.white;
 
-		Customize.cust.FontR = GUI.HorizontalSlider (new Rect (50, 65, 200, 20), Customize.cust.FontR, 1, 255);
-		Customize.cust.FontG = GUI.HorizontalSlider (new Rect (50, 85, 200, 20), Customize.cust.FontG, 1, 255);
-		Customize.cust.FontB = GUI.HorizontalSlider (new Rect (50, 105, 200, 20), Customize.cust.FontB, 1, 255);
-		Customize.cust.FontA = GUI.HorizontalSlider (new Rect (50, 125, 200, 20), Customize.cust.FontA, 1, 255);
+		GameControl.control.SelectedOS.Colour.Font.Red = GUI.HorizontalSlider (new Rect (50, 65, 200, 20), GameControl.control.SelectedOS.Colour.Font.Red, 1, 255);
+		GameControl.control.SelectedOS.Colour.Font.Green = GUI.HorizontalSlider (new Rect (50, 85, 200, 20), GameControl.control.SelectedOS.Colour.Font.Green, 1, 255);
+		GameControl.control.SelectedOS.Colour.Font.Blue = GUI.HorizontalSlider (new Rect (50, 105, 200, 20), GameControl.control.SelectedOS.Colour.Font.Blue, 1, 255);
+		GameControl.control.SelectedOS.Colour.Font.Alpha = GUI.HorizontalSlider (new Rect (50, 125, 200, 20), GameControl.control.SelectedOS.Colour.Font.Alpha, 1, 255);
 
 		Customize.cust.FontColorInt = 1;
 	}
@@ -1372,6 +1571,7 @@ public class SystemPanel : MonoBehaviour
 		if(GUI.Button(new Rect(2,2,20,20),"<-"))
 		{
 			SelectedMenu = Menu.Color;
+			CatName = "Color";
 		}
 
 		SetWindowColor();
@@ -1381,17 +1581,17 @@ public class SystemPanel : MonoBehaviour
 		GUI.Label(new Rect(5,100,300,300),"Blue");
 		GUI.Label(new Rect(5,120,300,300),"Alpha");
 
-		GUI.Label(new Rect(260,60,300,300),"" + Customize.cust.WindowR.ToString("F0"));
-		GUI.Label(new Rect(260,80,300,300),"" + Customize.cust.WindowG.ToString("F0"));
-		GUI.Label(new Rect(260,100,300,300),"" + Customize.cust.WindowB.ToString("F0"));
-		GUI.Label(new Rect(260,120,300,300),"" + Customize.cust.WindowA.ToString("F0"));
+		GUI.Label(new Rect(260,60,300,300),"" + GameControl.control.SelectedOS.Colour.Window.Red.ToString("F0"));
+		GUI.Label(new Rect(260,80,300,300),"" + GameControl.control.SelectedOS.Colour.Window.Green.ToString("F0"));
+		GUI.Label(new Rect(260,100,300,300),"" + GameControl.control.SelectedOS.Colour.Window.Blue.ToString("F0"));
+		GUI.Label(new Rect(260,120,300,300),"" + GameControl.control.SelectedOS.Colour.Window.Alpha.ToString("F0"));
 
 		GUI.backgroundColor = Color.white;
 
-		Customize.cust.WindowR = GUI.HorizontalSlider (new Rect (60, 65, 200, 20), Customize.cust.WindowR, 1, 255);
-		Customize.cust.WindowG = GUI.HorizontalSlider (new Rect (60, 85, 200, 20), Customize.cust.WindowG, 1, 255);
-		Customize.cust.WindowB = GUI.HorizontalSlider (new Rect (60, 105, 200, 20), Customize.cust.WindowB, 1, 255);
-		Customize.cust.WindowA = GUI.HorizontalSlider (new Rect (60, 125, 200, 20), Customize.cust.WindowA, 1, 255);
+		GameControl.control.SelectedOS.Colour.Window.Red = GUI.HorizontalSlider (new Rect (60, 65, 200, 20), GameControl.control.SelectedOS.Colour.Window.Red, 1, 255);
+		GameControl.control.SelectedOS.Colour.Window.Green = GUI.HorizontalSlider (new Rect (60, 85, 200, 20), GameControl.control.SelectedOS.Colour.Window.Green, 1, 255);
+		GameControl.control.SelectedOS.Colour.Window.Blue = GUI.HorizontalSlider (new Rect (60, 105, 200, 20), GameControl.control.SelectedOS.Colour.Window.Blue, 1, 255);
+		GameControl.control.SelectedOS.Colour.Window.Alpha = GUI.HorizontalSlider (new Rect (60, 125, 200, 20), GameControl.control.SelectedOS.Colour.Window.Alpha, 1, 255);
 
 		Customize.cust.WindowColorInt = 3;
 	}
@@ -1401,6 +1601,7 @@ public class SystemPanel : MonoBehaviour
 		if(GUI.Button(new Rect(2,2,20,20),"<-"))
 		{
 			SelectedMenu = Menu.Color;
+			CatName = "Color";
 		}
 
 		SetButtonColor();
@@ -1410,17 +1611,17 @@ public class SystemPanel : MonoBehaviour
 		GUI.Label(new Rect(5,100,300,300),"Blue");
 		GUI.Label(new Rect(5,120,300,300),"Alpha");
 
-		GUI.Label(new Rect(260,60,300,300),"" + Customize.cust.ButtonR.ToString("F0"));
-		GUI.Label(new Rect(260,80,300,300),"" + Customize.cust.ButtonG.ToString("F0"));
-		GUI.Label(new Rect(260,100,300,300),"" + Customize.cust.ButtonB.ToString("F0"));
-		GUI.Label(new Rect(260,120,300,300),"" + Customize.cust.ButtonA.ToString("F0"));
+		GUI.Label(new Rect(260,60,300,300),"" + GameControl.control.SelectedOS.Colour.Button.Red.ToString("F0"));
+		GUI.Label(new Rect(260,80,300,300),"" + GameControl.control.SelectedOS.Colour.Button.Green.ToString("F0"));
+		GUI.Label(new Rect(260,100,300,300),"" + GameControl.control.SelectedOS.Colour.Button.Blue.ToString("F0"));
+		GUI.Label(new Rect(260,120,300,300),"" + GameControl.control.SelectedOS.Colour.Button.Alpha.ToString("F0"));
 
 		GUI.backgroundColor = Color.white;
 
-		Customize.cust.ButtonR = GUI.HorizontalSlider (new Rect (60, 65, 200, 20), Customize.cust.ButtonR, 1, 255);
-		Customize.cust.ButtonG = GUI.HorizontalSlider (new Rect (60, 85, 200, 20), Customize.cust.ButtonG, 1, 255);
-		Customize.cust.ButtonB = GUI.HorizontalSlider (new Rect (60, 105, 200, 20), Customize.cust.ButtonB, 1, 255);
-		Customize.cust.ButtonA = GUI.HorizontalSlider (new Rect (60, 125, 200, 20), Customize.cust.ButtonA, 1, 255);
+		GameControl.control.SelectedOS.Colour.Button.Red = GUI.HorizontalSlider (new Rect (60, 65, 200, 20), GameControl.control.SelectedOS.Colour.Button.Red, 1, 255);
+		GameControl.control.SelectedOS.Colour.Button.Green = GUI.HorizontalSlider (new Rect (60, 85, 200, 20), GameControl.control.SelectedOS.Colour.Button.Green, 1, 255);
+		GameControl.control.SelectedOS.Colour.Button.Blue = GUI.HorizontalSlider (new Rect (60, 105, 200, 20), GameControl.control.SelectedOS.Colour.Button.Blue, 1, 255);
+		GameControl.control.SelectedOS.Colour.Button.Alpha = GUI.HorizontalSlider (new Rect (60, 125, 200, 20), GameControl.control.SelectedOS.Colour.Button.Alpha, 1, 255);
 
 		Customize.cust.ButtonColorInt = 2;
 	}
@@ -1430,6 +1631,7 @@ public class SystemPanel : MonoBehaviour
 		if(GUI.Button(new Rect(2,2,20,20),"<-"))
 		{
 			SelectedMenu = Menu.Display;
+			CatName = "Display";
 		}
 
 		scrollpos = GUI.BeginScrollView(new Rect(5, 60, 100, 100), scrollpos, new Rect(0, 0, 0, Res*20));
@@ -1511,6 +1713,7 @@ public class SystemPanel : MonoBehaviour
 		if(GUI.Button(new Rect(2,2,20,20),"<-"))
 		{
 			SelectedMenu = Menu.Display;
+			CatName = "Display";
 		}
 
 		if(GUI.Button(new Rect(60,30,100,21),"Settings"))
@@ -1519,12 +1722,19 @@ public class SystemPanel : MonoBehaviour
 		}
 
 		scrollpos = GUI.BeginScrollView(new Rect(5, 60, 275, 130), scrollpos, new Rect(0, 0, 0, scrollsize*64));
-		for (scrollsize = 0; scrollsize < BackgroundPics.Count; scrollsize++)
+		for (scrollsize = 0; scrollsize < os.ListOfBackgroundImages.Count; scrollsize++)
 		{
-			if(GUI.Button(new Rect(0, scrollsize * 64, 275, 64),BackgroundPics[scrollsize],com.Skin [GameControl.control.GUIID].customStyles [DesktopStyle]))
+			if(GUI.Button(new Rect(0, scrollsize * 64, 275, 64), os.ListOfBackgroundImages[scrollsize], com.Skin [GameControl.control.GUIID].customStyles [DesktopStyle]))
 			{
-				Customize.cust.SelectedBackground = scrollsize;
-				os.pic [2] = BackgroundPics[Customize.cust.SelectedBackground];
+				os.pic [2] = os.ListOfBackgroundImages[scrollsize];
+				GameControl.control.SelectedOS.SelectedBackground = scrollsize;
+				for (int i = 0; i < GameControl.control.OSName.Count; i++)
+				{
+					if(GameControl.control.OSName[i].Title == GameControl.control.SelectedOS.Title && GameControl.control.OSName[i].Name == GameControl.control.SelectedOS.Name)
+					{
+						GameControl.control.OSName[i].SelectedBackground = GameControl.control.SelectedOS.SelectedBackground;
+					}
+				}
 			}
 		}
 		GUI.EndScrollView();
@@ -1542,7 +1752,12 @@ public class SystemPanel : MonoBehaviour
 			ApplyBackgrounds();
 		}
 
-		Customize.cust.CustomTexFileNames[4] = GUI.TextField(new Rect (2, 182, 296, 21), Customize.cust.CustomTexFileNames[4]);
+		if (GUI.Button(new Rect(65, 60, 70, 21), "Open FE"))
+		{
+			OpenFileExplorerBackground();
+		}
+
+		GameControl.control.SelectedOS.FPC.BackgroundAddress = GUI.TextField(new Rect (2, 182, 296, 21), GameControl.control.SelectedOS.FPC.BackgroundAddress);
 	}
 
 	void QuickLaunch()
@@ -1552,7 +1767,7 @@ public class SystemPanel : MonoBehaviour
 		if(GUI.Button(new Rect(2,2,20,20),"<-"))
 		{
 			SelectedMenu = Menu.Home;
-			CatName = " - Home";
+			CatName = "Home";
 		}
 
 		if (GUI.Button (new Rect (200, 180, 80, 20), "Refresh"))
@@ -1578,7 +1793,7 @@ public class SystemPanel : MonoBehaviour
 
 		for (ScanCount = 0; ScanCount < GameControl.control.ProgramFiles.Count; ScanCount++) 
 		{
-			if (GameControl.control.ProgramFiles[ScanCount].Type == ProgramSystem.ProgramType.Exe)
+			if (GameControl.control.ProgramFiles[ScanCount].Extension == ProgramSystem.FileExtension.Exe)
 			{
 				SelectablePrograms.Add(GameControl.control.ProgramFiles[ScanCount]);
 			}

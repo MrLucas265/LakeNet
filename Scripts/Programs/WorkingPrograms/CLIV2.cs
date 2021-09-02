@@ -217,45 +217,6 @@ public class CLIV2 : MonoBehaviour
 	void DoMyWindow(int WindowID)
 	{
 
-		if (boot.Terminal == false)
-		{
-			if (CloseButton.Contains (Event.current.mousePosition)) 
-			{
-				if (GUI.Button (new Rect (CloseButton), "X", Skin.customStyles [0])) 
-				{
-					appman.SelectedApp = "Command Line V3";
-				}
-			} 
-			else
-			{
-				GUI.backgroundColor = com.colors[Customize.cust.ButtonColorInt];
-				GUI.contentColor = com.colors[Customize.cust.FontColorInt];
-				GUI.Button (new Rect (CloseButton), "X", Skin.customStyles [1]);
-			}
-
-			if (MiniButton.Contains (Event.current.mousePosition)) 
-			{
-				if (GUI.Button (new Rect (MiniButton), "-",Skin.customStyles [2])) 
-				{
-					minimize = !minimize;
-					Minimize();
-				}
-			} 
-			else
-			{
-				GUI.backgroundColor = com.colors[Customize.cust.ButtonColorInt];
-				GUI.contentColor = com.colors[Customize.cust.FontColorInt];
-				if (GUI.Button (new Rect (MiniButton), "-",Skin.customStyles [2])) 
-				{
-					minimize = !minimize;
-					Minimize();
-				}
-			}
-
-            GUI.DragWindow(new Rect(DefaltBoxSetting));
-            GUI.Box(new Rect(DefaltBoxSetting), "Command-Line Interface");
-        }
-
 		if (cli.PastCommands.Count > Customize.cust.DeletionAmt) 
 		{
 			cli.PastCommands.RemoveAt (0);
@@ -315,33 +276,73 @@ public class CLIV2 : MonoBehaviour
 			}
 		}
 
-		User = "" + GameControl.control.ProfileName + "@" + Customize.cust.GatewayName + ">";
-
-		SMod = Customize.cust.TerminalFontSize / 2 * 0.1f;
-
         //Customize.cust.TerminalTextPosMod = SMod * User.Length;
 
 
-        if (boot.Terminal == true)
+        if (GameControl.control.Gateway.Status.Terminal == true)
 		{
-			GUI.contentColor = Color.white;
-
-			scrollpos = GUI.BeginScrollView(new Rect(2, 2, windowRect.width-4, windowRect.height-HMod), scrollpos, new Rect(0, 0, 0,scrollsize * 22));
-
-			GUI.Label (new Rect (2, scrollsize * 20 * SMod, windowRect.width-2, Customize.cust.FontSize+2),User,Style);
-
-			//cli.Parse = GUI.TextField(new Rect(User.Length + Customize.cust.TerminalTextPosMod * Customize.cust.TerminalFontSize, scrollsize*20-1*SMod, windowRect.width-84, 23), cli.Parse, 500,Style);
-			cli.Parse = GUI.TextField(new Rect(User.Length + Customize.cust.TerminalTextPosMod * Customize.cust.TerminalFontSize, scrollsize*20*SMod, windowRect.width-84, Customize.cust.FontSize+2), cli.Parse, 500,Style);
-
-			for (scrollsize = 0; scrollsize < cli.PastCommands.Count; scrollsize++)
+			if (MiniButton.Contains(Event.current.mousePosition))
 			{
-				GUI.Label (new Rect (2, scrollsize * 20 * SMod, windowRect.width-2, 25), "" + cli.PastCommands [scrollsize],Style);
+				if (GUI.Button(new Rect(MiniButton), "-", Skin.customStyles[2]))
+				{
+					minimize = !minimize;
+					Minimize();
+				}
+			}
+			else
+			{
+				GUI.backgroundColor = com.colors[Customize.cust.ButtonColorInt];
+				GUI.contentColor = com.colors[Customize.cust.FontColorInt];
+				if (GUI.Button(new Rect(MiniButton), "-", Skin.customStyles[2]))
+				{
+					minimize = !minimize;
+					Minimize();
+				}
 			}
 
-			GUI.EndScrollView();
+			//GUI.DragWindow(new Rect(DefaltBoxSetting));
+			GUI.Box(new Rect(DefaltBoxSetting), "CLI Terminal - Safemode");
+
+			TerminalModeV2();
 		}
 		else
 		{
+			if (CloseButton.Contains(Event.current.mousePosition))
+			{
+				if (GUI.Button(new Rect(CloseButton), "X", Skin.customStyles[0]))
+				{
+					appman.SelectedApp = "Command Line V3";
+				}
+			}
+			else
+			{
+				GUI.backgroundColor = com.colors[Customize.cust.ButtonColorInt];
+				GUI.contentColor = com.colors[Customize.cust.FontColorInt];
+				GUI.Button(new Rect(CloseButton), "X", Skin.customStyles[1]);
+			}
+
+			if (MiniButton.Contains(Event.current.mousePosition))
+			{
+				if (GUI.Button(new Rect(MiniButton), "-", Skin.customStyles[2]))
+				{
+					minimize = !minimize;
+					Minimize();
+				}
+			}
+			else
+			{
+				GUI.backgroundColor = com.colors[Customize.cust.ButtonColorInt];
+				GUI.contentColor = com.colors[Customize.cust.FontColorInt];
+				if (GUI.Button(new Rect(MiniButton), "-", Skin.customStyles[2]))
+				{
+					minimize = !minimize;
+					Minimize();
+				}
+			}
+
+			GUI.DragWindow(new Rect(DefaltBoxSetting));
+			GUI.Box(new Rect(DefaltBoxSetting), "Command-Line Interface");
+
 			GUI.contentColor = Color.green;
 
 
@@ -362,5 +363,51 @@ public class CLIV2 : MonoBehaviour
 
             cli.Parse = GUI.TextField(new Rect(12, windowRect.height - 20, windowRect.width - 84, Customize.cust.FontSize + 2), cli.Parse, 500, Style);
         }
+	}
+
+	void TerminalModeV1()
+	{
+
+		User = "" + GameControl.control.ProfileName + "@" + Customize.cust.GatewayName + ">";
+
+		SMod = Customize.cust.TerminalFontSize / 2 * 0.1f;
+
+		GUI.contentColor = Color.white;
+
+		scrollpos = GUI.BeginScrollView(new Rect(2, 2, windowRect.width - 4, windowRect.height - HMod), scrollpos, new Rect(0, 0, 0, scrollsize * 22));
+
+		GUI.Label(new Rect(2, scrollsize * 20 * SMod, windowRect.width - 2, Customize.cust.FontSize + 2), User, Style);
+
+		//cli.Parse = GUI.TextField(new Rect(User.Length + Customize.cust.TerminalTextPosMod * Customize.cust.TerminalFontSize, scrollsize*20-1*SMod, windowRect.width-84, 23), cli.Parse, 500,Style);
+		cli.Parse = GUI.TextField(new Rect(User.Length + Customize.cust.TerminalTextPosMod * Customize.cust.TerminalFontSize, scrollsize * 20 * SMod, windowRect.width - 84, Customize.cust.FontSize + 2), cli.Parse, 500, Style);
+
+		for (scrollsize = 0; scrollsize < cli.PastCommands.Count; scrollsize++)
+		{
+			GUI.Label(new Rect(2, scrollsize * 20 * SMod, windowRect.width - 2, 25), "" + cli.PastCommands[scrollsize], Style);
+		}
+
+		GUI.EndScrollView();
+	}
+
+	void TerminalModeV2()
+	{
+		GUI.contentColor = Color.white;
+
+		scrollpos = GUI.BeginScrollView(new Rect(2, 25, windowRect.width - 4, windowRect.height - 40), scrollpos, new Rect(0, 0, 0, scrollsize * 24));
+
+		//GUI.Label (new Rect (2, windowRect.height - 50, windowRect.width-2, Customize.cust.FontSize+2),User,Style);
+
+		//cli.Parse = GUI.TextField(new Rect(User.Length + Customize.cust.TerminalTextPosMod * Customize.cust.TerminalFontSize, scrollsize*20-1*SMod, windowRect.width-84, 23), cli.Parse, 500,Style);
+		//cli.Parse = GUI.TextField(new Rect(User.Length + Customize.cust.TerminalTextPosMod * Customize.cust.TerminalFontSize, windowRect.height - 50, windowRect.width-84, Customize.cust.FontSize+2), cli.Parse, 500,Style);
+
+		for (scrollsize = 0; scrollsize < cli.PastCommands.Count; scrollsize++)
+		{
+			GUI.Label(new Rect(2, scrollsize * 24, windowRect.width - 2, 20), "" + cli.PastCommands[scrollsize], Style);
+		}
+
+		GUI.EndScrollView();
+		GUI.Label(new Rect(2, windowRect.height - 20, windowRect.width - 2, Customize.cust.FontSize + 2), ">", Style);
+
+		cli.Parse = GUI.TextField(new Rect(12, windowRect.height - 20, windowRect.width - 84, Customize.cust.FontSize + 2), cli.Parse, 500, Style);
 	}
 }

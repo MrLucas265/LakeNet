@@ -2,13 +2,16 @@
 using System.Collections.Generic;
 using UnityEngine;
 using System;
+using System.Linq;
 using System.Text.RegularExpressions;
+using UnityEditor;
 
 public class CLICommandsV2 : MonoBehaviour
 {
 	public List<string> PastCommands = new List<string>();
 	public List<string> Functions = new List<string>();
 	public List<string> CommandNames = new List<string>();
+	public List<string> DirectoryHistory = new List<string>();
 	public List<CLICMDS> SystemCommands = new List<CLICMDS>();
 	public string CommandLine;
 	public string[] inputArray;
@@ -117,6 +120,7 @@ public class CLICommandsV2 : MonoBehaviour
 	public int CommandIndex;
 
 	public string twd;
+	public int localdirectoryid;
 
 	public bool writeInfo;
 
@@ -125,6 +129,23 @@ public class CLICommandsV2 : MonoBehaviour
 	public int SelectedFolder;
 
 	public bool SetScrollPos;
+
+	private ShutdownProm ShutDownWindow;
+
+	public List<InfectionSystem> BlankInfections = new List<InfectionSystem>();
+	public List<ProgramSystem.FileType> BlankFileType = new List<ProgramSystem.FileType>();
+
+	public ProgramSystem HeldFile;
+
+	public ColorSystem OSColour;
+	public OSFPCSystem OSFPC;
+
+	public string StringCommand;
+	public bool EnableStringCommandCheck;
+	public bool StringCommandDone;
+	public List<string> ListOfStringCommands = new List<string>();
+	public string StringCommandTask;
+	public string FileExplorerFileType;
 
 	// Use this for initialization
 	void Start ()
@@ -139,6 +160,8 @@ public class CLICommandsV2 : MonoBehaviour
 		Missions = GameObject.Find("Missions");
 		Crash = GameObject.Find("Crash");
 		Desktops = GameObject.Find("Desktops");
+
+		ShutDownWindow = prompt.GetComponent<ShutdownProm>();
 
 
 		sp = system.GetComponent<SystemPanel>();
@@ -170,6 +193,8 @@ public class CLICommandsV2 : MonoBehaviour
 			//Customize.cust.TerminalCommandCharacterSplit = " ";
 			//Customize.cust.TerminalSpaceCharacterSplit = @"\";
 		}
+
+		StringCommandTask = "na";
 	}
 
 	void AfterStart()
@@ -237,7 +262,7 @@ public class CLICommandsV2 : MonoBehaviour
 				{
 					if (SystemCommands [i].Func == "-help") 
 					{
-						if(boot.Terminal == true)
+						if(GameControl.control.Gateway.Status.Terminal == true)
 						{
 							PastCommands.Add("Command-Line Interface Version 3.0");
 						}
@@ -246,6 +271,59 @@ public class CLICommandsV2 : MonoBehaviour
 				}
 			}
 		}
+
+		if(EnableStringCommandCheck == true)
+		{
+			ProcessingString();
+		}
+
+		if(StringCommandTask != "na")
+		{
+			switch(StringCommandTask)
+			{
+				case "MakeFakeApp":
+					if(StringCommandDone)
+					{
+						RunFakeApps(StringCommand);
+					}
+					break;
+			}
+		}
+	}
+
+	void StartProcessingString()
+	{
+		ResetStringCommand();
+		EnableStringCommandCheck = true;
+	}
+
+	void ResetStringCommand()
+	{
+		StringCommand = "";
+		StringCommandDone = false;
+		ListOfStringCommands.RemoveRange(0, ListOfStringCommands.Count);
+	}
+
+	void ProcessingString()
+	{
+		for (int i = 0; i < ParseArray.Length; i++)
+		{
+			ListOfStringCommands.Add(ParseArray[i]);
+		}
+		ListOfStringCommands.RemoveAt(0);
+		for (int i = 0; i < ListOfStringCommands.Count; i++)
+		{
+			if(i == 0)
+			{
+				StringCommand += ListOfStringCommands[i];
+			}
+			else
+			{
+				StringCommand += " " + ListOfStringCommands[i];
+			}
+		}
+		StringCommandDone = true;
+		EnableStringCommandCheck = false;
 	}
 
 	public void SetSystemCommands()
@@ -271,6 +349,21 @@ public class CLICommandsV2 : MonoBehaviour
 			SystemCommands.Add(new CLICMDS("skipmission", "skipmission"));
 			SystemCommands.Add(new CLICMDS("settimemod", "settimemod"));
 			SystemCommands.Add(new CLICMDS("enablemusicplayer", "enablemusicplayer"));
+			SystemCommands.Add(new CLICMDS("openchatroom", "openchatroom"));
+			SystemCommands.Add(new CLICMDS("shutdown", "shutdown"));
+			SystemCommands.Add(new CLICMDS("logout", "logout"));
+			SystemCommands.Add(new CLICMDS("restart", "restart"));
+			SystemCommands.Add(new CLICMDS("safemode", "safemode"));
+			SystemCommands.Add(new CLICMDS("allos", "installdefaltos"));
+			SystemCommands.Add(new CLICMDS("mkreal", "createrealexe"));
+			SystemCommands.Add(new CLICMDS("mkbnkacc", "createnewbankaccount"));
+			SystemCommands.Add(new CLICMDS("mkfakeapp", "mkfakeapp"));
+			SystemCommands.Add(new CLICMDS("prtstr", "prtstr"));
+			SystemCommands.Add(new CLICMDS("prtscrn", "screenshot"));
+			SystemCommands.Add(new CLICMDS("str", "str"));
+			SystemCommands.Add(new CLICMDS("ofe", "ofe"));
+			SystemCommands.Add(new CLICMDS("devinstall", "devinstall"));
+			//SystemCommands.Add(new CLICMDS("..", "back"));
 
 			if (GameControl.control.ShortCommands == true)
             {
@@ -310,8 +403,8 @@ public class CLICommandsV2 : MonoBehaviour
                 SystemCommands.Add(new CLICMDS("open", "open"));
                 SystemCommands.Add(new CLICMDS("pwd", "pwd"));
                 SystemCommands.Add(new CLICMDS("ls", "ls"));
-                SystemCommands.Add(new CLICMDS("q", "quit"));
-                SystemCommands.Add(new CLICMDS("copy", "copy"));
+				SystemCommands.Add(new CLICMDS("q", "close"));
+				SystemCommands.Add(new CLICMDS("copy", "copy"));
                 SystemCommands.Add(new CLICMDS("paste", "paste"));
                 SystemCommands.Add(new CLICMDS("copy1", "copy1"));
                 SystemCommands.Add(new CLICMDS("paste1", "paste1"));
@@ -322,7 +415,6 @@ public class CLICommandsV2 : MonoBehaviour
                 SystemCommands.Add(new CLICMDS("time", "time"));
                 SystemCommands.Add(new CLICMDS("whoami", "whoami"));
                 SystemCommands.Add(new CLICMDS("systeminfo", "systeminfo"));
-                SystemCommands.Add(new CLICMDS("screenshot", "screenshot"));
                 SystemCommands.Add(new CLICMDS("listprograms", "listprograms"));
                 SystemCommands.Add(new CLICMDS("selectbankaccount", "selectbankaccount"));
                 SystemCommands.Add(new CLICMDS("restart", "restart"));
@@ -335,7 +427,10 @@ public class CLICommandsV2 : MonoBehaviour
                 SystemCommands.Add(new CLICMDS("listemails", "printemails"));
                 SystemCommands.Add(new CLICMDS("viewemails", "viewselectedemail"));
                 SystemCommands.Add(new CLICMDS("selectnotisnd", "selectnotisnd"));
-            }
+
+				SystemCommands.Add(new CLICMDS("dlv2", "dlv2"));
+				SystemCommands.Add(new CLICMDS("del", "del"));
+			}
             else
             {
                 //PREFRENCES
@@ -374,7 +469,7 @@ public class CLICommandsV2 : MonoBehaviour
                 SystemCommands.Add(new CLICMDS("open", "open"));
                 SystemCommands.Add(new CLICMDS("printworkingdirectory", "pwd"));
                 SystemCommands.Add(new CLICMDS("list", "ls"));
-                SystemCommands.Add(new CLICMDS("close", "q"));
+                SystemCommands.Add(new CLICMDS("close", "close"));
                 SystemCommands.Add(new CLICMDS("copy", "copy"));
                 SystemCommands.Add(new CLICMDS("paste", "paste"));
                 SystemCommands.Add(new CLICMDS("copy1", "copy1"));
@@ -386,7 +481,6 @@ public class CLICommandsV2 : MonoBehaviour
                 SystemCommands.Add(new CLICMDS("time", "time"));
                 SystemCommands.Add(new CLICMDS("whoami", "whoami"));
                 SystemCommands.Add(new CLICMDS("systeminfo", "systeminfo"));
-                SystemCommands.Add(new CLICMDS("screenshot", "screenshot"));
                 SystemCommands.Add(new CLICMDS("listprograms", "listprograms"));
                 SystemCommands.Add(new CLICMDS("selectbankaccount", "selectbankaccount"));
                 SystemCommands.Add(new CLICMDS("restart", "restart"));
@@ -422,33 +516,33 @@ public class CLICommandsV2 : MonoBehaviour
 		}
 	}
 
-	void SetFontColor()
+	public void SetFontColor()
 	{
 		Color32 Fontcolor;
-		Fontcolor.r = (byte)Customize.cust.FontR;
-		Fontcolor.g = (byte)Customize.cust.FontG;
-		Fontcolor.b = (byte)Customize.cust.FontB;
-		Fontcolor.a = (byte)Customize.cust.FontA;
+		Fontcolor.r = (byte)GameControl.control.SelectedOS.Colour.Font.Red;
+		Fontcolor.g = (byte)GameControl.control.SelectedOS.Colour.Font.Green;
+		Fontcolor.b = (byte)GameControl.control.SelectedOS.Colour.Font.Blue;
+		Fontcolor.a = (byte)GameControl.control.SelectedOS.Colour.Font.Alpha;
 		com.colors[1] = Fontcolor;
 	}
 
-	void SetButtonColor()
+	public void SetButtonColor()
 	{
 		Color32 ButtonColor;
-		ButtonColor.r = (byte)Customize.cust.ButtonR;
-		ButtonColor.g = (byte)Customize.cust.ButtonG;
-		ButtonColor.b = (byte)Customize.cust.ButtonB;
-		ButtonColor.a = (byte)Customize.cust.ButtonA;
+		ButtonColor.r = (byte)GameControl.control.SelectedOS.Colour.Button.Red;
+		ButtonColor.g = (byte)GameControl.control.SelectedOS.Colour.Button.Green;
+		ButtonColor.b = (byte)GameControl.control.SelectedOS.Colour.Button.Blue;
+		ButtonColor.a = (byte)GameControl.control.SelectedOS.Colour.Button.Alpha;
 		com.colors[2] = ButtonColor;
 	}
 
-	void SetWindowColor()
+	public void SetWindowColor()
 	{
 		Color32 WindowColor;
-		WindowColor.r = (byte)Customize.cust.WindowR;
-		WindowColor.g = (byte)Customize.cust.WindowG;
-		WindowColor.b = (byte)Customize.cust.WindowB;
-		WindowColor.a = (byte)Customize.cust.WindowA;
+		WindowColor.r = (byte)GameControl.control.SelectedOS.Colour.Window.Red;
+		WindowColor.g = (byte)GameControl.control.SelectedOS.Colour.Window.Green;
+		WindowColor.b = (byte)GameControl.control.SelectedOS.Colour.Window.Blue;
+		WindowColor.a = (byte)GameControl.control.SelectedOS.Colour.Window.Alpha;
 		com.colors[3] = WindowColor;
 	}
 
@@ -464,51 +558,6 @@ public class CLICommandsV2 : MonoBehaviour
 
 	void RunProgram()
 	{
-		//if (inputArray.Length > 2)
-		//{
-		//	if (inputArray[2] != "")
-		//	{
-		//		for (int Index = 0; Index < GameControl.control.ProgramFiles.Count; Index++) 
-		//		{
-		//			if (GameControl.control.ProgramFiles [Index].Name == ParseArray[2]) 
-		//			{
-		//				if (GameControl.control.ProgramFiles[Index].Location == ParseArray[1]) 
-		//				{
-		//					appman.enabled = true;
-		//					appman.SelectedApp = GameControl.control.ProgramFiles[Index].Target;
-		//				}
-		//			}
-		//		}
-		//	}
-		//	else
-		//	{
-		//		for (int Index = 0; Index < GameControl.control.ProgramFiles.Count; Index++) 
-		//		{
-		//			if (GameControl.control.ProgramFiles[Index].Name == inputArray[1]) 
-		//			{
-		//				if (twd == GameControl.control.ProgramFiles [Index].Location) 
-		//				{
-		//					appman.enabled = true;
-		//					appman.SelectedApp = GameControl.control.ProgramFiles[Index].Target;
-		//				}
-		//			}
-		//		}
-		//	}
-		//}
-		//else
-		//{
-		//	for (int Index = 0; Index < GameControl.control.ProgramFiles.Count; Index++) 
-		//	{
-		//		if (GameControl.control.ProgramFiles[Index].Name == inputArray[1]) 
-		//		{
-		//			if (twd == GameControl.control.ProgramFiles [Index].Location) 
-		//			{
-		//				appman.enabled = true;
-		//				appman.SelectedApp = GameControl.control.ProgramFiles[Index].Target;
-		//			}
-		//		}
-		//	}
-		//}
 		for (int Index = 0; Index < GameControl.control.ProgramFiles.Count; Index++) 
 		{
             if (inputArray[1] == Index.ToString())
@@ -526,6 +575,11 @@ public class CLICommandsV2 : MonoBehaviour
                     appman.ProgramName = GameControl.control.ProgramFiles[Index].Name;
                     appman.SelectedApp = GameControl.control.ProgramFiles[Index].Target;
 				}
+			}
+			if(inputArray[1] == GameControl.control.ProgramFiles[Index].Location + "/" + GameControl.control.ProgramFiles[Index].Name)
+			{
+				appman.ProgramName = GameControl.control.ProgramFiles[Index].Name;
+				appman.SelectedApp = GameControl.control.ProgramFiles[Index].Target;
 			}
 		}
 	}
@@ -586,12 +640,12 @@ public class CLICommandsV2 : MonoBehaviour
 				if (twd.Length > 3)
 				{
 					FolderName = inputArray [1];
-					GameControl.control.ProgramFiles.Add (new ProgramSystem (FolderName, "", "", "", twd, "" + twd +  "/" + FolderName, 0,0,0,0,0,0, false, ProgramSystem.ProgramType.Txt));
+					GameControl.control.ProgramFiles.Add(new ProgramSystem(FolderName, "", "", "", "", "", twd, "" + twd + "/" + FolderName, "", "", ProgramSystem.FileExtension.Txt, ProgramSystem.FileExtension.Null, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, false, false, false, false, BlankInfections, BlankFileType));
 				} 
 				else 
 				{
 					FolderName = inputArray [1];
-					GameControl.control.ProgramFiles.Add (new ProgramSystem (FolderName, "", "", "", twd, "" + twd +  "" + FolderName, 0,0,0,0,0,0, false, ProgramSystem.ProgramType.Txt));
+					GameControl.control.ProgramFiles.Add(new ProgramSystem(FolderName, "", "", "", "", "", twd, "" + twd + "" + FolderName, "", "", ProgramSystem.FileExtension.Txt, ProgramSystem.FileExtension.Null, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, false, false, false, false, BlankInfections, BlankFileType));
 				}
 				FolderName = "";
 				FileIndex = -1;
@@ -619,12 +673,13 @@ public class CLICommandsV2 : MonoBehaviour
 				if (GameControl.control.ProgramFiles[Index].Location == twd)
 				{
 					FileIndex = Index;
-					FileName = GameControl.control.ProgramFiles[Index].Name;
-					FileSize = GameControl.control.ProgramFiles[Index].Used;
-					FileContent = GameControl.control.ProgramFiles[Index].Content;
-					FileTarget = GameControl.control.ProgramFiles[Index].Target;
-					FileVersion = GameControl.control.ProgramFiles[Index].Version;
-					FileType = GameControl.control.ProgramFiles[Index].Type.ToString();
+					HeldFile = GameControl.control.ProgramFiles[FileIndex];
+					//FileName = GameControl.control.ProgramFiles[Index].Name;
+					//FileSize = GameControl.control.ProgramFiles[Index].Used;
+					//FileContent = GameControl.control.ProgramFiles[Index].Content;
+					//FileTarget = GameControl.control.ProgramFiles[Index].Target;
+					//FileVersion = GameControl.control.ProgramFiles[Index].Version;
+					//FileType = GameControl.control.ProgramFiles[Index].Type.ToString();
 					PastCommands.Add (FileName + "Has been copied From : " + twd);
 				}
 			}
@@ -640,9 +695,9 @@ public class CLICommandsV2 : MonoBehaviour
 
 	void PasteFile1()
 	{
-		if (fu.ProgramHandle.Count <= 0) 
+		if (fu.ProgramHandle.Count <= 0)
 		{
-			if (FileIndex != -1) 
+			if (FileIndex != -1)
 			{
 				if (inputArray.Length > 1)
 				{
@@ -650,12 +705,12 @@ public class CLICommandsV2 : MonoBehaviour
 					{
 						for (int Index = 0; Index < GameControl.control.ProgramFiles.Count; Index++)
 						{
-							if (GameControl.control.ProgramFiles[Index].Type == ProgramSystem.ProgramType.Fdl || GameControl.control.ProgramFiles[Index].Type == ProgramSystem.ProgramType.Dir)
+							if (GameControl.control.ProgramFiles[Index].Extension == ProgramSystem.FileExtension.Fdl || GameControl.control.ProgramFiles[Index].Extension == ProgramSystem.FileExtension.Dir)
 							{
 								if (GameControl.control.ProgramFiles[Index].Target == inputArray[1])
 								{
 									string Location = inputArray[1];
-									fu.ProgramHandle.Add(new FileUtilitySystem("Paste", FileName, Location, "", FileTarget, FileContent, FileType, false, true, true, false, FileVersion, 0, 0, 0, 0, 0, 0, 0, FileSize, 0, 0, 0, FileUtilitySystem.ProgramType.Paste));
+									fu.ProgramHandle.Add(new FileUtilitySystem("Paste", FileName, Location,"", "", FileTarget, FileContent, FileType, false, true, true, false, FileVersion, 0, 0, 0, 0, 0, 0, 0, FileSize, 0, 0, 0, FileUtilitySystem.ProgramType.Paste));
 									fu.AddWindow();
 									PastCommands.Add(FileName + " is being pasted to: " + Location);
 								}
@@ -665,20 +720,20 @@ public class CLICommandsV2 : MonoBehaviour
 					else
 					{
 						string FileLocation = twd;
-						fu.ProgramHandle.Add (new FileUtilitySystem ("Paste", FileName, FileLocation,"", FileTarget,FileContent,FileType, false, true, true, false,FileVersion,0,0, 0, 0, 0, 0, 0, FileSize, 0, 0, 0, FileUtilitySystem.ProgramType.Paste));
-						fu.AddWindow ();
-						PastCommands.Add (FileName + " is being pasted to: " + FileLocation);
+						fu.ProgramHandle.Add(new FileUtilitySystem("Paste", FileName, FileLocation,"", "", FileTarget, FileContent, FileType, false, true, true, false, FileVersion, 0, 0, 0, 0, 0, 0, 0, FileSize, 0, 0, 0, FileUtilitySystem.ProgramType.Paste));
+						fu.AddWindow();
+						PastCommands.Add(FileName + " is being pasted to: " + FileLocation);
 					}
 				}
 				else
 				{
 					string FileLocation = twd;
-					fu.ProgramHandle.Add (new FileUtilitySystem ("Paste", FileName, FileLocation,"", FileTarget,FileContent,FileType, false, true, true, false,FileVersion,0,0, 0, 0, 0, 0, 0, FileSize, 0, 0, 0, FileUtilitySystem.ProgramType.Paste));
-					fu.AddWindow ();
-					PastCommands.Add (FileName + " is being pasted to: " + FileLocation);
+					fu.ProgramHandle.Add(new FileUtilitySystem("Paste", FileName, FileLocation,"", "", FileTarget, FileContent, FileType, false, true, true, false, FileVersion, 0, 0, 0, 0, 0, 0, 0, FileSize, 0, 0, 0, FileUtilitySystem.ProgramType.Paste));
+					fu.AddWindow();
+					PastCommands.Add(FileName + " is being pasted to: " + FileLocation);
 				}
 			}
-		} 
+		}
 	}
 
 	void ProgramQuickLaunch()
@@ -717,27 +772,94 @@ public class CLICommandsV2 : MonoBehaviour
 
 	void RemoteFileDelete()
 	{
-		if (ib.CurrentLocation != "") 
+		string LocationName = "";
+		if (ib.CurrentLocation != "")
 		{
-			for (int Index = 0; Index < GameControl.control.WebsiteFiles.Count; Index++) 
+
+			for (int Index = 0; Index < GameControl.control.CompanyServerData.Count; Index++)
 			{
-				if (GameControl.control.WebsiteFiles[Index].Name == inputArray [2])
+				if (GameControl.control.CompanyServerData[Index].Name == ib.CurrentLocation)
 				{
-					if (GameControl.control.WebsiteFiles [Index].Location == ib.CurrentLocation)
+					LocationName = GameControl.control.CompanyServerData[Index].Name;
+					if (GameControl.control.CompanyServerData[Index].Files.Count > 0)
 					{
-						FileIndex = Index;
-						FileName = GameControl.control.WebsiteFiles[FileIndex].Name;
-						FileSize = GameControl.control.WebsiteFiles[FileIndex].Used;
+						for (int i = 0; i < GameControl.control.CompanyServerData[Index].Files.Count; i++)
+						{
+							if (GameControl.control.CompanyServerData[Index].Files[i].Name == inputArray[2])
+							{
+								if (GameControl.control.CompanyServerData[Index].Files[i].Location == ib.AddressBar)
+								{
+									FileIndex = i;
+									FileName = GameControl.control.CompanyServerData[Index].Files[i].Name;
+									FileSize = GameControl.control.CompanyServerData[Index].Files[i].Used;
+									FileLocation = GameControl.control.CompanyServerData[Index].Files[i].Location;
+								}
+							}
+						}
 					}
 				}
 			}
 
-			if (fu.ProgramHandle.Count <= 0) 
+			//for (int Index = 0; Index < GameControl.control.WebsiteFiles.Count; Index++)
+			//{
+			//	if (GameControl.control.WebsiteFiles[Index].Name == inputArray[2])
+			//	{
+			//		if (GameControl.control.WebsiteFiles[Index].Location == ib.CurrentLocation)
+			//		{
+			//			FileIndex = Index;
+			//			FileName = GameControl.control.WebsiteFiles[FileIndex].Name;
+			//			FileSize = GameControl.control.WebsiteFiles[FileIndex].Used;
+			//		}
+			//	}
+			//}
+
+			if (fu.ProgramHandle.Count <= 0)
 			{
-				if (FileIndex != -1) 
+				if (FileIndex != -1)
 				{
-					fu.ProgramHandle.Add (new FileUtilitySystem ("Delete", FileName, FileLocation, "","","","", false, true, true, false, 0, 0, 0, 0, 0, 0, 0, 0, FileSize, 0, 0, 0, FileUtilitySystem.ProgramType.RemoteDelete));
-					fu.AddWindow ();
+					fu.ProgramHandle.Add(new FileUtilitySystem("Delete", FileName, FileLocation, LocationName, "", "", "", "", false, true, true, false, 0, 0, 0, 0, 0, 0, 0, 0, FileSize, 0, 0, 0, FileUtilitySystem.ProgramType.RemoteDelete));
+					fu.AddWindow();
+				}
+			}
+		}
+	}
+
+	void DownloadFile()
+	{
+		string LocationName = "";
+		if (ib.CurrentLocation != "")
+		{
+
+			for (int Index = 0; Index < GameControl.control.CompanyServerData.Count; Index++)
+			{
+				if (GameControl.control.CompanyServerData[Index].Name == ib.CurrentLocation)
+				{
+					LocationName = GameControl.control.CompanyServerData[Index].Name;
+					if (GameControl.control.CompanyServerData[Index].Files.Count > 0)
+					{
+						for (int i = 0; i < GameControl.control.CompanyServerData[Index].Files.Count; i++)
+						{
+							if (GameControl.control.CompanyServerData[Index].Files[i].Name == inputArray[1])
+							{
+								if (GameControl.control.CompanyServerData[Index].Files[i].Location == ib.AddressBar)
+								{
+									FileIndex = i;
+									FileName = GameControl.control.CompanyServerData[Index].Files[i].Name;
+									FileSize = GameControl.control.CompanyServerData[Index].Files[i].Used;
+									FileLocation = GameControl.control.CompanyServerData[Index].Files[i].Location;
+								}
+							}
+						}
+					}
+				}
+			}
+
+			if (fu.ProgramHandle.Count <= 0)
+			{
+				if (FileIndex != -1)
+				{
+					fu.ProgramHandle.Add(new FileUtilitySystem("Download", FileName, Customize.cust.DownloadPath, "", FileLocation, "", "", "", false, true, true, false, 0, 0, 0, 0, 0, 0, 0, 0, FileSize, 0, 0, 0, FileUtilitySystem.ProgramType.Download));
+					fu.AddWindow();
 				}
 			}
 		}
@@ -745,11 +867,11 @@ public class CLICommandsV2 : MonoBehaviour
 
 	void CLIDeleteFile()
 	{
-		for (int Index = 0; Index < GameControl.control.ProgramFiles.Count; Index++) 
+		for (int Index = 0; Index < GameControl.control.ProgramFiles.Count; Index++)
 		{
-			if (GameControl.control.ProgramFiles[Index].Name == inputArray [1])
+			if (GameControl.control.ProgramFiles[Index].Name == inputArray[1])
 			{
-				if (GameControl.control.ProgramFiles [Index].Location == twd)
+				if (GameControl.control.ProgramFiles[Index].Location == twd)
 				{
 					FileIndex = Index;
 					FileName = GameControl.control.ProgramFiles[FileIndex].Name;
@@ -758,12 +880,12 @@ public class CLICommandsV2 : MonoBehaviour
 			}
 		}
 
-		if (fu.ProgramHandle.Count <= 0) 
+		if (fu.ProgramHandle.Count <= 0)
 		{
-			if (FileIndex != -1) 
+			if (FileIndex != -1)
 			{
-				fu.ProgramHandle.Add (new FileUtilitySystem ("Delete", FileName, twd, "","","","", false, true, true, false, 0, 0, 0, 0, 0, 0, 0, 0, FileSize, 0, 0, 0, FileUtilitySystem.ProgramType.LocalDelete));
-				fu.AddWindow ();
+				fu.ProgramHandle.Add(new FileUtilitySystem("Delete", FileName, twd,"", "", "", "", "", false, true, true, false, 0, 0, 0, 0, 0, 0, 0, 0, FileSize, 0, 0, 0, FileUtilitySystem.ProgramType.LocalDelete));
+				fu.AddWindow();
 			}
 		}
 	}
@@ -792,13 +914,13 @@ public class CLICommandsV2 : MonoBehaviour
 			{
 				if (twd.Length > 3)
 				{
-					FolderName = inputArray [1];
-					GameControl.control.ProgramFiles.Add (new ProgramSystem (FolderName, "", "", "", twd, "" + twd +  "/" + FolderName, 0,0,0,0,0,0, false, ProgramSystem.ProgramType.Fdl));
-				} 
-				else 
+					FolderName = inputArray[1];
+					GameControl.control.ProgramFiles.Add(new ProgramSystem(FolderName, "", "", "", "", "", twd, "" + twd + "/" + FolderName, "", "", ProgramSystem.FileExtension.Fdl, ProgramSystem.FileExtension.Null, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, false, false, false, false, BlankInfections, BlankFileType));
+				}
+				else
 				{
-					FolderName = inputArray [1];
-					GameControl.control.ProgramFiles.Add (new ProgramSystem (FolderName, "", "", "", twd, "" + twd +  "" + FolderName, 0,0,0,0,0,0, false, ProgramSystem.ProgramType.Fdl));
+					FolderName = inputArray[1];
+					GameControl.control.ProgramFiles.Add(new ProgramSystem(FolderName, "", "", "", "", "", twd, "" + twd + "" + FolderName, "", "", ProgramSystem.FileExtension.Fdl, ProgramSystem.FileExtension.Null, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, false, false, false, false, BlankInfections, BlankFileType));
 				}
 				FolderName = "";
 				FileIndex = -1;
@@ -818,6 +940,7 @@ public class CLICommandsV2 : MonoBehaviour
 					FileLocation = inputArray[3];
 					FileName = GameControl.control.ProgramFiles[FileIndex].Name;
 					FileSize = GameControl.control.ProgramFiles[FileIndex].Used;
+					HeldFile = GameControl.control.ProgramFiles[FileIndex];
 				}
 			}
 		}
@@ -826,41 +949,19 @@ public class CLICommandsV2 : MonoBehaviour
 		{
 			if (FileIndex != -1) 
 			{
-                if (GameControl.control.ProgramFiles[FileIndex].Type == ProgramSystem.ProgramType.Fdl)
+                if (GameControl.control.ProgramFiles[FileIndex].Extension == ProgramSystem.FileExtension.Fdl)
 				{
 					fu.ForceDone = true;
 					fu.FileIndex = GameControl.control.ProgramFiles.Count-1;
-					fu.ProgramHandle.Add (new FileUtilitySystem ("Delete", FileName, FileLocation,"", "","","", false, true, true, false, 0,0, 0, 0, 0, 0, 0, 0, FileSize, 0, 0, 0, FileUtilitySystem.ProgramType.LocalFolderDelete));
+					//fu.ProgramHandle.Add(new FUSv2("Delete", "", FileLocation, false, true, true, false, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, FUSv2.UtilityType.LocalFolderDelete, HeldFile));
+					fu.ProgramHandle.Add (new FileUtilitySystem ("Delete", FileName, FileLocation,"","", "","","", false, true, true, false, 0,0, 0, 0, 0, 0, 0, 0, FileSize, 0, 0, 0, FileUtilitySystem.ProgramType.LocalFolderDelete));
 				}
 				else
 				{
-					fu.ProgramHandle.Add (new FileUtilitySystem ("Delete", FileName, FileLocation,"", "","","", false, true, true, false, 0,0, 0, 0, 0, 0, 0, 0, FileSize, 0, 0, 0, FileUtilitySystem.ProgramType.LocalDelete));
+					//fu.ProgramHandle.Add(new FUSv2("Delete", "", FileLocation, false, true, true, false, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, FUSv2.UtilityType.LocalDelete, HeldFile));
+					fu.ProgramHandle.Add (new FileUtilitySystem ("Delete", FileName, FileLocation,"","", "","","", false, true, true, false, 0,0, 0, 0, 0, 0, 0, 0, FileSize, 0, 0, 0, FileUtilitySystem.ProgramType.LocalDelete));
 				}
 				fu.AddWindow ();
-			}
-		}
-	}
-
-	void DownloadFile()
-	{
-		if (ib.CurrentLocation != "")
-		{
-			for (int Index = 0; Index < GameControl.control.WebsiteFiles.Count; Index++) 
-			{
-				if (GameControl.control.WebsiteFiles [Index].Name == inputArray [1])
-				{
-					FileIndex = Index;
-					FileName = GameControl.control.WebsiteFiles [FileIndex].Name;
-					FileSize = GameControl.control.WebsiteFiles [FileIndex].Used;
-				}
-			}
-			if (fu.ProgramHandle.Count <= 0) 
-			{
-				if (FileIndex != -1)
-				{
-					fu.ProgramHandle.Add (new FileUtilitySystem ("Download", FileName, "", Customize.cust.DownloadPath, "","","", false, true, true, false, 0,0, 0, 0, 0, 0, 0, 0, FileSize, 0, 0, 0, FileUtilitySystem.ProgramType.Download));
-					fu.AddWindow ();
-				}
 			}
 		}
 	}
@@ -869,23 +970,23 @@ public class CLICommandsV2 : MonoBehaviour
 	{
 		if (ib.CurrentLocation != "")
 		{
-			for (int Index = 0; Index < GameControl.control.ProgramFiles.Count; Index++) 
+			for (int Index = 0; Index < GameControl.control.ProgramFiles.Count; Index++)
 			{
-				if (GameControl.control.ProgramFiles[Index].Name == inputArray [1])
+				if (GameControl.control.ProgramFiles[Index].Name == inputArray[1])
 				{
 					FileIndex = Index;
 					FileName = GameControl.control.ProgramFiles[FileIndex].Name;
 					FileSize = GameControl.control.ProgramFiles[FileIndex].Used;
 				}
 			}
-			if (fu.ProgramHandle.Count <= 0) 
+			if (fu.ProgramHandle.Count <= 0)
 			{
-				if (FileIndex != -1) 
+				if (FileIndex != -1)
 				{
-					fu.ProgramHandle.Add (new FileUtilitySystem ("Upload", FileName, FileLocation,"", "","","", false, true, true, false, 0, 0,0, 0, 0, 0, 0, 0, FileSize, 0, 0, 0, FileUtilitySystem.ProgramType.Upload));
-					fu.AddWindow ();
+					fu.ProgramHandle.Add(new FileUtilitySystem("Upload", FileName, FileLocation,"", "", "", "", "", false, true, true, false, 0, 0, 0, 0, 0, 0, 0, 0, FileSize, 0, 0, 0, FileUtilitySystem.ProgramType.Upload));
+					fu.AddWindow();
 				}
-			} 
+			}
 		}
 	}
 
@@ -921,11 +1022,130 @@ public class CLICommandsV2 : MonoBehaviour
 	{
 		for (int i = 0; i < GameControl.control.ProgramFiles.Count; i++) 
 		{
-			if (GameControl.control.ProgramFiles [i].Type == ProgramSystem.ProgramType.Exe)
+			if (GameControl.control.ProgramFiles [i].Extension == ProgramSystem.FileExtension.Exe)
 			{
 				PastCommands.Add (GameControl.control.ProgramFiles [i].Name);
 			}
 		}
+	}
+
+	void ChangeLocalDirectory()
+	{
+		if (writeInfo == true)
+		{
+			PastCommands.Add("CLI Working Directory Changed From : " + DirectoryHistory[DirectoryHistory.Count - 1]);
+			PastCommands.Add("CLI Working Directory Changed To : " + twd);
+		}
+		DirectoryHistory.Add(twd);
+		twd = GameControl.control.ProgramFiles[localdirectoryid].Target;
+		//string concat = String.Join("", DirectoryHistory.ToArray());
+	}
+
+	void ChangeLocalDirectoryUp()
+	{
+		if(DirectoryHistory.Count > 0)
+		{
+			int cdupid = DirectoryHistory.Count - 1;
+			twd = DirectoryHistory[cdupid];
+			DirectoryHistory.RemoveAt(cdupid);
+		}
+	}
+
+	void CheckLocalDirectoryChange()
+	{
+		for (localdirectoryid = 0; localdirectoryid < GameControl.control.ProgramFiles.Count; localdirectoryid++)
+		{
+			if (inputArray[1] == GameControl.control.ProgramFiles[localdirectoryid].Name)
+			{
+				if (twd == GameControl.control.ProgramFiles[localdirectoryid].Location)
+				{
+					if (twd != GameControl.control.ProgramFiles[localdirectoryid].Target)
+					{
+						ChangeLocalDirectory();
+					}
+				}
+			}
+			else if (inputArray[1] == GameControl.control.ProgramFiles[localdirectoryid].Location)
+			{
+				if (twd != GameControl.control.ProgramFiles[localdirectoryid].Location)
+				{
+					ChangeLocalDirectory();
+				}
+			}
+			else if (inputArray[1] == GameControl.control.ProgramFiles[localdirectoryid].Target)
+			{
+				if (twd != GameControl.control.ProgramFiles[localdirectoryid].Target)
+				{
+					ChangeLocalDirectory();
+				}
+			}
+			else if (inputArray[1] == localdirectoryid.ToString())
+			{
+				if (twd == GameControl.control.ProgramFiles[localdirectoryid].Location)
+				{
+					if (twd != GameControl.control.ProgramFiles[localdirectoryid].Target)
+					{
+						ChangeLocalDirectory();
+					}
+				}
+			}
+		}
+	}
+
+	void CreateRealExe(string Name, string GameLocation, string RealLocation)
+	{
+		if (Name != "")
+		{
+			for (int i = 0; i < GameControl.control.ProgramFiles.Count; i++)
+			{
+				if (GameControl.control.ProgramFiles[i].Name == Name && GameControl.control.ProgramFiles[i].Location == GameLocation)
+				{
+					ep.enabled = true;
+					ep.show = true;
+					ep.playsound = true;
+					ep.ErrorTitle = "File Utility Error - 85";
+					ep.ErrorMsg = "A file with that name already exists in that directory.";
+					FileIndex = -1;
+				}
+				else
+				{
+					FileIndex = i;
+				}
+			}
+			if (FileIndex != -1)
+			{
+				if (GameLocation.Length > 3)
+				{
+					GameControl.control.ProgramFiles.Add(new ProgramSystem(Name, "", "", "", "", "", GameLocation, RealLocation, "", "", ProgramSystem.FileExtension.Real, ProgramSystem.FileExtension.Null, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, false, false, false, false, BlankInfections, BlankFileType));
+				}
+				FileIndex = -1;
+			}
+		}
+	}
+
+	void InstallOS()
+	{
+
+		//OSColour.Button.Red = 255;
+		//OSColour.Button.Green = 255;
+		//OSColour.Button.Blue = 255;
+		//OSColour.Button.Alpha = 255;
+
+		//OSColour.Window.Red = 255;
+		//OSColour.Window.Green = 255;
+		//OSColour.Window.Blue = 255;
+		//OSColour.Window.Alpha = 255;
+
+		//OSColour.Font.Alpha = 255;
+
+		GameControl.control.ProgramFiles.Add(new ProgramSystem("" + "TreeOS", "", "", "", "", "", "C:/System", "", "", "", ProgramSystem.FileExtension.OS, ProgramSystem.FileExtension.Null, 0, 0, 0, 0, 0, 0, 0, 100, 1, 0, 0, 0, 0, 0, 0, 0, false, false, false, false, BlankInfections, BlankFileType));
+		//GameControl.control.ProgramFiles.Add(new ProgramSystem("" + "FluidicIceOS", "", "", "", "", "", "C:/System", "", "", "", ProgramSystem.FileExtension.OS, ProgramSystem.FileExtension.Null, 0, 0, 0, 0, 0, 0, 0, 100, 1, 0, 0, 0, 0, 0, 0, 0, false, false, false, false, BlankInfections, BlankFileType));
+		GameControl.control.ProgramFiles.Add(new ProgramSystem("" + "AppatureOS", "", "", "", "", "", "C:/System", "", "", "", ProgramSystem.FileExtension.OS, ProgramSystem.FileExtension.Null, 0, 0, 0, 0, 0, 0, 0, 100, 1, 0, 0, 0, 0, 0, 0, 0, false, false, false, false, BlankInfections, BlankFileType));
+		GameControl.control.ProgramFiles.Add(new ProgramSystem("" + "EthelOS", "", "", "", "", "", "C:/System", "", "", "", ProgramSystem.FileExtension.OS, ProgramSystem.FileExtension.Null, 0, 0, 0, 0, 0, 0, 0, 100, 1, 0, 0, 0, 0, 0, 0, 0, false, false, false, false, BlankInfections, BlankFileType));
+		GameControl.control.OSName.Add(new OperatingSystems(OperatingSystems.OSName.EthelOS, "EthelOS", OSColour, OSFPC, false, 9999, true));
+		GameControl.control.OSName.Add(new OperatingSystems(OperatingSystems.OSName.TreeOS, "TreeOS", OSColour, OSFPC, false, 9999, true));
+		//GameControl.control.OSName.Add(new OperatingSystems(OperatingSystems.OSName.FluidicIceOS, "FluidicIceOS", Colour, OSFPC, false, 9999, true));
+		GameControl.control.OSName.Add(new OperatingSystems(OperatingSystems.OSName.AppatureOS, "AppatureOS", OSColour, OSFPC, false, 9999, true));
 	}
 
 	void NameChange()
@@ -956,6 +1176,20 @@ public class CLICommandsV2 : MonoBehaviour
 		}
 
 		CommandNames.RemoveRange (0, CommandNames.Count);
+	}
+
+	void RunFakeApps(string ProgramName)
+	{
+		appman.ProgramName = ProgramName;
+		appman.FakeApp = true;
+		appman.SelectedApp = "fakeapp";
+		StringCommandTask = "na";
+	}
+
+	public void OpenFileExplorer(string FileType)
+	{
+		StringCommand = EditorUtility.OpenFilePanel("Select File Path", "", FileType);
+		WWW www = new WWW("file:///" + StringCommand);
 	}
 
 	public void CommandCheck()
@@ -1018,6 +1252,18 @@ public class CLICommandsV2 : MonoBehaviour
 		{
 			CheckInput();
 		}
+
+		SpecialChecks();
+	}
+
+	public void SpecialChecks()
+	{
+		switch(ParseArray[0])
+		{
+			case "str":
+			StartProcessingString();
+				break;
+		}
 	}
 
 	public void CheckInput()
@@ -1026,8 +1272,33 @@ public class CLICommandsV2 : MonoBehaviour
 
 		switch(inputArray[0])
 		{
+		case "createrealexe":
+				CreateRealExe(ParseArray[1], ParseArray[2], ParseArray[3]);
+				break;
 
-		case"aql":
+		case "installdefaltos":
+				InstallOS();
+				break;
+
+		case "ofe":
+				OpenFileExplorer(StringCommand);
+				ResetStringCommand();
+				break;
+
+		case "screenshot":
+				PastCommands.Add("Screenshot Taken");
+				screenshot.TakeShot();
+			break;
+
+			case "prtstr":
+				PastCommands.Add(StringCommand);
+				break;
+
+			//case "devinstall":
+			//	GameControl.control.ProgramFiles.Add(new ProgramSystem())
+			//	break;
+
+			case "aql":
             if (inputArray[1] == "")
             {
                 ProgramQuickLaunch();
@@ -1035,7 +1306,7 @@ public class CLICommandsV2 : MonoBehaviour
 			break;
 
             case "error":
-                if (inputArray[1] == "1")
+                if (ParseArray[1] == "1")
                 {
                     PastCommands.Add("Displayed an error");
                     ep.SoundSelect = 0;
@@ -1058,7 +1329,11 @@ public class CLICommandsV2 : MonoBehaviour
 			Desktops.SetActive (false);
 			break;
 
-        case "url":
+		case"mkfakeapp":
+				RunFakeApps(StringCommand);
+				break;
+
+			case "url":
             if (inputArray[1] != "" && inputArray[1] != "help")
             {
                 Application.OpenURL(inputArray[1]);
@@ -1069,7 +1344,31 @@ public class CLICommandsV2 : MonoBehaviour
             }
             break;
 
-        case "noti":
+			case "openchatroom":
+				if (inputArray[1] == "Info")
+				{
+					PastCommands.Add("Available Commands:");
+					PastCommands.Add("Help");
+					PastCommands.Add("Refresh");
+					PastCommands.Add("CMD");
+					PastCommands.Add("Invite");
+					PastCommands.Add("Define");
+					PastCommands.Add("Disconnect");
+				}
+				if (inputArray[1] == "Refresh")
+				{
+					PastCommands.Add("Main Chat: Levi");
+					PastCommands.Add("Lobby: ");
+					PastCommands.Add("ERROR");
+				}
+				if (inputArray[1] == "Help")
+				{
+					PastCommands.Add("There is none to be found here.");
+				}
+				break;
+
+
+		case "noti":
             if (inputArray[1] != "")
             {
 				noti.NewNotification("CLI Noti","Test",inputArray[1]);
@@ -1115,59 +1414,13 @@ public class CLICommandsV2 : MonoBehaviour
 		case "cd":
 			if (inputArray [1] != "") 
 			{
-				for (int i = 0; i < GameControl.control.ProgramFiles.Count; i++)
+				if (inputArray[1] == "back" || inputArray[1] == "..")
 				{
-					if (inputArray [1] == GameControl.control.ProgramFiles [i].Name)
-					{
-						if (twd == GameControl.control.ProgramFiles [i].Location) 
-						{
-							if (twd != GameControl.control.ProgramFiles [i].Target) 
-							{
-								if (writeInfo == true) 
-								{
-									PastCommands.Add ("CLI Working Directory Changed From : " + twd);
-									twd = GameControl.control.ProgramFiles [i].Target;
-									PastCommands.Add ("CLI Working Directory Changed To : " + twd);
-								} 
-								else 
-								{
-									twd = GameControl.control.ProgramFiles [i].Target;
-								}
-							}
-						} 
-					}
-					else if (inputArray [1] == GameControl.control.ProgramFiles [i].Location) 
-					{
-						if (twd != GameControl.control.ProgramFiles [i].Location)
-						{
-							if (writeInfo == true) 
-							{
-								PastCommands.Add ("CLI Working Directory Changed From : " + twd);
-								twd = GameControl.control.ProgramFiles [i].Location;
-								PastCommands.Add ("CLI Working Directory Changed To : " + twd);
-							} 
-							else 
-							{
-								twd = GameControl.control.ProgramFiles [i].Location;
-							}
-						}
-					}
-					else if (inputArray [1] == GameControl.control.ProgramFiles [i].Target) 
-					{
-						if (twd != GameControl.control.ProgramFiles [i].Target) 
-						{
-							if (writeInfo == true) 
-							{
-								PastCommands.Add ("CLI Working Directory Changed From : " + twd);
-								twd = GameControl.control.ProgramFiles [i].Target;
-								PastCommands.Add ("CLI Working Directory Changed To : " + twd);
-							} 
-							else 
-							{
-								twd = GameControl.control.ProgramFiles [i].Target;
-							}
-						}
-					}
+					ChangeLocalDirectoryUp();
+				}
+				else
+				{
+					CheckLocalDirectoryChange();
 				}
 			}
 			if (inputArray [1] == "")
@@ -1285,7 +1538,21 @@ public class CLICommandsV2 : MonoBehaviour
 			}
 		break;
 
-		case "enablemusicplayer":
+		case "close":
+			if (inputArray[1] == "help")
+			{
+				PastCommands.Add("run");
+				PastCommands.Add("lets you run a program");
+				PastCommands.Add("in the directory your currently in");
+				PastCommands.Add("example run Calculator");
+			}
+			else
+			{
+				RunProgram();
+			}
+			break;
+
+			case "enablemusicplayer":
 			mp.enabled = true;
 			PastCommands.Add("Music Player has been enabled");
 			PastCommands.Add("Warnning may cause longer loading times");
@@ -1314,19 +1581,6 @@ public class CLICommandsV2 : MonoBehaviour
 				}
 			}
 			break;
-
-			case "q":
-            if (inputArray[1] == "help")
-            {
-                PastCommands.Add("close");
-                PastCommands.Add("lets you close a running program");
-                PastCommands.Add("example close Calculator");
-            }
-            else
-            {
-                CloseProgram();
-            }
-            break;
 
             case "open":
 			if (inputArray[1] == "help")
@@ -1386,7 +1640,7 @@ public class CLICommandsV2 : MonoBehaviour
 						{
 							FileName = inputArray[2];
 							string FileLocation = inputArray[3];
-							fu.ProgramHandle.Add (new FileUtilitySystem ("Paste", FileName, FileLocation,"", "","","", false, true, true, false, 0, 0,0, 0, 0, 0, 0, 0, FileSize, 0, 0, 0, FileUtilitySystem.ProgramType.Paste));
+							fu.ProgramHandle.Add (new FileUtilitySystem ("Paste", FileName, FileLocation,"","", "","","", false, true, true, false, 0, 0,0, 0, 0, 0, 0, 0, FileSize, 0, 0, 0, FileUtilitySystem.ProgramType.Paste));
 							fu.AddWindow ();
 						}
 					} 
@@ -1428,8 +1682,7 @@ public class CLICommandsV2 : MonoBehaviour
 					}
 					if (FileIndex != -1)
 					{
-						GameControl.control.ProgramFiles.Add (new ProgramSystem (inputArray [2], "", "", "", inputArray [3], "" + inputArray [3] + "/" + inputArray [2], 0, 0, 0, 0, 0, 0, false, ProgramSystem.ProgramType.Fdl));
-						//GameControl.control.ProgramFiles.Add (new ProgramSystem (inputArray [2], "", "", "", inputArray [3], "" + inputArray [4], 0, 0, 0, 0, 0, 0, false, ProgramSystem.ProgramType.Fdl));
+						GameControl.control.ProgramFiles.Add(new ProgramSystem(inputArray[2], "", "", "", "", "", inputArray[3], "" + inputArray[3] + "/" + inputArray[2], "", "", ProgramSystem.FileExtension.Fdl, ProgramSystem.FileExtension.Null, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, false, false, false, false, BlankInfections, BlankFileType));
 					}
 				}
 				break;
@@ -1473,7 +1726,7 @@ public class CLICommandsV2 : MonoBehaviour
 					{
 						if (FileIndex != -1) 
 						{
-							fu.ProgramHandle.Add (new FileUtilitySystem ("Delete", FileName, FileLocation,"", "","","", false, true, true, false, 0,0, 0, 0, 0, 0, 0, 0, FileSize, 0, 0, 0, FileUtilitySystem.ProgramType.LocalDelete));
+							fu.ProgramHandle.Add (new FileUtilitySystem ("Delete", FileName, FileLocation,"","", "","","", false, true, true, false, 0,0, 0, 0, 0, 0, 0, 0, FileSize, 0, 0, 0, FileUtilitySystem.ProgramType.LocalDelete));
 							fu.AddWindow ();
 						}
 					} 
@@ -1547,7 +1800,7 @@ public class CLICommandsV2 : MonoBehaviour
 			{
 				int select = 0;
 				int.TryParse (inputArray [1],out select);
-				GameControl.control.SelectedBank = select;
+				//GameControl.control.SelectedBank = select;
 				PastCommands.Add ("Selected account " + select);
 			}
 			break;
@@ -1557,12 +1810,31 @@ public class CLICommandsV2 : MonoBehaviour
 			{
 				float amount = 0;
 				float.TryParse (inputArray [1],out amount);
-				GameControl.control.MyBankDetails[GameControl.control.SelectedBank].AccountBalance = amount;
-				PastCommands.Add ("Added  " + amount + " to " + GameControl.control.SelectedBank);
+					for (int i = 0; i < GameControl.control.BankData.Count; i++)
+					{
+						for (int j = 0; j < GameControl.control.BankData[i].Accounts.Count; j++)
+						{
+							if (GameControl.control.BankData[i].Accounts[j].Primary == true)
+							{
+								GameControl.control.BankData[i].Accounts[j].AccountBalance = amount;
+								PastCommands.Add("Added  " + amount + " to " + GameControl.control.BankData[i].Accounts[j].AccountNumber);
+							}
+						}
+					}
 			}
 			break;
 
-		case "time":
+		case "createnewbankaccount":
+			string accountnumber = StringGenerator.RandomNumberChar(6, 6);
+			string accountpass = StringGenerator.RandomMixedChar(15, 15);
+			GameControl.control.StoredLogins.Add(new LoginSystem("LEC Bank", accountnumber, accountpass, 0));
+			for (int i = 0; i < GameControl.control.BankData.Count; i++)
+			{
+				GameControl.control.BankData[i].Accounts.Add(new BankAccountsSystem("192.168.56.91", "LEC Bank", accountnumber, accountnumber, accountpass, 0, 1,0, 0, 0, 1, false,false,null));
+			}
+			break;
+
+			case "time":
 			PastCommands.Add ("" + GameControl.control.Time.CurrentTime);
 			break;
 
@@ -1630,9 +1902,8 @@ public class CLICommandsV2 : MonoBehaviour
 					{
 						float red = 0;
 						float.TryParse (inputArray [3],out red);
-						Customize.cust.FontR = red;
+						GameControl.control.SelectedOS.Colour.Font.Red = red;
 						SetFontColor();
-						//SetFontColor();
 					}
 					break;
 
@@ -1641,7 +1912,7 @@ public class CLICommandsV2 : MonoBehaviour
 					{
 						float green = 0;
 						float.TryParse (inputArray [3],out green);
-						Customize.cust.FontG = green;
+						GameControl.control.SelectedOS.Colour.Font.Green = green;
 						SetFontColor();
 					}
 					break;
@@ -1651,7 +1922,7 @@ public class CLICommandsV2 : MonoBehaviour
 					{
 						float blue = 0;
 						float.TryParse (inputArray [3],out blue);
-						Customize.cust.FontB = blue;
+						GameControl.control.SelectedOS.Colour.Font.Blue = blue;
 						SetFontColor();
 					}
 					break;
@@ -1661,7 +1932,7 @@ public class CLICommandsV2 : MonoBehaviour
 					{
 						float alpha = 0;
 						float.TryParse (inputArray [3],out alpha);
-						Customize.cust.FontB = alpha;
+						GameControl.control.SelectedOS.Colour.Font.Alpha = alpha;
 						SetFontColor();
 					}
 					break;
@@ -1677,9 +1948,8 @@ public class CLICommandsV2 : MonoBehaviour
 					{
 						float red = 0;
 						float.TryParse (inputArray [3],out red);
-						Customize.cust.ButtonR = red;
-						SetFontColor();
-						//SetFontColor();
+						GameControl.control.SelectedOS.Colour.Button.Red = red;
+						SetButtonColor();
 					}
 					break;
 
@@ -1688,8 +1958,8 @@ public class CLICommandsV2 : MonoBehaviour
 					{
 						float green = 0;
 						float.TryParse (inputArray [3],out green);
-						Customize.cust.ButtonG = green;
-						SetFontColor();
+						GameControl.control.SelectedOS.Colour.Button.Green = green;
+						SetButtonColor();
 					}
 					break;
 
@@ -1698,8 +1968,8 @@ public class CLICommandsV2 : MonoBehaviour
 					{
 						float blue = 0;
 						float.TryParse (inputArray [3],out blue);
-						Customize.cust.ButtonB = blue;
-						SetFontColor();
+						GameControl.control.SelectedOS.Colour.Button.Blue = blue;
+						SetButtonColor();
 					}
 					break;
 
@@ -1708,8 +1978,8 @@ public class CLICommandsV2 : MonoBehaviour
 					{
 						float alpha = 0;
 						float.TryParse (inputArray [3],out alpha);
-						Customize.cust.ButtonB = alpha;
-						SetFontColor();
+						GameControl.control.SelectedOS.Colour.Button.Alpha = alpha;
+						SetButtonColor();
 					}
 					break;
 				}
@@ -1724,9 +1994,8 @@ public class CLICommandsV2 : MonoBehaviour
 					{
 						float red = 0;
 						float.TryParse (inputArray [3],out red);
-						Customize.cust.WindowR = red;
-						SetFontColor();
-						//SetFontColor();
+						GameControl.control.SelectedOS.Colour.Window.Red = red;
+						SetWindowColor();
 					}
 					break;
 
@@ -1735,8 +2004,8 @@ public class CLICommandsV2 : MonoBehaviour
 					{
 						float green = 0;
 						float.TryParse (inputArray [3],out green);
-						Customize.cust.WindowG = green;
-						SetFontColor();
+						GameControl.control.SelectedOS.Colour.Window.Green = green;
+						SetWindowColor();
 					}
 					break;
 
@@ -1745,8 +2014,8 @@ public class CLICommandsV2 : MonoBehaviour
 					{
 						float blue = 0;
 						float.TryParse (inputArray [3],out blue);
-						Customize.cust.WindowB = blue;
-						SetFontColor();
+						GameControl.control.SelectedOS.Colour.Window.Blue = blue;
+						SetWindowColor();
 					}
 					break;
 
@@ -1755,8 +2024,8 @@ public class CLICommandsV2 : MonoBehaviour
 					{
 						float alpha = 0;
 						float.TryParse (inputArray [3],out alpha);
-						Customize.cust.WindowA = alpha;
-						SetFontColor();
+						GameControl.control.SelectedOS.Colour.Window.Alpha = alpha;
+						SetWindowColor();
 					}
 					break;
 				}
@@ -1767,6 +2036,7 @@ public class CLICommandsV2 : MonoBehaviour
 		case "connect":
 			ib.AddressBar = inputArray[1];
 			ib.Inputted = inputArray[1];
+			ib.WebSiteInfo();
 			storedConnection = inputArray[1];
 			break;
 
@@ -1777,17 +2047,40 @@ public class CLICommandsV2 : MonoBehaviour
 			}
 			PastCommands.Add ("Memory: " + ram.RemainingRAM);
 			PastCommands.Add ("Power: " + psu.RemainingPower);
-			PastCommands.Add ("Hard Drives: " + HardwareController.hdcon.HDDFreeSpace);
+			//PastCommands.Add ("Hard Drives: " + HardwareController.hdcon.HDDFreeSpace);
 			break;
 
 		case "restart":
-				GameControl.control.Booted = false;
-				Application.LoadLevel(1);
+				ShutDownWindow.Restart();
+				break;
+
+		case "safemode":
+			GameControl.control.SelectedOS.Name = OperatingSystems.OSName.SafeMode;
+			GameControl.control.Gateway.Status.Terminal = true;
+			GameControl.control.Gateway.Status.Booted = false;
+			GameControl.control.Gateway.Status.SafeMode = true;
+			Application.LoadLevel(1);
+			break;
+
+		case "shutdown":
+			ShutDownWindow.Shutdown();
+			break;
+
+		case "logout":
+			if(GameControl.control.Gateway.Status.Terminal == true)
+			{
+				PastCommands.Add("Signing Out..");
+				ShutDownWindow.SignOut();
+			}
+			else
+			{
+				ShutDownWindow.SignOutUI();
+			}
 			break;
 
 		case "exit":
-				PastCommands.RemoveRange(0, PastCommands.Count);
-				appman.SelectedApp = "Command Line V3";
+			PastCommands.RemoveRange(0, PastCommands.Count);
+			appman.SelectedApp = "Command Line V3";
 			break;
 
 		case "background":

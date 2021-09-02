@@ -55,8 +55,6 @@ public class BugReport : MonoBehaviour
 		com = SysSoftware.GetComponent<Computer>();
 		appman = SysSoftware.GetComponent<AppMan>();
 
-		windowID = 57;
-		ContextMenuID = 58;
 		ContextwindowRect = new Rect(2, 49, 65, 22);
 	}
 
@@ -257,6 +255,10 @@ public class BugReport : MonoBehaviour
 		sh.TakeShot();
 		tw.Write("Reported Date: " + WrittenTime + "\n" + "\n" + "Reported By: " + GameControl.control.ProfileName + "\n" + "\n" + GameControl.control.GameVersion[0] + "(" + GameControl.control.GameVersion[2] + ")" + "\n" + GameControl.control.GameVersion[1] + "\n" + ActualVersion + "\n" + "\n" + "Subject: " + Subject + "\n" + "\n" + "Report Type: " + InformationType + "\n" + "\n" + "Report Information: " + "\n" + Content + "\n" + "\n" + "Current OS: " + GameControl.control.SelectedOS.Name);
 		tw.Close();
+
+		Subject = "";
+		InformationType = "";
+		Content = "";
 		
 	}
 }

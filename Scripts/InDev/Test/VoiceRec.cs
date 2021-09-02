@@ -25,12 +25,12 @@ public class VoiceRec : MonoBehaviour
 
 	public void KeywordList()
 	{
-		keywords.Add("Open" + ProgramName, () =>
+		keywords.Add("Open " + ProgramName, () =>
 		 {
 			 print("Open " + ProgramName);
 			 Run();
 		 });
-		keywords.Add("Close" + ProgramName, () =>
+		keywords.Add("Close " + ProgramName, () =>
 		 {
 			 print("Closed " + ProgramName);
 			 Run();

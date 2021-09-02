@@ -22,7 +22,6 @@ public class IceOSAppMenu : MonoBehaviour
 	private DirSearch ds;
 	private Favs fav;
 	private TreeView tv;
-	private CLI cmd;
 	private SystemMap sm;
 	private MonitorBypass mPass;
 	private WebSecViewer wsv;
@@ -148,7 +147,6 @@ public class IceOSAppMenu : MonoBehaviour
 		ds = SysSoftware.GetComponent<DirSearch>();
 		tv = SysSoftware.GetComponent<TreeView>();
 		al = AppSoftware.GetComponent<AccLog>();
-		cmd = SysSoftware.GetComponent<CLI>();
 		sm = AppSoftware.GetComponent<SystemMap>();
 		clk = SysSoftware.GetComponent<Clock>();
 		defalt = SysSoftware.GetComponent<Defalt>();
@@ -184,62 +182,6 @@ public class IceOSAppMenu : MonoBehaviour
 
 		windowID = appmenu.windowID;
 	}
-
-	void Test()
-	{
-		GameControl.control.ProgramFiles.Add(new ProgramSystem("Calculator","","","","C:/Programs","Calculator",0,0,2,0,100,10,false,ProgramSystem.ProgramType.Exe));
-
-		GameControl.control.ProgramFiles.Add(new ProgramSystem("Music Player","","","","C:/Programs","Music Player",0,0,2,0,100,10,false,ProgramSystem.ProgramType.Exe));
-		//GameControl.control.QuickProgramList.Add(new ProgramSystem("Calculator","","","","C:/Programs","Calculator",0,0,2,0,100,10,false,ProgramSystem.ProgramType.Exe));
-
-		GameControl.control.ProgramFiles.Add(new ProgramSystem("Net Viewer","","","","C:/Programs","Net Viewer",0,0,2,0,100,10,false,ProgramSystem.ProgramType.Exe));
-		//GameControl.control.QuickProgramList.Add(new ProgramSystem("Net Viewer","","","","C:/Programs","Net Viewer",0,0,2,0,100,10,false,ProgramSystem.ProgramType.Exe));
-
-		GameControl.control.ProgramFiles.Add(new ProgramSystem("System Panel","","","","C:/Programs","System Panel",0,0,2,0,100,10,false,ProgramSystem.ProgramType.Exe));
-
-		GameControl.control.ProgramFiles.Add(new ProgramSystem("Remote Viewer","","","","C:/Programs","Remote Viewer",0,0,2,0,100,10,false,ProgramSystem.ProgramType.Exe));
-		//GameControl.control.QuickProgramList.Add(new ProgramSystem("Remote Viewer","","","","C:/Programs","Remote Viewer",0,0,2,0,100,10,false,ProgramSystem.ProgramType.Exe));
-
-		GameControl.control.ProgramFiles.Add(new ProgramSystem("Notepad","","","","C:/Programs","Notepad",0,0,2,0,100,10,false,ProgramSystem.ProgramType.Exe));
-		//GameControl.control.QuickProgramList.Add(new ProgramSystem("Notepad","","","","C:/Programs","Notepad",0,0,2,0,100,10,false,ProgramSystem.ProgramType.Exe));
-
-		GameControl.control.ProgramFiles.Add(new ProgramSystem("CLI","","","","C:/Programs","Command Line V3",0,0,2,0,100,10,false,ProgramSystem.ProgramType.Exe));
-//		GameControl.control.QuickProgramList.Add(new ProgramSystem("CLIv3","","","","C:/Programs","Command Line V3",0,0,2,0,100,10,false,ProgramSystem.ProgramType.Exe));
-
-		GameControl.control.ProgramFiles.Add(new ProgramSystem("Task Viewer","","","","C:/Programs","Task Viewer",0,0,2,0,100,10,false,ProgramSystem.ProgramType.Exe));
-//		GameControl.control.QuickProgramList.Add(new ProgramSystem("Task Viewer","","","","C:/Programs","Task Viewer",0,0,2,0,100,10,false,ProgramSystem.ProgramType.Exe));
-
-		GameControl.control.ProgramFiles.Add(new ProgramSystem("CHM","","","","C:/Programs","CHM",0,0,2,0,100,10,false,ProgramSystem.ProgramType.Exe));
-//		GameControl.control.QuickProgramList.Add(new ProgramSystem("CHM","","","","C:/Programs","CHM",0,0,2,0,100,10,false,ProgramSystem.ProgramType.Exe));
-
-		GameControl.control.ProgramFiles.Add(new ProgramSystem("Version","","","","C:/Programs","Version",0,0,2,0,100,10,false,ProgramSystem.ProgramType.Exe));
-
-		Test2();
-	}
-
-	void Test2()
-	{
-		GameControl.control.ProgramFiles.Add(new ProgramSystem("Disk Manager","","","","C:/Programs","Disk Manager",0,0,2,0,100,10,false,ProgramSystem.ProgramType.Exe));
-//		GameControl.control.QuickProgramList.Add(new ProgramSystem("Disk Manager","","","","C:/Programs","Disk Manager",0,0,2,0,100,10,false,ProgramSystem.ProgramType.Exe));
-
-		//GameControl.control.ProgramFiles.Add(new ProgramSystem("Notepad V2","","","","C:/Programs","Notepadv2",0,0,2,0,100,10,false,ProgramSystem.ProgramType.Exe));
-		//GameControl.control.QuickProgramList.Add(new ProgramSystem("Notepad V2","","","","C:/Programs","Notepadv2",0,0,2,0,100,10,false,ProgramSystem.ProgramType.Exe));
-
-		GameControl.control.ProgramFiles.Add(new ProgramSystem("Mail","","","","C:/Programs","Email",0,0,2,0,100,10,false,ProgramSystem.ProgramType.Exe));
-		//GameControl.control.QuickProgramList.Add(new ProgramSystem("Mail","","","","C:/Programs","Email",0,0,2,0,100,10,false,ProgramSystem.ProgramType.Exe));
-
-		GameControl.control.ProgramFiles.Add(new ProgramSystem("Gateway","","","","C:/Programs","Computer",0,0,2,0,100,10,false,ProgramSystem.ProgramType.Exe));
-
-        GameControl.control.ProgramFiles.Add(new ProgramSystem("Device Manager", "", "", "", "C:/Programs", "Device Manager", 0, 0, 2, 0, 100, 10, false, ProgramSystem.ProgramType.Exe));
-
-        GameControl.control.ProgramFiles.Add(new ProgramSystem("Accounts","","","","C:/Programs","Account Tracker",0,0,2,0,100,2,false,ProgramSystem.ProgramType.Exe));
-
-        GameControl.control.ProgramFiles.Add(new ProgramSystem("QA Report System", "", "", "", "C:/Programs", "Bug Report", 0, 0, 0, 0, 100, 2, false, ProgramSystem.ProgramType.Exe));
-        //GameControl.control.QuickProgramList.Add(new ProgramSystem("Gateway","","","","C:/Programs","Computer",0,0,2,0,100,10,false,ProgramSystem.ProgramType.Exe));
-
-        //GameControl.control.ProgramFiles.Add(new ProgramSystem("Store","","","","C:/Programs","Store",0,0,2,0,100,10,false,ProgramSystem.ProgramType.Exe));
-        //GameControl.control.QuickProgramList.Add(new ProgramSystem("Store","","","","C:/Programs","Store",0,0,2,0,100,10,false,ProgramSystem.ProgramType.Exe));
-    }
 
 	void UpdateUI()
 	{
@@ -321,7 +263,7 @@ public class IceOSAppMenu : MonoBehaviour
 
 		for (int b = 0; b < GameControl.control.ProgramFiles.Count; b++) 
 		{
-			if (GameControl.control.ProgramFiles[b].Type == ProgramSystem.ProgramType.Exe) 
+			if (GameControl.control.ProgramFiles[b].Extension == ProgramSystem.FileExtension.Exe) 
 			{
 				ListOfPrograms.Add(GameControl.control.ProgramFiles[b].Name);
 				ListOfProgramTargets.Add(GameControl.control.ProgramFiles[b].Target);
@@ -338,7 +280,7 @@ public class IceOSAppMenu : MonoBehaviour
 
         for (int b = 0; b < GameControl.control.ProgramFiles.Count; b++) 
 		{
-			if (GameControl.control.ProgramFiles[b].Type == ProgramSystem.ProgramType.Exe) 
+			if (GameControl.control.ProgramFiles[b].Extension == ProgramSystem.FileExtension.Exe) 
 			{
 				ListOfSites.Add(GameControl.control.ProgramFiles[b].Name);
 				ListOfTargets.Add(GameControl.control.ProgramFiles[b].Target);
@@ -365,6 +307,12 @@ public class IceOSAppMenu : MonoBehaviour
 	{
 		sc.SoundSelect = 3;
 		sc.PlaySound();
+	}
+
+	void Update()
+	{
+		UpdateProgramList();
+		UpdateSiteList();
 	}
 
 	void OnGUI()
@@ -404,7 +352,6 @@ public class IceOSAppMenu : MonoBehaviour
 	{
 		if(SearchSites != "")
 		{
-			UpdateSiteList();
 			SearchDone = false;
 			Inputted = SearchSites;
 			UpdateSearchUI = true;
@@ -485,7 +432,6 @@ public class IceOSAppMenu : MonoBehaviour
 					if (GUI.Button (new Rect (ShowAllButton), "Show All"))
 					{
 						PlayClickSound();
-						UpdateProgramList();
 						ShowAllApps = true;
 					}
 				}

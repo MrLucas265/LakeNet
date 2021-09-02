@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Store : MonoBehaviour 
+public class Store : MonoBehaviour
 {
 	private GameObject Missions;
 	private GameObject AppsSoftware;
@@ -51,7 +51,9 @@ public class Store : MonoBehaviour
 	public List<int> Cost = new List<int>();
 
 	public string SelectedProgram;
-	public List<string> ListOfSoftware = new List<string>();
+
+	public List<ProgramSystem> Catalog = new List<ProgramSystem>();
+
 	public int Price;
 	public float Size;
 	public float Version;
@@ -59,8 +61,8 @@ public class Store : MonoBehaviour
 	public int MaxProgramVersion;
 	public int SelectedVersion;
 	public string ProgramName;
-    public string SystemProgramName;
-    public string ProgramType;
+	public string SystemProgramName;
+	public string ProgramType;
 	public string ProgramTarget;
 	public string Cat;
 	public CHMSystem ProgramInfo;
@@ -71,11 +73,13 @@ public class Store : MonoBehaviour
 	public string Password;
 	public bool ShowPassword;
 
-    private FileUtility fu;
+	public string OSName;
 
-    private DiskMan dskman;
 
-    void Start () 
+	public List<InfectionSystem> BlankInfections = new List<InfectionSystem>();
+	public List<ProgramSystem.FileType> BlankFileType = new List<ProgramSystem.FileType>();
+
+	void Start()
 	{
 		SysSoftware = GameObject.Find("System");
 		Missions = GameObject.Find("Missions");
@@ -84,8 +88,8 @@ public class Store : MonoBehaviour
 		Computer = GameObject.Find("Computer");
 		HackingSoftware = GameObject.Find("Hacking");
 
-        WebSearch();
-		UpdateProgramList();
+		WebSearch();
+		UpdateCatalog();
 	}
 
 	void WebSearch()
@@ -100,121 +104,30 @@ public class Store : MonoBehaviour
 		trace = HackingSoftware.GetComponent<Tracer>();
 		brow = Missions.GetComponent<MissionBrow>();
 		sm = AppsSoftware.GetComponent<SystemMap>();
-        fu = SysSoftware.GetComponent<FileUtility>();
-        dskman = SysSoftware.GetComponent<DiskMan>();
 
-    }
-
-	void UpdateProgramList()
-	{
-		ListOfSoftware.Add("Notepad");
-		//ListOfSoftware.Add("Music Player");
-		//ListOfSoftware.Add("Paint");
-		//ListOfSoftware.Add("Background Downloader");
-		ListOfSoftware.Add("NotepadV2");
-		ListOfSoftware.Add("TreeOS");
-		ListOfSoftware.Add("FluidicIceOS");
-		ListOfSoftware.Add("AppatureOS");
 	}
 
-	void UpdateUI()
+	void UpdateCatalog()
 	{
-		switch (ProgramName) 
-		{
-		case "Notepad":
-			Price = 250;
-			Size = 2;
-			Desc = "The password breaker is slower and more expensive then the dircrk but eventually will match the password.";
-			Version = 1;
-			ProgramTarget = "Notepad";
-            SystemProgramName = "Notepad";
-			ProgramType = "Exe";
-			break;
-		case "Music Player":
-			Price = 150;
-			Size = 1;
-			Desc = "Music Player allows the user to play custom .wav music on thier desktop.";
-			Version = 1;
-			ProgramTarget = "Trace Tracker";
-			ProgramType = "Exe";
-			break;
-		case "Paint":
-			Price = 150;
-			Size = 5;
-			Desc = "Paint is a artistic canvas editor that allows.";
-			ProgramTarget = "Paint";
-			Version = 1;
-			ProgramType = "Exe";
-			break;
-		case "Background Downloader":
-			Price = 500 ;
-			Size = 1;
-			Desc = "Background Downloader is a program that allows the user to download more backgrounds.";
-			Version = 1;
-			ProgramTarget = "Background Downloader";
-			ProgramType = "Exe";
-			break;
-		case "TreeOS":
-			Price = 500;
-			Size = 20;
-			Desc = "TreeOS is a icon based shell for ease of use and understanding.";
-			Version = 1;
-			ProgramTarget = "TreeOS";
-            SystemProgramName = "TreeOS";
-            ProgramType = "OS";
-			break;
-		case "FluidicIceOS":
-			Price = 500;
-			Size = 20;
-			Desc = "FluidicIceOS shell enviroment is very user friendly that uses a titlebar and icons.";
-			Version = 1;
-			ProgramTarget = "FluidicIceOS";
-            SystemProgramName = "FluidicIceOS";
-            ProgramType = "OS";
-			break;
-		case "AppatureOS":
-			Price = 500;
-			Size = 15;
-			Desc = "AppatureOS is a light user friendly desktop enviroment to help maximize screen space.";
-			Version = 1;
-			ProgramTarget = "AppatureOS";
-            SystemProgramName = "AppatureOS";
-			ProgramType = "OS";
-			break;
-		case "NotepadV2":
-			Price = 500;
-			Size = 4;
-			Desc = "Version 2 of the classic notepad.";
-			Version = 2;
-			ProgramTarget = "Notepadv2";
-            SystemProgramName = "Notepadv2";
-            ProgramType = "Exe";
-			break;
-		}
+		Catalog.Add(new ProgramSystem("Notepad", "", "", "", "", "The notepad for all your typing needs.", "www.store.com", "Notepad", "", "", ProgramSystem.FileExtension.Ins, ProgramSystem.FileExtension.Exe, 0, 0, 2, 0, 0, 0, 0, 100, 1.0f, 250, 0, 0, 0, 0, 0, 0, false, false, false, false, BlankInfections, BlankFileType));
+
+		Catalog.Add(new ProgramSystem("Notepad v2", "", "", "", "", "The notepad for all your typing needs.", "www.store.com", "Notepadv2", "", "", ProgramSystem.FileExtension.Ins, ProgramSystem.FileExtension.Exe, 0, 0, 4, 0, 0, 0, 0, 100, 2.0f, 500, 0, 0, 0, 0, 0, 0, false, false, false, false, BlankInfections, BlankFileType));
+
+		OSName = OperatingSystems.OSName.FluidicIceOS.ToString();
+		Catalog.Add(new ProgramSystem(OSName, "", "", "", "", "FluidicIceOS", "www.store.com", OSName, "", "", ProgramSystem.FileExtension.Ins, ProgramSystem.FileExtension.Exe, 0, 0, 20, 0, 0, 0, 0, 100, 1.0f, 500, 0, 0, 0, 0, 0, 0, false, false, false, false, BlankInfections, BlankFileType));
+
+		OSName = OperatingSystems.OSName.AppatureOS.ToString();
+		Catalog.Add(new ProgramSystem(OSName, "", "", "", "", "The notepad for all your typing needs.", "www.store.com", OSName, "", "", ProgramSystem.FileExtension.Ins, ProgramSystem.FileExtension.OS, 0, 0, 15, 0, 0, 0, 0, 100, 1.0f, 500, 0, 0, 0, 0, 0, 0, false, false, false, false, BlankInfections, BlankFileType));
+
+		OSName = OperatingSystems.OSName.TreeOS.ToString();
+		Catalog.Add(new ProgramSystem(OSName, "", "", "", "", "The notepad for all your typing needs.", "www.store.com", OSName, "", "", ProgramSystem.FileExtension.Ins, ProgramSystem.FileExtension.OS, 0, 0, 20, 0, 0, 0, 0, 100, 1.0f, 500, 0, 0, 0, 0, 0, 0, false, false, false, false, BlankInfections, BlankFileType));
 	}
 
 	void Bought()
 	{
-        for (int i = 0; i < dskman.DriveLetter.Length; i++)
-        {
-            if (Customize.cust.DownloadPath[0] == dskman.DriveLetter[i])
-            {
-                if (dskman.FreeSpace[i] >= Size)
-                {
-                    if (GameControl.control.MyBankDetails[GameControl.control.SelectedBank].AccountBalance >= Price)
-                    {
-                        GameControl.control.MyBankDetails[GameControl.control.SelectedBank].AccountBalance -= Price;
-                        if (fu.ProgramHandle.Count <= 0)
-                        {
-                            fu.ProgramHandle.Add(new FileUtilitySystem("Download", ProgramName, Customize.cust.DownloadPath, "", ProgramTarget, "", ProgramType, false, true, true, false, SelectedVersion, 0, 0, 0, 0, 0, 0, 0, Size, 0, 0, 0, FileUtilitySystem.ProgramType.DownloadProgram));
-                            fu.AddWindow();
-                        }
-                        Buying = false;
-                    }
-                }
-            }
-        }
-    }
+		ib.DownloadManager(Catalog[Select]);
+		Buying = false;
+	}
 
 	void VersionControl()
 	{
@@ -232,62 +145,58 @@ public class Store : MonoBehaviour
 
 	public void RenderSite()
 	{
-		switch (ib.AddressBar) 
+		switch (ib.AddressBar)
 		{
 
-		case "www.store.com":
-			scrollpos = GUI.BeginScrollView(new Rect(2, 25, 165, 240), scrollpos, new Rect(0, 0, 0, scrollsize*20));
-			for (scrollsize = 0; scrollsize < ListOfSoftware.Count; scrollsize++)
-			{
-				if(GUI.Button(new Rect(0, scrollsize * 20, 149, 20), "" + ListOfSoftware[scrollsize]))
+			case "www.store.com":
+				scrollpos = GUI.BeginScrollView(new Rect(2, 25, 165, 240), scrollpos, new Rect(0, 0, 0, scrollsize * 20));
+				for (scrollsize = 0; scrollsize < Catalog.Count; scrollsize++)
 				{
-					Select = scrollsize;
-					ProgramName = ListOfSoftware[Select];
-					SelectedVersion = 1;
-					UpdateUI();
+					if (GUI.Button(new Rect(0, scrollsize * 20, 149, 20), "" + Catalog[scrollsize].Name))
+					{
+						Select = scrollsize;
+					}
 				}
-			}
-			GUI.EndScrollView();
+				GUI.EndScrollView();
 
-			if (ProgramName != "")
-			{
-				GUI.Box((new Rect(168,25,330,240)),"");
+				GUI.Box((new Rect(168, 25, 330, 240)), "");
 
-				GUI.Label(new Rect(171,25,300,300), "Product Name: " + ProgramName);
-				GUI.Label(new Rect(171,45,300,300), "Product Type: " + ProgramType);
-				GUI.Label(new Rect(171,65,300,300), "Product Desc: " + Desc);
-				GUI.Label(new Rect(171,160,300,300), "Product Cost: " + Price);
-				GUI.Label(new Rect(171,175,300,300), "Product Size: " + Size);
-				GUI.Label(new Rect(171,190,300,300), "Product Version: " + SelectedVersion);
-				GUI.Label(new Rect(171,205,300,300), "----------------");
+				GUI.Label(new Rect(171, 25, 300, 300), "Product Name: " + Catalog[Select].Name);
+				GUI.Label(new Rect(171, 45, 300, 300), "Product Type: " + Catalog[Select].Extension.ToString());
+				GUI.Label(new Rect(171, 65, 300, 300), "Product Desc: " + Catalog[Select].Description);
+				GUI.Label(new Rect(171, 160, 300, 300), "Product Cost: " + Catalog[Select].Price);
+				GUI.Label(new Rect(171, 175, 300, 300), "Product Size: " + Catalog[Select].Used);
+				GUI.Label(new Rect(171, 190, 300, 300), "Product Version: " + Catalog[Select].Version);
+				GUI.Label(new Rect(171, 205, 300, 300), "----------------");
 
 
-				if (GameControl.control.SoftwareVersion [ProgramID] != 0) 
-				{
-					GUI.Label(new Rect(171,243,500,500), "Current Product Version: " + Version);
-				}
+				//if (GameControl.control.SoftwareVersion[ProgramID] != 0)
+				//{
+				//	GUI.Label(new Rect(171, 243, 500, 500), "Current Product Version: " + Version);
+				//}
 
-				if(GUI.Button(new Rect(300,275,65,20),"Purchase"))
-				{
-					Buying = true;
-					Bought();
-				}
+				//if (GUI.Button(new Rect(300, 275, 65, 20), "Purchase"))
+				//{
+				//	if (GameControl.control.MyBankDetails[GameControl.control.SelectedBank].AccountBalance >= Catalog[Select].Price)
+				//	{
+				//		GameControl.control.MyBankDetails[GameControl.control.SelectedBank].AccountBalance -= Catalog[Select].Price;
+				//		Buying = true;
+				//		Bought();
+				//	}
+				//}
 
-				if(GUI.Button(new Rect(200,275,85,20),"Next Version"))
+				if (GUI.Button(new Rect(200, 275, 85, 20), "Next Version"))
 				{
 					SelectedVersion++;
 					VersionControl();
-					UpdateUI();
 				}
 
-				if(GUI.Button(new Rect(100,275,85,20),"Prev Version"))
+				if (GUI.Button(new Rect(100, 275, 85, 20), "Prev Version"))
 				{
 					SelectedVersion--;
 					VersionControl();
-					UpdateUI();
 				}
-			}
-			break;
+				break;
 		}
 	}
 }

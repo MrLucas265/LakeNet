@@ -25,26 +25,26 @@ public class BIOSSelect : MonoBehaviour
 
 	public void RenderBios()
 	{
-		switch (HardwareController.hdcon.Motherboard [0])
+		switch (GameControl.control.Gateway.Brand)
 		{
 
-		case "":
-			bios1.enabled = true;
-			bios1.BIOSGUI();
-			break;
+			case "":
+				bios1.enabled = true;
+				bios1.BIOSGUI();
+				break;
 
-		case "Basic":
-			bios1.enabled = true;
-			bios1.BIOSGUI();
-			break;
+			case "Basic":
+				bios1.enabled = true;
+				bios1.BIOSGUI();
+				break;
 
-		case "NOVA 8A21C-1280RD":
-			bios1.enabled = true;
-			bios1.BIOSGUI();
-			break;
+			case "NOVA 8A21C-1280RD":
+				bios1.enabled = true;
+				bios1.BIOSGUI();
+				break;
 
-		case "2":
-			break;
+			case "2":
+				break;
 		}
 	}
 }

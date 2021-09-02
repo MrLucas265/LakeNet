@@ -14,7 +14,6 @@ public class ServerFileScanner : MonoBehaviour
 	public bool execute;
 
 	private Defalt defalt;
-	private CLI cmd;
 	private WebSec ws;
 	private ErrorProm ep;
 	private InternetBrowser ib;
@@ -55,7 +54,6 @@ public class ServerFileScanner : MonoBehaviour
 		ep = Prompts.GetComponent<ErrorProm>();
 		com = SysSoftware.GetComponent<Computer>();
 		trace = HackingSoftware.GetComponent<Tracer>();
-		cmd = SysSoftware.GetComponent<CLI>();
 		defalt = SysSoftware.GetComponent<Defalt>();
 		ib = AppSoftware.GetComponent<InternetBrowser>();
 		ws = AppSoftware.GetComponent<WebSec>();

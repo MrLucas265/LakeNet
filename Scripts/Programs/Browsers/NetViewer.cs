@@ -102,7 +102,7 @@ public class NetViewer : MonoBehaviour
 			ib.Home();
 		}
 
-		if (ib.AddressBar == "") 
+		if (ib.AddressBar == "")
 		{
 			ib.AddressBar = "www.ping.com";
 		}
@@ -196,8 +196,8 @@ public class NetViewer : MonoBehaviour
 	{
 		appman.SelectedApp = "Net Viewer";
 		ib.TempHistory.RemoveRange(0, ib.TempHistory.Count);
-		ib.AddressBar = Customize.cust.WebBrowserHomepage;
-		ib.Inputted = Customize.cust.WebBrowserHomepage;
+		//ib.AddressBar = Customize.cust.WebBrowserHomepage;
+		//ib.Inputted = Customize.cust.WebBrowserHomepage;
 	}
 
 	void OnGUI()
@@ -304,16 +304,24 @@ public class NetViewer : MonoBehaviour
 				ib.Back();
 			}
 
-			if (Event.current.type == EventType.keyDown && Event.current.keyCode == KeyCode.Return)
+			//if (Event.current.type == EventType.keyDown && Event.current.keyCode == KeyCode.Return)
+			//{
+			//	ib.connected = false;
+			//	ib.InitalTime = 1;
+			//	ib.SiteConnection();
+			//}
+
+			if (GUI.Button(new Rect(URLSearchLocation), SearchIcon, com.Skin[GameControl.control.GUIID].customStyles[2]))
 			{
-                ib.connected = false;
-                ib.SiteConnection();
+				ib.SiteConnectingStuff();
+				ib.SiteConnectingStuff();
+				ib.ClearCurrentConnectionStuff();
 			}
 
-			if (GUI.Button (new Rect (URLSearchLocation), SearchIcon, com.Skin [GameControl.control.GUIID].customStyles [2])) 
+			if (ib.ErrorDesc == "")
 			{
-                ib.connected = false;
-                ib.SiteConnection();
+				ib.SiteConnectingStuff();
+				ib.ClearCurrentConnectionStuff();
 			}
 
 			if (AddbookmarkButton.Contains (Event.current.mousePosition)) 

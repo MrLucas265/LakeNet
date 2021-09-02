@@ -39,6 +39,8 @@ public class AccLog : MonoBehaviour
 
 	public List<LoginSystem> Logins = new List<LoginSystem>();
 
+	public string SelectedBank;
+
     //private Files files;
     // Use this for initialization
     void Start () 
@@ -56,6 +58,7 @@ public class AccLog : MonoBehaviour
 		PosCheck();
 		Menu = "Main";
 		SelectedLogin = "";
+		SelectedBank = "";
     }
 
     // Update is called once per frame
@@ -135,101 +138,135 @@ public class AccLog : MonoBehaviour
 
 	void DisplayBankAccounts()
 	{
-		if (GameControl.control.MyBankDetails.Count >= 1)
+		if (GameControl.control.BankData.Count >= 1)
 		{
-			GUI.Button(new Rect(2,25,60, 20),"AccNo");
-			GUI.Button(new Rect(63,25,120, 20),"Bank");
-			GUI.Button(new Rect(184,25,70, 20),"Balance");
-
-			scrollpos = GUI.BeginScrollView(new Rect(1, 46, 295, 150), scrollpos, new Rect(0, 0, 0, scrollsize * 21));
-			for (scrollsize = 0; scrollsize < GameControl.control.MyBankDetails.Count; scrollsize++)
+			if (SelectedBank != "")
 			{
-				if (GUI.Button (new Rect (1, scrollsize * 21, 60, 20), "" + GameControl.control.MyBankDetails [scrollsize].AccountNumber)) 
+				GUI.Button(new Rect(2, 25, 60, 20), "AccNo");
+				GUI.Button(new Rect(63, 25, 120, 20), "Account IP");
+				GUI.Button(new Rect(184, 25, 70, 20), "Balance");
+
+				scrollpos = GUI.BeginScrollView(new Rect(1, 46, 295, 150), scrollpos, new Rect(0, 0, 0, scrollsize * 21));
+				for (int i = 0; i < GameControl.control.BankData.Count; i++)
 				{
-
-				}
-
-				if (GUI.Button (new Rect (62, scrollsize * 21, 120, 20),"" + GameControl.control.MyBankDetails[scrollsize].BankName))
-				{
-
-				}
-
-				if (GUI.Button (new Rect (183, scrollsize * 21, 70, 20),"" + GameControl.control.MyBankDetails[scrollsize].AccountBalance)) 
-				{
-
-				}
-
-				if (GameControl.control.SelectedBank == scrollsize)
-				{
-					if (GUI.Button (new Rect (254, scrollsize * 21, 20, 20),"☒")) 
+					for (int j = 0; j < GameControl.control.BankData[i].Accounts.Count; j++)
 					{
-						GameControl.control.SelectedBank = scrollsize;
+						if(GameControl.control.BankData[i].Accounts[j].PlayerKnown == true)
+						{
+							scrollsize = j;
+							if (GUI.Button(new Rect(1, scrollsize * 21, 60, 20), "" + GameControl.control.BankData[i].Accounts[j].AccountNumber))
+							{
+								GUIUtility.systemCopyBuffer = GameControl.control.BankData[i].Accounts[j].AccountNumber;
+							}
+
+							if (GUI.Button(new Rect(62, scrollsize * 21, 120, 20), "" + GameControl.control.BankData[i].Accounts[j].AccIP))
+							{
+								GUIUtility.systemCopyBuffer = GameControl.control.BankData[i].Accounts[j].AccIP;
+							}
+
+							if (GUI.Button(new Rect(183, scrollsize * 21, 70, 20), "" + GameControl.control.BankData[i].Accounts[j].AccountBalance))
+							{
+
+							}
+
+							if (GameControl.control.BankData[i].Accounts[j].Primary == true)
+							{
+								if (GUI.Button(new Rect(254, scrollsize * 21, 20, 20), "☒"))
+								{
+									GameControl.control.BankData[i].Accounts[j].Primary = false;
+								}
+							}
+							else
+							{
+								if (GUI.Button(new Rect(254, scrollsize * 21, 20, 20), "☐"))
+								{
+									GameControl.control.BankData[i].Accounts[j].Primary = true;
+								}
+							}
+						}
 					}
 				}
-				else
-				{
-					if (GUI.Button (new Rect (254, scrollsize * 21, 20, 20),"☐")) 
-					{
-						GameControl.control.SelectedBank = scrollsize;
-					}
-				}
+				GUI.EndScrollView();
 			}
-			GUI.EndScrollView();
+			else
+			{
+				scrollpos = GUI.BeginScrollView(new Rect(1, 25, 295, 150), scrollpos, new Rect(0, 0, 0, scrollsize * 21));
+				for (int i = 0; i < GameControl.control.BankData.Count; i++)
+				{
+					for (int j = 0; j < GameControl.control.BankData[i].Accounts.Count; j++)
+					{
+						if(GameControl.control.BankData[i].Accounts[j].PlayerKnown)
+						{
+							if (GUI.Button(new Rect(1, scrollsize * 21, 200, 20), "" + GameControl.control.BankData[i].Name))
+							{
+								int Select = i;
+								SelectedBank = GameControl.control.BankData[Select].Name;
+							}
+						}
+					}
+				}
+				GUI.EndScrollView();
+			}
 		}
 	}
 
 	void DisplayLogins()
 	{
-		if (SelectedLogin == "") 
+		if (SelectedLogin != "")
 		{
-			GUI.Button(new Rect(2,25,150, 20),"Name");
-
-			if (GameControl.control.StoredLogins.Count >= 1)
-			{
-				scrollpos = GUI.BeginScrollView(new Rect(1, 46, 295, 150), scrollpos, new Rect(0, 0, 0, scrollsize * 21));
-				for (scrollsize = 0; scrollsize < GameControl.control.StoredLogins.Count; scrollsize++)
-				{
-					if (GUI.Button (new Rect (1, scrollsize * 21, 150, 20), "" + GameControl.control.StoredLogins [scrollsize].Name)) 
-					{
-						SelectedLogin = GameControl.control.StoredLogins[scrollsize].Name;
-					}
-				}
-				GUI.EndScrollView();
-			}
-		} 
-		else 
-		{
-			GUI.Button(new Rect(2,25,125, 20),"Usr");
-			GUI.Button(new Rect(128,25,125, 20),"Pass");
-
-			Logins.RemoveRange (0, Logins.Count);
-
+			GUI.Button(new Rect(2, 25, 60, 20), "User");
+			GUI.Button(new Rect(63, 25, 120, 20), "Pass");
 
 			for (int i = 0; i < GameControl.control.StoredLogins.Count; i++)
 			{
-				if (GameControl.control.StoredLogins [i].Name == SelectedLogin)
+				if (GameControl.control.StoredLogins[i].Name == SelectedLogin)
 				{
-					Logins.Add (GameControl.control.StoredLogins[i]);
+					if(!Logins.Contains(GameControl.control.StoredLogins[i]))
+					{
+						Logins.Add(GameControl.control.StoredLogins[i]);
+					}
 				}
 			}
 
-			if (Logins.Count > 0)
+
+			scrollpos = GUI.BeginScrollView(new Rect(1, 46, 295, 150), scrollpos, new Rect(0, 0, 0, scrollsize * 21));
+			for (int i = 0; i < Logins.Count; i++)
 			{
-				scrollpos = GUI.BeginScrollView(new Rect(1, 46, 295, 150), scrollpos, new Rect(0, 0, 0, scrollsize * 21));
-				for (scrollsize = 0; scrollsize < Logins.Count; scrollsize++)
+				scrollsize = i;
+				if (GUI.Button(new Rect(1, scrollsize * 21, 60, 20), "" + Logins[i].Username))
 				{
-					if (GUI.Button (new Rect (1, scrollsize * 21, 125, 20),"" + Logins[scrollsize].Username))
-					{
-
-					}
-
-					if (GUI.Button (new Rect (127, scrollsize * 21, 125, 20),"" + Logins[scrollsize].Password)) 
-					{
-
-					}
+					GUIUtility.systemCopyBuffer = Logins[i].Username;
 				}
-				GUI.EndScrollView();
+
+				if (GUI.Button(new Rect(62, scrollsize * 21, 120, 20), "" + Logins[i].Password))
+				{
+					GUIUtility.systemCopyBuffer = Logins[i].Password;
+				}
 			}
+			GUI.EndScrollView();
+		}
+		else
+		{
+			for (int i = 0; i < GameControl.control.StoredLogins.Count; i++)
+			{
+				if (!Logins.Contains(GameControl.control.StoredLogins[i]))
+				{
+					Logins.Add(GameControl.control.StoredLogins[i]);
+				}
+			}
+
+			scrollpos = GUI.BeginScrollView(new Rect(1, 25, 295, 150), scrollpos, new Rect(0, 0, 0, scrollsize * 21));
+			for (int i = 0; i < Logins.Count; i++)
+			{
+				scrollsize = i;
+				if (GUI.Button(new Rect(1, i * 21, 200, 20), "" + Logins[scrollsize].Name))
+				{
+					int Select = i;
+					SelectedLogin = Logins[Select].Name;
+					Logins.RemoveRange(0, Logins.Count);
+				}
+			}
+			GUI.EndScrollView();
 		}
 	}
 
@@ -275,7 +312,7 @@ public class AccLog : MonoBehaviour
 		{
 			if (GUI.Button (new Rect (CloseButton), "X", com.Skin [GameControl.control.GUIID].customStyles [0])) 
 			{
-				appman.SelectedApp = "Accounts";
+				appman.SelectedApp = "Account Tracker";
 			}
 		} 
 		else
@@ -315,7 +352,34 @@ public class AccLog : MonoBehaviour
 				} 
 				else
 				{
-					Menu = "Main";
+					if(Menu == "Bank")
+					{
+						if(SelectedBank != "")
+						{
+							SelectedBank = "";
+						}
+						else
+						{
+							Menu = "Main";
+						}
+					}
+					else if (Menu == "Login")
+					{
+						if (SelectedLogin != "")
+						{
+							SelectedLogin = "";
+							Logins.RemoveRange(0, Logins.Count);
+						}
+						else
+						{
+							Menu = "Main";
+							Logins.RemoveRange(0, Logins.Count);
+						}
+					}
+					else
+					{
+						Menu = "Main";
+					}
 				}
 			}
 		} 

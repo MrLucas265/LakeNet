@@ -173,40 +173,40 @@ public class StockExchangeBrowser : MonoBehaviour
 
 		case "www.stockexchange.com":
 			stockexchange.RenderSite ();
-			sm.Connect ();
-			clic.storedConnection = "www.stockexchange.com";
+			//sm.Connect ();
+			//clic.storedConnection = "www.stockexchange.com";
 			connected = true;
 			MainPage = true;
 			break;
 
 		case "www.stockexchange.com/properexchange":
 			st.RenderSite ();
-			sm.Connect ();
-			clic.storedConnection = "www.stockexchange.com/properexchange";
+			//sm.Connect ();
+			//clic.storedConnection = "www.stockexchange.com/properexchange";
 			connected = true;
 			MainPage = false;
 			break;
 
 		case "www.stockexchange.com/memeexchange":
 			gstocks.RenderSite ();
-			sm.Connect ();
-			clic.storedConnection = "www.stockexchange.com/memeexchange";
+			//sm.Connect ();
+			//clic.storedConnection = "www.stockexchange.com/memeexchange";
 			connected = true;
 			MainPage = false;
 			break;
 
         case "www.stockexchange.com/history":
             history.RenderSite();
-            sm.Connect();
-            clic.storedConnection = "www.stockexchange.com/history";
+            //sm.Connect();
+           //clic.storedConnection = "www.stockexchange.com/history";
             connected = true;
             MainPage = false;
             break;
 
         case "www.stockexchange.com/portfolio":
 			port.RenderSite ();
-			sm.Connect ();
-			clic.storedConnection = "www.stockexchange.com/portfolio";
+			//sm.Connect ();
+			//clic.storedConnection = "www.stockexchange.com/portfolio";
 			connected = true;
 			MainPage = false;
 			break;

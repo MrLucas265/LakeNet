@@ -2,7 +2,7 @@
 //using System.Collections;
 //using System.Collections.Generic;
 
-//public class CabbageCorp : MonoBehaviour 
+//public class CabbageCorp : MonoBehaviour
 //{
 //	public int StartCount;
 //	public List<string> EmailSubject = new List<string>();
@@ -44,13 +44,13 @@
 //	public int scrollsize;
 
 //	public List<Color> Colors = new List<Color>();
-//	public Color32 rgb1 = new Color32(0,0,0,0);
-//	public Color32 buttonColor = new Color32(0,0,0,0);
-//	public Color32 fontColor = new Color32(0,0,0,0);
-//	public Color32 ClosefontColor = new Color32(0,0,0,0);
-//	public Color32 ClosebuttonColor = new Color32(0,0,0,0);
-//	public Color32 WindowColor = new Color32(0,0,0,0);
-//	public Color32 TitlebarColor = new Color32(0,0,0,0);
+//	public Color32 rgb1 = new Color32(0, 0, 0, 0);
+//	public Color32 buttonColor = new Color32(0, 0, 0, 0);
+//	public Color32 fontColor = new Color32(0, 0, 0, 0);
+//	public Color32 ClosefontColor = new Color32(0, 0, 0, 0);
+//	public Color32 ClosebuttonColor = new Color32(0, 0, 0, 0);
+//	public Color32 WindowColor = new Color32(0, 0, 0, 0);
+//	public Color32 TitlebarColor = new Color32(0, 0, 0, 0);
 
 //	//DesktopEnvStuff
 //	public Texture2D AppMenuIcon;
@@ -77,13 +77,13 @@
 //		Hacking = GameObject.Find("Hacking");
 //		System = GameObject.Find("System");
 //		StartCount = 100;
-//		fileGenPrivate ();
+//		fileGenPrivate();
 //		Documents();
 //		WebSearch();
 //		LoadPresetColors();
 
-//		ExplorerPos = new Rect(100,100,200,150);
-//		AppMenuPos = new Rect(1,135,125,125);
+//		ExplorerPos = new Rect(100, 100, 200, 150);
+//		AppMenuPos = new Rect(1, 135, 125, 125);
 //		AppMenuButtonPos = new Rect(1, 264, 35, 35);
 //	}
 
@@ -149,7 +149,7 @@
 //	{
 //		int charAmount = Random.Range(min, max); //set those to the minimum and maximum length of your string
 //		string retMe = "";
-//		for(int i=0; i<charAmount; i++)
+//		for (int i = 0; i < charAmount; i++)
 //		{
 //			retMe += glyphs[Random.Range(0, glyphs.Length)];
 //		}
@@ -160,7 +160,7 @@
 //	{
 //		int charAmount = Random.Range(min, max); //set those to the minimum and maximum length of your string
 //		string retMe = "";
-//		for(int i=0; i<charAmount; i++)
+//		for (int i = 0; i < charAmount; i++)
 //		{
 //			retMe += AccNo[Random.Range(0, AccNo.Length)];
 //		}
@@ -174,24 +174,24 @@
 
 //	void Update()
 //	{
-//		if (SiteAdminPass == "") 
+//		if (SiteAdminPass == "")
 //		{
 //			PasswordSetup();
 //		}
 
-//		if (GameControl.control.CabbageFileName.Count < StartCount || GameControl.control.CabbageFileSize.Count < StartCount) 
+//		if (GameControl.control.CabbageFileName.Count < StartCount || GameControl.control.CabbageFileSize.Count < StartCount)
 //		{
-//			fileGenPrivate ();
+//			fileGenPrivate();
 //		}
 //	}
 
 //	public void fileGenPrivate()
 //	{
-//		for(int i=0; i<1; i++)
+//		for (int i = 0; i < 1; i++)
 //		{
-//			GameControl.control.CabbageFileName.Add(GetRandomString(4,4));
+//			GameControl.control.CabbageFileName.Add(GetRandomString(4, 4));
 //			GameControl.control.CabbageFileName.Sort();
-//			GameControl.control.CabbageFileSize.Add (Random.Range (1, 50));
+//			GameControl.control.CabbageFileSize.Add(Random.Range(1, 50));
 //		}
 //	}
 
@@ -208,19 +208,19 @@
 //	{
 //		GUI.backgroundColor = WindowColor;
 //		GUI.contentColor = WindowColor;
-//		GUI.Box(new Rect(AppMenuPos),"");
+//		GUI.Box(new Rect(AppMenuPos), "");
 
 //		GUI.backgroundColor = TitlebarColor;
 //		GUI.contentColor = ClosefontColor;
 
-//		GUI.Button(new Rect(AppMenuPos.x,AppMenuPos.y,AppMenuPos.width,24),UserIcon);
-//		GUI.Label(new Rect(AppMenuPos.x + 26,AppMenuPos.y,AppMenuPos.width,24),"" + ib.Username);
+//		GUI.Button(new Rect(AppMenuPos.x, AppMenuPos.y, AppMenuPos.width, 24), UserIcon);
+//		GUI.Label(new Rect(AppMenuPos.x + 26, AppMenuPos.y, AppMenuPos.width, 24), "" + ib.Username);
 
-//		if (!AppMenuPos.Contains (Event.current.mousePosition))
+//		if (!AppMenuPos.Contains(Event.current.mousePosition))
 //		{
-//			if (!AppMenuButtonPos.Contains (Event.current.mousePosition))
+//			if (!AppMenuButtonPos.Contains(Event.current.mousePosition))
 //			{
-//				if (Input.GetMouseButtonDown (0))
+//				if (Input.GetMouseButtonDown(0))
 //				{
 //					showAppMenu = false;
 //				}
@@ -230,66 +230,66 @@
 
 //	void Explorer()
 //	{
-//		ExplorerTitlePos = new Rect (ExplorerPos.x, ExplorerPos.y, ExplorerPos.width - 43, 21);
-//		CloseButton = new Rect (ExplorerPos.x + 200 - 22,ExplorerPos.y,21,21);
-//		MiniButton = new Rect (ExplorerPos.x + 200 - 43,ExplorerPos.y,21,21);
+//		ExplorerTitlePos = new Rect(ExplorerPos.x, ExplorerPos.y, ExplorerPos.width - 43, 21);
+//		CloseButton = new Rect(ExplorerPos.x + 200 - 22, ExplorerPos.y, 21, 21);
+//		MiniButton = new Rect(ExplorerPos.x + 200 - 43, ExplorerPos.y, 21, 21);
 
-//		GUI.Box(new Rect(ExplorerPos),"");
+//		GUI.Box(new Rect(ExplorerPos), "");
 //		GUI.backgroundColor = TitlebarColor;
 //		GUI.contentColor = fontColor;
-//		GUI.Box(new Rect(ExplorerTitlePos),"Explorer");
+//		GUI.Box(new Rect(ExplorerTitlePos), "Explorer");
 
-//		if (!CloseButton.Contains (Event.current.mousePosition)) 
+//		if (!CloseButton.Contains(Event.current.mousePosition))
 //		{
 //			GUI.backgroundColor = TitlebarColor;
 //			GUI.contentColor = fontColor;
-//			if (GUI.Button (new Rect (CloseButton), "X", com.Skin [GameControl.control.GUIID].customStyles [1])) 
+//			if (GUI.Button(new Rect(CloseButton), "X", com.Skin[GameControl.control.GUIID].customStyles[1]))
 //			{
 //				showExplorer = false;
 //			}
 //		}
-//		else 
+//		else
 //		{
 //			GUI.backgroundColor = ClosebuttonColor;
 //			GUI.contentColor = ClosefontColor;
-//			if (GUI.Button (new Rect (CloseButton), "X", com.Skin [GameControl.control.GUIID].customStyles [2])) 
+//			if (GUI.Button(new Rect(CloseButton), "X", com.Skin[GameControl.control.GUIID].customStyles[2]))
 //			{
 //				showExplorer = false;
 //			}
 //		}
 
-//		if (ExplorerTitlePos.Contains (Event.current.mousePosition)) 
+//		if (ExplorerTitlePos.Contains(Event.current.mousePosition))
 //		{
-//			if (Input.GetMouseButton (0))
+//			if (Input.GetMouseButton(0))
 //			{
-//				ExplorerPos.x = Event.current.mousePosition.x-75;
-//				ExplorerPos.y = Event.current.mousePosition.y-10;
+//				ExplorerPos.x = Event.current.mousePosition.x - 75;
+//				ExplorerPos.y = Event.current.mousePosition.y - 10;
 //			}
-//		} 
+//		}
 
-//		if (MiniButton.Contains (Event.current.mousePosition)) 
+//		if (MiniButton.Contains(Event.current.mousePosition))
 //		{
 //			GUI.backgroundColor = TitlebarColor;
 //			GUI.contentColor = fontColor;
-//			if (GUI.Button (new Rect (MiniButton), "-",com.Skin [GameControl.control.GUIID].customStyles [2])) 
+//			if (GUI.Button(new Rect(MiniButton), "-", com.Skin[GameControl.control.GUIID].customStyles[2]))
 //			{
 //				MinimizeExplorer = !MinimizeExplorer;
 //			}
-//		} 
+//		}
 //		else
 //		{
 //			GUI.backgroundColor = TitlebarColor;
 //			GUI.contentColor = fontColor;
-//			if (GUI.Button (new Rect (MiniButton), "-",com.Skin [GameControl.control.GUIID].customStyles [2])) 
+//			if (GUI.Button(new Rect(MiniButton), "-", com.Skin[GameControl.control.GUIID].customStyles[2]))
 //			{
 //				MinimizeExplorer = !MinimizeExplorer;
 //			}
 //		}
 
-//		if (MinimizeExplorer == true) 
+//		if (MinimizeExplorer == true)
 //		{
 //			ExplorerPos.height = 21;
-//		} 
+//		}
 //		else
 //		{
 //			ExplorerPos.height = 150;
@@ -298,12 +298,12 @@
 
 //	void DesktopEnv()
 //	{
-//		if (GUI.Button (new Rect (AppMenuButtonPos), AppMenuIcon)) 
+//		if (GUI.Button(new Rect(AppMenuButtonPos), AppMenuIcon))
 //		{
 //			showAppMenu = !showAppMenu;
 //		}
 
-//		if (GUI.Button (new Rect (45, 264, 35, 35), ExplorerIcon)) 
+//		if (GUI.Button(new Rect(45, 264, 35, 35), ExplorerIcon))
 //		{
 //			showExplorer = !showExplorer;
 //		}

@@ -57,15 +57,30 @@ public class CustomTheme : MonoBehaviour
 			tex1.Clear ();
 			for (scrollsize = 0; scrollsize < Customize.cust.CustomTexFileNames.Count; scrollsize++) 
 			{
-				tex1.Add(LoadPNG(Customize.cust.CustomTexFileNames[scrollsize]));
+				if(scrollsize == 4)
+				{
+					tex1.Add(LoadPNG(GameControl.control.SelectedOS.FPC.BackgroundAddress));
+				}
+				else
+				{
+					tex1.Add(LoadPNG(Customize.cust.CustomTexFileNames[scrollsize]));
+				}
 			}
 		} 
 		else
 		{
 			for (scrollsize = 0; scrollsize < Customize.cust.CustomTexFileNames.Count; scrollsize++)
 			{
-				tex1.Add(LoadPNG(Customize.cust.CustomTexFileNames[scrollsize]));
+				if (scrollsize == 4)
+				{
+					tex1.Add(LoadPNG(GameControl.control.SelectedOS.FPC.BackgroundAddress));
+				}
+				else
+				{
+					tex1.Add(LoadPNG(Customize.cust.CustomTexFileNames[scrollsize]));
+				}
 			}
+			//tex1[4] = LoadPNG(GameControl.control.SelectedOS.FPC.BackgroundAddress);
 		}
 	}
 

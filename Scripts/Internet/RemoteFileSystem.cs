@@ -19,7 +19,6 @@ public class RemoteFileSystem
 	public float Health;
 	public float Version;
 	public bool Infected;
-	public Rect DisplayPos;
 
 	public enum ProgramType
 	{
@@ -39,7 +38,7 @@ public class RemoteFileSystem
 		Voice
 	}
 
-	public RemoteFileSystem(string name, string sender, string date, string content, string location, string target, float encryption, float free, float used, float capacity, float health, float version, bool infected, ProgramType type,Rect displaypos) //,Texture2D icon)
+	public RemoteFileSystem(string name, string sender, string date, string content, string location, string target, float encryption, float free, float used, float capacity, float health, float version, bool infected, ProgramType type) //,Texture2D icon)
 	{
 		Name = name;
 		Sender = sender;
@@ -55,6 +54,6 @@ public class RemoteFileSystem
 		Health = health;
 		Version = version;
 		Infected = infected;
-		DisplayPos = displaypos;
+		//DisplayPos = displaypos;
 	}
 }

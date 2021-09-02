@@ -10,6 +10,8 @@ public class UACSystem
     public string Password;
     public string AccountHolder;
     public string IP;
+    public string LoggedInIP;
+    public bool LoggedIn;
     public AccountType Type;
 
     public enum AccountType
@@ -20,19 +22,24 @@ public class UACSystem
         AccessPrivilages3,
         AccessPrivilages4,
         AccessPrivilages5,
+        Officer,
+        SysAdmin,
         Admin,
         User,
         Guest,
         Read,
-        ReadWrite
+        ReadWrite,
+        LoggedIn
     }
 
-    public UACSystem(string username, string password, string accountholder, string ip, AccountType type)
+    public UACSystem(string username, string password, string accountholder, string ip,string loggedinip,bool loggedin, AccountType type)
     {
         UserName = username;
         Password = password;
         AccountHolder = accountholder;
         IP = ip;
+        LoggedInIP = loggedinip;
         Type = type;
+        LoggedIn = loggedin;
     }
 }

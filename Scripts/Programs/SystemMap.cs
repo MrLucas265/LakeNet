@@ -91,6 +91,10 @@ public class SystemMap : MonoBehaviour
 
 	public float TestX;
 	public float TestY;
+
+	public float MathX = 0;
+	public float ZoomInt = 0;
+
 	// Use this for initialization
 	void Start ()
 	{
@@ -125,7 +129,8 @@ public class SystemMap : MonoBehaviour
 		UpdateGatewayPos();
 
 		PanningSpeed = 25;
-		ZoomLevel = 1.1f;
+		ZoomLevel = 0.98f;
+		PanHorizontal = 40;
 
 		RevaTestPos = new Vector2(110, 90);
 		JaildewPos = new Vector2(200, 60);
@@ -289,6 +294,11 @@ public class SystemMap : MonoBehaviour
 			if(PanVertical > DownClamp)
 				PanVertical -= 1 * PanningSpeed;
 			ModY -= PanningSpeed;
+
+			if(ModY <= 0)
+			{
+				ModY = 0;
+			}
 		}
 
 		if (Event.current.type == EventType.keyDown && Event.current.keyCode == KeyCode.Equals || Event.current.type == EventType.keyDown && Event.current.keyCode == KeyCode.KeypadPlus) 
@@ -299,6 +309,10 @@ public class SystemMap : MonoBehaviour
 				ModX += 75-TestX;//75
 				ModY += 25-TestY;//25
 			}
+
+			ZoomInt = ZoomLevel * 10 - 10;
+
+			MathX = 20 * ZoomInt;
 		}
 		if (Event.current.type == EventType.keyDown && Event.current.keyCode == KeyCode.Minus || Event.current.type == EventType.keyDown && Event.current.keyCode == KeyCode.KeypadMinus) 
 		{
@@ -318,6 +332,10 @@ public class SystemMap : MonoBehaviour
 					PanHorizontal += 50;
 				}
 			}
+
+			ZoomInt = ZoomLevel * 10 - 10;
+
+			MathX = 20 * ZoomInt;
 		}
 
 		if (PanHorizontal <= RightClamp) 
@@ -524,11 +542,11 @@ public class SystemMap : MonoBehaviour
 			PercentageChange = 100 / BouncedConnections.Count;
 		}
 
-		GUI.Button (new Rect (GatewayPos.x, GatewayPos.y, 30, 15), "GW");
+		GUI.Button (new Rect (GatewayPos.x + PanHorizontal + MathX, GatewayPos.y+PanVertical, 30, 15), "GW");
 
 		if (GameControl.control.Sites.Contains ("www.cabbagecorp.com"))
 		{
-			if (GUI.Button (new Rect (UniconPos.x, UniconPos.y, w, h), "CABC",Map)) 
+			if (GUI.Button (new Rect (UniconPos.x + PanHorizontal + MathX, UniconPos.y, w, h), "CABC",Map)) 
 			{
 				if (BouncedConnections.Contains (CabbagePos)) 
 				{
@@ -561,7 +579,7 @@ public class SystemMap : MonoBehaviour
 
 		if (GameControl.control.Sites.Contains ("www.unicon.com"))
 		{
-			if (GUI.Button (new Rect (UniconPos.x, UniconPos.y, w, h), "UC",Map)) 
+			if (GUI.Button (new Rect (UniconPos.x + PanHorizontal + MathX, UniconPos.y, w, h), "UC",Map)) 
 			{
 				if (BouncedConnections.Contains (UniconPos)) 
 				{
@@ -592,9 +610,9 @@ public class SystemMap : MonoBehaviour
 			}
 		}
 
-		if (GameControl.control.Sites.Contains ("www.jaildew.com"))
+		if (GameControl.control.Sites.Contains("www.jaildew.com"))
 		{
-			if (GUI.Button (new Rect (JaildewPos.x, JaildewPos.y, w, h), "JD",Map)) 
+			if (GUI.Button (new Rect (JaildewPos.x+PanHorizontal+MathX, JaildewPos.y + PanVertical, w, h), "JD",Map)) 
 			{
 				if (BouncedConnections.Contains (JaildewPos)) 
 				{
@@ -620,7 +638,7 @@ public class SystemMap : MonoBehaviour
 
 		if (GameControl.control.Sites.Contains ("www.becassystems.com"))
 		{
-			if (GUI.Button (new Rect (BecasPos.x, BecasPos.y, w+10, h), "BCAS",Map)) 
+			if (GUI.Button (new Rect (BecasPos.x + PanHorizontal + MathX, BecasPos.y, w+10, h), "BCAS",Map)) 
 			{
 				if (BouncedConnections.Contains (BecasPos)) 
 				{
@@ -644,7 +662,7 @@ public class SystemMap : MonoBehaviour
 			}
 		}
 
-		if (GUI.Button (new Rect (RevaPos.x, RevaPos.y, w, h), "RVA",Map)) 
+		if (GUI.Button (new Rect (RevaPos.x + PanHorizontal + MathX, RevaPos.y, w, h), "RVA",Map)) 
 		{
 			if (BouncedConnections.Contains (RevaPos)) 
 			{
@@ -667,7 +685,7 @@ public class SystemMap : MonoBehaviour
 			}
 		}
 
-		if (GUI.Button (new Rect (LecBankPos.x, LecBankPos.y, w, h), "LEC",Map)) 
+		if (GUI.Button (new Rect (LecBankPos.x + PanHorizontal + MathX, LecBankPos.y, w, h), "LEC",Map)) 
 		{
 			if (BouncedConnections.Contains (LecBankPos)) 
 			{
@@ -690,7 +708,7 @@ public class SystemMap : MonoBehaviour
 			}
 		}
 
-		if (GUI.Button (new Rect (RevaTestPos.x, RevaTestPos.y, w, h), "RTS",Map)) 
+		if (GUI.Button (new Rect (RevaTestPos.x + PanHorizontal + MathX, RevaTestPos.y, w, h), "RTS",Map)) 
 		{
 			if (BouncedConnections.Contains (RevaTestPos)) 
 			{
@@ -714,7 +732,7 @@ public class SystemMap : MonoBehaviour
 		}
 		if (GameControl.control.Sites.Contains ("www.academicstudies.com"))
 		{
-			if (GUI.Button (new Rect (AcademicPos.x, AcademicPos.y, w, h), "ACA",Map)) 
+			if (GUI.Button (new Rect (AcademicPos.x + PanHorizontal + MathX, AcademicPos.y, w, h), "ACA",Map)) 
 			{
 				if (BouncedConnections.Contains (AcademicPos)) 
 				{
@@ -739,5 +757,7 @@ public class SystemMap : MonoBehaviour
 		}
 
 		DrawLine();
+
+		ZoomMath();
 	}
 }

@@ -41,7 +41,7 @@ public class Progtive : MonoBehaviour
 	public float GPUUsageWE;
 
 	private Defalt defalt;
-	private CLICommands cmd;
+	private CLICommandsV2 cmd;
 	private WebSec ws;
 	private ErrorProm ep;
 	private InternetBrowser ib;
@@ -71,7 +71,7 @@ public class Progtive : MonoBehaviour
 		ep = Prompts.GetComponent<ErrorProm>();
 		com = SysSoftware.GetComponent<Computer>();
 		trace = HackingSoftware.GetComponent<Tracer>();
-		cmd = SysSoftware.GetComponent<CLICommands>();
+		cmd = SysSoftware.GetComponent<CLICommandsV2>();
 		defalt = SysSoftware.GetComponent<Defalt>(); 
 		ib = AppSoftware.GetComponent<InternetBrowser>(); 
 		ws = AppSoftware.GetComponent<WebSec>();

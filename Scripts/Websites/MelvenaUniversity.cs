@@ -63,11 +63,16 @@ public class MelvenaUniversity : MonoBehaviour
 
     public List<WebSecSystem> Secuirty = new List<WebSecSystem>();
 
+    private PeopleCreator peoplecreator;
+    private GameObject personcontroller;
+
     // Use this for initialization
     void Start()
     {
         Computer = GameObject.Find("Applications");
         System = GameObject.Find("System");
+        personcontroller = GameObject.Find("PersonController");
+        peoplecreator = personcontroller.GetComponent<PeopleCreator>();
         ib = Computer.GetComponent<InternetBrowser>();
         appman = System.GetComponent<AppMan>();
         //WebSearch();
@@ -161,7 +166,8 @@ public class MelvenaUniversity : MonoBehaviour
             {
                 //TempMaritalStatus = PersonController.control.People[FoundPostion].Academics.CollageQualifications + " " + PersonController.control.People[FoundPostion].Academics.CollageGrade;
 
-                GUI.DrawTexture(new Rect(20, 100, 125, 150), PersonController.control.People[FoundPostion].Photo);
+                int foundPhotoID = PersonController.control.People[FoundPostion].PhotoID;
+                GUI.DrawTexture(new Rect(20, 100, 125, 150), peoplecreator.Faces[foundPhotoID]);
 
                 GUI.TextField(new Rect(10, 70, 150, 22), Names[FoundPostion]);
 
@@ -193,7 +199,8 @@ public class MelvenaUniversity : MonoBehaviour
             }
             else
             {
-                GUI.DrawTexture(new Rect(20, 100, 125, 150), PersonController.control.People[Index].Photo);
+                int PhotoID = PersonController.control.People[Index].PhotoID;
+                GUI.DrawTexture(new Rect(20, 100, 125, 150), peoplecreator.Faces[PhotoID]);
 
                 GUI.TextField(new Rect(10, 70, 150, 22), Names[Index]);
 

@@ -56,7 +56,6 @@ public class TreeOSDesktop : MonoBehaviour
 	private DirSearch ds;
 	private Favs fav;
 	private TreeView tv;
-	private CLI cmd;
 	private SystemMap sm;
 	private MonitorBypass mPass;
 	private WebSecViewer wsv;
@@ -160,7 +159,6 @@ public class TreeOSDesktop : MonoBehaviour
 		clk = SysSoftware.GetComponent<Clock>();
 		defalt = SysSoftware.GetComponent<Defalt>();
 		am = SysSoftware.GetComponent<AppMenu>();
-		cmd = SysSoftware. GetComponent<CLI>();
 		com = SysSoftware.GetComponent<Computer>();
 		sc = SysSoftware.GetComponent<SoundControl>();
 		appman = SysSoftware.GetComponent<AppMan>();

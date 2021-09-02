@@ -18,12 +18,18 @@ public class HardwareCFile : MonoBehaviour {
 
     public List<ModemSystem> ListOfModems = new List<ModemSystem>();
 
+    public List<DrivePatSystem> Partitions = new List<DrivePatSystem>();
+
     //IMAGES
     public List<string> ListOfFilePaths = new List<string>();
     public List<Texture2D> ListOfCPUImages = new List<Texture2D>();
     public List<Texture2D> ListOfMotherboardImages = new List<Texture2D>();
     public List<Texture2D> ListOfStorageImages = new List<Texture2D>();
     public List<Texture2D> ListOfMemoryImages = new List<Texture2D>();
+
+
+    //WebCog
+    //
 
     // Use this for initialization
     void Start ()
@@ -100,8 +106,6 @@ public class HardwareCFile : MonoBehaviour {
         float FactoryMaxSpeed = 0; // What the max speed is by default
         float Voltage = 0; // Overclocking Multi
         float DegredationRate = 0f; // The rate that health is lost
-        float MaxHealth = 0;
-        float Health = MaxHealth;
         float IdlePowerDraw = 0; // What the power draw is at idle
         float PowerEffRating = 0; // How effecient the power is at performance
         int UIPosX = 0;
@@ -112,15 +116,21 @@ public class HardwareCFile : MonoBehaviour {
         int MaxMemorySlots = 0;
 
         ManufactorName = "ZettaByte";
-        ProductName = "BASIC";
-        Name = ManufactorName + " " + ProductName;
-        Socket = "140";
+        string BrandName = "BASIC";
+        string Chipset = "B100";
+        ProductName = "";
+        Socket = "100";
+        string Description = "";
         Image = 0;
         MaxCPUSockets = 1;
         MaxStorageSlots = 2;
         MaxMemorySlots = 1;
+        int MaxExpansionSlots = 1;
+        int MaxInstalledMemory = 8;
 
-        ListOfMotherboards.Add(new MotherboardSystem(Name,"","",0,0,0,0,Image,MaxCPUSockets,MaxStorageSlots,MaxMemorySlots,null,null,null,null,null,null,null,null,null));
+        HealthStatSystem Health = new HealthStatSystem(0.00001f,0,100,100,100,100,0,1);
+
+        ListOfMotherboards.Add(new MotherboardSystem(ManufactorName, BrandName,Chipset,Socket,ProductName,Description,Image,MaxCPUSockets,MaxStorageSlots,MaxMemorySlots,MaxExpansionSlots, MaxInstalledMemory, null,null,null,null,null,null,null,null,null,null,null,null,null,null,Health,null));
     }
 
     void CPU()
@@ -147,7 +157,7 @@ public class HardwareCFile : MonoBehaviour {
         ManufactorName = "Zion";
         ProductName = "Z-14";
         Name = ManufactorName + " " + ProductName;
-        Socket = "420";
+        Socket = "100";
         Size = 32;
         Cores = 1;
         MaxSpeed = 0.5f;
@@ -277,6 +287,8 @@ public class HardwareCFile : MonoBehaviour {
         float PowerDraw = 0; // What the power draw is at idle
         float PowerEffRating = 0; // How effecient the power is at performance
         float BootTime = 0;
+        float Timer = 0;
+        float InitalTimer = 0;
         int UIPosX = 0;
         int UIPosY = 0;
         int Image = 0;
@@ -295,11 +307,13 @@ public class HardwareCFile : MonoBehaviour {
         PowerDraw = 5;
         PowerEffRating = 0.0025f;
         BootTime = 0.14f;
+        InitalTimer = 1;
+        Timer = InitalTimer;
         UIPosX = 0;
         UIPosY = 0;
         Image = 0;
 
-        ListOfStorage.Add(new StorageDevice(Name, ManufactorName, Desc, Connector, Speed, 0, MaxMemory, MaxMemory, PowerDraw, DegredationRate, MaxHealth, Health, 0, PowerEffRating, BootTime, StorageDevice.StorageType.HDD, UIPosX,UIPosY,Image));
+        ListOfStorage.Add(new StorageDevice(Name, ManufactorName, Desc, Connector, Speed, 0, MaxMemory, MaxMemory, PowerDraw, DegredationRate, MaxHealth, Health, 0, PowerEffRating, BootTime,Timer,InitalTimer, StorageDevice.StorageType.HDD, UIPosX,UIPosY,Image,Partitions));
 
         ManufactorName = "EasternVirtual";
         ProductName = "Red";
@@ -315,10 +329,12 @@ public class HardwareCFile : MonoBehaviour {
         PowerDraw = 15;
         PowerEffRating = 0.0025f;
         BootTime = 0.11f;
+        InitalTimer = 1;
+        Timer = InitalTimer;
         UIPosX = 0;
         UIPosY = 0;
         Image = 0;
-        ListOfStorage.Add(new StorageDevice(Name, ManufactorName, Desc, Connector, Speed, 0, MaxMemory, MaxMemory, PowerDraw, DegredationRate, MaxHealth, Health, 0, PowerEffRating, BootTime, StorageDevice.StorageType.HDD, UIPosX, UIPosY, Image));
+        ListOfStorage.Add(new StorageDevice(Name, ManufactorName, Desc, Connector, Speed, 0, MaxMemory, MaxMemory, PowerDraw, DegredationRate, MaxHealth, Health, 0, PowerEffRating, BootTime, Timer, InitalTimer, StorageDevice.StorageType.HDD, UIPosX, UIPosY, Image, Partitions));
     }
 
     void PSU()
@@ -384,7 +400,7 @@ public class HardwareCFile : MonoBehaviour {
         PowerUsage = 15;
         PowerEffRating = 0.0025f;
 
-        ListOfModems.Add(new ModemSystem(Name, ManufactorName, "", "", MaxSpeed, MaxSpeed, MinSpeed, 0, PowerUsage, DegredationRate, MaxHealth, Health, 0, PowerEffRating, 0, 0, ModemSystem.ModemConnectionType.DialUp));
+        ListOfModems.Add(new ModemSystem(Name, ManufactorName, "", "", MaxSpeed, MaxSpeed, MaxSpeed, MinSpeed, 0, PowerUsage, DegredationRate, MaxHealth, Health, 0, PowerEffRating, 0, 0,"", ModemSystem.ModemConnectionType.DialUp));
 
         ManufactorName = "TUGs";
         ProductName = "Advanced Modem";
@@ -398,6 +414,6 @@ public class HardwareCFile : MonoBehaviour {
         PowerUsage = 15;
         PowerEffRating = 0.0025f;
 
-        ListOfModems.Add(new ModemSystem(Name, ManufactorName, "", "", MaxSpeed, MaxSpeed, MinSpeed, 0, PowerUsage, DegredationRate, MaxHealth, Health, 0, PowerEffRating, 0, 0, ModemSystem.ModemConnectionType.DialUp));
+        ListOfModems.Add(new ModemSystem(Name, ManufactorName, "", "", MaxSpeed, MaxSpeed, MaxSpeed, MinSpeed, 0, PowerUsage, DegredationRate, MaxHealth, Health, 0, PowerEffRating, 0, 0,"", ModemSystem.ModemConnectionType.DialUp));
     }
 }

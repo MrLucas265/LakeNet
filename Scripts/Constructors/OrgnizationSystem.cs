@@ -11,6 +11,7 @@ public class OrgnizationSystem
     public DOBSystem FoundingDate;
     public OrgType Type;
     public List<ServerSystem> Server = new List<ServerSystem>();
+    public BankSystem BankAccounts;
 
     public enum OrgType
     {
@@ -19,16 +20,7 @@ public class OrgnizationSystem
 
     }
 
-    public enum CompanyName
-    {
-        Medical,
-        Finnicheal,
-
-    }
-
-
-
-    public OrgnizationSystem(string name, string abv, string orgnum,DOBSystem dob, OrgType type, List<ServerSystem> server)
+    public OrgnizationSystem(string name, string abv, string orgnum,DOBSystem dob, OrgType type, List<ServerSystem> server, BankSystem bankaccount)
     {
         Name = name;
         Abv = abv;
@@ -36,6 +28,7 @@ public class OrgnizationSystem
         FoundingDate = dob;
         Type = type;
         Server = server;
+        BankAccounts = bankaccount;
         //Month = month;
         //Year = year;
         //Age = age;

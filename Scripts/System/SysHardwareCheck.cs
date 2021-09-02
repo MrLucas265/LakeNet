@@ -42,17 +42,23 @@ public class SysHardwareCheck : MonoBehaviour
 	{
 		if (GameControl.control.Gateway.InstalledCPU [0].UsagePercent > 100) 
 		{
-			crashmsg = true;
+			noti.ForcedMusicSetting = true;
+			noti.ForcedMusicOption = false;
+			noti.NewNotification("Critical Error", "OS Kernal Panic", "Insuffcient CPU resource pool.");
 			KernalPanic ();
 		}
 		if (GameControl.control.Gateway.InstalledPSU [0].Remaining < 0) 
 		{
-			crashmsg = true;
+			noti.ForcedMusicSetting = true;
+			noti.ForcedMusicOption = false;
+			noti.NewNotification("Critical Error", "OS Kernal Panic", "Insuffcient PSU resource pool.");
 			KernalPanic ();
 		}
 		if (GameControl.control.Gateway.InstalledRAM [0].Remaining < 0) 
 		{
-			crashmsg = true;
+			noti.ForcedMusicSetting = true;
+			noti.ForcedMusicOption = false;
+			noti.NewNotification("Critical Error", "OS Kernal Panic", "Insuffcient RAM resource pool.");
 			KernalPanic ();
 		}
 	}
@@ -77,13 +83,6 @@ public class SysHardwareCheck : MonoBehaviour
 
 	void KernalPanic()
 	{
-		if (crashmsg == true) 
-		{
-			noti.ForcedMusicSetting = true;
-			noti.ForcedMusicOption = false;
-			noti.NewNotification("Critical Error","OS Kernal Panic","Insuffcient CPU resource pool.");
-			crashmsg = false;	
-		}
 		SCM.StopCodeWord = "AUTO_SYSTEM_CRASH";
 		SCM.StopCodeNumber = "0xD34DD13D";
 		SCM.CodeDetail = "K3RN31-94N1C-C9U-2Y2-CR2";

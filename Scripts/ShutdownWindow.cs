@@ -69,7 +69,6 @@ public class ShutdownWindow : MonoBehaviour
 	private JailDew jd;
 	private Unicom uc;
 	private Test test;
-	private CLI cmd;
 	private Defalt def;
 	private MissionGen mg;
 	private OS os;
@@ -83,7 +82,6 @@ public class ShutdownWindow : MonoBehaviour
 	private CustomTheme ct;
 	private Mouse mouse;
 	private ScreenSaver ss;
-	private CLICommands clic;
 
 	private GameObject missions;
 
@@ -146,7 +144,6 @@ public class ShutdownWindow : MonoBehaviour
 		ds = GetComponent<DirSearch>();
 		tv = GetComponent<TreeView>();
 		clk = GetComponent<Clock>();
-		cmd = GetComponent<CLI> ();
 		def = GetComponent<Defalt>();
 		mg = GetComponent<MissionGen>();
 		os = GetComponent<OS>();
@@ -160,7 +157,6 @@ public class ShutdownWindow : MonoBehaviour
 		ct = GetComponent<CustomTheme>();
 		mouse = GetComponent<Mouse>();
 		ss = GetComponent<ScreenSaver>();
-		clic = GetComponent<CLICommands>();
 
 		missiongen = missions.GetComponent<MissionGen>();
 		missionbrow = missions.GetComponent<MissionBrow>();
@@ -417,7 +413,6 @@ public class ShutdownWindow : MonoBehaviour
 			{
 			case 0:
 				BootInfo.Add ("[Initializing] System Commands");
-				clic.SetSystemCommands();
 				break;
 			case 1:
 				BootInfo.Remove ("[Initializing] System Commands");

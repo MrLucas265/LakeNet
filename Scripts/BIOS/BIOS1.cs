@@ -60,7 +60,7 @@ public class BIOS1 : MonoBehaviour
 
 		if(GUI.Button (new Rect (600,Screen.height-25,100,20),"Load"))
 		{
-			HardwareController.hdcon.Load();
+
 		}
 
 		GUI.Button (new Rect (0,0,0,0),"Advanced Mode");
@@ -105,13 +105,11 @@ public class BIOS1 : MonoBehaviour
 
 		if (GUI.Button (new Rect (140, 300, 50, 21), "- 0.05")) 
 		{
-			HardwareController.hdcon.CPUVoltage -= 0.05f;
 			cpu.OverclockMath();
 		}
 
 		if (GUI.Button (new Rect (195, 300, 50, 21), "+ 0.05")) 
 		{
-			HardwareController.hdcon.CPUVoltage += 0.05f;
 			cpu.OverclockMath();
 		}
 

@@ -12,7 +12,7 @@ public class Tracer : MonoBehaviour
 	private WebSec ws;
 	private Defalt def;
 	private InternetBrowser ib;
-	private TTSndControl sc;
+	private SoundControl sc;
     public int windowID;
     public Rect windowRect = new Rect(100, 100, 200, 200);
     public float native_width = 1920;
@@ -29,15 +29,6 @@ public class Tracer : MonoBehaviour
 
 	public bool UpdateTimer;
 
-	public float CPUUsage;
-	public float RAMUsage;
-	public float GPUUsage;
-	public float DiskUsage;
-
-	public float CPUUsageWE;
-	public float RAMUsageWE;
-	public float GPUUsageWE;
-
 	public float ItemCount;
 
 	private GameObject Hardware;
@@ -45,7 +36,6 @@ public class Tracer : MonoBehaviour
 	private GameObject SysSoftware;
 	private GameObject AppSoftware;
 	private GameObject HackingSoftware;
-    private GameObject TraceSnd;
 
     public float percenttimer;
 	public float percentcooldown;
@@ -57,19 +47,20 @@ public class Tracer : MonoBehaviour
 
 	public Color32 windowColor = new Color32(0,0,0,0);
 
+	public float Pitch;
+
 	// Use this for initialization
 	void Start ()
     {
 		Hardware = GameObject.Find("Hardware");
 		Prompts = GameObject.Find("Prompts");
 		SysSoftware = GameObject.Find("System");
-        TraceSnd = GameObject.Find("Trace Tracker");
         HackingSoftware = GameObject.Find("Hacking");
 		AppSoftware = GameObject.Find("Applications");
 
 		com = SysSoftware.GetComponent<Computer>();
 		def = SysSoftware.GetComponent<Defalt>();
-		sc = SysSoftware.GetComponent<TTSndControl>();
+		sc = SysSoftware.GetComponent<SoundControl>();
 
 		ws = AppSoftware.GetComponent<WebSec>();
 		sm = AppSoftware.GetComponent<SystemMap>();
@@ -80,6 +71,7 @@ public class Tracer : MonoBehaviour
         beeptimer = beepcooldown;
 		native_height = Customize.cust.native_height;
 		native_width = Customize.cust.native_width;
+		Pitch = 0.5f;
 	}
 
 	void TraceColor()
@@ -93,7 +85,7 @@ public class Tracer : MonoBehaviour
 		{
 			Color32 windowColor;
 			windowColor.r = (byte)255;
-			windowColor.g = (byte)255;
+			windowColor.g = (byte)ColorPercentage;
 			windowColor.b = (byte)ColorPercentage;
 			windowColor.a = (byte)255;
 			GUI.color = windowColor;
@@ -116,43 +108,31 @@ public class Tracer : MonoBehaviour
 			UpdateTimer = false;
 		}
 
-//		if (starting == true) 
-//		{
-//			hd.CurRAMBan += RAMUsage;
-//			hd.CurGPUBandwidth += GPUUsage;
-//			hd.CurCPUBandwidth += CPUUsage;
-//			show = true;
-//			starting = false;
-//		}
-//
-//		if (executing == true) 
-//		{
-//			timer = MaxTime;
-//			hd.CurRAMBan += RAMUsageWE;
-//			hd.CurGPUBandwidth += GPUUsageWE;
-//			hd.CurCPUBandwidth += CPUUsageWE;
-//			executing = false;
-//		}
-//
-//		if (stopping == true) 
-//		{
-//			hd.CurRAMBan -= RAMUsageWE;
-//			hd.CurGPUBandwidth -= GPUUsageWE;
-//			hd.CurCPUBandwidth -= CPUUsageWE;
-//			startTrace = false;
-//			stopping = false;
-//		}
-//
-//		if(closing == true)
-//		{
-//			hd.CurRAMBan -= RAMUsage;
-//			hd.CurGPUBandwidth -= GPUUsage;
-//			hd.CurCPUBandwidth -= CPUUsage;
-//			closing = false;
-//			show = false;
-//		}
+		if (starting == true)
+		{
+			show = true;
+			starting = false;
+		}
 
-        if(startTrace == true)
+		if (executing == true)
+		{
+			timer = MaxTime;
+			executing = false;
+		}
+
+		if (stopping == true)
+		{
+			startTrace = false;
+			stopping = false;
+		}
+
+		if (closing == true)
+		{
+			closing = false;
+			show = false;
+		}
+
+		if (startTrace == true)
         {
             timer -= Time.deltaTime;
 			percenttimer -= Time.deltaTime;
@@ -172,19 +152,19 @@ public class Tracer : MonoBehaviour
 					sm.ConnectionsLeft--;
 				}
 
-//				if (CurrentPercentage > sm.PercentageChange) 
-//				{
-//					CurrentPercentage = 0;
-//					sm.ConnectionsLeft--;
-//				}
+				//if (CurrentPercentage > sm.PercentageChange)
+				//{
+				//	CurrentPercentage = 0;
+				//	sm.ConnectionsLeft--;
+				//}
 
-				if(beeptimer>=beepcooldown)
+				if (beeptimer>=beepcooldown)
 				{
+					Pitch = Pitch + 0.01f;
 					if (beeptimer > 0.15f) 
 					{
 						TraceColor();
-						//sc.SoundSelect = 12;
-						sc.PlaySound();
+						sc.PlayTraceTrackerSound(12, 1);
 						beeptimer = 0;
 					}
 				}
@@ -192,11 +172,8 @@ public class Tracer : MonoBehaviour
 
             if(timer <= 0)
             {
-				if (ib.SiteAdminPass != "") 
-				{
-					
-				}
-				else 
+				Pitch = 0.5f;
+				if (ib.SiteAdminPass == "") 
 				{
 					ib.SiteAdminPass = StringGenerator.RandomMixedChar(8, 8);
 					stopping = true;

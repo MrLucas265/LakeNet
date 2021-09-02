@@ -74,7 +74,6 @@ public class CPU : MonoBehaviour
 	{
         Software = GameObject.Find("Software");
 
-        HardwareController.hdcon.Load();
 		CoolDown = 0.15f;
 		UpdateCPUStats();
 
@@ -82,7 +81,7 @@ public class CPU : MonoBehaviour
 		FanEff = 0.9f;
 		MaxFanRPM = 4800;
 
-		MaxCPUSpeed = FactoryMaxSpeed * HardwareController.hdcon.CPUVoltage;
+		//MaxCPUSpeed = FactoryMaxSpeed * HardwareController.hdcon.CPUVoltage;
 
 		MaxFlowRate = MaxFanRPM / FanSize * 2 * FanEff;
 
@@ -100,7 +99,7 @@ public class CPU : MonoBehaviour
 
 	public void UpdateCPUStats()
 	{
-		Voltage = HardwareController.hdcon.CPUVoltage;
+		//Voltage = HardwareController.hdcon.CPUVoltage;
 	}
 	
 	// Update is called once per frame
@@ -111,10 +110,10 @@ public class CPU : MonoBehaviour
 
 	public void OverclockMath()
 	{
-		if (HardwareController.hdcon.CPUVoltage != 0) 
-		{
-			MaxCPUSpeed = FactoryMaxSpeed * HardwareController.hdcon.CPUVoltage;
-		}
+	//	if (HardwareController.hdcon.CPUVoltage != 0) 
+	//	{
+	//		MaxCPUSpeed = FactoryMaxSpeed * HardwareController.hdcon.CPUVoltage;
+	//	}
 	}
 
 	void Update () 
@@ -140,11 +139,11 @@ public class CPU : MonoBehaviour
 			SetProgramStuff();
 		}
 
-		if (HardwareController.hdcon.CPUCheck == true) 
-		{
+		//if (HardwareController.hdcon.CPUCheck == true) 
+		//{
 			//HardwareCheck();
-			HardwareController.hdcon.CPUCheck = false;
-		}
+		//	HardwareController.hdcon.CPUCheck = false;
+		//}
 	}
 
     void PowerCheck()

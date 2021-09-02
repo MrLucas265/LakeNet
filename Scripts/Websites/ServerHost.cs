@@ -50,7 +50,7 @@ public class ServerHost : MonoBehaviour
 
 			if(GUI.Button(new Rect(5,100,ButtonWidth,20),"Basic Bitcoin Server"))
 			{
-				GameControl.control.Balance[GameControl.control.SelectedBank] -= 0;
+				//GameControl.control.Balance[GameControl.control.SelectedBank] -= 0;
 			}
 			break;
 

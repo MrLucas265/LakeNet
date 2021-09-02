@@ -69,7 +69,6 @@ public class Boot : MonoBehaviour
 	private JailDew jd;
 	private Unicom uc;
 	private Test test;
-	private CLI cmd;
 	private Defalt def;
 	private MissionGen mg;
 	private OS os;
@@ -85,6 +84,7 @@ public class Boot : MonoBehaviour
 	private ScreenSaver ss;
 	private CLICommandsV2 clic;
 	private NotfiPrompt noti;
+	private NotificationPrompt notip;
 	private SysHardwareCheck shc;
 
 	private GameObject missions;
@@ -125,24 +125,59 @@ public class Boot : MonoBehaviour
 
 	public bool PlaySoundOnce;
 
-	public bool Terminal;
-
     public bool TestMode;
 
     public GUISkin Skin;
+
+	public List<float> LoadingBarXPos = new List<float>();
+	public string LoadingBarInfo;
+
+	public bool SetColor;
 
 	void Awake()
 	{
 		Customize.cust.Load();
 	}
 
+	void SelectedOSBootDiskCheck()
+	{
+		for (int i = 0; i < GameControl.control.ProgramFiles.Count; i++)
+		{
+			if (GameControl.control.ProgramFiles[i].Extension == ProgramSystem.FileExtension.OS)
+			{
+				if (GameControl.control.ProgramFiles[i].Name == GameControl.control.SelectedOS.Name.ToString())
+				{
+					for (int j = 0; j < GameControl.control.Gateway.InstalledStorageDevice.Count; j++)
+					{
+						for (int k = 0; k < GameControl.control.Gateway.InstalledStorageDevice[j].Partitions.Count; k++)
+						{
+							if (GameControl.control.ProgramFiles[i].Location.StartsWith(GameControl.control.Gateway.InstalledStorageDevice[j].Partitions[k].DriveLetter))
+							{
+								GameControl.control.BootTime = GameControl.control.Gateway.InstalledStorageDevice[j].BootTime;
+							}
+						}
+					}
+				}
+			}
+		}
+
+		if(GameControl.control.BootTime == 0)
+		{
+			GameControl.control.BootTime = GameControl.control.Gateway.InstalledStorageDevice[0].BootTime;
+		}
+	}
+
 	// Use this for initialization
 	void Start ()
 	{
-		cd = GameControl.control.BootTime;
+		SelectedOSBootDiskCheck();
+
 		Kernal ();
 
+		SetColor = true;
+
 		missions = GameObject.Find ("Missions");
+		Prompt = GameObject.Find("Prompts");
 
 		jd = GetComponent<JailDew>();
 		uc = GetComponent<Unicom>();
@@ -159,14 +194,12 @@ public class Boot : MonoBehaviour
 		ds = GetComponent<DirSearch>();
 		tv = GetComponent<TreeView>();
 		clk = GetComponent<Clock>();
-		cmd = GetComponent<CLI> ();
 		def = GetComponent<Defalt>();
 		mg = GetComponent<MissionGen>();
 		os = GetComponent<OS>();
 		sm = GetComponent<SystemMap>();
 		wsv = GetComponent<WebSecViewer>();
 		ep = GetComponent<ErrorProm>();
-		sdp = GetComponent<ShutdownProm>();
 		sp = GetComponent<SystemPanel>();
 		sc = GetComponent<SoundControl>();
 		desk = GetComponent<Desktop>();
@@ -175,6 +208,8 @@ public class Boot : MonoBehaviour
 		ss = GetComponent<ScreenSaver>();
 		clic = GetComponent<CLICommandsV2>();
 		shc = GetComponent<SysHardwareCheck>();
+
+		sdp = Prompt.GetComponent<ShutdownProm>();
 
 		missiongen = missions.GetComponent<MissionGen>();
 		missionbrow = missions.GetComponent<MissionBrow>();
@@ -185,6 +220,7 @@ public class Boot : MonoBehaviour
 
 		Prompt = GameObject.Find ("Prompts");
 		noti = Prompt.GetComponent<NotfiPrompt>();
+		notip = Prompt.GetComponent<NotificationPrompt>();
 
 		RotationCooldown = 0.01f;
 
@@ -216,10 +252,8 @@ public class Boot : MonoBehaviour
 
 		LoadPresetColors();
 
-		missiongen.enabled = true;
-		missionbrow.enabled = true;
-		currentcontracts.enabled = true;
-    }
+		cd = GameControl.control.BootTime;
+	}
 
 	void LoadPresetColors()
 	{
@@ -259,6 +293,8 @@ public class Boot : MonoBehaviour
 	// Update is called once per frame
 	void Update ()
 	{
+		speedMod = Random.Range(0.01f, 2f);
+
 		if (Input.GetKeyDown (KeyCode.End)) 
 		{
 			ForceCrash();
@@ -280,11 +316,13 @@ public class Boot : MonoBehaviour
 		{
 			if (pause == false) 
 			{
-				cd -= 1 * Time.deltaTime;
+				cd -= speedMod * Time.deltaTime;
 
 				if (cd <= 0) 
 				{
 					Index++;
+					//sc.SoundSelect = 13;
+					//sc.PlaySound();
 					cd = GameControl.control.BootTime;
 					Kernal();
 					a += speedMod;
@@ -293,11 +331,13 @@ public class Boot : MonoBehaviour
 
 			if (pause == true) 
 			{
-				cd1 -= 1 * Time.deltaTime;
+				cd1 -= speedMod * Time.deltaTime;
 
 				if (cd1 <= 0) 
 				{
 					Index1++;
+					//sc.SoundSelect = 13;
+					//sc.PlaySound();
 					cd1 = GameControl.control.BootTime;
 					Kernal ();
 					a += speedMod;
@@ -382,7 +422,7 @@ public class Boot : MonoBehaviour
 			BootInfo.Remove ("Preparing systems check.");
 			BootInfo.Add ("Preparing systems check..");
 			os.SetOSUsage = true;
-			GameControl.control.logged = true;
+			GameControl.control.Gateway.Status.Booting = true;
 			break;
 		case 2:
 			BootInfo.Remove ("Preparing systems check..");
@@ -438,6 +478,7 @@ public class Boot : MonoBehaviour
 		case 9:
 			BootInfo.Remove ("[       ] Starting login systems");
 			BootInfo.Add ("[ OK ] Starting login systems");
+			sdp.enabled = true;
 			break;
 		case 10:
 			BootInfo.Add ("[       ] Starting accounts service");
@@ -535,6 +576,9 @@ public class Boot : MonoBehaviour
 			case 14:
 				BootInfo.Remove ("[Initializing] Software.");
 				BootInfo.Add ("[Initializing] Software..");
+				missiongen.enabled = true;
+				missionbrow.enabled = true;
+				currentcontracts.enabled = true;
 				break;
 			case 15:
 				BootInfo.Remove ("[Initializing] Software..");
@@ -559,14 +603,16 @@ public class Boot : MonoBehaviour
 			{
 				ss.enabled = true;
 			}
-            os.enabled = true;
+			GameControl.control.Gateway.Status.Booting = false;
+			os.enabled = true;
             desk.enabled = true;
 			noti.enabled = true;
 			shc.enabled = true;
-            enabled = false;
+			notip.show = true;
+			enabled = false;
             booting = false;
             show = false;
-            GameControl.control.Booted = true;
+			GameControl.control.Gateway.Status.Booted = true;
 
         }
 	}
@@ -594,7 +640,7 @@ public class Boot : MonoBehaviour
 	{
 		GUI.backgroundColor = buttonColor;
 		GUI.contentColor = fontColor;
-		if (Terminal == false)
+		if (GameControl.control.Gateway.Status.Terminal == false)
 		{
 			OSCheck();
 		}
@@ -704,6 +750,66 @@ public class Boot : MonoBehaviour
 					PlaySoundOnce = true;
 					sc.SoundSelect = 8;
 					sc.PlaySound ();
+					DesktopIni();
+				}
+			}
+			break;
+
+			case OperatingSystems.OSName.EthelOS:
+			BackgroundFade = false;
+			ColourFade = false;
+
+			//GUI.DrawTexture (new Rect (Pos.width-24, Pos.height-24, 48, 48), os.Icon[os.SelectedIcon]);
+
+			GUI.color = Color2;
+			Color2.r = 255;
+			Color2.g = 255;
+			Color2.b = 0;
+
+			if(SetColor == true)
+			{
+				GameControl.control.SelectedOS.Colour.Window.Red = 255;
+				GameControl.control.SelectedOS.Colour.Window.Green = 217;
+				GameControl.control.SelectedOS.Colour.Window.Blue = 0;
+				GameControl.control.SelectedOS.Colour.Window.Alpha = 255;
+
+				GameControl.control.SelectedOS.Colour.Button.Red = 255;
+				GameControl.control.SelectedOS.Colour.Button.Green = 209;
+				GameControl.control.SelectedOS.Colour.Button.Blue = 0;
+				GameControl.control.SelectedOS.Colour.Button.Alpha = 255;
+
+				GameControl.control.SelectedOS.Colour.Font.Red = 0;
+				GameControl.control.SelectedOS.Colour.Font.Green = 0;
+				GameControl.control.SelectedOS.Colour.Font.Blue = 0;
+				GameControl.control.SelectedOS.Colour.Font.Alpha = 255;
+
+				GameControl.control.GUIID = 2;
+				SetColor = false;
+			}
+
+			//GUI.Label (new Rect (Pos.width-75, Pos.height+60, 400, 22),"" + BootInfo[BootInfo.Count-1]);
+
+			//RoationPic = "E";
+			DisplayText(0,0);
+			LoadingBar1(30, windowRect.height - 30,windowRect.width - 60, 24,3,10);
+
+			//if (BGTakingAlpha == true)
+			//{
+			//	if (PlaySoundOnce == false)
+			//	{
+			//		PlaySoundOnce = true;
+			//		sc.SoundSelect = 8;
+			//		sc.PlaySound ();
+			//	}
+			//}
+
+			if (percentage >= 100)
+			{
+				if (PlaySoundOnce == false)
+				{
+					PlaySoundOnce = true;
+					sc.SoundSelect = 1;
+					sc.PlaySound();
 					DesktopIni();
 				}
 			}
@@ -873,6 +979,14 @@ public class Boot : MonoBehaviour
 		}
 	}
 
+	void DisplayText(float x,float y)
+	{
+		for (int i = 0; i < BootInfo.Count; i++)
+		{
+			GUI.Label(new Rect(x, y + 21 * i, 1000, 21), BootInfo[i]);
+		}
+	}
+
 	void BootTextLogo()
 	{
 		for (int i = 0; i < BootInfo.Count; i++)
@@ -917,6 +1031,7 @@ public class Boot : MonoBehaviour
 	void LoadingBar()
 	{
 		percentage = a / b * 100;
+		MoveMod = 40;
 		moveAmt += MoveMod * Time.deltaTime;
 
 		if (moveAmt >= MaxmoveAmt) 
@@ -925,6 +1040,7 @@ public class Boot : MonoBehaviour
 		}
 
 		GUI.TextArea (new Rect (x, y, w3, h4),"");
+
 		if (moveAmt < 125)
 		{
 			GUI.Box (new Rect (x + moveAmt, y, w, h),"");
@@ -937,6 +1053,57 @@ public class Boot : MonoBehaviour
 		{
 			GUI.Box (new Rect (x + BarMod2 + moveAmt, y, w, h),"");
 		}
+	}
+
+	void LoadingBar1(float x,float y,float boxw, float boxh,int barcount,float spacing)
+	{
+		percentage = a / b * 100;
+		b = 53;
+		moveAmt = 0;
+		MoveMod = speedMod / b;
+
+		moveAmt += 1 * Time.deltaTime;
+
+		GameControl.control.BootTime = 0.14f;
+
+		if(moveAmt >= MoveMod)
+		{
+			LoadingBarInfo = LoadingBarInfo + "|";
+			moveAmt = 0;
+		}
+
+		GUI.TextArea(new Rect(x, y, boxw, boxh),"" + LoadingBarInfo);
+
+		//if (LoadingBarXPos.Count < barcount)
+		//{
+		//	LoadingBarXPos.Add(10);
+		//}
+
+		//if(LoadingBarXPos.Count > 0)
+		//{
+		//	for (int i = 0; i < LoadingBarXPos.Count; i++)
+		//	{
+		//		LoadingBarXPos[i] += MoveMod * Time.deltaTime;
+		//		GUI.Box(new Rect(LoadingBarXPos[i] * 40, y, 10, boxh), "");
+
+		//		if (LoadingBarXPos[i] >= 100)
+		//		{
+		//			LoadingBarXPos.RemoveAt(i);
+		//		}
+		//	}
+		//}
+		//if (moveAmt < 125)
+		//{
+		//	GUI.Box(new Rect(x + moveAmt, y, w, h), "");
+		//}
+		//if (moveAmt >= 15 && moveAmt < 135)
+		//{
+		//	GUI.Box(new Rect(x + BarMod1 + moveAmt, y, w, h), "");
+		//}
+		//if (moveAmt >= 30 && moveAmt < 155)
+		//{
+		//	GUI.Box(new Rect(x + BarMod2 + moveAmt, y, w, h), "");
+		//}
 	}
 
 	void BreathingLogo()

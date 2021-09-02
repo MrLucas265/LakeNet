@@ -182,7 +182,7 @@ public class TUG : MonoBehaviour
 		if(GUI.Button(new Rect(2,40,150,20),"Set Network Speed"))
 		{
             GameControl.control.Gateway.InstalledModem[0].MaxSpeed = SelectedSpeed;
-            GameControl.control.Gateway.InstalledModem[0].Speed = SelectedSpeed;
+            GameControl.control.Gateway.InstalledModem[0].CurrentSpeed = SelectedSpeed;
             
             DateSystem InitalPlanDate = new DateSystem(GameControl.control.Time.Seconds, GameControl.control.Time.Miniutes, GameControl.control.Time.Hours, GameControl.control.Time.Day, GameControl.control.Time.Month, GameControl.control.Time.Year, 0, "", false, "", 0, 0, 0, false, "" + GameControl.control.Time.Day.ToString("00") + "" + "/" + GameControl.control.Time.Month.ToString("00") + "/" + GameControl.control.Time.Year.ToString("0000"), "", "");
             int MonthMath = InitalPlanDate.Month + 1;
@@ -197,18 +197,18 @@ public class TUG : MonoBehaviour
                 {
                     if (!GameControl.control.Plans[i].Name.Contains("Modem"))
                     {
-                        GameControl.control.MyBankDetails[GameControl.control.SelectedBank].AccountBalance -= GameControl.control.Plans[i].Price;
+                       // GameControl.control.MyBankDetails[GameControl.control.SelectedBank].AccountBalance -= GameControl.control.Plans[i].Price;
                         GameControl.control.Plans.RemoveAt(i);
                     }
                 }
             }
 
             GameControl.control.Plans.Add(new PlanSystem("TUG", "www.tugs.com", SelectedPlanName, SelectedPlanInfo, MonthlyPrice, InitalPlanDate, DuePlanDate));
-            GameControl.control.MyBankDetails[GameControl.control.SelectedBank].AccountBalance -= MonthlyPrice;
+           // GameControl.control.MyBankDetails[GameControl.control.SelectedBank].AccountBalance -= MonthlyPrice;
         }
 
         GUI.Label(new Rect(315, 60, 300, 20), "Current Max Speed: " + GameControl.control.Gateway.InstalledModem[0].MaxSpeed);
-        GUI.Label(new Rect(315, 80, 300, 20), "Current Speed: " + GameControl.control.Gateway.InstalledModem[0].Speed);
+        GUI.Label(new Rect(315, 80, 300, 20), "Current Speed: " + GameControl.control.Gateway.InstalledModem[0].CurrentSpeed);
 
         if (GUI.Button(new Rect(5,80,100,20),"Dial Up"))
 		{

@@ -566,19 +566,19 @@ public class TaskViewerBackup : MonoBehaviour
                     AnyShowen = true;
                 }
 
-                if (GUI.Button(new Rect(2, 88, 141, 20), "Disk:" + HardwareController.hdcon.HDDFreeSpace + GameControl.control.SpaceName + "/" + HardwareController.hdcon.HDDMaxSpace + GameControl.control.SpaceName))
-                {
-                    CloseAllMainMenuSubMenus();
-                    showDisk = true;
-                    AnyShowen = true;
-                }
+                //if (GUI.Button(new Rect(2, 88, 141, 20), "Disk:" + HardwareController.hdcon.HDDFreeSpace + GameControl.control.SpaceName + "/" + HardwareController.hdcon.HDDMaxSpace + GameControl.control.SpaceName))
+                //{
+                //    CloseAllMainMenuSubMenus();
+                //    showDisk = true;
+                //    AnyShowen = true;
+                //}
 
-                if (GUI.Button(new Rect(2, 109, 141, 20), "Network:" + HardwareController.hdcon.networkspeed + GameControl.control.SpaceName + "s" + "/" + HardwareController.hdcon.Maxsnetworkspeed + GameControl.control.SpaceName + "s"))
-                {
-                    CloseAllMainMenuSubMenus();
-                    showNET = true;
-                    AnyShowen = true;
-                }
+                //if (GUI.Button(new Rect(2, 109, 141, 20), "Network:" + HardwareController.hdcon.networkspeed + GameControl.control.SpaceName + "s" + "/" + HardwareController.hdcon.Maxsnetworkspeed + GameControl.control.SpaceName + "s"))
+                //{
+                //    CloseAllMainMenuSubMenus();
+                //    showNET = true;
+                //    AnyShowen = true;
+                //}
 
                 if (GUI.Button(new Rect(2, 130, 141, 20), "GPU:" + GameControl.control.Gateway.InstalledGPU[0].MemoryUsage + " / " + GameControl.control.Gateway.InstalledGPU[0].MaxMemory))
                 {
@@ -670,25 +670,25 @@ public class TaskViewerBackup : MonoBehaviour
         switch (SelectedOption)
         {
             case "Kill":
-                switch (SelectedTask.Type)
+                switch (SelectedTask.Extension)
                 {
-                    case ProgramSystem.ProgramType.Txt:
+                    case ProgramSystem.FileExtension.Txt:
                         //EndProgram();
                         CloseContextMenu();
                         break;
-                    case ProgramSystem.ProgramType.Fdl:
+                    case ProgramSystem.FileExtension.Fdl:
                         //OpenFld();
                         CloseContextMenu();
                         break;
-                    case ProgramSystem.ProgramType.Ins:
+                    case ProgramSystem.FileExtension.Ins:
                         //OpenIns();
                         CloseContextMenu();
                         break;
-                    case ProgramSystem.ProgramType.Exe:
+                    case ProgramSystem.FileExtension.Exe:
                         EndProgram();
                         CloseContextMenu();
                         break;
-                    case ProgramSystem.ProgramType.Dir:
+                    case ProgramSystem.FileExtension.Dir:
                         //OpenFld();
                         CloseContextMenu();
                         break;

@@ -98,6 +98,16 @@ public class OS : MonoBehaviour
 
     public bool Held;
 
+	public List<string> ListOfFilePaths = new List<string>();
+	public List<Texture2D> ListOfBackgroundImages = new List<Texture2D>();
+
+	public bool ForcedBackground;
+
+	public bool DefaultBackground;
+
+	private GameObject WindowHandel;
+	private WindowManager winman;
+
 
 
 	// Use this for initialization
@@ -106,6 +116,7 @@ public class OS : MonoBehaviour
 		SysSoftware = GameObject.Find("System");
 		Hardware = GameObject.Find("Hardware");
 		Applications = GameObject.Find("Applications");
+		WindowHandel = GameObject.Find("WindowHandel");
 
 		cpu = Hardware.GetComponent<CPU>();
 		ram = Hardware.GetComponent<RAM>();
@@ -120,31 +131,13 @@ public class OS : MonoBehaviour
 
         note = Applications.GetComponent<Notepad>();
 
+		winman = WindowHandel.GetComponent<WindowManager>();
 
-
-        if (boot.Terminal == true)
-		{
-			CPUUsage += 2;
-			MemoryUsage += 500;
-			GraphicsUsage += 5;
-			Index = 2;
-			SetOSUsage = false;
-			StartUpdateOS = false;
-			SetUsage ();
-			SelectedIcon = 1;
-			GameControl.control.BootTime = 0.4f;
-			appman.SelectedApp = "Command Line V2";
-		}
-		else
-		{
-			StartUpdateOS = true;
-		}
-
-//		if (Customize.cust.native_width != 0)
-//		{
-//			native_width = Customize.cust.native_width;
-//			native_height = Customize.cust.native_height;
-//		}
+		//		if (Customize.cust.native_width != 0)
+		//		{
+		//			native_width = Customize.cust.native_width;
+		//			native_height = Customize.cust.native_height;
+		//		}
 
 		if (Application.isEditor == true) 
 		{
@@ -155,16 +148,45 @@ public class OS : MonoBehaviour
 			windowRect = new Rect (0, 0, Customize.cust.RezX, Customize.cust.RezY);
 		}
 
+		winman.ProgramName = "Desktop";
+		winman.windowRect = new Rect(windowRect);
+		winman.AddProgramWindow();
+
 		IconWidth = 10 * 12;
 		xmodpic = 4;
 		ymodpic = 8;
 		xmod = 13;
 
-		MaxIconsPerRow = 10;
-
 		ContextMenuID = 98;
 		ContextwindowRect.width = 100;
+		LoadPics();
 		//ContextwindowRect.height = 21*6+7;
+		if (GameControl.control.Gateway.Status.Terminal == true)
+		{
+			ForcedBackground = true;
+			Index = 0;
+			CPUUsage += 1;
+			MemoryUsage += 256;
+			GraphicsUsage += 2;
+			SetOSUsage = false;
+			StartUpdateOS = false;
+			SetUsage();
+			SelectedIcon = 1;
+		}
+		else
+		{
+			StartUpdateOS = true;
+		}
+
+		com.SetColors();
+	}
+
+	void LoadPics()
+	{
+		for (int PhotoNumber = 0; PhotoNumber < 131; PhotoNumber++)
+		{
+			ListOfBackgroundImages.Add(Resources.Load<Texture2D>("DesktopBackgrounds/" + PhotoNumber));
+		}
 	}
 
 	void Update()
@@ -172,6 +194,7 @@ public class OS : MonoBehaviour
 		if (StartUpdateOS == true)
 		{
 			UpdateOS ();
+			pic[2] = ListOfBackgroundImages[GameControl.control.SelectedOS.SelectedBackground];
 		}
 
 		if (StartRefresh == true) 
@@ -215,7 +238,20 @@ public class OS : MonoBehaviour
 			SetOSUsage = false;
 			StartUpdateOS = false;
 			SetUsage ();
-			GameControl.control.BootTime = 0.4f;
+			GameControl.control.BootTime += 0.04f;
+			NotLegitCopy = "This copy of Appature is not legit.";
+			break;
+		case OperatingSystems.OSName.EthelOS:
+			CPUUsage += 2;
+			MemoryUsage += 500;
+			GraphicsUsage += 5;
+			Index = 2;
+			SetOSUsage = false;
+			ListOfBackgroundImages.Add(Resources.Load<Texture2D>("DesktopBackgrounds/" + "ethelbg"));
+			StartUpdateOS = false;
+			DefaultBackground = true;
+			SetUsage ();
+			GameControl.control.BootTime += 0.04f;
 			NotLegitCopy = "This copy of Appature is not legit.";
 			break;
 		case OperatingSystems.OSName.CSOSV1:
@@ -227,7 +263,7 @@ public class OS : MonoBehaviour
 			StartUpdateOS = false;
 			SetUsage();
 			SelectedIcon = 1;
-			GameControl.control.BootTime = 0.4f;
+			GameControl.control.BootTime += 0.04f;
 			break;
 		case OperatingSystems.OSName.TreeOS:
 			CPUUsage += 1;
@@ -237,25 +273,20 @@ public class OS : MonoBehaviour
 			SetOSUsage = false;
 			StartUpdateOS = false;
 			SetUsage();
-			GameControl.control.BootTime = 0.4f;
+			GameControl.control.BootTime += 0.04f;
 			break;
 		case OperatingSystems.OSName.FluidicIceOS:
 			CPUUsage += 0.1f;
 			MemoryUsage += 256;
 			GraphicsUsage += 2;
-			if (Customize.cust.UseCustomBG == true) 
-			{
-				Index = 2;
-			} 
-			else 
-			{
-				Index = 1;
-			}
+			Index = 2;
+			ListOfBackgroundImages.Add(Resources.Load<Texture2D>("DesktopBackgrounds/" + "ice1"));
 			SetOSUsage = false;
 			StartUpdateOS = false;
+			DefaultBackground = true;
 			SetUsage();
 			SelectedIcon = 1;
-			GameControl.control.BootTime = 0.4f;
+			GameControl.control.BootTime += 0.04f;
 			OSName = "FluidicIceOS A1";
 			BuildNumber = "IT:Build 3.5.1";
 			NotLegitCopy = "This copy of FluidicIceOS is not legit.";
@@ -269,7 +300,7 @@ public class OS : MonoBehaviour
             StartUpdateOS = false;
             SetUsage();
             SelectedIcon = 1;
-            GameControl.control.BootTime = 0.4f;
+           GameControl.control.BootTime += 0.04f;
             OSName = "FluidicIceOS A1";
             BuildNumber = "IT:Build 3.5.1";
             NotLegitCopy = "This copy of FluidicIceOS is not legit.";
@@ -283,7 +314,7 @@ public class OS : MonoBehaviour
 			StartUpdateOS = false;
 			SetUsage();
 			SelectedIcon = 1;
-			GameControl.control.BootTime = 0.4f;
+			GameControl.control.BootTime += 0.04f;
 			break;
 		case OperatingSystems.OSName.NOS:
 			CPUUsage += 1;
@@ -294,79 +325,14 @@ public class OS : MonoBehaviour
 			StartUpdateOS = false;
 			SetUsage();
 			SelectedIcon = 1;
-			GameControl.control.BootTime = 0.4f;
+			GameControl.control.BootTime += 0.04f;
 			break;
 		}
 
-//		switch (GameControl.control.defaltOS) 
-//		{
-//
-//		case "":
-//			if (SetOSUsage == true) 
-//			{
-//				//hdw.CurCPUBandwidth = 0;
-//				//hdw.CurRAMBan = 0;
-//				//hdw.CurGPUBandwidth = 0;
-//				Index = 0;
-//				SetOSUsage = false;
-//				StartUpdateOS = false;
-//			}
-//			break;
-//
-//		case "CSOSV1.0":
-//			if (SetOSUsage == true) 
-//			{
-//				CPUUsage += 2;
-//				MemoryUsage += 500;
-//				GraphicsUsage += 5;
-//				Index = 1;
-//				SetOSUsage = false;
-//				StartUpdateOS = false;
-//				SetUsage();
-//			}
-//			break;
-//
-//		case "Custom":
-//			if (SetOSUsage == true) 
-//			{
-//				CPUUsage += 2;
-//				MemoryUsage += 500;
-//				GraphicsUsage += 5;
-//				Index = 2;
-//				SetOSUsage = false;
-//				StartUpdateOS = false;
-//				SetUsage();
-//			}
-//			break;
-//
-//		case "TreeOS":
-//			if (SetOSUsage == true) 
-//			{
-//				CPUUsage += 2;
-//				MemoryUsage += 500;
-//				GraphicsUsage += 5;
-//				Index = 7;
-//				SetOSUsage = false;
-//				StartUpdateOS = false;
-//				SetUsage();
-//			}
-//			break;
-//
-//		case "Ice":
-//			if (SetOSUsage == true) 
-//			{
-//				CPUUsage += 2;
-//				MemoryUsage += 500;
-//				GraphicsUsage += 5;
-//				Index = 7;
-//				SetOSUsage = false;
-//				StartUpdateOS = false;
-//				SetUsage();
-//				SelectedIcon = 1;
-//				GameControl.control.BootTime += 30;
-//			}
-//			break;
-//		}
+		if (GameControl.control.SelectedOS.SelectedBackground > ListOfBackgroundImages.Count)
+		{
+			GameControl.control.SelectedOS.SelectedBackground = ListOfBackgroundImages.Count - 1;
+		}
 	}
 
 	void OpenFld()
@@ -463,16 +429,8 @@ public class OS : MonoBehaviour
 
         IconSize = IconHeight / 2;
 
-        GUI.depth = 100;
 		Customize.cust.windowx[windowID] = windowRect.x;
 		Customize.cust.windowy[windowID] = windowRect.y;
-
-		if(Show == true)
-		{
-			//GUI.color = com.colors[Customize.cust.WindowColorInt];
-			windowRect = WindowClamp.ClampToScreen(GUI.Window(windowID,windowRect,DoMyWindow,""));
-			GUI.BringWindowToBack (windowID);
-		}
 
 		if (ShowContext == true) 
 		{
@@ -480,6 +438,19 @@ public class OS : MonoBehaviour
 			GUI.skin = com.Skin[GameControl.control.GUIID];
 			GUI.color = com.colors[Customize.cust.WindowColorInt];
 			ContextwindowRect = WindowClamp.ClampToScreen(GUI.Window(ContextMenuID,ContextwindowRect,DoMyContextWindow,""));
+		}
+
+		if (winman.RunningPrograms.Count > 0 && Show == true)
+		{
+			for (int i = 0; i < winman.RunningPrograms.Count; i++)
+			{
+				if (winman.RunningPrograms[i].ProgramName == "Desktop")
+				{
+					GUI.BringWindowToBack(winman.RunningPrograms[i].WID);
+					GUI.color = com.colors[Customize.cust.WindowColorInt];
+					winman.RunningPrograms[i].windowRect = WindowClamp.ClampToScreen(GUI.Window(winman.RunningPrograms[i].WID, winman.RunningPrograms[i].windowRect, DoMyWindow, ""));
+				}
+			}
 		}
 
 		if (Input.GetMouseButtonUp (0) || Input.GetMouseButtonUp (1) || Input.GetMouseButtonUp (2))
@@ -493,7 +464,7 @@ public class OS : MonoBehaviour
 
 	void AddContextOptions()
 	{
-		if (GameControl.control.DesktopIconList [SelectedProgram].Type == ProgramSystem.ProgramType.Exe)
+		if (GameControl.control.DesktopIconList [SelectedProgram].Extension == ProgramSystem.FileExtension.Exe)
 		{
 			ContextMenuOptions.Add ("Open");
 			//ContextMenuOptions.Add ("Copy");
@@ -510,7 +481,7 @@ public class OS : MonoBehaviour
 			//ContextMenuOptions.Add ("Create Icon");
 			ContextMenuOptions.Add ("Details");
 		}
-        if (GameControl.control.DesktopIconList[SelectedProgram].Type == ProgramSystem.ProgramType.Txt)
+        if (GameControl.control.DesktopIconList[SelectedProgram].Extension == ProgramSystem.FileExtension.Txt)
         {
             ContextMenuOptions.Add("Open");
             //ContextMenuOptions.Add ("Copy");
@@ -527,7 +498,7 @@ public class OS : MonoBehaviour
             //ContextMenuOptions.Add ("Create Icon");
             ContextMenuOptions.Add("Details");
         }
-        if (GameControl.control.DesktopIconList [SelectedProgram].Type == ProgramSystem.ProgramType.Real)
+        if (GameControl.control.DesktopIconList [SelectedProgram].Extension == ProgramSystem.FileExtension.Real)
 		{
 			ContextMenuOptions.Add ("Open");
 			//ContextMenuOptions.Add ("Copy");
@@ -544,7 +515,7 @@ public class OS : MonoBehaviour
 			//ContextMenuOptions.Add ("Create Icon");
 			ContextMenuOptions.Add ("Details");
 		}
-		if (GameControl.control.DesktopIconList [SelectedProgram].Type == ProgramSystem.ProgramType.Dir || GameControl.control.DesktopIconList [SelectedProgram].Type == ProgramSystem.ProgramType.Fdl)
+		if (GameControl.control.DesktopIconList [SelectedProgram].Extension == ProgramSystem.FileExtension.Dir || GameControl.control.DesktopIconList [SelectedProgram].Extension == ProgramSystem.FileExtension.Fdl)
 		{
 			ContextMenuOptions.Add ("Open");
 			//ContextMenuOptions.Add ("Create Icon");
@@ -587,37 +558,37 @@ public class OS : MonoBehaviour
 		switch (SelectedOption) 
 		{
 		case "Open":
-			switch (GameControl.control.DesktopIconList [SelectedProgram].Type) 
+			switch (GameControl.control.DesktopIconList [SelectedProgram].Extension) 
 			{
-			case ProgramSystem.ProgramType.Txt:
+			case ProgramSystem.FileExtension.Txt:
 				OpenTxt();
 				CloseContextMenu();
 				break;
-			case ProgramSystem.ProgramType.Fdl:
+			case ProgramSystem.FileExtension.Fdl:
 				OpenFld();
 				CloseContextMenu();
 				break;
-			case ProgramSystem.ProgramType.Ins:
+			case ProgramSystem.FileExtension.Ins:
 				//OpenIns();
 				CloseContextMenu();
 				break;
-			case ProgramSystem.ProgramType.Exe:
+			case ProgramSystem.FileExtension.Exe:
 				OpenExe();
 				CloseContextMenu();
 				break;
-			case ProgramSystem.ProgramType.Real:
+			case ProgramSystem.FileExtension.Real:
 				OpenReal();
 				CloseContextMenu();
 				break;
-			case ProgramSystem.ProgramType.Web:
+			case ProgramSystem.FileExtension.Web:
 				OpenWeb();
 				CloseContextMenu();
 				break;
-			case ProgramSystem.ProgramType.RealWeb:
+			case ProgramSystem.FileExtension.RealWeb:
 				OpenRealWeb();
 				CloseContextMenu();
 				break;
-			case ProgramSystem.ProgramType.Dir:
+			case ProgramSystem.FileExtension.Dir:
 				OpenFld();
 				CloseContextMenu();
 				break;
@@ -696,9 +667,14 @@ public class OS : MonoBehaviour
 
     void DoMyWindow(int WindowID)
 	{
-        //GUI.contentColor = com.colors[Customize.cust.FontColorInt];
+		//GUI.contentColor = com.colors[Customize.cust.FontColorInt];
 
-        if (Event.current.type == EventType.keyDown && Event.current.keyCode == KeyCode.C)
+		if (Input.GetMouseButtonDown(0))
+		{
+			winman.SelectedWID = -1;
+		}
+
+		if (Event.current.type == EventType.keyDown && Event.current.keyCode == KeyCode.C)
         {
             Held = true;
         }
@@ -724,13 +700,21 @@ public class OS : MonoBehaviour
             }
         }
 
-        if (Customize.cust.CustomTexFileNames [4] == "") 
+
+		if(ForcedBackground == false)
 		{
-			GUI.DrawTexture(new Rect (0, 0, windowRect.width, windowRect.height), pic[Index]);
-		} 
-		else 
+			if (GameControl.control.SelectedOS.FPC.BackgroundAddress == "")
+			{
+				GUI.DrawTexture(new Rect(0, 0, windowRect.width, windowRect.height), pic[Index]);
+			}
+			else
+			{
+				GUI.DrawTexture(new Rect(0, 0, windowRect.width, windowRect.height), pic[Index]);
+			}
+		}
+		else
 		{
-			GUI.DrawTexture(new Rect (0, 0, windowRect.width, windowRect.height), pic[Index]);
+			GUI.DrawTexture(new Rect(0, 0, windowRect.width, windowRect.height), ListOfBackgroundImages[Index]);
 		}
 
 		if (GameControl.control.SerialKey == "")
@@ -787,36 +771,55 @@ public class OS : MonoBehaviour
 
     public void RunTerminal()
     {
-        appman.SelectedApp = "Command Line V3";
+		appman.ProgramName = "CLI";
+		appman.SelectedApp = "Command Line V3";
     }
 
-    public void RunGateway()
+	public void RunControlPanel()
+	{
+		appman.ProgramName = "System Panel";
+		appman.SelectedApp = "System Panel";
+	}
+
+	public void RunHelpMenu()
+	{
+		appman.ProgramName = "CHM";
+		appman.SelectedApp = "CHM";
+	}
+
+	public void RunGateway()
     {
-        appman.SelectedApp = "Computer";
+		appman.ProgramName = "Computer";
+		appman.SelectedApp = "Computer";
     }
 
     public void RunDeviceManager()
     {
-        appman.SelectedApp = "Device Manager";
+		appman.ProgramName = "Device Manager";
+		appman.SelectedApp = "Device Manager";
     }
 
     public void RunProgramManager()
     {
-        appman.SelectedApp = "Task Viewer";
+		appman.ProgramName = "Task Viewer";
+		appman.SelectedApp = "Task Viewer";
     }
 
 	public void RunProgramExecutor()
 	{
+		appman.ProgramName = "Executor";
 		appman.SelectedApp = "Executor";
 	}
 
 	public void RunStartMenu()
 	{
+		appman.ProgramName = "Start Menu";
 		appman.SelectedApp = "Start Menu";
 	}
 
 	public void RunQABugReport()
 	{
+		appman.ProgramName = "Bug Report";
 		appman.SelectedApp = "Bug Report";
 	}
 
@@ -831,9 +834,9 @@ public class OS : MonoBehaviour
 		{
 			for (int i = 0; i < GameControl.control.DesktopIconList.Count; i++) 
 			{
-				switch (GameControl.control.DesktopIconList [i].Type) 
+				switch (GameControl.control.DesktopIconList [i].Extension) 
 				{
-				case ProgramSystem.ProgramType.Dir:
+				case ProgramSystem.FileExtension.Dir:
 					GUI.Box (new Rect (x + IconWidth/xmodpic, y + 30 + IconSize/ymodpic, IconSize, IconSize), com.Icon [0],FTextSize);
 					if (GUI.Button (new Rect (x, y + 30, IconWidth, IconHeight),"")) 
 					{
@@ -866,7 +869,7 @@ public class OS : MonoBehaviour
 						}
 					}
 					break;
-				case ProgramSystem.ProgramType.Fdl:
+				case ProgramSystem.FileExtension.Fdl:
 					GUI.Box (new Rect (x + IconWidth/xmodpic, y + 30 + IconSize/ymodpic, IconSize, IconSize), com.Icon [1],FTextSize);
 					//GUI.TextArea (new Rect (x, y + 30, IconSize, IconSize), GameControl.control.DesktopIconList [i].Name);
 					if (GUI.Button (new Rect (x, y + 30, IconWidth, IconHeight),"")) 
@@ -900,7 +903,7 @@ public class OS : MonoBehaviour
 						}
 					}
 					break;
-				case ProgramSystem.ProgramType.Exe:
+				case ProgramSystem.FileExtension.Exe:
 					GUI.Box (new Rect (x + IconWidth/xmodpic, y + 30 + IconSize/ymodpic, IconSize, IconSize), com.Icon [2],FTextSize);
 					if (GUI.Button (new Rect (x, y + 30, IconWidth, IconHeight),"")) 
 					{
@@ -933,7 +936,7 @@ public class OS : MonoBehaviour
 						}
 					}
 					break;
-				case ProgramSystem.ProgramType.Real:
+				case ProgramSystem.FileExtension.Real:
 					GUI.Box (new Rect (x + IconWidth/xmodpic, y + 30 + IconSize/ymodpic, IconSize, IconSize), com.Icon [2],FTextSize);
 					if (GUI.Button (new Rect (x, y + 30, IconWidth, IconHeight),"")) 
 					{
@@ -966,7 +969,7 @@ public class OS : MonoBehaviour
 						}
 					}
 					break;
-				case ProgramSystem.ProgramType.Web:
+				case ProgramSystem.FileExtension.Web:
 					GUI.Box (new Rect (x + IconWidth/xmodpic, y + 30 + IconSize/ymodpic, IconSize, IconSize), com.Icon [2],FTextSize);
 					if (GUI.Button (new Rect (x, y + 30, IconWidth, IconHeight),"")) 
 					{
@@ -999,7 +1002,7 @@ public class OS : MonoBehaviour
 						}
 					}
 					break;
-				case ProgramSystem.ProgramType.RealWeb:
+				case ProgramSystem.FileExtension.RealWeb:
 					GUI.Box (new Rect (x + IconWidth/xmodpic, y + 30 + IconSize/ymodpic, IconSize, IconSize), com.Icon [2],FTextSize);
 					if (GUI.Button (new Rect (x, y + 30, IconWidth, IconHeight),"")) 
 					{
@@ -1032,7 +1035,7 @@ public class OS : MonoBehaviour
 						}
 					}
 					break;
-				case ProgramSystem.ProgramType.Ins:
+				case ProgramSystem.FileExtension.Ins:
 					GUI.Box (new Rect (x + IconWidth/xmodpic, y + 30 + IconSize/ymodpic, IconSize, IconSize), com.Icon [3],FTextSize);
 					if (GUI.Button (new Rect (x, y + 30, IconWidth, IconHeight),"")) 
 					{
@@ -1065,7 +1068,7 @@ public class OS : MonoBehaviour
 						}
 					}
 					break;
-				case ProgramSystem.ProgramType.File:
+				case ProgramSystem.FileExtension.File:
 					GUI.Box (new Rect (x + IconWidth/xmodpic, y + 30 + IconSize/ymodpic, IconSize, IconSize), com.Icon [4],FTextSize);
 					if (GUI.Button (new Rect (x, y + 30, IconWidth, IconHeight),"")) 
 					{
@@ -1097,7 +1100,7 @@ public class OS : MonoBehaviour
 						}
 					}
 					break;
-				case ProgramSystem.ProgramType.Txt:
+				case ProgramSystem.FileExtension.Txt:
                     GUI.Box(new Rect(x + IconWidth / xmodpic, y + 30 + IconSize / ymodpic, IconSize, IconSize), com.Icon[4], FTextSize);
                     if (GUI.Button(new Rect(x, y + 30, IconWidth, IconHeight), ""))
                     {
@@ -1130,18 +1133,21 @@ public class OS : MonoBehaviour
                     }
                     break;
 				}
-//				int TempX = (int)x;
-//				int TempY = (int)y;
-//				BackgroundColorSet.r = pic [2].GetPixel(TempX, TempY).r;
-//				BackgroundColorSet.g = pic [2].GetPixel(TempX, TempY).g;
-//				BackgroundColorSet.b = pic [2].GetPixel(TempX, TempY).b;
-//				if (BackgroundColor.Count <= GameControl.control.DesktopIconList.Count) 
-//				{
-//					BackgroundColor.Add(pic [2].GetPixel(TempX, TempY));
-//				}
+				//				int TempX = (int)x;
+				//				int TempY = (int)y;
+				//				BackgroundColorSet.r = pic [2].GetPixel(TempX, TempY).r;
+				//				BackgroundColorSet.g = pic [2].GetPixel(TempX, TempY).g;
+				//				BackgroundColorSet.b = pic [2].GetPixel(TempX, TempY).b;
+				//				if (BackgroundColor.Count <= GameControl.control.DesktopIconList.Count) 
+				//				{
+				//					BackgroundColor.Add(pic [2].GetPixel(TempX, TempY));
+				//				}
 				//TextSize.normal.textColor = (PerceivedBrightness(BackgroundColor[i]) > 130 ? Color.black : Color.white);
 				//TextSize.font = (Font)Resources.Load ("Fonts/RedVelvetica-ShadowsBold");
 				//TextSize.normal.textColor = com.colors[Customize.cust.FontColorInt];
+
+				FTextSize.fontSize = 16;
+				BTextSize.fontSize = 16;
 
 				FTextSize.normal.background = Button;
 				BTextSize.normal.background = Button;
@@ -1151,21 +1157,38 @@ public class OS : MonoBehaviour
 				FTextSize.wordWrap = true;
 				FTextSize.normal.textColor = Color.black;
 
-				GUI.Label (new Rect (x, y +0 + IconHeight + 5 + 1, IconWidth, 23), GameControl.control.DesktopIconList [i].Name,FTextSize);
-				GUI.Label(new Rect (x, y +0 + IconHeight + 5 - 1, IconWidth, 23), GameControl.control.DesktopIconList [i].Name,FTextSize);
-				GUI.Label(new Rect (x, y + 0  + IconHeight + 5, IconWidth, 23), GameControl.control.DesktopIconList [i].Name,FTextSize);
+				GUI.Label (new Rect (x+1, y +0 + IconHeight + 5 + 1, IconWidth, 23), GameControl.control.DesktopIconList [i].Name,FTextSize);
+				GUI.Label(new Rect (x+1, y +0 + IconHeight + 5 - 1, IconWidth, 23), GameControl.control.DesktopIconList [i].Name,FTextSize);
+				GUI.Label(new Rect (x+1, y + 0  + IconHeight + 5, IconWidth, 23), GameControl.control.DesktopIconList [i].Name,FTextSize);
 				GUI.Label(new Rect (x, y + 0 + IconHeight + 5, IconWidth, 23), GameControl.control.DesktopIconList [i].Name,FTextSize);
 				BTextSize.normal.textColor = Color.white;
-				GUI.Label(new Rect (x, y+IconHeight+5, IconWidth, 23), GameControl.control.DesktopIconList [i].Name,BTextSize);
+				GUI.Label(new Rect (x+1, y+IconHeight+5, IconWidth, 23), GameControl.control.DesktopIconList [i].Name,BTextSize);
 				//GUI.Label (new Rect (x+IconWidth/xmod, y+IconHeight+15, 200, 23), GameControl.control.DesktopIconList [i].Name,BTextSize);
-
-				rows++;
-				x += IconWidth + 30;
-				if (rows == MaxIconsPerRow)
+				if(GameControl.control.SelectedOS.GridMode == true)
 				{
-					rows = 0;
-					x = 0;
+					MaxIconsPerRow = Screen.height;
+					MaxIconsPerRow = MaxIconsPerRow / ((int)IconHeight + 30);
+					rows++;
 					y += IconHeight + 30;
+					if (rows == MaxIconsPerRow)
+					{
+						rows = 0;
+						x += IconWidth + 30;
+						y = 0;
+					}
+				}
+				else
+				{
+					MaxIconsPerRow = Screen.width;
+					MaxIconsPerRow = MaxIconsPerRow / ((int)IconWidth + (int)xmodpic);
+					rows++;
+					x += IconHeight + 30;
+					if (rows == MaxIconsPerRow)
+					{
+						rows = 0;
+						x = 0;
+						y += IconHeight + 30;
+					}
 				}
 			}
 		}

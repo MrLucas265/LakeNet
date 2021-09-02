@@ -13,8 +13,9 @@ public class Defalt : MonoBehaviour
 	private GameObject Other;
 	private GameObject Missions;
     private GameObject QA;
+	private GameObject VideoStuff;
 
-    private Computer com;
+	private Computer com;
     private Notepad note;
     private Notepadv2 notev2;
     private Progtive pro;
@@ -27,14 +28,13 @@ public class Defalt : MonoBehaviour
 	private DirSearch ds;
 	private TreeView tv;
 	private Clock clk;
-	private CLI cmd;
 	private CLIV2 cmd2;
 	private OS os;
 	private SystemMap sm;
 	private WebSecViewer wsv;
 	private ErrorProm ep;
 	private ShutdownProm sdp;
-	private TextReader tr;
+//	private TextReader tr;
 	private PurchasePrompt pp;
 	private ScreenSaver ss;
 	private SystemPanel sp;
@@ -51,7 +51,7 @@ public class Defalt : MonoBehaviour
 	private NotfiPrompt notiprompt;
 	private PasswordCracker passcrk;
 	private MusicPlayer mp;
-	private DiskMan dm;
+	private DiskManV2 dmv2;
 	private Mouse mouse;
 	private FileExplorer fp;
     private DeviceManager dem;
@@ -63,15 +63,19 @@ public class Defalt : MonoBehaviour
     private EventViewer eventview;
 	private ExchangeViewer exchangeview;
     private VolumeController vc;
+	private MediaPlayer media;
+	private VersionViewer version;
 
-    private MissionGen misgen;
+	private MissionGen misgen;
 
 	private InternetBrowser ib;
 	private NetViewer eib;
 	private Firefox fib;
 	private RemoteView rv;
 
-    public bool godemode;
+	private RealExeCreator rec;
+
+	public bool godemode;
 	public bool ScriptHandelActive;
 
 	public List<int> OpenwindowID = new List<int>();
@@ -111,11 +115,13 @@ public class Defalt : MonoBehaviour
 		Computer = GameObject.Find("Computer");
 		Other = GameObject.Find("Other");
 		Missions = GameObject.Find("Missions");
+		VideoStuff = GameObject.Find("Video Stuff");
 
-        qa = QA.GetComponent<BugReport>();
+		qa = QA.GetComponent<BugReport>();
+		media = VideoStuff.GetComponent<MediaPlayer>();
 
-        //mb = GetComponent<MissionBrow>();
-        sl = Computer.GetComponent<SiteList>();
+		//mb = GetComponent<MissionBrow>();
+		sl = Computer.GetComponent<SiteList>();
 		wsv = Computer.GetComponent<WebSecViewer>();
 
 		//Hacking Software
@@ -133,18 +139,19 @@ public class Defalt : MonoBehaviour
 		am = SysSoftware.GetComponent<AppMenu>();
 		tasks = SysSoftware.GetComponent<TaskViewer>();
 		clk = SysSoftware.GetComponent<Clock>();
-		cmd = SysSoftware.GetComponent<CLI>();
 		cmd2 = SysSoftware.GetComponent<CLIV2>();
 		os = SysSoftware.GetComponent<OS>();
-		dm = SysSoftware.GetComponent<DiskMan>();
+		dmv2 = SysSoftware.GetComponent<DiskManV2>();
 		mouse = SysSoftware.GetComponent<Mouse>();
 		fp = SysSoftware.GetComponent<FileExplorer>();
         dem = SysSoftware.GetComponent<DeviceManager>();
         vc = SysSoftware.GetComponent<VolumeController>();
+		version = SysSoftware.GetComponent<VersionViewer>();
+		rec = SysSoftware.GetComponent<RealExeCreator>();
 
-        //Application Softwate
-        //        port = AppSoftware.GetComponent<Portfolio>();
-        tr = AppSoftware.GetComponent<TextReader>();
+		//Application Softwate
+		//        port = AppSoftware.GetComponent<Portfolio>();
+		//        tr = AppSoftware.GetComponent<TextReader>();
 		sm = AppSoftware.GetComponent<SystemMap>();
 		al = AppSoftware.GetComponent<AccLog>();
 		note = AppSoftware.GetComponent<Notepad>();
@@ -198,6 +205,15 @@ public class Defalt : MonoBehaviour
 			ct.enabled = false;
 		}
 
+		if (Customize.cust.CustomTexFileNames[6] != "")
+		{
+			ct.enabled = true;
+			ct.Once = false;
+			ct.UpdatePics();
+			ss.ScreensaverPicture = ct.tex1[6];
+			ct.enabled = false;
+		}
+
 		if (Customize.cust.CustomTexFileNames [4] != "")
 		{
 			ct.enabled = true;
@@ -208,11 +224,11 @@ public class Defalt : MonoBehaviour
 		} 
 		else
 		{
-			if (Customize.cust.SelectedBackground >= sp.BackgroundPics.Count)
-			{
-				Customize.cust.SelectedBackground = 0;
-			}
-			os.pic[2] = sp.BackgroundPics[Customize.cust.SelectedBackground];
+			//if (Customize.cust.SelectedBackground >= sp.BackgroundPics.Count)
+			//{
+			//	Customize.cust.SelectedBackground = 0;
+			//}
+			//os.pic[2] = sp.BackgroundPics[Customize.cust.SelectedBackground];
 		}
 
 		if (Customize.cust.CustomTexFileNames [3] != "")
@@ -241,13 +257,13 @@ public class Defalt : MonoBehaviour
 		tv.windowID = 12;
 		clk.windowID = 13;
 		//hd.windowID = 14;
-		cmd.windowID = 15;
+//		cmd.windowID = 15;
 		os.windowID = 16;
 		sm.windowID = 17;
 		wsv.windowID = 18;
 		//ep.windowID = 19;
 		sdp.windowID = 20;
-		tr.windowID = 21;
+//		tr.windowID = 21;
 		pp.windowID = 22;
 //		cf.windowID = 23;
 //		df.windowID = 24;
@@ -274,7 +290,7 @@ public class Defalt : MonoBehaviour
 		notiprompt.windowID = 45;
 		passcrk.windowID = 46;
 		mp.windowID = 47;
-		dm.windowID = 48;
+//		dm.windowID = 48;
 		fp.windowID = 49;
 		fp.ContextMenuID = 50;
 		tasks.ContextMenuID = 51;
@@ -287,12 +303,16 @@ public class Defalt : MonoBehaviour
         qa.ContextMenuID = 58;
         nv.windowID = 59;
         nv.ContextMenuID = 60;
-        //calendar.windowID = 61;
+        rec.windowID = 61;
+
         calendarv2.windowID = 62;
         eventview.windowID = 63;
 		exchangeview.windowID = 64;
         pv.windowID = 65;
         vc.windowID = 66;
+		dmv2.windowID = 67;
+		media.windowID = 68;
+		version.windowID = 69;
 
 
         for (int i = 0; i < 100; i++)
@@ -323,28 +343,9 @@ public class Defalt : MonoBehaviour
 		//GameControl.control.LoginSite.Add("www.lecbank.com");
 	}
 
-    public void FirstMission()
-    {
-        if (GameControl.control.Rep.Count > 0)
-        {
-            if (GameControl.control.Rep[0].RepLevel == 0)
-            {
-                if (GameControl.control.Contracts.Count == 0)
-                {
-                    misgen.FirstMission();
-                }
-            }
-        }
-    }
-
 	// Update is called once per frame
 	void Update ()
     {
-        if(GameControl.control.NewAccount == true)
-        {
-            FirstMission();
-        }
-
         //ScriptHandel();
         if (Customize.cust.ScreenSaverEnabled == true && ss.enabled == false)
 		{
@@ -354,7 +355,7 @@ public class Defalt : MonoBehaviour
 		if(trace.timer <= 0 && trace.startTrace == true)
 		{
 			GameControl.control.Fines++;
-			GameControl.control.Balance[GameControl.control.SelectedBank] -= 500 * GameControl.control.Fines;
+			//GameControl.control.Balance[GameControl.control.SelectedBank] -= 500 * GameControl.control.Fines;
 			trace.startTrace = false;
 			ib.showAddressBar = true;
 			pro.Password = "";
@@ -366,27 +367,14 @@ public class Defalt : MonoBehaviour
         //	GameControl.control.Contracts.Add (new MissionSystem ("REVA Test","Test Data","REVA Test Server","www.jaildew.com","Welcome to your new gateway before we make you an agent we need you to do a task for us delete the test file and we will make you an offical memeber","Test",0,Random.Range (0, 0),Random.Range (200, 200),MissionSystem.MissionType.TDelete));
         //}
 
-        if (HardwareController.hdcon.networkspeed == 0) 
-		{
-			HardwareController.hdcon.networkspeed = 0.25f;
-		}
+        //if (HardwareController.hdcon.networkspeed == 0) 
+		//{
+		//	HardwareController.hdcon.networkspeed = 0.25f;
+		//}
 
 		if (Customize.cust.SSActiveTime == 0)
 		{
 			Customize.cust.SSActiveTime = 60;
-		}
-
-		if(GameControl.control.SoftwareVersion[2] == 0)
-        {
-			GameControl.control.SoftwareVersion[2] = 1;
-        }
-		if(GameControl.control.SoftwareVersion[3] == 0)
-		{
-			GameControl.control.SoftwareVersion[3] = 1;
-		}
-		if(GameControl.control.SoftwareVersion[7] == 0)
-		{
-			GameControl.control.SoftwareVersion[7] = 1;
 		}
 	}
 }

@@ -31,7 +31,7 @@ public class Reva : MonoBehaviour
 	private Defalt defalt;
 	private PurchasePrompt pp;
 	private SystemMap sm;
-	private DiskMan dskman;
+	private DiskManV2 dskman;
 
 	public int Select;
 
@@ -109,7 +109,7 @@ public class Reva : MonoBehaviour
 		trace = HackingSoftware.GetComponent<Tracer>();
 		brow = Missions.GetComponent<MissionBrow>();
 		sm = AppsSoftware.GetComponent<SystemMap>();
-		dskman = SysSoftware.GetComponent<DiskMan>();
+		dskman = SysSoftware.GetComponent<DiskManV2>();
         fu = SysSoftware.GetComponent<FileUtility>();
 
     }
@@ -135,7 +135,7 @@ public class Reva : MonoBehaviour
 			Price = 1500 * SelectedVersion;
 			Size = upg.ProgtiveDiskList [SelectedVersion];
 			Desc = "The password breaker is slower and more expensive then the dircrk but eventually will match the password.";
-			Version = GameControl.control.SoftwareVersion [ProgramID];
+			//Version = GameControl.control.SoftwareVersion [ProgramID];
 			ProgramTarget = "Password Cracker";
 			SystemProgramName = "Password_Cracker";
 			ProgramType = "Exe";
@@ -146,7 +146,7 @@ public class Reva : MonoBehaviour
 			Price = 750 * SelectedVersion;
 			Size = upg.TraceDiskList[SelectedVersion];
 			Desc = "A software kit that detects active direct traces";
-			Version = GameControl.control.SoftwareVersion[ProgramID];
+			//Version = GameControl.control.SoftwareVersion[ProgramID];
 			ProgramTarget = "Trace Tracker";
 			SystemProgramName = "Trace_Tracker";
 			ProgramType = "Exe";
@@ -170,7 +170,7 @@ public class Reva : MonoBehaviour
 			Price = 500 * SelectedVersion;
 			Size = 5;
 			Desc = "The directory cracker is cheaper and faster then the password breaker but wont always work.";
-			Version = GameControl.control.SoftwareVersion [ProgramID];
+			//Version = GameControl.control.SoftwareVersion [ProgramID];
 			ProgramTarget = "Dictionary Cracker";
 			SystemProgramName = "Dictionary_Cracker";
 			ProgramType = "Exe";
@@ -178,28 +178,28 @@ public class Reva : MonoBehaviour
 		}
 	}
 
-	void Bought()
-	{
-        for(int i = 0; i < dskman.DriveLetter.Length; i++)
-        {
-            if (Customize.cust.DownloadPath[0] == dskman.DriveLetter[i])
-            {
-                if (dskman.FreeSpace[i] >= Size)
-                {
-                    if (GameControl.control.MyBankDetails[GameControl.control.SelectedBank].AccountBalance >= Price)
-                    {
-                        GameControl.control.MyBankDetails[GameControl.control.SelectedBank].AccountBalance -= Price;
-                        if (fu.ProgramHandle.Count <= 0)
-                        {
-                            fu.ProgramHandle.Add(new FileUtilitySystem("Download", ProgramName, Customize.cust.DownloadPath, "", ProgramTarget, "", ProgramType, false, true, true, false, SelectedVersion, 0, 0, 0, 0, 0, 0, 0, Size, 0, 0, 0, FileUtilitySystem.ProgramType.DownloadProgram));
-                            fu.AddWindow();
-                        }
-                        Buying = false;
-                    }
-                }
-            }
-        }
-	}
+	//void Bought()
+	//{
+	//	for (int i = 0; i < dskman.DriveLetter.Length; i++)
+	//	{
+	//		if (Customize.cust.DownloadPath[0] == dskman.DriveLetter[i])
+	//		{
+	//			if (dskman.FreeSpace[i] >= Size)
+	//			{
+	//				if (GameControl.control.MyBankDetails[GameControl.control.SelectedBank].AccountBalance >= Price)
+	//				{
+	//					GameControl.control.MyBankDetails[GameControl.control.SelectedBank].AccountBalance -= Price;
+	//					if (fu.ProgramHandle.Count <= 0)
+	//					{
+	//						fu.ProgramHandle.Add(new FileUtilitySystem("Download", ProgramName, Customize.cust.DownloadPath, "", ProgramTarget, "", ProgramType, false, true, true, false, SelectedVersion, 0, 0, 0, 0, 0, 0, 0, Size, 0, 0, 0, FileUtilitySystem.ProgramType.DownloadProgram));
+	//						fu.AddWindow();
+	//					}
+	//					Buying = false;
+	//				}
+	//			}
+	//		}
+	//	}
+	//}
 
 	void VersionControl()
 	{
@@ -330,128 +330,135 @@ public class Reva : MonoBehaviour
 					ib.AddHistory();
 				}
 
-				if (brow.Select <= 0)
+				if(misgen.MissionList.Count > 0)
 				{
-					brow.Select = 0;
-				}
-
-				if (Event.current.type == EventType.keyDown && Event.current.keyCode == KeyCode.UpArrow) 
-				{
-					if (brow.Select >= 1)
+					if (brow.Select <= 0)
 					{
-						scrollpos.y -= 30;
-						brow.Select--;
+						brow.Select = 0;
 					}
 
-					if (scrollpos.y < brow.Select*30)
+					if (Event.current.type == EventType.keyDown && Event.current.keyCode == KeyCode.UpArrow)
 					{
-						scrollpos.y = brow.Select*30;
+						if (brow.Select >= 1)
+						{
+							scrollpos.y -= 30;
+							brow.Select--;
+						}
+
+						if (scrollpos.y < brow.Select * 30)
+						{
+							scrollpos.y = brow.Select * 30;
+						}
+
+						if (scrollpos.y > brow.Select * 30)
+						{
+							scrollpos.y = brow.Select * 30;
+						}
 					}
 
-					if (scrollpos.y > brow.Select*30)
+					if (Event.current.type == EventType.keyDown && Event.current.keyCode == KeyCode.DownArrow)
 					{
-						scrollpos.y = brow.Select*30;
-					}
-				}
+						if (brow.Select < misgen.MissionTotal - 1)
+						{
+							scrollpos.y += 30;
+							brow.Select++;
+						}
 
-				if (Event.current.type == EventType.keyDown && Event.current.keyCode == KeyCode.DownArrow) 
-				{
-					if (brow.Select < misgen.MissionTotal-1)
+						if (scrollpos.y < brow.Select * 30)
+						{
+							scrollpos.y = brow.Select * 30;
+						}
+
+						if (scrollpos.y > brow.Select * 30)
+						{
+							scrollpos.y = brow.Select * 30;
+						}
+					}
+
+
+					if (brow.Select > -1)
 					{
-						scrollpos.y += 30;
-						brow.Select++;
+						if (misgen.MissionList.Count > 0)
+						{
+							if (misgen.MissionList[brow.Select].LevelRequirement <= GameControl.control.Rep[0].RepLevel)
+							{
+								GUI.Label(new Rect(180, 180, 300, 300), "Mission Name: " + misgen.MissionList[brow.Select].Name);
+								GUI.Label(new Rect(180, 200, 300, 300), "Mission Reward: " + misgen.MissionList[brow.Select].Cash);
+								//GUI.Label (new Rect (180, 220, 300, 300), "Mission Target: " + misgen.MissionList [brow.Select].Target);
+								//GUI.Label (new Rect (180, 240, 300, 300), "Mission File: " + misgen.MissionList [brow.Select].File);
+
+								GUI.TextArea(new Rect(180, 35, 300, 150), "" + misgen.MissionList[brow.Select].MDesc);
+							}
+							else
+							{
+								GUI.TextArea(new Rect(180, 60, 300, 100), "Your level is too low to accept this mission currently.");
+							}
+						}
 					}
 
-					if (scrollpos.y < brow.Select*30)
+					if (GameControl.control.Contracts.Count <= 12 && brow.Select > -1 && misgen.MissionList[brow.Select].LevelRequirement <= GameControl.control.Rep[0].RepLevel)
 					{
-						scrollpos.y = brow.Select*30;
+						if (GUI.Button(new Rect(425, 275, 70, 20), "Accept"))
+						{
+							brow.Accept();
+						}
+
+						if (GUI.Button(new Rect(325, 275, 70, 20), "Contact"))
+						{
+							//brow.Accept();
+						}
 					}
 
-					if (scrollpos.y > brow.Select*30)
-					{
-						scrollpos.y = brow.Select*30;
-					}
-				}
-
-
-				if(brow.Select > -1)
-				{
 					if (misgen.MissionList.Count > 0)
 					{
-						if (misgen.MissionList [brow.Select].LevelRequirement <= GameControl.control.Rep[0].RepLevel) 
+						scrollpos = GUI.BeginScrollView(new Rect(3, 35, 170, 240), scrollpos, new Rect(0, 0, 0, scrollsize * 30));
+						for (scrollsize = 0; scrollsize < misgen.MissionList.Count; scrollsize++)
 						{
-							GUI.Label (new Rect (180, 180, 300, 300), "Mission Name: " + misgen.MissionList [brow.Select].Name);
-							GUI.Label (new Rect (180, 200, 300, 300), "Mission Reward: " + misgen.MissionList [brow.Select].Cash);
-							//GUI.Label (new Rect (180, 220, 300, 300), "Mission Target: " + misgen.MissionList [brow.Select].Target);
-							//GUI.Label (new Rect (180, 240, 300, 300), "Mission File: " + misgen.MissionList [brow.Select].File);
-
-							GUI.TextArea (new Rect (180, 35, 300, 150), "" + misgen.MissionList [brow.Select].MDesc);
-						} 
-						else
-						{
-							GUI.TextArea(new Rect(180, 60, 300, 100), "Your level is too low to accept this mission currently.");
+							if (brow.Select == scrollsize)
+							{
+								if (misgen.MissionList[scrollsize].LevelRequirement <= GameControl.control.Rep[0].RepLevel)
+								{
+									if (GUI.Button(new Rect(0, scrollsize * 30, 150, 29), "☒" + misgen.MissionList[scrollsize].Name))
+									{
+										brow.Select = scrollsize;
+										brow.showAccept = true;
+									}
+								}
+								else
+								{
+									if (GUI.Button(new Rect(0, scrollsize * 30, 150, 29), "☒" + "Insuffcient Level"))
+									{
+										brow.Select = scrollsize;
+										//brow.showAccept = true;
+									}
+								}
+							}
+							else
+							{
+								if (misgen.MissionList[scrollsize].LevelRequirement <= GameControl.control.Rep[0].RepLevel)
+								{
+									if (GUI.Button(new Rect(0, scrollsize * 30, 150, 29), "☐" + misgen.MissionList[scrollsize].Name))
+									{
+										brow.Select = scrollsize;
+										//brow.showAccept = true;
+									}
+								}
+								else
+								{
+									if (GUI.Button(new Rect(0, scrollsize * 30, 150, 29), "☐" + "Insuffcient Level"))
+									{
+										brow.Select = scrollsize;
+										// brow.showAccept = true;
+									}
+								}
+							}
 						}
+						GUI.EndScrollView();
 					}
 				}
-
-				if (GameControl.control.Contracts.Count <= 12 && brow.Select > -1 && misgen.MissionList [brow.Select].LevelRequirement <= GameControl.control.Rep[0].RepLevel)
+				if (misgen.MissionList.Count == 0)
 				{
-					if (GUI.Button(new Rect(425, 275, 70, 20), "Accept"))
-					{
-						brow.Accept();
-					}
-
-					if (GUI.Button(new Rect(325, 275, 70, 20), "Contact"))
-					{
-						//brow.Accept();
-					}
-				}
-
-				if (misgen.MissionList.Count > 0) 
-				{
-					scrollpos = GUI.BeginScrollView(new Rect(3, 35, 170, 240), scrollpos, new Rect(0, 0, 0, scrollsize * 30));
-					for (scrollsize = 0; scrollsize < misgen.MissionList.Count; scrollsize++)
-					{
-						if (brow.Select == scrollsize)
-						{
-                            if (misgen.MissionList[scrollsize].LevelRequirement <= GameControl.control.Rep[0].RepLevel)
-                            {
-                                if (GUI.Button(new Rect(0, scrollsize * 30, 150, 29), "☒" + misgen.MissionList[scrollsize].Name))
-                                {
-                                    brow.Select = scrollsize;
-                                    brow.showAccept = true;
-                                }
-                            }
-                            else
-                            {
-                                if (GUI.Button(new Rect(0, scrollsize * 30, 150, 29), "☒" + "Insuffcient Level"))
-                                {
-                                    brow.Select = scrollsize;
-                                    //brow.showAccept = true;
-                                }
-                            }
-						}
-						else
-						{
-                            if (misgen.MissionList[scrollsize].LevelRequirement <= GameControl.control.Rep[0].RepLevel)
-                            {
-                                if (GUI.Button(new Rect(0, scrollsize * 30, 150, 29), "☐" + misgen.MissionList[scrollsize].Name))
-                                {
-                                    brow.Select = scrollsize;
-                                    //brow.showAccept = true;
-                                }
-                            }
-                            else
-                            {
-                                if (GUI.Button(new Rect(0, scrollsize * 30, 150, 29), "☐" + "Insuffcient Level"))
-                                {
-                                    brow.Select = scrollsize;
-                                   // brow.showAccept = true;
-                                }
-                            }
-						}
-					}
-					GUI.EndScrollView();
+					GUI.TextArea(new Rect(180, 60, 300, 100), "No contracts are currently posted, please come back later.");
 				}
 			}
 			break;
@@ -560,15 +567,15 @@ public class Reva : MonoBehaviour
 				GUI.Label(new Rect(171,205,300,300), "----------------");
 
 
-				if (GameControl.control.SoftwareVersion [ProgramID] != 0) 
-				{
-					GUI.Label(new Rect(171,243,500,500), "Current Product Version: " + Version);
-				}
+				//if (GameControl.control.SoftwareVersion [ProgramID] != 0) 
+				//{
+				//	GUI.Label(new Rect(171,243,500,500), "Current Product Version: " + Version);
+				//}
 
 				if(GUI.Button(new Rect(300,275,65,20),"Purchase"))
 				{
 					Buying = true;
-					Bought();
+					//Bought();
 				}
 
 				if(GUI.Button(new Rect(200,275,85,20),"Next Version"))

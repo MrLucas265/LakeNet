@@ -9,8 +9,6 @@ public class GameControl : MonoBehaviour
 {
 	public static GameControl control;
 
-    public List<string> MissionType = new List<string>();
-
     public int LCDPage;
 
     public bool ChangeColor;
@@ -38,70 +36,25 @@ public class GameControl : MonoBehaviour
     public bool NewAccount;
 	public bool[] StoryMis;
 
-	public bool Booted;
-
-    public bool Shutdown;
-
-    public List<string> DocumentContent = new List<string>();
-	public List<string> DocumentName = new List<string>();
-    public List<string> MyFiles = new List<string>();
-	public List<float> FileSize = new List<float>();
-	public List<string> HackingSoftware = new List<string>();
-	public List<string> BypassSoftware = new List<string>();
-	public List<string> OtherSoftware = new List<string>();
-	public List<string> SecuirtySoftware = new List<string>();
-    public List<string> GateWayFiles = new List<string>();
     public List<string> Sites = new List<string>();
 	public List<string> FavSites = new List<string>();
 
     // Mission Block
-	public List<float> SoftwareVersion = new List<float>();
-    public List<int> Hardware = new List<int>();
     // End Mission Block
 
-	public bool logged;
-
 	// Bank Info
-	public List<string> AccountNumber = new List<string>();
-	public List<string> Bank = new List<string>();
-	public List<int> Balance = new List<int>();
-	public List<bool> RegiBank = new List<bool>();
-	public List<string> AccountName = new List<string>();
-	public List<string> AccountPass = new List<string>();
-	public List<float> AccountBalance = new List<float>();
-	public List<float> CreditRating = new List<float>();
-	public List<float> Loan = new List<float>();
-	public List<float> LoanIntrest = new List<float>();
-	public List<float> AccountIntrest = new List<float>();
-	public int SelectedBank;
+	public BankSystem SelectedBank;
 
-    public List<string> AcaName = new List<string>();
-    public List<string> AcaDegree = new List<string>();
-	public List<string> StudentDegree = new List<string>();
+	// IP Block
+	// End IP Block
 
-    // IP Block
-    public int ip1;
-    public int ip2;
-    public int ip3;
-    public int ip4;
-    public string fullip;
-    // End IP Block
-
-    public int Fines;
-
-	public float score;
-	public int Clicks;
-	public List<float> Upgrades = new List<float>();
-	public List<float> Cost = new List<float>();
+	public int Fines;
 
 	public float BootTime;
 
 	public string SpaceName;
 
 	// Share Market
-	public List<string> SharesBoughtOffName = new List<string>();
-	public List<int> SharesBrought = new List<int>();
-	public List<int> SharesBoughtPrice = new List<int>();
 
 
 	public List<string> QuickLaunchNames = new List<string>();
@@ -117,22 +70,21 @@ public class GameControl : MonoBehaviour
 	//COMMAND
 	public List<CLICMDS> Commands = new List<CLICMDS>();
 	// WEBSITES BLOCK
-	public List<ProgramSystem> WebsiteFiles = new List<ProgramSystem>();
 	public List<LoginSystem> StoredLogins = new List<LoginSystem>();
     public List<WebSecSystem> WebsiteSecurity = new List<WebSecSystem>();
     // WEBSITES END BLOCK
     public List<CHMSystem> ProgramInfo = new List<CHMSystem>();
-	public List<BankSystem> MyBankDetails = new List<BankSystem>();
+	public List<BankSystem> BankData = new List<BankSystem>();
 	public List<EmailSystem> EmailData = new List<EmailSystem>();
 	public List<MissionSystem> Contracts = new List<MissionSystem>();
 	public List<ProgramSystem> ProgramFiles = new List<ProgramSystem>();
 	public List<ProgramSystem> QuickProgramList = new List<ProgramSystem>();
 	public List<ProgramSystem> DesktopIconList = new List<ProgramSystem>();
 	public MotherboardSystem Gateway;
-    public MotherboardSystem PickedParts;
+	public List<WarehouseSystem> StoredParts = new List<WarehouseSystem>();
 
-    //Stocks
-    public List<StockPortfolioSystem> TransactionHistory = new List<StockPortfolioSystem>();
+	//Stocks
+	public List<StockPortfolioSystem> TransactionHistory = new List<StockPortfolioSystem>();
     public List<StockPortfolioSystem> Portfolio = new List<StockPortfolioSystem>();
 	public List<StockExchangeShareSystem> Exchanges = new List<StockExchangeShareSystem>();
 
@@ -158,7 +110,9 @@ public class GameControl : MonoBehaviour
 	public List<string> GameVersion = new List<string>();
 
 
-	public List<CompanyServerSystem> CompanyServers = new List<CompanyServerSystem>();
+	public List<CompanyServerSystem> CompanyServerData = new List<CompanyServerSystem>();
+
+	public List<ProgramSystem> DefaultLaunchedPrograms = new List<ProgramSystem>();
 
 	// Use this for initialization
 
@@ -202,47 +156,22 @@ public class GameControl : MonoBehaviour
         data.ProfileName = ProfileName;
 		data.StoryMis = StoryMis;
         data.ProfileID = ProfileID;
-		data.WebsiteFiles = WebsiteFiles;
         data.GUIID = GUIID;
-		data.DocumentContent = DocumentContent;
-		data.DocumentName = DocumentName;
-        data.MyFiles = MyFiles;
-		data.FileSize = FileSize;
-        data.fullip = fullip;
 		data.Rep = Rep;
         data.Sites = Sites;
 		data.FavSites = FavSites;
-        data.SoftwareVersion = SoftwareVersion;
-        data.Hardware = Hardware;
-        data.ip1 = ip1;
-        data.ip2 = ip2;
-        data.ip3 = ip3;
-        data.ip4 = ip4;
-		data.StudentDegree = StudentDegree;
-        data.AcaDegree = AcaDegree;
-        data.AcaName = AcaName;
         data.Fines = Fines;
-		data.Clicks = Clicks;
-		data.score = score;
-		data.Upgrades = Upgrades;
-		data.Cost = Cost;
 		data.SpaceName = SpaceName;
-		data.SharesBoughtOffName = SharesBoughtOffName;
-		data.SharesBoughtPrice = SharesBoughtPrice;
-		data.SharesBrought = SharesBrought;
-		data.AccountNumber = AccountNumber;
-		data.Bank = Bank;
-		data.Balance = Balance;
-		data.SelectedBank = SelectedBank;
 		data.StoredLogins = StoredLogins;
         data.WebsiteSecurity = WebsiteSecurity;
 		data.ProgramInfo = ProgramInfo;
-		data.MyBankDetails = MyBankDetails;
+		data.BankData = BankData;
 		data.EmailData = EmailData;
 		data.Contracts = Contracts;
 		data.ProgramFiles = ProgramFiles;
 		data.QuickProgramList = QuickProgramList;
 		data.Gateway = Gateway;
+		data.StoredParts = StoredParts;
         data.TransactionHistory = TransactionHistory;
         data.Portfolio = Portfolio;
 		data.Exchanges = Exchanges;
@@ -262,6 +191,8 @@ public class GameControl : MonoBehaviour
 		data.Serialkey = SerialKey;
         data.ShortCommands = ShortCommands;
 		data.GameVersion = GameVersion;
+		data.DefaultLaunchedPrograms = DefaultLaunchedPrograms;
+		data.CompanyServerData = CompanyServerData;
 
 		bf.Serialize (file, data);
 		file.Close();
@@ -281,50 +212,25 @@ public class GameControl : MonoBehaviour
             NewAccount = data.NewAccount;
 			ProfileName = data.ProfileName;
 			ProfileID = data.ProfileID;
-			WebsiteFiles = data.WebsiteFiles;
 			StoryMis = data.StoryMis;
             GUIID = data.GUIID;
-			DocumentContent = data.DocumentContent;
-			DocumentName = data.DocumentName;
-            MyFiles = data.MyFiles;
-			FileSize = data.FileSize;
-            fullip = data.fullip;
 			Rep = data.Rep;
             Sites = data.Sites;
 			FavSites = data.FavSites;
-            SoftwareVersion = data.SoftwareVersion;
-            Hardware = data.Hardware;
-            ip1 = data.ip1;
-            ip2 = data.ip2;
-            ip3 = data.ip3;
-            ip4 = data.ip4;
-            AcaDegree = data.AcaDegree;
-			StudentDegree = data.StudentDegree;
-            AcaName = data.AcaName;
             Fines = data.Fines;
-			Clicks = data.Clicks;
-			score = data.score;
-			Upgrades = data.Upgrades;
-			Cost = data.Cost;
 			SpaceName = data.SpaceName;
-			SharesBoughtOffName = data.SharesBoughtOffName;
-			SharesBoughtPrice = data.SharesBoughtPrice;
-			SharesBrought = data.SharesBrought;
-			AccountNumber = data.AccountNumber;
-			Bank = data.Bank;
-			Balance = data.Balance;
-			SelectedBank = data.SelectedBank;
 			StoredLogins = data.StoredLogins;
             WebsiteSecurity = data.WebsiteSecurity;
 			ProgramInfo = data.ProgramInfo;
-			MyBankDetails = data.MyBankDetails;
+			BankData = data.BankData;
 			EmailData = data.EmailData;
 			Contracts = data.Contracts;
 			ProgramFiles = data.ProgramFiles;
 			QuickProgramList = data.QuickProgramList;
 			DesktopIconList = data.DesktopIconList;
 			Gateway = data.Gateway;
-            TransactionHistory = data.TransactionHistory;
+			StoredParts = data.StoredParts;
+			TransactionHistory = data.TransactionHistory;
             Portfolio = data.Portfolio;
 			Exchanges = data.Exchanges;
 			QuickLaunchNames = data.QuickLaunchNames;
@@ -342,6 +248,8 @@ public class GameControl : MonoBehaviour
 			SerialKey = data.Serialkey;
             ShortCommands = data.ShortCommands;
 			GameVersion = data.GameVersion;
+			DefaultLaunchedPrograms = data.DefaultLaunchedPrograms;
+			CompanyServerData = data.CompanyServerData;
 		}
 	}
 }
@@ -360,10 +268,6 @@ class ComputerData
 
 	public bool[] StoryMis;
 
-	public List<string> DocumentContent = new List<string>();
-	public List<string> DocumentName = new List<string>();
-    public List<string> MyFiles = new List<string>();
-	public List<float> FileSize = new List<float>();
     public List<string> Sites = new List<string>();
 	public List<string> FavSites = new List<string>();
     // Mission Block
@@ -375,31 +279,11 @@ class ComputerData
     public List<string> AcaDegree = new List<string>();
 	public List<string> StudentDegree = new List<string>();
 
-	// Bank Info
-	public List<string> AccountNumber = new List<string>();
-	public List<string> Bank = new List<string>();
-	public List<int> Balance = new List<int>();
-	public int SelectedBank;
-
     // IP Block
-    public int ip1;
-    public int ip2;
-    public int ip3;
-    public int ip4;
-    public string fullip;
 
     public int Fines;
 
-	public float score;
-	public int Clicks;
-	public List<float> Upgrades = new List<float>();
-	public List<float> Cost = new List<float>();
-
 	public string SpaceName;
-
-	public List<string> SharesBoughtOffName = new List<string>();
-	public List<int> SharesBrought = new List<int>();
-	public List<int> SharesBoughtPrice = new List<int>();
 
 	public List<string> QuickLaunchNames = new List<string>();
 
@@ -414,22 +298,21 @@ class ComputerData
 	//COMMAND
 	public List<CLICMDS> Commands = new List<CLICMDS>();
 	// WEBSITES BLOCK
-	public List<ProgramSystem> WebsiteFiles = new List<ProgramSystem>();
 	public List<LoginSystem> StoredLogins = new List<LoginSystem>();
     public List<WebSecSystem> WebsiteSecurity = new List<WebSecSystem>();
     // WEBSITES END BLOCK
     public List<CHMSystem> ProgramInfo = new List<CHMSystem>();
-	public List<BankSystem> MyBankDetails = new List<BankSystem>();
+	public List<BankSystem> BankData = new List<BankSystem>();
 	public List<EmailSystem> EmailData = new List<EmailSystem>();
 	public List<MissionSystem> Contracts = new List<MissionSystem>();
 	public List<ProgramSystem> ProgramFiles = new List<ProgramSystem>();
 	public List<ProgramSystem> QuickProgramList = new List<ProgramSystem>();
 	public List<ProgramSystem> DesktopIconList = new List<ProgramSystem>();
 	public MotherboardSystem Gateway;
-    public MotherboardSystem PickedParts;
+	public List<WarehouseSystem> StoredParts = new List<WarehouseSystem>();
 
-    //Stocks
-    public List<StockPortfolioSystem> TransactionHistory = new List<StockPortfolioSystem>();
+	//Stocks
+	public List<StockPortfolioSystem> TransactionHistory = new List<StockPortfolioSystem>();
     public List<StockPortfolioSystem> Portfolio = new List<StockPortfolioSystem>();
 	public List<StockExchangeShareSystem> Exchanges = new List<StockExchangeShareSystem>();
 
@@ -452,4 +335,8 @@ class ComputerData
     public bool ShortCommands;
 
 	public List<string> GameVersion = new List<string>();
+
+	public List<CompanyServerSystem> CompanyServerData = new List<CompanyServerSystem>();
+
+	public List<ProgramSystem> DefaultLaunchedPrograms = new List<ProgramSystem>();
 }

@@ -81,11 +81,6 @@ public class NotificationViewer : MonoBehaviour
         ContextwindowRect.width = 100;
 
         CloseButton = new Rect(windowRect.width - 23, 2, 21, 21);
-
-        if (GameControl.control.SoftwareVersion[1] == 0)
-        {
-            GameControl.control.SoftwareVersion[1] = 1;
-        }
     }
 
     void PosCheck()
@@ -233,7 +228,7 @@ public class NotificationViewer : MonoBehaviour
 					SelectedMenu = 2;
 				}
 
-				if (Event.current.type == EventType.keyDown && Event.current.keyCode == KeyCode.UpArrow) 
+                if (Event.current.type == EventType.keyDown && Event.current.keyCode == KeyCode.UpArrow) 
 				{
 					if (SelectedNotification >= 1)
 					{

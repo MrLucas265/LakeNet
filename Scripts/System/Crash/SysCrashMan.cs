@@ -12,10 +12,12 @@ public class SysCrashMan : MonoBehaviour
 	public string ExtraDetail;
 
 	private BlueCrash bc;
+	private YellowCrash yc;
 	// Use this for initialization
 	void Start ()
 	{
 		bc = GetComponent<BlueCrash>();
+		yc = GetComponent<YellowCrash>();
 	}
 	
 	// Update is called once per frame
@@ -34,9 +36,22 @@ public class SysCrashMan : MonoBehaviour
 			bc.ExtraDetail = ExtraDetail;
 			bc.enabled = true;
 			bc.Timers ();
-			break;
+		break;
 
-        case OperatingSystems.OSName.TreeOS:
+		case OperatingSystems.OSName.EthelOS:
+			if (yc.Timer == 0)
+			{
+				yc.Timer = 10;
+			}
+			yc.StopCodeWord = StopCodeWord;
+			yc.StopCodeNumber = StopCodeNumber;
+			yc.CodeDetail = CodeDetail;
+			yc.ExtraDetail = ExtraDetail;
+			yc.enabled = true;
+			yc.Timers();
+		break;
+
+		case OperatingSystems.OSName.TreeOS:
             if (bc.Timer == 0)
             {
                 bc.Timer = 10;

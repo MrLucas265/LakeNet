@@ -13,10 +13,13 @@ public class WindowConSys
     public int WID;
     public int PID;
     public Rect windowRect;
+    public Rect TitleBoxRect;
     public List<Rect> windowButtons = new List<Rect>();
-    public Rect titleBox;
+    public bool Resize;
+    public Rect ResizeRect;
+    public Rect WindowResizeRect;
 
-    public WindowConSys(string windowName,string programName,string processName, string status, string type,int wid,int pid,Rect WindowRect, List<Rect> WindowButtons, Rect TitleBox)
+    public WindowConSys(string windowName,string programName,string processName, string status, string type,int wid,int pid,Rect WindowRect, List<Rect> WindowButtons, Rect titleboxrect,bool resize, Rect resizerect, Rect windowresizerect)
     {
         WindowName = windowName;
         ProgramName = programName;
@@ -27,6 +30,9 @@ public class WindowConSys
         PID = pid;
         windowRect = WindowRect;
         windowButtons = WindowButtons;
-        titleBox = TitleBox;
+        TitleBoxRect = titleboxrect;
+        Resize = resize;
+        ResizeRect = resizerect;
+        WindowResizeRect = windowresizerect;
     }
 }

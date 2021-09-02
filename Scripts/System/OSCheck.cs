@@ -22,6 +22,7 @@ public class OSCheck : MonoBehaviour
 	public List<ProgramSystem> BootableOS = new List<ProgramSystem>();
 
 	private Boot boot;
+	private OS os;
 
 	public bool ChangeOS;
 
@@ -32,6 +33,7 @@ public class OSCheck : MonoBehaviour
 	void Start ()
 	{
 		boot = GetComponent<Boot>();
+		os = GetComponent<OS>();
 
 		windowRect = new Rect(0, 0, Customize.cust.RezX, Customize.cust.RezY);
 
@@ -65,10 +67,14 @@ public class OSCheck : MonoBehaviour
 	{
 		for (int i = 0; i < GameControl.control.ProgramFiles.Count; i++)
 		{
-			if (GameControl.control.ProgramFiles[i].Type == ProgramSystem.ProgramType.OS)
+			if (GameControl.control.ProgramFiles[i].Extension == ProgramSystem.FileExtension.OS)
 			{
 				if(!BootableOS.Contains(GameControl.control.ProgramFiles[i]))
 				{
+					//if(GameControl.control.ProgramFiles[i].Location != "Reserved")
+					//{
+					//	BootableOS.Add(GameControl.control.ProgramFiles[i]);
+					//}
 					BootableOS.Add(GameControl.control.ProgramFiles[i]);
 				}
 			}
@@ -76,50 +82,89 @@ public class OSCheck : MonoBehaviour
 
 		if (ChangeOS == true)
 		{
-			scrollpos = GUI.BeginScrollView(new Rect(100, 100, 920, 540), scrollpos, new Rect(0, 0, 0, scrollsize * 22));
-			for (scrollsize = 0; scrollsize < BootableOS.Count; scrollsize++)
+			if (BootableOS.Count <= 0)
 			{
-				if(GUI.Button(new Rect (0, scrollsize * 22, 200, 21), "" + BootableOS[scrollsize].Name))
+				if (GameControl.control.SelectedOS.Name == OperatingSystems.OSName.SafeMode)
 				{
-					SelectedOS = BootableOS[scrollsize].Name;
+					boot.enabled = true;
+					this.enabled = false;
+					GameControl.control.Gateway.Status.Terminal = true;
+					ChangeOS = false;
+					show = false;
+				}
+				else
+				{
+					GUI.Label(new Rect(10, Screen.height - 25, 500, 20), "No boot device found. Press any key to restart and boot into safe mode.");
+
+					if (Input.anyKeyDown)
+					{
+						GameControl.control.SelectedOS.Name = OperatingSystems.OSName.SafeMode;
+						GameControl.control.Gateway.Status.Booted = false;
+						GameControl.control.Gateway.Status.SafeMode = true;
+						Application.LoadLevel(1);
+					}
 				}
 			}
-			GUI.EndScrollView();
-
-			switch (SelectedOS)
+			else
 			{
-				case "Kernal-Sanders":
-					GameControl.control.SelectedOS.Name = OperatingSystems.OSName.TreeOS;
-					boot.Terminal = true;
-					ChangeOS = false;
-					break;
-				case "FluidicIceOS":
-					GameControl.control.SelectedOS.Name = OperatingSystems.OSName.FluidicIceOS;
-					ChangeOS = false;
-					break;
-				case "TreeOS":
-					GameControl.control.SelectedOS.Name = OperatingSystems.OSName.TreeOS;
-					ChangeOS = false;
-					break;
-				case "AppatureOS":
-					GameControl.control.SelectedOS.Name = OperatingSystems.OSName.AppatureOS;
-					ChangeOS = false;
-					break;
+				GameControl.control.Gateway.Status.Terminal = false;
+
+				scrollpos = GUI.BeginScrollView(new Rect(100, 100, 920, 540), scrollpos, new Rect(0, 0, 0, scrollsize * 22));
+				for (scrollsize = 0; scrollsize < BootableOS.Count; scrollsize++)
+				{
+					if (GUI.Button(new Rect(0, scrollsize * 22, 200, 21), "" + BootableOS[scrollsize].Name))
+					{
+						SelectedOS = BootableOS[scrollsize].Name;
+					}
+				}
+				GUI.EndScrollView();
+
+				for (int i = 0; i < GameControl.control.OSName.Count; i++)
+				{
+					if (GameControl.control.OSName[i].Title == SelectedOS)
+					{
+						if(SelectedOS == "Kernal-Sanders")
+						{
+							GameControl.control.Gateway.Status.Terminal = true;
+						}
+						GameControl.control.SelectedOS = GameControl.control.OSName[i];
+						GameControl.control.SelectedOS.Colour = GameControl.control.OSName[i].Colour;
+						ChangeOS = false;
+					}
+				}
 			}
 		}
 		else
 		{
 			if(BootableOS.Count <= 0)
 			{
-				GUI.Label (new Rect (10, Screen.height-25, 500, 20), "No boot device found. Press any key to restart the gateway.");
+				if (GameControl.control.SelectedOS.Name == OperatingSystems.OSName.SafeMode)
+				{
+					boot.enabled = true;
+					this.enabled = false;
+					GameControl.control.Gateway.Status.Terminal = true;
+					ChangeOS = false;
+					show = false;
+				}
+				else
+				{
+					GUI.Label(new Rect(10, Screen.height - 25, 500, 20), "No boot device found. Press any key to restart and boot into safe mode.");
+
+					if (Input.anyKeyDown)
+					{
+						GameControl.control.SelectedOS.Name = OperatingSystems.OSName.SafeMode;
+						GameControl.control.Gateway.Status.Booted = false;
+						Application.LoadLevel(1);
+					}
+				}
 			}
 			else
 			{
-				if (BootableOS.Count == 1)
+				if (BootableOS.Count == 0)
 				{
 					this.enabled = false;
 					boot.enabled = true;
-					boot.Terminal = true;
+					GameControl.control.Gateway.Status.Terminal = true;
 				}
 				else
 				{

@@ -11,7 +11,6 @@ public class PasswordCracker : MonoBehaviour
 	public float native_height = 1080;
 
 	private Defalt defalt;
-	private CLICommands cmd;
 	private WebSec ws;
 	private ErrorProm ep;
 	private InternetBrowser ib;
@@ -60,7 +59,6 @@ public class PasswordCracker : MonoBehaviour
 		ep = Prompts.GetComponent<ErrorProm>();
 		com = SysSoftware.GetComponent<Computer>();
 		trace = HackingSoftware.GetComponent<Tracer>();
-		cmd = SysSoftware.GetComponent<CLICommands>();
 		defalt = SysSoftware.GetComponent<Defalt>(); 
 		ib = AppSoftware.GetComponent<InternetBrowser>(); 
 		ws = AppSoftware.GetComponent<WebSec>();
@@ -240,77 +238,10 @@ public class PasswordCracker : MonoBehaviour
                 }
                 else
                 {
-                    RunKeyGen = false;
+                    //RunKeyGen = false;
                 }
             }
         }
-    }
-
-    public void Main()
-    {
-        //switch (ib.AddressBar)
-        //{
-
-        //    case "www.becassystems.com/login":
-        //        if (ib.Username == "Admin")
-        //        {
-        //            if (ws.Monitor == true)
-        //            {
-        //                trace.UpdateTimer = true;
-        //                Hacking();
-        //            }
-        //        }
-        //        else
-        //        {
-        //            RunKeyGen = false;
-        //        }
-        //        break;
-
-        //    case "www.jaildew.com/login":
-        //        if (ib.Username == "Admin")
-        //        {
-        //            Hacking();
-        //            if (ws.Monitor == true)
-        //            {
-        //                trace.UpdateTimer = true;
-        //            }
-        //        }
-        //        else
-        //        {
-        //            RunKeyGen = false;
-        //        }
-        //        break;
-
-        //    case "www.unicom.com/login":
-        //        if (ib.Username == "Admin")
-        //        {
-        //            Hacking();
-        //        }
-        //        else
-        //        {
-        //            RunKeyGen = false;
-        //        }
-        //        break;
-
-        //    case "www.revatest.com/login":
-        //        if (ib.Username == "Admin")
-        //        {
-        //            if (ws.Monitor == true)
-        //            {
-        //                trace.UpdateTimer = true;
-        //                Hacking();
-        //            }
-        //            else
-        //            {
-        //                Hacking();
-        //            }
-        //        }
-        //        else
-        //        {
-        //            RunKeyGen = false;
-        //        }
-        //        break;
-        //}
     }
 
 	public void Run()

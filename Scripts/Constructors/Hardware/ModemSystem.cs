@@ -11,8 +11,9 @@ public class ModemSystem
 
     public string Connector;
 
-    public float Speed;
+    public float CurrentSpeed;
     public float MaxSpeed;
+    public float NetPlanSpeed;
     public float ThrottleSpeed;
     public float Capacity;
 
@@ -26,6 +27,7 @@ public class ModemSystem
 
     public float ModemMonthlyPrice;
     public float PlanMonthlyPrice;
+    public string ModemIP;
 
     public ModemConnectionType ConnectionType;
 
@@ -42,14 +44,15 @@ public class ModemSystem
         MobileBroadband,
     }
 
-    public ModemSystem(string name, string manufactor, string description, string connector, float speed, float maxspeed, float throttlespeed, float capacity, float powerusage, float degradationrate,float maxhealth, float currenthealth,float healthpercentage,  float powereff,float modemmonthlyprice, float planmonthlyprice, ModemConnectionType connectiontype)
+    public ModemSystem(string name, string manufactor, string description, string connector, float currentspeed, float maxspeed,float netplanspeed, float throttlespeed, float capacity, float powerusage, float degradationrate,float maxhealth, float currenthealth,float healthpercentage,  float powereff,float modemmonthlyprice, float planmonthlyprice,string modemip, ModemConnectionType connectiontype)
     {
         Name = name;
         Manufactor = manufactor;
         Description = description;
         Connector = connector;
-        Speed = speed;
+        CurrentSpeed = currentspeed;
         MaxSpeed = maxspeed;
+        NetPlanSpeed = netplanspeed;
         ThrottleSpeed = throttlespeed;
         Capacity = capacity;
         PowerUsage = powerusage;
@@ -60,6 +63,7 @@ public class ModemSystem
         PowerEff = powereff;
         ModemMonthlyPrice = modemmonthlyprice;
         PlanMonthlyPrice = planmonthlyprice;
+        ModemIP = modemip;
         ConnectionType = connectiontype;
     }
 }

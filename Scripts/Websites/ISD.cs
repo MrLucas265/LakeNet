@@ -59,7 +59,9 @@ public class ISD : MonoBehaviour
     public string TempPersonalStatus;
 
     private GameObject System;
+    private GameObject personcontroller;
     private AppMan appman;
+    private PeopleCreator peoplecreator;
 
     public List<WebSecSystem> Secuirty = new List<WebSecSystem>();
 
@@ -68,8 +70,10 @@ public class ISD : MonoBehaviour
     {
         Computer = GameObject.Find("Applications");
         System = GameObject.Find("System");
+        personcontroller = GameObject.Find("PersonController");
         ib = Computer.GetComponent<InternetBrowser>();
         appman = System.GetComponent<AppMan>();
+        peoplecreator = personcontroller.GetComponent<PeopleCreator>();
         //WebSearch();
         //PlayerInfo();
         ResetTime = 0.15f;
@@ -159,7 +163,8 @@ public class ISD : MonoBehaviour
 
             if(Found == true)
             {
-                GUI.DrawTexture(new Rect(20, 100, 125, 150), PersonController.control.People[FoundPostion].Photo);
+                int foundPhotoID = PersonController.control.People[FoundPostion].PhotoID;
+                GUI.DrawTexture(new Rect(20, 100, 125, 150), peoplecreator.Faces[foundPhotoID]);
 
                 GUI.TextField(new Rect(10, 70, 150, 22), Names[FoundPostion]);
 
@@ -191,7 +196,8 @@ public class ISD : MonoBehaviour
             }
             else
             {
-                GUI.DrawTexture(new Rect(20, 100, 125, 150), PersonController.control.People[Index].Photo);
+                int PhotoID = PersonController.control.People[Index].PhotoID;
+                GUI.DrawTexture(new Rect(20, 100, 125, 150), peoplecreator.Faces[PhotoID]);
 
                 GUI.TextField(new Rect(10, 70, 150, 22), Names[Index]);
 

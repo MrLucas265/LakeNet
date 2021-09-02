@@ -2,7 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 
-public class ScreenSaver : MonoBehaviour 
+public class ScreenSaver : MonoBehaviour
 {
 	public float autosave;
 
@@ -47,7 +47,7 @@ public class ScreenSaver : MonoBehaviour
 
 	public List<string> ScreenSaverTypes = new List<string>();
 
-	void Start ()
+	void Start()
 	{
 		windowRect.width = Screen.width;
 		windowRect.height = Screen.height;
@@ -59,10 +59,10 @@ public class ScreenSaver : MonoBehaviour
 	}
 
 
-	void Update () 
+	void Update()
 	{
 		CoolDown = Customize.cust.SSActiveTime;
-		if (Customize.cust.ScreenSaverEnabled == false) 
+		if (Customize.cust.ScreenSaverEnabled == false)
 		{
 			this.enabled = false;
 		}
@@ -78,51 +78,95 @@ public class ScreenSaver : MonoBehaviour
 			Desktops.SetActive(true);
 			Timer = CoolDown;
 		}
-			
-		if (Timer <= 0) 
+
+		if (Timer <= 0)
 		{
 			show = true;
 			Desktops.SetActive(false);
 		}
 
-		if (Right == true) 
+		switch (Customize.cust.ScreenSaverType)
 		{
-			posX += speed * Time.deltaTime;
-		} 
-		else 
-		{
-			posX -= speed * Time.deltaTime;
+			case "Time":
+				if (Right == true)
+				{
+					posX += speed * Time.deltaTime;
+				}
+				else
+				{
+					posX -= speed * Time.deltaTime;
+				}
+
+
+				if (Up == true)
+				{
+					posY += speed * Time.deltaTime;
+				}
+				else
+				{
+					posY -= speed * Time.deltaTime;
+				}
+
+
+				if (posY <= 0)
+				{
+					Up = true;
+				}
+				if (posY >= Screen.height - ModY)
+				{
+					Up = false;
+				}
+
+				if (posX <= 0)
+				{
+					Right = true;
+				}
+				if (posX >= Screen.width - ModX)
+				{
+					Right = false;
+				}
+				break;
+
+			case "Picture":
+				if (Right == true)
+				{
+					posX += speed * Time.deltaTime;
+				}
+				else
+				{
+					posX -= speed * Time.deltaTime;
+				}
+
+
+				if (Up == true)
+				{
+					posY += speed * Time.deltaTime;
+				}
+				else
+				{
+					posY -= speed * Time.deltaTime;
+				}
+
+
+				if (posY <= 0)
+				{
+					Up = true;
+				}
+				if (posY >= Screen.height - ScreensaverPicture.height / 4)
+				{
+					Up = false;
+				}
+
+				if (posX <= 0)
+				{
+					Right = true;
+				}
+				if (posX >= Screen.width - ScreensaverPicture.width / 4)
+				{
+					Right = false;
+				}
+				break;
 		}
-
-
-		if (Up == true) 
-		{
-			posY += speed * Time.deltaTime;
-		} 
-		else 
-		{
-			posY -= speed * Time.deltaTime;
-		}
-
-
-		if (posY <= 0)
-		{
-			Up = true;
-		} 
-		if(posY >= Screen.height - ModY)
-		{
-			Up = false;
-		}
-
-		if (posX <= 0)
-		{
-			Right = true;
-		} 
-		if(posX >= Screen.width - ModX)
-		{
-			Right = false;
-		}
-
 	}
 
 	void AddTypes()
@@ -138,9 +182,9 @@ public class ScreenSaver : MonoBehaviour
 	{
 		GUI.skin = com.Skin[GameControl.control.GUIID];
 
-		if(show == true)
+		if (show == true)
 		{
-			windowRect = GUI.Window(windowID,windowRect,DoMyWindow,"");
+			windowRect = GUI.Window(windowID, windowRect, DoMyWindow, "");
 		}
 	}
 
@@ -148,17 +192,17 @@ public class ScreenSaver : MonoBehaviour
 	{
 		switch (Customize.cust.ScreenSaverType)
 		{
-		case "Blank":
-			DisplayBlank();
-			break;
-		case "Time":
-			DisplayTime();
-			break;
-		case "Picture":
-			DisplayPicture();
-			break;
-		case "Blank Rainbow":
-			break;
+			case "Blank":
+				DisplayBlank();
+				break;
+			case "Time":
+				DisplayTime();
+				break;
+			case "Picture":
+				DisplayPicture();
+				break;
+			case "Blank Rainbow":
+				break;
 		}
 	}
 
@@ -169,31 +213,31 @@ public class ScreenSaver : MonoBehaviour
 
 	void DisplayBlank()
 	{
-		if (Customize.cust.CustomTexFileNames [5] == "") 
+		if (Customize.cust.CustomTexFileNames[5] == "")
 		{
-			GUI.DrawTexture (new Rect (0, 0, windowRect.width, windowRect.height), ScreensaverBackGroundDefalt);
-		} 
-		else 
+			GUI.DrawTexture(new Rect(0, 0, windowRect.width, windowRect.height), ScreensaverBackGroundDefalt);
+		}
+		else
 		{
-			GUI.DrawTexture (new Rect (0, 0, windowRect.width, windowRect.height), ScreensaverBackGround);
+			GUI.DrawTexture(new Rect(0, 0, windowRect.width, windowRect.height), ScreensaverBackGround);
 		}
 	}
 
 	void DisplayPicture()
 	{
-		ModX = 130;
-		ModY = 70;
+		ModX = 0;
+		ModY = 0;
 
-		if (Customize.cust.CustomTexFileNames [5] == "") 
+		if (Customize.cust.CustomTexFileNames[5] == "")
 		{
-			GUI.DrawTexture (new Rect (0, 0, windowRect.width, windowRect.height), ScreensaverBackGroundDefalt);
-		} 
-		else 
+			GUI.DrawTexture(new Rect(0, 0, windowRect.width, windowRect.height), ScreensaverBackGroundDefalt);
+		}
+		else
 		{
-			GUI.DrawTexture (new Rect (0, 0, windowRect.width, windowRect.height), ScreensaverBackGround);
+			GUI.DrawTexture(new Rect(0, 0, windowRect.width, windowRect.height), ScreensaverBackGround);
 		}
 
-		GUI.Label (new Rect (posX, posY, 128, 128),ScreensaverPicture);
+		GUI.Label(new Rect(posX, posY, ScreensaverPicture.width / 4, ScreensaverPicture.height / 4), ScreensaverPicture);
 	}
 
 	void DisplayTime()
@@ -201,39 +245,39 @@ public class ScreenSaver : MonoBehaviour
 		ModX = 130;
 		ModY = 40;
 
-		if (Customize.cust.CustomTexFileNames [5] == "") 
+		if (Customize.cust.CustomTexFileNames[5] == "")
 		{
-			GUI.DrawTexture (new Rect (0, 0, windowRect.width, windowRect.height), ScreensaverBackGroundDefalt);
-		} 
-		else 
+			GUI.DrawTexture(new Rect(0, 0, windowRect.width, windowRect.height), ScreensaverBackGroundDefalt);
+		}
+		else
 		{
-			GUI.DrawTexture (new Rect (0, 0, windowRect.width, windowRect.height), ScreensaverBackGround);
+			GUI.DrawTexture(new Rect(0, 0, windowRect.width, windowRect.height), ScreensaverBackGround);
 		}
 
-		if (UseRealTime == false) 
+		if (UseRealTime == false)
 		{
-			GUI.Label (new Rect (posX, posY, 200, 200), "" + GameControl.control.Time.CurrentTime, ClockFont);
-		} 
-		else 
+			GUI.Label(new Rect(posX, posY, 200, 200), "" + GameControl.control.Time.CurrentTime, ClockFont);
+		}
+		else
 		{
-			if (System.DateTime.Now.Hour >= 12) 
+			if (System.DateTime.Now.Hour >= 12)
 			{
 				MTS = " PM";
-			} 
-			else 
+			}
+			else
 			{
 				MTS = " AM";
 			}
 
 			if (System.DateTime.Now.Hour < 13)
 			{
-				GUI.Label (new Rect (posX, posY, 100, 100), "" + System.DateTime.Now.Hour.ToString ("00") + ":" + System.DateTime.Now.Minute.ToString ("00") + MTS, ClockFont);
-			} 
+				GUI.Label(new Rect(posX, posY, 100, 100), "" + System.DateTime.Now.Hour.ToString("00") + ":" + System.DateTime.Now.Minute.ToString("00") + MTS, ClockFont);
+			}
 			if (System.DateTime.Now.Hour >= 13)
 			{
 				MTF = System.DateTime.Now.Hour;
 				MTF -= 12;
-				GUI.Label(new Rect (posX, posY, 100, 100), "" + MTF.ToString("00") + ":" + System.DateTime.Now.Minute.ToString("00") + MTS, ClockFont);
+				GUI.Label(new Rect(posX, posY, 100, 100), "" + MTF.ToString("00") + ":" + System.DateTime.Now.Minute.ToString("00") + MTS, ClockFont);
 			}
 		}
 	}

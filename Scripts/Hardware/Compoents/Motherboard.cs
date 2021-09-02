@@ -32,16 +32,16 @@ public class Motherboard : MonoBehaviour
 
 	public void HardwareCheck()
 	{
-		switch (HardwareController.hdcon.Motherboard[0]) 
-		{
-		case "Basic":
-			CPUSocket = 775;
-			CPUSlots = 1;
-			RAMSlots = 2;
-			MaxRAMAmt = 8;
-			GPUSlots = 1;
-			maxDrivesAmt = 2;
-			break;
-		}
+		//switch (HardwareController.hdcon.Motherboard[0]) 
+		//{
+		//case "Basic":
+		//	CPUSocket = 775;
+		//	CPUSlots = 1;
+		//	RAMSlots = 2;
+		//	MaxRAMAmt = 8;
+		//	GPUSlots = 1;
+		//	maxDrivesAmt = 2;
+		//	break;
+		//}
 	}
 }

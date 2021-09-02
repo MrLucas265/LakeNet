@@ -62,6 +62,7 @@ public class GStocks : MonoBehaviour
 		LoadPresetColors();
 		EnableTime = true;
 		Cooldown = 60;
+		Cal();
 	}
 
 	// Update is called once per frame
@@ -241,7 +242,16 @@ public class GStocks : MonoBehaviour
 	void PurchaseShares()
 	{
 		float cost = Exchange [SelectedCompany].CurPrice * Amount;
-		GameControl.control.MyBankDetails [GameControl.control.SelectedBank].AccountBalance -= cost;
+		for(int i = 0; i < GameControl.control.BankData.Count;i++)
+		{
+			for (int j = 0; j < GameControl.control.BankData[i].Accounts.Count; j++)
+			{
+				if(GameControl.control.BankData[i].Accounts[j].Primary == true)
+				{
+					GameControl.control.BankData[i].Accounts[j].AccountBalance -= cost;
+				}
+			}
+		}
 		GameControl.control.Portfolio.Add (new StockPortfolioSystem (Exchange [SelectedCompany].Exchange, "", Exchange [SelectedCompany].Company, "", GameControl.control.Time.FullDate, Exchange [SelectedCompany].CurPrice, Amount));
         GameControl.control.TransactionHistory.Add(new StockPortfolioSystem(Exchange[SelectedCompany].Exchange, "B", Exchange[SelectedCompany].Company, "", GameControl.control.Time.FullDate, Exchange[SelectedCompany].CurPrice, Amount));
         Amount = 0;
@@ -283,9 +293,18 @@ public class GStocks : MonoBehaviour
 			{
 				if (Amount > 0)
 				{
-					if (GameControl.control.MyBankDetails [GameControl.control.SelectedBank].AccountBalance >= cost)
+					for (int i = 0; i < GameControl.control.BankData.Count; i++)
 					{
-						PurchaseShares ();
+						for (int j = 0; j < GameControl.control.BankData[i].Accounts.Count; j++)
+						{
+							if (GameControl.control.BankData[i].Accounts[j].Primary == true)
+							{
+								if (GameControl.control.BankData[i].Accounts[j].AccountBalance >= cost)
+								{
+									PurchaseShares();
+								}
+							}
+						}
 					}
 				}
 			}

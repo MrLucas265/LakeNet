@@ -97,7 +97,18 @@ public class Portfolio : MonoBehaviour
 	void SellShares()
 	{
 		float cost = CurrentSharePrice * Amount;
-		GameControl.control.MyBankDetails [GameControl.control.SelectedBank].AccountBalance += cost;
+
+		for (int i = 0; i < GameControl.control.BankData.Count; i++)
+		{
+			for (int j = 0; j < GameControl.control.BankData[i].Accounts.Count; j++)
+			{
+				if (GameControl.control.BankData[i].Accounts[j].Primary == true)
+				{
+					GameControl.control.BankData[i].Accounts[j].AccountBalance += cost;
+				}
+			}
+		}
+
         GameControl.control.TransactionHistory.Add(new StockPortfolioSystem(GameControl.control.Portfolio[SelectedCompany].Exchange, "S", GameControl.control.Portfolio[SelectedCompany].Company, "",GameControl.control.Time.FullDate, CurrentSharePrice, Amount));
         GameControl.control.Portfolio.RemoveAt (SelectedCompany);
 		Amount = 0;
