@@ -166,9 +166,7 @@ public class CLIV2 : MonoBehaviour
 					if (pwinman.RunningPrograms[i].ProgramName == ProgramNameForWinMan)
 					{
 						ColorUI(pwinman.RunningPrograms[i].WPN);
-
-						GUI.color = new Color32(Registry.GetRedColorData(PersonName,ProgramName,"WindowColor"), Registry.GetGreenColorData(PersonName, ProgramName, "WindowColor"), Registry.GetBlueColorData(PersonName, ProgramName, "WindowColor"), Registry.GetAlphaColorData(PersonName, ProgramName, "WindowColor"));
-						//GUI.color = Color.black;
+						GUI.color = new Color32(LocalRegistry.GetRedColorData(PersonName, pwinman.RunningPrograms[i].WPN, ProgramName, "WindowColor"), LocalRegistry.GetGreenColorData(PersonName, pwinman.RunningPrograms[i].WPN, ProgramName, "WindowColor"), LocalRegistry.GetBlueColorData(PersonName, pwinman.RunningPrograms[i].WPN, ProgramName, "WindowColor"), LocalRegistry.GetAlphaColorData(PersonName, pwinman.RunningPrograms[i].WPN, ProgramName, "WindowColor"));
 						pwinman.RunningPrograms[i].windowRect = WindowClamp.ClampToScreen(GUI.Window(pwinman.RunningPrograms[i].WID, pwinman.RunningPrograms[i].windowRect, DoMyWindow, ""));
 
 						if (!pwinman.RunningPrograms[i].windowRect.Contains(Event.current.mousePosition))
@@ -251,7 +249,7 @@ public class CLIV2 : MonoBehaviour
 
 	void RenderTitleBar(int WindowID,string WindowName)
     {
-		GUI.contentColor = new Color32(Registry.GetRedColorData(PersonName, ProgramName, "WindowColor"), Registry.GetGreenColorData(PersonName, ProgramName, "WindowColor"), Registry.GetBlueColorData(PersonName, ProgramName, "WindowColor"), Registry.GetAlphaColorData(PersonName, ProgramName, "WindowColor"));
+		GUI.contentColor = new Color32(LocalRegistry.GetRedColorData(PersonName, WindowID, ProgramName, "FontColor"), LocalRegistry.GetGreenColorData(PersonName, WindowID, ProgramName, "FontColor"), LocalRegistry.GetBlueColorData(PersonName, WindowID, ProgramName, "FontColor"), LocalRegistry.GetAlphaColorData(PersonName, WindowID, ProgramName, "FontColor"));
 
 		if (Registry.GetBoolData("Player", "CLI", "Pinned") == false)
 		{
@@ -263,16 +261,15 @@ public class CLIV2 : MonoBehaviour
 	void ColorUI(int WPN)
 	{
 		LocalRegistry.SetColorData(PersonName, WPN, ProgramName, "FontColor", new SColor(new Color32(0, 255, 0, 255)));
-		LocalRegistry.SetFloatColorData(PersonName, WPN, ProgramName, "FontColor", 0, 255, 0, 255);
+		LocalRegistry.SetFloatColorData(PersonName, WPN, ProgramName, "FontColor", new ColorSystem(0, 255, 0, 255));
 
 		LocalRegistry.SetColorData(PersonName, WPN, ProgramName, "WindowColor", new SColor(new Color32(0, 0, 0, 255)));
-		LocalRegistry.SetFloatColorData(PersonName, WPN, ProgramName, "WindowColor", 0, 0, 0, 255);
-		print("" + LocalRegistry.GetRedColorData(PersonName, WPN, ProgramName, "WindowColor"));
+		LocalRegistry.SetFloatColorData(PersonName, WPN, ProgramName, "WindowColor",new ColorSystem(0, 0, 0, 255));
 	}
 
 	void RenderUI(int WindowID)
 	{
-		GUI.contentColor = new Color32(Registry.GetRedColorData(PersonName, ProgramName, "FontColor"), Registry.GetGreenColorData(PersonName, ProgramName, "FontColor"), Registry.GetBlueColorData(PersonName, ProgramName, "FontColor"), Registry.GetAlphaColorData(PersonName, ProgramName, "FontColor"));
+		//GUI.contentColor = new Color32(Registry.GetRedColorData(PersonName, ProgramName, "FontColor"), Registry.GetGreenColorData(PersonName, ProgramName, "FontColor"), Registry.GetBlueColorData(PersonName, ProgramName, "FontColor"), Registry.GetAlphaColorData(PersonName, ProgramName, "FontColor"));
 
 		if (LocalRegistry.GetStringDataCount(PersonName, WindowID, ProgramName, "Input") > Customize.cust.DeletionAmt)
 		{

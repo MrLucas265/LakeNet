@@ -112,16 +112,13 @@ public class LocalRegistry
 
 		RegValue.ColorFloatData.Alpha = FloatData;
 	}
-	public static void SetFloatColorData(string PersonsName, int PID, string KeyName, string ValueName, float RFloatData, float GFloatData, float BFloatData, float AFloatData)
+	public static void SetFloatColorData(string PersonsName, int PID, string KeyName, string ValueName, ColorSystem FloatData)
 	{
 		var person = PersonController.control.People.FirstOrDefault(x => x.Name == PersonsName);
 		var reg = person.Gateway.RunningPrograms[PID].LocalRegister.FirstOrDefault(x => x.KeyName == KeyName);
 		var RegValue = reg.Values.FirstOrDefault(x => x.ValueName == ValueName);
 
-		RegValue.ColorFloatData.Red = RFloatData;
-		RegValue.ColorFloatData.Green = GFloatData;
-		RegValue.ColorFloatData.Blue = BFloatData;
-		RegValue.ColorFloatData.Alpha = AFloatData;
+		RegValue.ColorFloatData = FloatData;
 	}
 	public static void SetRedFloatColorData(string PersonsName, int PID, string KeyName, string ValueName, float FloatData)
 	{

@@ -308,44 +308,14 @@ public class Uwu : ConsoleCommand
         SystemPanel sp;
         Computer com;
         DesktopEnviroment os;
-        sp = system.GetComponent<SystemPanel>();
         com = system.GetComponent<Computer>();
         os = system.GetComponent<DesktopEnviroment>();
 
         Registry.SetIntData(PersonsName, "System", "SelectedGUIID", GameControl.control.GUIID);
 
-        Registry.SetRedColorData(PersonsName, "System", "SecondaryWindowColor", 255);
-        Registry.SetGreenColorData(PersonsName, "System", "SecondaryWindowColor", 1);
-        Registry.SetBlueColorData(PersonsName, "System", "SecondaryWindowColor", 255);
-        Registry.SetAlphaColorData(PersonsName, "System", "SecondaryWindowColor", 52);
-
-        Registry.SetRedColorData(PersonsName, "System", "SecondaryButtonColor", 228);
-        Registry.SetGreenColorData(PersonsName, "System", "SecondaryButtonColor", 156);
-        Registry.SetBlueColorData(PersonsName, "System", "SecondaryButtonColor", 255);
-        Registry.SetAlphaColorData(PersonsName, "System", "SecondaryButtonColor", 255);
-
-        Registry.SetRedColorData(PersonsName, "System", "SecondaryFontColor", 255);
-        Registry.SetGreenColorData(PersonsName, "System", "SecondaryFontColor", 255);
-        Registry.SetBlueColorData(PersonsName, "System", "SecondaryFontColor", 255);
-        Registry.SetAlphaColorData(PersonsName, "System", "SecondaryFontColor", 255);
-
-        Registry.SetRedColorData(PersonsName, "System", "WindowColor", (byte)GameControl.control.SelectedOS.Colour.Window.Red);
-        Registry.SetGreenColorData(PersonsName, "System", "WindowColor", (byte)GameControl.control.SelectedOS.Colour.Window.Green);
-        Registry.SetBlueColorData(PersonsName, "System", "WindowColor", (byte)GameControl.control.SelectedOS.Colour.Window.Blue);
-        Registry.SetAlphaColorData(PersonsName, "System", "WindowColor", (byte)GameControl.control.SelectedOS.Colour.Window.Alpha);
-
-        Registry.SetRedColorData(PersonsName, "System", "FontColor", (byte)GameControl.control.SelectedOS.Colour.Font.Red);
-        Registry.SetGreenColorData(PersonsName, "System", "FontColor", (byte)GameControl.control.SelectedOS.Colour.Font.Green);
-        Registry.SetBlueColorData(PersonsName, "System", "FontColor", (byte)GameControl.control.SelectedOS.Colour.Font.Blue);
-        Registry.SetAlphaColorData(PersonsName, "System", "FontColor", (byte)GameControl.control.SelectedOS.Colour.Font.Alpha);
-
-        Registry.SetRedColorData(PersonsName, "System", "ButtonColor", (byte)GameControl.control.SelectedOS.Colour.Button.Red);
-        Registry.SetGreenColorData(PersonsName, "System", "ButtonColor", (byte)GameControl.control.SelectedOS.Colour.Button.Green);
-        Registry.SetBlueColorData(PersonsName, "System", "ButtonColor", (byte)GameControl.control.SelectedOS.Colour.Button.Blue);
-        Registry.SetAlphaColorData(PersonsName, "System", "ButtonColor", (byte)GameControl.control.SelectedOS.Colour.Button.Alpha);
-
-
-
+        Registry.SetColorData(PersonsName,  "System", "SecondaryWindowColor",new SColor(new Color32(255,1,255,52)));
+        Registry.SetColorData(PersonsName, "System", "SecondaryButtonColor", new SColor(new Color32(228, 156, 255, 255)));
+        Registry.SetColorData(PersonsName, "System", "SecondaryFontColor", new SColor(new Color32(255, 255, 255, 255)));
 
         Registry.SetIntData(PersonsName, "System", "SelectedBackground", GameControl.control.SelectedOS.FPC.SelectedBackground);
 
