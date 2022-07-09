@@ -27,7 +27,6 @@ public class Reva : MonoBehaviour
 	private MissionGen misgen;
 	private MissionBrow brow;
 	private ErrorProm ep;
-	private Upgrade upg;
 	private Defalt defalt;
 	private PurchasePrompt pp;
 	private SystemMap sm;
@@ -45,7 +44,6 @@ public class Reva : MonoBehaviour
 	public float revatw;
 	public float revath;
 
-	private Progtive prog;
 	private Tracer trace;
 
 	public List<string> RevaSoftware = new List<string>();
@@ -102,10 +100,8 @@ public class Reva : MonoBehaviour
 		ib = AppsSoftware.GetComponent<InternetBrowser>();
 		misgen = Missions.GetComponent<MissionGen>();
 		ep = Prompts.GetComponent<ErrorProm>();
-		upg = Computer.GetComponent<Upgrade>();
 		defalt = SysSoftware.GetComponent<Defalt>();
 		pp = Prompts.GetComponent<PurchasePrompt>();
-		prog = HackingSoftware.GetComponent<Progtive>();
 		trace = HackingSoftware.GetComponent<Tracer>();
 		brow = Missions.GetComponent<MissionBrow>();
 		sm = AppsSoftware.GetComponent<SystemMap>();
@@ -133,7 +129,7 @@ public class Reva : MonoBehaviour
 			ProgramID = 2;
 			MaxProgramVersion = 10;
 			Price = 1500 * SelectedVersion;
-			Size = upg.ProgtiveDiskList [SelectedVersion];
+				Size = 10;
 			Desc = "The password breaker is slower and more expensive then the dircrk but eventually will match the password.";
 			//Version = GameControl.control.SoftwareVersion [ProgramID];
 			ProgramTarget = "Password Cracker";
@@ -144,7 +140,7 @@ public class Reva : MonoBehaviour
 			ProgramID = 3;
 			MaxProgramVersion = 1;
 			Price = 750 * SelectedVersion;
-			Size = upg.TraceDiskList[SelectedVersion];
+				Size = 10;
 			Desc = "A software kit that detects active direct traces";
 			//Version = GameControl.control.SoftwareVersion[ProgramID];
 			ProgramTarget = "Trace Tracker";
@@ -480,11 +476,6 @@ public class Reva : MonoBehaviour
 			
 			if(logged == true)
 			{
-				upg.Display = false;
-				upg.Desc = "";
-				upg.Cost = 0;
-				upg.Selected = "";
-				upg.Specs = "";
 
 				if(GUI.Button(new Rect(245,30,50,20),"Home"))
 				{

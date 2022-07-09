@@ -48,7 +48,7 @@ public class ShutdownProm : MonoBehaviour
     //private Test test;
     private SignoutMan SignMan;
     private Boot boot;
-	private OS os;
+	private DesktopEnviroment os;
 	private Defalt def;
 	private Computer com;
 	private SoundControl sc;
@@ -78,7 +78,7 @@ public class ShutdownProm : MonoBehaviour
 		//tv = GetComponent<TreeView>();
 		clk = Puter.GetComponent<Clock>();
 		boot = Puter.GetComponent<Boot>();
-		os = Puter.GetComponent<OS>();
+		os = Puter.GetComponent<DesktopEnviroment>();
 		sc = Puter.GetComponent<SoundControl>();
 		def = Puter.GetComponent<Defalt>();
         SignMan = Signout.GetComponent<SignoutMan>();

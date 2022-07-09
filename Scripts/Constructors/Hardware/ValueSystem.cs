@@ -17,4 +17,8 @@ public class ValueSystem
         CurrentValue = currentvalue;
         Depreciation = depreciation;
     }
+
+    public ValueSystem()
+    {
+    }
 }

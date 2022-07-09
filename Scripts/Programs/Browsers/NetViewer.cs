@@ -24,7 +24,6 @@ public class NetViewer : MonoBehaviour
 
 	// collection of scripts
 	private AppMan appman;
-	private TestSite testsite;
 	private Becas becas;
 	private Test RevaTest;
 	private Test1 test1;
@@ -143,7 +142,6 @@ public class NetViewer : MonoBehaviour
 	{
 		ws = AppSoftware.GetComponent<WebSec>();
 		sm = AppSoftware.GetComponent<SystemMap>();
-		testsite = Database.GetComponent<TestSite>();
 		becas = Database.GetComponent<Becas>();
 		RevaTest = Database.GetComponent<Test>();
 		ping = Database.GetComponent<Ping>();

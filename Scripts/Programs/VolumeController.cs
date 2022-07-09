@@ -29,7 +29,7 @@ public class VolumeController : MonoBehaviour
     private Clock clk;
     private CD cd;
     private Boot boot;
-    private OS os;
+    private DesktopEnviroment os;
     private Defalt def;
     private Computer com;
     private SoundControl sc;

@@ -11,7 +11,6 @@ public class AppatureAppMenu : MonoBehaviour
 
 	private Computer com;
 	private InternetBrowser ib;
-	private Progtive prog;
 	private Notepad note;
 	private MissionBrow mb;
 	private CurContracts cc;
@@ -129,7 +128,6 @@ public class AppatureAppMenu : MonoBehaviour
 		com = SysSoftware.GetComponent<Computer>();
 		ib = AppSoftware.GetComponent<InternetBrowser>();
 		note = AppSoftware.GetComponent<Notepad>();
-		prog = HackingSoftware.GetComponent<Progtive>();
 		al = SysSoftware.GetComponent<AccLog>();
 
 		trace = HackingSoftware.GetComponent<Tracer>();
@@ -387,7 +385,8 @@ public class AppatureAppMenu : MonoBehaviour
 							PlayClickSound();
                             appman.ProgramName = GameControl.control.QuickProgramList[scrollsize].Name;
                             appman.SelectedApp = GameControl.control.QuickProgramList[scrollsize].Target;
-                        }
+							appman.Name = "Player";
+						}
 					}
 					GUI.EndScrollView();
 					//End of Quick Launch
@@ -416,7 +415,8 @@ public class AppatureAppMenu : MonoBehaviour
 							PlayClickSound();
                             appman.ProgramName = ListOfPrograms[scrollsize];
                             appman.SelectedApp = ListOfProgramTargets[scrollsize];
-                        }
+							appman.Name = "Player";
+						}
 					}
 					GUI.EndScrollView();
 				}
@@ -446,6 +446,7 @@ public class AppatureAppMenu : MonoBehaviour
 							{
                                 appman.ProgramName = ListOfSites[scrollsize];
                                 appman.SelectedApp = ListOfTargets[scrollsize];
+								appman.Name = "Player";
                             }
 						}
 					}

@@ -4,7 +4,9 @@ using UnityEngine;
 using System;
 using System.Linq;
 using System.Text.RegularExpressions;
+#if UNITY_EDITOR
 using UnityEditor;
+#endif
 
 public class CLICommandsV2 : MonoBehaviour
 {
@@ -21,7 +23,6 @@ public class CLICommandsV2 : MonoBehaviour
 
 	private InternetBrowser ib;
 	//private Notepad note;
-	private Progtive pro;
 	private Tracer trace;
 	//private MissionBrow mb;
 	//private CurContracts cc;
@@ -37,7 +38,7 @@ public class CLICommandsV2 : MonoBehaviour
 	private Unicom uc;
 	private Test test;
 	private Boot boot;
-	private OS os;
+	private DesktopEnviroment os;
 	private Defalt def;
 	//private SoundControl sc;
 	private ErrorProm ep;
@@ -72,7 +73,6 @@ public class CLICommandsV2 : MonoBehaviour
 
 	private NotfiPrompt noti;
 
-	private CPU cpu;
 	private RAM ram;
 	private PSU psu;
 	private HardDrives hdd;
@@ -90,6 +90,7 @@ public class CLICommandsV2 : MonoBehaviour
 	public string FileTarget;
 	public string FileContent;
 	public float FileVersion;
+	public ProgramSystemv2 ProgramFile;
 
 	public string SpecialChar = "!@#$%^&*()_+-=<>?:{}[]';/.,";
 	public string Uppercase = "ABCDEFGHIJKLMNOQRSTUVWXYZ";
@@ -210,7 +211,6 @@ public class CLICommandsV2 : MonoBehaviour
 		//dsk = GetComponent<Desktop>();
 		com = GetComponent<Computer>();
 		//note = GetComponent<Notepad>();
-		pro = GetComponent<Progtive>();
 		trace = GetComponent<Tracer>();
 		//mb = GetComponent<MissionBrow>();
 		//cc = GetComponent<CurContracts>();
@@ -222,11 +222,10 @@ public class CLICommandsV2 : MonoBehaviour
 		//clk = GetComponent<Clock>();
 		//ep = Prompt.GetComponent<ErrorProm>();
 		boot = GetComponent<Boot>();
-		os = GetComponent<OS>();
+		os = GetComponent<DesktopEnviroment>();
 		def = GetComponent<Defalt>();
 		sc = system.GetComponent<SoundControl>();
 
-		cpu = hardware.GetComponent<CPU>();
 		ram = hardware.GetComponent<RAM>();
 		psu = hardware.GetComponent<PSU>();
 		hdd = hardware.GetComponent<HardDrives>();
@@ -331,169 +330,174 @@ public class CLICommandsV2 : MonoBehaviour
 		if(SystemCommands.Count == 0)
 		{
 			//MAIN
-			SystemCommands.Add(new CLICMDS("-help", "-help"));
-			SystemCommands.Add(new CLICMDS("help", "help"));
-			SystemCommands.Add(new CLICMDS("listcommands", "listcommands"));
+			SystemCommands.Add(new CLICMDS("-help","-help", "-help",""));
+			SystemCommands.Add(new CLICMDS("help","help", "help", ""));
+			SystemCommands.Add(new CLICMDS("listcommands","listcommands", "listcommands", ""));
 			//DEV
-			SystemCommands.Add(new CLICMDS("version", "version"));
-			SystemCommands.Add(new CLICMDS("errorlog", "errorlog"));
-			SystemCommands.Add(new CLICMDS("viewrep", "viewrep"));
-			SystemCommands.Add(new CLICMDS("accountinfo", "accountinfo"));
-			SystemCommands.Add(new CLICMDS("doubleclickdelay", "doubleclickdelay"));
-			SystemCommands.Add(new CLICMDS("setbankbalance", "setbankbalance"));
-			SystemCommands.Add(new CLICMDS("printinfo", "writeinfo"));
-			SystemCommands.Add(new CLICMDS("url", "url"));
-			SystemCommands.Add(new CLICMDS("error", "error"));
-			SystemCommands.Add(new CLICMDS("notification", "noti"));
-			SystemCommands.Add(new CLICMDS("syscrash", "syscrash"));
-			SystemCommands.Add(new CLICMDS("skipmission", "skipmission"));
-			SystemCommands.Add(new CLICMDS("settimemod", "settimemod"));
-			SystemCommands.Add(new CLICMDS("enablemusicplayer", "enablemusicplayer"));
-			SystemCommands.Add(new CLICMDS("openchatroom", "openchatroom"));
-			SystemCommands.Add(new CLICMDS("shutdown", "shutdown"));
-			SystemCommands.Add(new CLICMDS("logout", "logout"));
-			SystemCommands.Add(new CLICMDS("restart", "restart"));
-			SystemCommands.Add(new CLICMDS("safemode", "safemode"));
-			SystemCommands.Add(new CLICMDS("allos", "installdefaltos"));
-			SystemCommands.Add(new CLICMDS("mkreal", "createrealexe"));
-			SystemCommands.Add(new CLICMDS("mkbnkacc", "createnewbankaccount"));
-			SystemCommands.Add(new CLICMDS("mkfakeapp", "mkfakeapp"));
-			SystemCommands.Add(new CLICMDS("prtstr", "prtstr"));
-			SystemCommands.Add(new CLICMDS("prtscrn", "screenshot"));
-			SystemCommands.Add(new CLICMDS("str", "str"));
-			SystemCommands.Add(new CLICMDS("ofe", "ofe"));
-			SystemCommands.Add(new CLICMDS("devinstall", "devinstall"));
+			SystemCommands.Add(new CLICMDS("aiprorun", "aiprun", "aiprogramrun", ""));
+			SystemCommands.Add(new CLICMDS("version","ver", "version", ""));
+			SystemCommands.Add(new CLICMDS("errorlog", "elog", "errorlog", ""));
+			SystemCommands.Add(new CLICMDS("viewrep", "viewrep", "viewrep", ""));
+			SystemCommands.Add(new CLICMDS("accountinfo", "accinfo", "accountinfo", ""));
+			SystemCommands.Add(new CLICMDS("doubleclickdelay", "dblclkdelay", "doubleclickdelay", ""));
+			SystemCommands.Add(new CLICMDS("setbankbalance", "setbnkbal", "setbankbalance", ""));
+			SystemCommands.Add(new CLICMDS("printinfo", "prntinfo", "writeinfo", ""));
+			SystemCommands.Add(new CLICMDS("url", "url", "url", ""));
+			SystemCommands.Add(new CLICMDS("error", "error", "error", ""));
+			SystemCommands.Add(new CLICMDS("notification", "noti", "noti", ""));
+			SystemCommands.Add(new CLICMDS("syscrash", "syscrash", "syscrash", ""));
+			SystemCommands.Add(new CLICMDS("skipmission", "skpmis", "skipmission", ""));
+			SystemCommands.Add(new CLICMDS("settimemod", "settimemod", "settimemod", ""));
+			SystemCommands.Add(new CLICMDS("enablemusicplayer", "enablemusicply", "enablemusicplayer", ""));
+			SystemCommands.Add(new CLICMDS("openchatroom", "opnchatroom", "openchatroom", ""));
+			SystemCommands.Add(new CLICMDS("shutdown", "shutdwn", "shutdown", ""));
+			SystemCommands.Add(new CLICMDS("logout", "logout", "logout", ""));
+			SystemCommands.Add(new CLICMDS("restart", "restart", "restart", ""));
+			SystemCommands.Add(new CLICMDS("safemode", "safemode", "safemode", ""));
+			SystemCommands.Add(new CLICMDS("installdefaltos", "allos", "installdefaltos", ""));
+			SystemCommands.Add(new CLICMDS("createrealexe", "mkreal", "createrealexe", ""));
+			SystemCommands.Add(new CLICMDS("createnewbankaccount", "mkbnkacc", "createnewbankaccount", ""));
+			SystemCommands.Add(new CLICMDS("mkfakeapp", "mkfakeapp", "mkfakeapp", ""));
+			SystemCommands.Add(new CLICMDS("printstring","prtstr", "prtstr", ""));
+			SystemCommands.Add(new CLICMDS("printscreen","prtscrn", "screenshot", ""));
+			SystemCommands.Add(new CLICMDS("string","str", "str", ""));
+			SystemCommands.Add(new CLICMDS("ofe", "ofe", "ofe", ""));
+			SystemCommands.Add(new CLICMDS("devinstall", "devinstall", "devinstall", ""));
+			SystemCommands.Add(new CLICMDS("resetdomaindb", "resetdomaindb", "resetdomaindb", ""));
+			SystemCommands.Add(new CLICMDS("regedit", "regedit", "regedit", ""));
+			//SYSTEM PREFRENCES
+			SystemCommands.Add(new CLICMDS("volume","vol", "volume", ""));
+			SystemCommands.Add(new CLICMDS("sound", "snd", "sound", ""));
+			SystemCommands.Add(new CLICMDS("background", "bg", "background", ""));
+			SystemCommands.Add(new CLICMDS("aql", "aql", "aql", ""));
+			SystemCommands.Add(new CLICMDS("theme", "theme", "theme", ""));
 			//SystemCommands.Add(new CLICMDS("..", "back"));
 
-			if (GameControl.control.ShortCommands == true)
-            {
-                //PREFRENCES
-                SystemCommands.Add(new CLICMDS("vol", "volume"));
-                SystemCommands.Add(new CLICMDS("snd", "sound"));
-                SystemCommands.Add(new CLICMDS("bg", "background"));
-                SystemCommands.Add(new CLICMDS("aql", "aql"));
-                SystemCommands.Add(new CLICMDS("theme", "theme"));
-                //TERMINAL
-                SystemCommands.Add(new CLICMDS("mode", "mode"));
-                SystemCommands.Add(new CLICMDS("setautodelete", "setautodelete"));
-                SystemCommands.Add(new CLICMDS("setfontsize", "clifontsize"));
-                SystemCommands.Add(new CLICMDS("settextpos", "clitextpos"));
-                SystemCommands.Add(new CLICMDS("setcommandchar", "setcommandchar"));
-                SystemCommands.Add(new CLICMDS("setspacechar", "setspacechar"));
-                //COLOR COMMANDS
-                SystemCommands.Add(new CLICMDS("color", "color"));
-                SystemCommands.Add(new CLICMDS("font", "font"));
-                SystemCommands.Add(new CLICMDS("button", "button"));
-                SystemCommands.Add(new CLICMDS("window", "window"));
-                SystemCommands.Add(new CLICMDS("red", "red"));
-                SystemCommands.Add(new CLICMDS("blue", "blue"));
-                SystemCommands.Add(new CLICMDS("green", "green"));
-                //NETWORK COMMANDS
-                SystemCommands.Add(new CLICMDS("-r", "-r"));
-                SystemCommands.Add(new CLICMDS("dl", "dl"));
-                SystemCommands.Add(new CLICMDS("ul", "ul"));
-                SystemCommands.Add(new CLICMDS("connect", "connect"));
-                //LOCAL COMMANDS
-                SystemCommands.Add(new CLICMDS("-l", "-l"));
-                //UTILITY COMMANDS
-                SystemCommands.Add(new CLICMDS("clear", "clear"));
-                SystemCommands.Add(new CLICMDS("rm", "rm"));
-                SystemCommands.Add(new CLICMDS("cd", "cd"));
-                SystemCommands.Add(new CLICMDS("run", "run"));
-                SystemCommands.Add(new CLICMDS("open", "open"));
-                SystemCommands.Add(new CLICMDS("pwd", "pwd"));
-                SystemCommands.Add(new CLICMDS("ls", "ls"));
-				SystemCommands.Add(new CLICMDS("q", "close"));
-				SystemCommands.Add(new CLICMDS("copy", "copy"));
-                SystemCommands.Add(new CLICMDS("paste", "paste"));
-                SystemCommands.Add(new CLICMDS("copy1", "copy1"));
-                SystemCommands.Add(new CLICMDS("paste1", "paste1"));
-                SystemCommands.Add(new CLICMDS("paste2", "paste2"));
-                SystemCommands.Add(new CLICMDS("mkdir", "mkdir"));
-                SystemCommands.Add(new CLICMDS("del", "del"));
-                SystemCommands.Add(new CLICMDS("mkdoc", "mkdoc"));
-                SystemCommands.Add(new CLICMDS("time", "time"));
-                SystemCommands.Add(new CLICMDS("whoami", "whoami"));
-                SystemCommands.Add(new CLICMDS("systeminfo", "systeminfo"));
-                SystemCommands.Add(new CLICMDS("listprograms", "listprograms"));
-                SystemCommands.Add(new CLICMDS("selectbankaccount", "selectbankaccount"));
-                SystemCommands.Add(new CLICMDS("restart", "restart"));
-                SystemCommands.Add(new CLICMDS("exit", "exit"));
-                SystemCommands.Add(new CLICMDS("syspan", "syspan"));
-				SystemCommands.Add(new CLICMDS("time", "time"));
-				SystemCommands.Add(new CLICMDS("date", "date"));
-				SystemCommands.Add(new CLICMDS("datetime", "datetime"));
-                //PROGRAM COMMANDS
-                SystemCommands.Add(new CLICMDS("listemails", "printemails"));
-                SystemCommands.Add(new CLICMDS("viewemails", "viewselectedemail"));
-                SystemCommands.Add(new CLICMDS("selectnotisnd", "selectnotisnd"));
+			//TERMINAL PREFRENCES
+			SystemCommands.Add(new CLICMDS("mode","mode", "mode", ""));
+			SystemCommands.Add(new CLICMDS("setautodelete", "setautodelete", "setautodelete", ""));
+			SystemCommands.Add(new CLICMDS("setfontsize", "setfontsize", "clifontsize", ""));
+			SystemCommands.Add(new CLICMDS("settextpos", "settextpos", "clitextpos", ""));
+			SystemCommands.Add(new CLICMDS("setcommandchar", "setcommandchar", "setcommandchar", ""));
+			SystemCommands.Add(new CLICMDS("setspacechar", "setspacechar", "setspacechar", ""));
 
-				SystemCommands.Add(new CLICMDS("dlv2", "dlv2"));
-				SystemCommands.Add(new CLICMDS("del", "del"));
-			}
-            else
-            {
-                //PREFRENCES
-                SystemCommands.Add(new CLICMDS("volume", "volume"));
-                SystemCommands.Add(new CLICMDS("sound", "sound"));
-                SystemCommands.Add(new CLICMDS("background", "background"));
-                SystemCommands.Add(new CLICMDS("addtoquicklaunch", "aql"));
-                SystemCommands.Add(new CLICMDS("theme", "theme"));
-                //TERMINAL
-                SystemCommands.Add(new CLICMDS("mode", "mode"));
-                SystemCommands.Add(new CLICMDS("setautodelete", "setautodelete"));
-                SystemCommands.Add(new CLICMDS("setfontsize", "clifontsize"));
-                SystemCommands.Add(new CLICMDS("settextpos", "clitextpos"));
-                SystemCommands.Add(new CLICMDS("setcommandchar", "setcommandchar"));
-                SystemCommands.Add(new CLICMDS("setspacechar", "setspacechar"));
-                //COLOR COMMANDS
-                SystemCommands.Add(new CLICMDS("color", "color"));
-                SystemCommands.Add(new CLICMDS("font", "font"));
-                SystemCommands.Add(new CLICMDS("button", "button"));
-                SystemCommands.Add(new CLICMDS("window", "window"));
-                SystemCommands.Add(new CLICMDS("red", "red"));
-                SystemCommands.Add(new CLICMDS("blue", "blue"));
-                SystemCommands.Add(new CLICMDS("green", "green"));
-                //NETWORK COMMANDS
-                SystemCommands.Add(new CLICMDS("remote", "-r"));
-                SystemCommands.Add(new CLICMDS("download", "dl"));
-                SystemCommands.Add(new CLICMDS("upload", "ul"));
-                SystemCommands.Add(new CLICMDS("connect", "connect"));
-                //LOCAL COMMANDS
-                SystemCommands.Add(new CLICMDS("local", "-l"));
-                //UTILITY COMMANDS
-                SystemCommands.Add(new CLICMDS("clear", "clear"));
-                SystemCommands.Add(new CLICMDS("remove", "rm"));
-                SystemCommands.Add(new CLICMDS("changedirectory", "cd"));
-                SystemCommands.Add(new CLICMDS("run", "run"));
-                SystemCommands.Add(new CLICMDS("open", "open"));
-                SystemCommands.Add(new CLICMDS("printworkingdirectory", "pwd"));
-                SystemCommands.Add(new CLICMDS("list", "ls"));
-                SystemCommands.Add(new CLICMDS("close", "close"));
-                SystemCommands.Add(new CLICMDS("copy", "copy"));
-                SystemCommands.Add(new CLICMDS("paste", "paste"));
-                SystemCommands.Add(new CLICMDS("copy1", "copy1"));
-                SystemCommands.Add(new CLICMDS("paste1", "paste1"));
-                SystemCommands.Add(new CLICMDS("paste2", "paste2"));
-                SystemCommands.Add(new CLICMDS("makedirectory", "mkdir"));
-                SystemCommands.Add(new CLICMDS("delete", "del"));
-                SystemCommands.Add(new CLICMDS("makedocument", "mkdoc"));
-                SystemCommands.Add(new CLICMDS("time", "time"));
-                SystemCommands.Add(new CLICMDS("whoami", "whoami"));
-                SystemCommands.Add(new CLICMDS("systeminfo", "systeminfo"));
-                SystemCommands.Add(new CLICMDS("listprograms", "listprograms"));
-                SystemCommands.Add(new CLICMDS("selectbankaccount", "selectbankaccount"));
-                SystemCommands.Add(new CLICMDS("restart", "restart"));
-                SystemCommands.Add(new CLICMDS("exit", "exit"));
-                SystemCommands.Add(new CLICMDS("syspan", "syspan"));
-				SystemCommands.Add(new CLICMDS("time", "time"));
-				SystemCommands.Add(new CLICMDS("date", "date"));
-				SystemCommands.Add(new CLICMDS("datetime", "datetime"));
-                //PROGRAM COMMANDS
-                SystemCommands.Add(new CLICMDS("listemails", "printemails"));
-                SystemCommands.Add(new CLICMDS("viewemails", "viewselectedemail"));
-                SystemCommands.Add(new CLICMDS("selectnotisnd", "selectnotisnd"));
-            }
+			//COLOR COMMANDS
+			SystemCommands.Add(new CLICMDS("color","color", "color", ""));
+			SystemCommands.Add(new CLICMDS("font", "font", "font", ""));
+			SystemCommands.Add(new CLICMDS("button", "button", "button", ""));
+			SystemCommands.Add(new CLICMDS("window", "window", "window", ""));
+			SystemCommands.Add(new CLICMDS("red", "red", "red", ""));
+			SystemCommands.Add(new CLICMDS("green", "green", "green", ""));
+			SystemCommands.Add(new CLICMDS("blue", "blue", "blue", ""));
+			//NETWORK COMMANDS
+			SystemCommands.Add(new CLICMDS("-r", "-r", "-r", ""));
+			SystemCommands.Add(new CLICMDS("dl", "dl", "dl", ""));
+			SystemCommands.Add(new CLICMDS("ul", "ul", "ul", ""));
+			SystemCommands.Add(new CLICMDS("connect", "connect", "connect", ""));
+			//LOCAL COMMANDS
+			SystemCommands.Add(new CLICMDS("-l","-l", "-l", ""));
+
+			//UTILITY COMMANDS
+			SystemCommands.Add(new CLICMDS("clear","clear", "clear", ""));
+			SystemCommands.Add(new CLICMDS("remove","rm", "rm", ""));
+			SystemCommands.Add(new CLICMDS("Change Directory","cd", "cd", ""));
+			SystemCommands.Add(new CLICMDS("run","run", "run", ""));
+			SystemCommands.Add(new CLICMDS("open", "open", "open", ""));
+			SystemCommands.Add(new CLICMDS("printworkingdirectory", "pwd", "pwd", ""));
+			SystemCommands.Add(new CLICMDS("list","ls", "ls", ""));
+			SystemCommands.Add(new CLICMDS("quit","q", "close", ""));
+			SystemCommands.Add(new CLICMDS("copy","copy", "copy", ""));
+			SystemCommands.Add(new CLICMDS("paste", "paste", "paste", ""));
+			SystemCommands.Add(new CLICMDS("copy1", "copy1", "copy1", ""));
+			SystemCommands.Add(new CLICMDS("paste1", "paste1", "paste1", ""));
+			SystemCommands.Add(new CLICMDS("paste2", "paste2", "paste2", ""));
+			SystemCommands.Add(new CLICMDS("makedirectory", "mkdir", "mkdir", ""));
+			SystemCommands.Add(new CLICMDS("delete", "del", "del", ""));
+			SystemCommands.Add(new CLICMDS("makedocument", "mkdoc", "mkdoc", ""));
+			SystemCommands.Add(new CLICMDS("time", "time", "time", ""));
+			SystemCommands.Add(new CLICMDS("whoami", "whoami", "whoami", ""));
+			SystemCommands.Add(new CLICMDS("systeminfo", "systeminfo", "systeminfo", ""));
+			SystemCommands.Add(new CLICMDS("listprograms", "listprograms", "listprograms", ""));
+			SystemCommands.Add(new CLICMDS("selectbankaccount", "selectbankaccount", "selectbankaccount", ""));
+			SystemCommands.Add(new CLICMDS("restart", "restart", "restart", ""));
+			SystemCommands.Add(new CLICMDS("exit", "exit", "exit", ""));
+			SystemCommands.Add(new CLICMDS("syspan", "syspan", "syspan", ""));
+			SystemCommands.Add(new CLICMDS("time", "time", "time", ""));
+			SystemCommands.Add(new CLICMDS("date", "date", "date", ""));
+			SystemCommands.Add(new CLICMDS("datetime", "datetime", "datetime", ""));
+			//PROGRAM COMMANDS
+			SystemCommands.Add(new CLICMDS("listemails", "listemails", "printemails", ""));
+			SystemCommands.Add(new CLICMDS("viewemails", "viewemails", "viewselectedemail", ""));
+			SystemCommands.Add(new CLICMDS("selectnotisnd", "selectnotisnd", "selectnotisnd", ""));
+
+		//	if (GameControl.control.ShortCommands == true)
+  //          {
+		//		//SystemCommands.Add(new CLICMDS("dlv2", "dlv2"));
+		//		//SystemCommands.Add(new CLICMDS("del", "del"));
+		//	}
+  //          else
+  //          {
+  //              //PREFRENCES
+  //              SystemCommands.Add(new CLICMDS("volume", "volume"));
+  //              SystemCommands.Add(new CLICMDS("sound", "sound"));
+  //              SystemCommands.Add(new CLICMDS("background", "background"));
+  //              SystemCommands.Add(new CLICMDS("addtoquicklaunch", "aql"));
+  //              SystemCommands.Add(new CLICMDS("theme", "theme"));
+  //              //TERMINAL
+  //              SystemCommands.Add(new CLICMDS("mode", "mode"));
+  //              SystemCommands.Add(new CLICMDS("setautodelete", "setautodelete"));
+  //              SystemCommands.Add(new CLICMDS("setfontsize", "clifontsize"));
+  //              SystemCommands.Add(new CLICMDS("settextpos", "clitextpos"));
+  //              SystemCommands.Add(new CLICMDS("setcommandchar", "setcommandchar"));
+  //              SystemCommands.Add(new CLICMDS("setspacechar", "setspacechar"));
+  //              //COLOR COMMANDS
+  //              SystemCommands.Add(new CLICMDS("color", "color"));
+  //              SystemCommands.Add(new CLICMDS("font", "font"));
+  //              SystemCommands.Add(new CLICMDS("button", "button"));
+  //              SystemCommands.Add(new CLICMDS("window", "window"));
+  //              SystemCommands.Add(new CLICMDS("red", "red"));
+  //              SystemCommands.Add(new CLICMDS("blue", "blue"));
+  //              SystemCommands.Add(new CLICMDS("green", "green"));
+  //              //NETWORK COMMANDS
+  //              SystemCommands.Add(new CLICMDS("remote", "-r"));
+  //              SystemCommands.Add(new CLICMDS("download", "dl"));
+  //              SystemCommands.Add(new CLICMDS("upload", "ul"));
+  //              SystemCommands.Add(new CLICMDS("connect", "connect"));
+  //              //LOCAL COMMANDS
+  //              SystemCommands.Add(new CLICMDS("local", "-l"));
+  //              //UTILITY COMMANDS
+  //              SystemCommands.Add(new CLICMDS("clear", "clear"));
+  //              SystemCommands.Add(new CLICMDS("remove", "rm"));
+  //              SystemCommands.Add(new CLICMDS("changedirectory", "cd"));
+  //              SystemCommands.Add(new CLICMDS("run", "run"));
+  //              SystemCommands.Add(new CLICMDS("open", "open"));
+  //              SystemCommands.Add(new CLICMDS("printworkingdirectory", "pwd"));
+  //              SystemCommands.Add(new CLICMDS("list", "ls"));
+  //              SystemCommands.Add(new CLICMDS("close", "close"));
+  //              SystemCommands.Add(new CLICMDS("copy", "copy"));
+  //              SystemCommands.Add(new CLICMDS("paste", "paste"));
+  //              SystemCommands.Add(new CLICMDS("copy1", "copy1"));
+  //              SystemCommands.Add(new CLICMDS("paste1", "paste1"));
+  //              SystemCommands.Add(new CLICMDS("paste2", "paste2"));
+  //              SystemCommands.Add(new CLICMDS("makedirectory", "mkdir"));
+  //              SystemCommands.Add(new CLICMDS("delete", "del"));
+  //              SystemCommands.Add(new CLICMDS("makedocument", "mkdoc"));
+  //              SystemCommands.Add(new CLICMDS("time", "time"));
+  //              SystemCommands.Add(new CLICMDS("whoami", "whoami"));
+  //              SystemCommands.Add(new CLICMDS("systeminfo", "systeminfo"));
+  //              SystemCommands.Add(new CLICMDS("listprograms", "listprograms"));
+  //              SystemCommands.Add(new CLICMDS("selectbankaccount", "selectbankaccount"));
+  //              SystemCommands.Add(new CLICMDS("restart", "restart"));
+  //              SystemCommands.Add(new CLICMDS("exit", "exit"));
+  //              SystemCommands.Add(new CLICMDS("syspan", "syspan"));
+		//		SystemCommands.Add(new CLICMDS("time", "time"));
+		//		SystemCommands.Add(new CLICMDS("date", "date"));
+		//		SystemCommands.Add(new CLICMDS("datetime", "datetime"));
+  //              //PROGRAM COMMANDS
+  //              SystemCommands.Add(new CLICMDS("listemails", "printemails"));
+  //              SystemCommands.Add(new CLICMDS("viewemails", "viewselectedemail"));
+  //              SystemCommands.Add(new CLICMDS("selectnotisnd", "selectnotisnd"));
+  //          }
 		}
 
 		if (GameControl.control.Commands.Count == 0)
@@ -710,8 +714,8 @@ public class CLICommandsV2 : MonoBehaviour
 								if (GameControl.control.ProgramFiles[Index].Target == inputArray[1])
 								{
 									string Location = inputArray[1];
-									fu.ProgramHandle.Add(new FileUtilitySystem("Paste", FileName, Location,"", "", FileTarget, FileContent, FileType, false, true, true, false, FileVersion, 0, 0, 0, 0, 0, 0, 0, FileSize, 0, 0, 0, FileUtilitySystem.ProgramType.Paste));
-									fu.AddWindow();
+									//fu.ProgramHandle.Add(new FileUtilitySystem("Paste", FileName, Location,"", "", FileTarget, FileContent, FileType, false, true, true, false, FileVersion, 0, 0, 0, 0, 0, 0, 0, FileSize, 0, 0, 0, FileUtilitySystem.ProgramType.Paste));
+									//fu.AddWindow();
 									PastCommands.Add(FileName + " is being pasted to: " + Location);
 								}
 							}
@@ -720,16 +724,16 @@ public class CLICommandsV2 : MonoBehaviour
 					else
 					{
 						string FileLocation = twd;
-						fu.ProgramHandle.Add(new FileUtilitySystem("Paste", FileName, FileLocation,"", "", FileTarget, FileContent, FileType, false, true, true, false, FileVersion, 0, 0, 0, 0, 0, 0, 0, FileSize, 0, 0, 0, FileUtilitySystem.ProgramType.Paste));
-						fu.AddWindow();
+						//fu.ProgramHandle.Add(new FileUtilitySystem("Paste", FileName, FileLocation,"", "", FileTarget, FileContent, FileType, false, true, true, false, FileVersion, 0, 0, 0, 0, 0, 0, 0, FileSize, 0, 0, 0, FileUtilitySystem.ProgramType.Paste));
+						//fu.AddWindow();
 						PastCommands.Add(FileName + " is being pasted to: " + FileLocation);
 					}
 				}
 				else
 				{
 					string FileLocation = twd;
-					fu.ProgramHandle.Add(new FileUtilitySystem("Paste", FileName, FileLocation,"", "", FileTarget, FileContent, FileType, false, true, true, false, FileVersion, 0, 0, 0, 0, 0, 0, 0, FileSize, 0, 0, 0, FileUtilitySystem.ProgramType.Paste));
-					fu.AddWindow();
+					//fu.ProgramHandle.Add(new FileUtilitySystem("Paste", FileName, FileLocation,"", "", FileTarget, FileContent, FileType, false, true, true, false, FileVersion, 0, 0, 0, 0, 0, 0, 0, FileSize, 0, 0, 0, FileUtilitySystem.ProgramType.Paste));
+					//fu.AddWindow();
 					PastCommands.Add(FileName + " is being pasted to: " + FileLocation);
 				}
 			}
@@ -817,8 +821,8 @@ public class CLICommandsV2 : MonoBehaviour
 			{
 				if (FileIndex != -1)
 				{
-					fu.ProgramHandle.Add(new FileUtilitySystem("Delete", FileName, FileLocation, LocationName, "", "", "", "", false, true, true, false, 0, 0, 0, 0, 0, 0, 0, 0, FileSize, 0, 0, 0, FileUtilitySystem.ProgramType.RemoteDelete));
-					fu.AddWindow();
+					//fu.ProgramHandle.Add(new FileUtilitySystem("Delete", FileName, FileLocation, LocationName, "", "", "", "", false, true, true, false, 0, 0, 0, 0, 0, 0, 0, 0, FileSize, 0, 0, 0, FileUtilitySystem.ProgramType.RemoteDelete));
+					//fu.AddWindow();
 				}
 			}
 		}
@@ -858,8 +862,8 @@ public class CLICommandsV2 : MonoBehaviour
 			{
 				if (FileIndex != -1)
 				{
-					fu.ProgramHandle.Add(new FileUtilitySystem("Download", FileName, Customize.cust.DownloadPath, "", FileLocation, "", "", "", false, true, true, false, 0, 0, 0, 0, 0, 0, 0, 0, FileSize, 0, 0, 0, FileUtilitySystem.ProgramType.Download));
-					fu.AddWindow();
+					//fu.ProgramHandle.Add(new FileUtilitySystem("Download", FileName, Customize.cust.DownloadPath, "", FileLocation, "", "", "", false, true, true, false, 0, 0, 0, 0, 0, 0, 0, 0, FileSize, 0, 0, 0, FileUtilitySystem.ProgramType.Download));
+					//fu.AddWindow();
 				}
 			}
 		}
@@ -884,8 +888,8 @@ public class CLICommandsV2 : MonoBehaviour
 		{
 			if (FileIndex != -1)
 			{
-				fu.ProgramHandle.Add(new FileUtilitySystem("Delete", FileName, twd,"", "", "", "", "", false, true, true, false, 0, 0, 0, 0, 0, 0, 0, 0, FileSize, 0, 0, 0, FileUtilitySystem.ProgramType.LocalDelete));
-				fu.AddWindow();
+				//fu.ProgramHandle.Add(new FileUtilitySystem("Delete", FileName, twd,"", "", "", "", "", false, true, true, false, 0, 0, 0, 0, 0, 0, 0, 0, FileSize, 0, 0, 0, FileUtilitySystem.ProgramType.LocalDelete));
+				//fu.AddWindow();
 			}
 		}
 	}
@@ -953,15 +957,13 @@ public class CLICommandsV2 : MonoBehaviour
 				{
 					fu.ForceDone = true;
 					fu.FileIndex = GameControl.control.ProgramFiles.Count-1;
-					//fu.ProgramHandle.Add(new FUSv2("Delete", "", FileLocation, false, true, true, false, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, FUSv2.UtilityType.LocalFolderDelete, HeldFile));
-					fu.ProgramHandle.Add (new FileUtilitySystem ("Delete", FileName, FileLocation,"","", "","","", false, true, true, false, 0,0, 0, 0, 0, 0, 0, 0, FileSize, 0, 0, 0, FileUtilitySystem.ProgramType.LocalFolderDelete));
+					//fu.ProgramHandle.Add (new FileUtilitySystem ("Delete", FileName, FileLocation,"","", "","","", false, true, true, false, 0,0, 0, 0, 0, 0, 0, 0, FileSize, 0, 0, 0, FileUtilitySystem.ProgramType.LocalFolderDelete));
 				}
 				else
 				{
-					//fu.ProgramHandle.Add(new FUSv2("Delete", "", FileLocation, false, true, true, false, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, FUSv2.UtilityType.LocalDelete, HeldFile));
-					fu.ProgramHandle.Add (new FileUtilitySystem ("Delete", FileName, FileLocation,"","", "","","", false, true, true, false, 0,0, 0, 0, 0, 0, 0, 0, FileSize, 0, 0, 0, FileUtilitySystem.ProgramType.LocalDelete));
+					//fu.ProgramHandle.Add (new FileUtilitySystem ("Delete", FileName, FileLocation,"","", "","","", false, true, true, false, 0,0, 0, 0, 0, 0, 0, 0, FileSize, 0, 0, 0, FileUtilitySystem.ProgramType.LocalDelete));
 				}
-				fu.AddWindow ();
+				//fu.AddWindow ();
 			}
 		}
 	}
@@ -983,8 +985,8 @@ public class CLICommandsV2 : MonoBehaviour
 			{
 				if (FileIndex != -1)
 				{
-					fu.ProgramHandle.Add(new FileUtilitySystem("Upload", FileName, FileLocation,"", "", "", "", "", false, true, true, false, 0, 0, 0, 0, 0, 0, 0, 0, FileSize, 0, 0, 0, FileUtilitySystem.ProgramType.Upload));
-					fu.AddWindow();
+					//fu.ProgramHandle.Add(new FileUtilitySystem("Upload", FileName, FileLocation,"", "", "", "", "", false, true, true, false, 0, 0, 0, 0, 0, 0, 0, 0, FileSize, 0, 0, 0, FileUtilitySystem.ProgramType.Upload));
+					//fu.AddWindow();
 				}
 			}
 		}
@@ -1123,6 +1125,16 @@ public class CLICommandsV2 : MonoBehaviour
 		}
 	}
 
+	void RegEdit()
+    {
+		switch (ParseArray[3])
+		{
+			case "string":
+				Registry.SetStringData("Player", ParseArray[1], ParseArray[2], ParseArray[4]);
+				break;
+		}
+	}
+
 	void InstallOS()
 	{
 
@@ -1142,10 +1154,10 @@ public class CLICommandsV2 : MonoBehaviour
 		//GameControl.control.ProgramFiles.Add(new ProgramSystem("" + "FluidicIceOS", "", "", "", "", "", "C:/System", "", "", "", ProgramSystem.FileExtension.OS, ProgramSystem.FileExtension.Null, 0, 0, 0, 0, 0, 0, 0, 100, 1, 0, 0, 0, 0, 0, 0, 0, false, false, false, false, BlankInfections, BlankFileType));
 		GameControl.control.ProgramFiles.Add(new ProgramSystem("" + "AppatureOS", "", "", "", "", "", "C:/System", "", "", "", ProgramSystem.FileExtension.OS, ProgramSystem.FileExtension.Null, 0, 0, 0, 0, 0, 0, 0, 100, 1, 0, 0, 0, 0, 0, 0, 0, false, false, false, false, BlankInfections, BlankFileType));
 		GameControl.control.ProgramFiles.Add(new ProgramSystem("" + "EthelOS", "", "", "", "", "", "C:/System", "", "", "", ProgramSystem.FileExtension.OS, ProgramSystem.FileExtension.Null, 0, 0, 0, 0, 0, 0, 0, 100, 1, 0, 0, 0, 0, 0, 0, 0, false, false, false, false, BlankInfections, BlankFileType));
-		GameControl.control.OSName.Add(new OperatingSystems(OperatingSystems.OSName.EthelOS, "EthelOS", OSColour, OSFPC, false, 9999, true));
-		GameControl.control.OSName.Add(new OperatingSystems(OperatingSystems.OSName.TreeOS, "TreeOS", OSColour, OSFPC, false, 9999, true));
-		//GameControl.control.OSName.Add(new OperatingSystems(OperatingSystems.OSName.FluidicIceOS, "FluidicIceOS", Colour, OSFPC, false, 9999, true));
-		GameControl.control.OSName.Add(new OperatingSystems(OperatingSystems.OSName.AppatureOS, "AppatureOS", OSColour, OSFPC, false, 9999, true));
+		GameControl.control.OSName.Add(new OperatingSystems("TreeOS", OperatingSystems.OSName.TreeOS));
+		//GameControl.control.OSName.Add(new OperatingSystems("FluidicIceOS", OperatingSystems.OSName.FluidicIceOS));
+		GameControl.control.OSName.Add(new OperatingSystems("AppatureOS", OperatingSystems.OSName.AppatureOS));
+		GameControl.control.OSName.Add(new OperatingSystems("EthelOS", OperatingSystems.OSName.EthelOS));
 	}
 
 	void NameChange()
@@ -1188,15 +1200,17 @@ public class CLICommandsV2 : MonoBehaviour
 
 	public void OpenFileExplorer(string FileType)
 	{
-		StringCommand = EditorUtility.OpenFilePanel("Select File Path", "", FileType);
-		WWW www = new WWW("file:///" + StringCommand);
+		//if (Application.isEditor == true)
+		//{
+		//	StringCommand = EditorUtility.OpenFilePanel("Select File Path", "", FileType);
+		//	WWW www = new WWW("file:///" + StringCommand);
+		//}
 	}
 
 	public void CommandCheck()
 	{
 		Functions.RemoveRange (0, Functions.Count);
 		CommandLine = "";
-		//ParseArray = Parse.Split(' ');
 		ParseArray = Regex.Split(Parse,Customize.cust.TerminalCommandCharacterSplit,RegexOptions.IgnoreCase);
 		ParseArrayLength = ParseArray.Length;
 		if (GameControl.control.Commands.Count > 0)
@@ -1207,14 +1221,29 @@ public class CLICommandsV2 : MonoBehaviour
 				for (int j = 0; j < ParseArray.Length; j++) 
 				{
 					CurrentParse = j;
-					if (ParseArray[j] == GameControl.control.Commands [i].Name) 
+					if (GameControl.control.ShortCommands == true)
 					{
-						if (!Functions.Contains (GameControl.control.Commands [i].Func))
+						if (ParseArray[j] == GameControl.control.Commands[i].ShortHand)
 						{
-							Functions.Add(GameControl.control.Commands [i].Func);
-						}
+							if (!Functions.Contains(GameControl.control.Commands[i].Func))
+							{
+								Functions.Add(GameControl.control.Commands[i].Func);
+							}
 
-						LastItem = ParseArray [ParseArray.Length - 1];
+							LastItem = ParseArray[ParseArray.Length - 1];
+						}
+					}
+					else
+					{
+						if (ParseArray[j] == GameControl.control.Commands[i].Name)
+						{
+							if (!Functions.Contains(GameControl.control.Commands[i].Func))
+							{
+								Functions.Add(GameControl.control.Commands[i].Func);
+							}
+
+							LastItem = ParseArray[ParseArray.Length - 1];
+						}
 					}
 				}
 			}
@@ -1270,13 +1299,18 @@ public class CLICommandsV2 : MonoBehaviour
 	{
 		inputArray = CommandLine.Split('▓');
 
-		switch(inputArray[0])
+		switch (inputArray[0])
 		{
 		case "createrealexe":
 				CreateRealExe(ParseArray[1], ParseArray[2], ParseArray[3]);
 				break;
 
-		case "installdefaltos":
+			case "resetdomaindb":
+				GameControl.control.CompanyServerData.RemoveRange(0, GameControl.control.CompanyServerData.Count);
+				ShutDownWindow.Restart();
+				break;
+
+			case "installdefaltos":
 				InstallOS();
 				break;
 
@@ -1285,7 +1319,17 @@ public class CLICommandsV2 : MonoBehaviour
 				ResetStringCommand();
 				break;
 
-		case "screenshot":
+			case "aiprogramrun":
+				appman.ProgramRequest("desktop", "Desktop", ParseArray[1]);
+				break;
+
+			case "regedit":
+				RegEdit();
+				PastCommands.Add(StringCommand);
+				//ResetStringCommand();
+				break;
+
+			case "screenshot":
 				PastCommands.Add("Screenshot Taken");
 				screenshot.TakeShot();
 			break;
@@ -1640,8 +1684,8 @@ public class CLICommandsV2 : MonoBehaviour
 						{
 							FileName = inputArray[2];
 							string FileLocation = inputArray[3];
-							fu.ProgramHandle.Add (new FileUtilitySystem ("Paste", FileName, FileLocation,"","", "","","", false, true, true, false, 0, 0,0, 0, 0, 0, 0, 0, FileSize, 0, 0, 0, FileUtilitySystem.ProgramType.Paste));
-							fu.AddWindow ();
+							//fu.ProgramHandle.Add (new FileUtilitySystem ("Paste", FileName, FileLocation,"","", "","","", false, true, true, false, 0, 0,0, 0, 0, 0, 0, 0, FileSize, 0, 0, 0, FileUtilitySystem.ProgramType.Paste));
+							//fu.AddWindow ();
 						}
 					} 
 				}
@@ -1726,8 +1770,8 @@ public class CLICommandsV2 : MonoBehaviour
 					{
 						if (FileIndex != -1) 
 						{
-							fu.ProgramHandle.Add (new FileUtilitySystem ("Delete", FileName, FileLocation,"","", "","","", false, true, true, false, 0,0, 0, 0, 0, 0, 0, 0, FileSize, 0, 0, 0, FileUtilitySystem.ProgramType.LocalDelete));
-							fu.AddWindow ();
+							//fu.ProgramHandle.Add (new FileUtilitySystem ("Delete", FileName, FileLocation,"","", "","","", false, true, true, false, 0,0, 0, 0, 0, 0, 0, 0, FileSize, 0, 0, 0, FileUtilitySystem.ProgramType.LocalDelete));
+							//fu.AddWindow ();
 						}
 					} 
 				}
@@ -2041,10 +2085,10 @@ public class CLICommandsV2 : MonoBehaviour
 			break;
 
 		case "systeminfo":
-			for (int i = 0; i < cpu.CPUSpeed.Count; i++)
-			{
-				PastCommands.Add ("Core" + i + " " + cpu.CPUSpeed[i]);
-			}
+			//for (int i = 0; i < cpu.CPUSpeed.Count; i++)
+			//{
+			//	PastCommands.Add ("Core" + i + " " + cpu.CPUSpeed[i]);
+			//}
 			PastCommands.Add ("Memory: " + ram.RemainingRAM);
 			PastCommands.Add ("Power: " + psu.RemainingPower);
 			//PastCommands.Add ("Hard Drives: " + HardwareController.hdcon.HDDFreeSpace);
@@ -2080,7 +2124,7 @@ public class CLICommandsV2 : MonoBehaviour
 
 		case "exit":
 			PastCommands.RemoveRange(0, PastCommands.Count);
-			appman.SelectedApp = "Command Line V3";
+			appman.SelectedApp = "CLI";
 			break;
 
 		case "background":

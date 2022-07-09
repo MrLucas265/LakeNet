@@ -17,7 +17,7 @@ public class DicCrk : MonoBehaviour
 	private WebSec ws;
 	private ErrorProm ep;
 	private InternetBrowser ib;
-	private CPU cpu;
+	//private CPU cpu;
 	private Tracer trace;
 	private Computer com;
 	private PasswordList pl;
@@ -62,7 +62,7 @@ public class DicCrk : MonoBehaviour
 		defalt = SysSoftware.GetComponent<Defalt>(); 
 		ib = AppSoftware.GetComponent<InternetBrowser>(); 
 		ws = AppSoftware.GetComponent<WebSec>();
-		cpu = Hardware.GetComponent<CPU>();
+		//cpu = Hardware.GetComponent<CPU>();
 		pl = SysSoftware.GetComponent<PasswordList>();
 		sc = SysSoftware.GetComponent<SoundControl>();
 

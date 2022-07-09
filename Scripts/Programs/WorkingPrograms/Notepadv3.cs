@@ -34,6 +34,7 @@ public class Notepadv3 : MonoBehaviour {
 	// Vars for context menu
 	public List<string> ContextMenuOptions = new List<string>();
 	public string SelectedOption;
+	public string ContextMenuName;
 
 	// Use this for initialization
 	void Start()
@@ -51,6 +52,8 @@ public class Notepadv3 : MonoBehaviour {
 		appman = Puter.GetComponent<AppMan>();
 
 		winman = WindowHandel.GetComponent<WindowManager>();
+
+		ContextMenuName = "NotepadV3 Context Menu";
 	}
 
 	// Update is called once per frame
@@ -75,36 +78,55 @@ public class Notepadv3 : MonoBehaviour {
 
 	void Close(int ID)
 	{
-		if (winman.RunningPrograms.Count > 0)
+		for (int PersonCount = 0; PersonCount < PersonController.control.People.Count; PersonCount++)
 		{
-			for (int i = 0; i < winman.RunningPrograms.Count; i++)
-			{
-				if (winman.RunningPrograms[i].ProgramName == ProgramNameForWinMan)
-				{
-					if (winman.RunningPrograms[i].WID == ID)
-					{
+			var pwinman = PersonController.control.People[PersonCount].Gateway;
 
-						quit = true;
-						appman.SelectedApp = "Notepadv3";
-						RemoveNotepadData(winman.RunningPrograms[i].PID);
-						winman.RunningPrograms.RemoveAt(i);
-						SetID();
+			if (pwinman.RunningPrograms.Count > 0)
+			{
+				for (int i = 0; i < pwinman.RunningPrograms.Count; i++)
+				{
+					if (pwinman.RunningPrograms[i].ProgramName == ProgramNameForWinMan)
+					{
+						if (pwinman.RunningPrograms[i].WID == ID)
+						{
+
+							quit = true;
+							appman.SelectedApp = "Notepadv3";
+							RemoveNotepadData(pwinman.RunningPrograms[i].PID);
+							pwinman.RunningPrograms.RemoveAt(i);
+							SetID();
+						}
 					}
 				}
 			}
 		}
 	}
 
+	void SelectWindowID(int WindowID)
+	{
+		if (Input.GetMouseButtonDown(0))
+		{
+			SelectedWindowID = WindowID;
+			winman.SelectedWID = WindowID;
+		}
+	}
+
 	void CloseContextMenu()
 	{
-		if (winman.RunningPrograms.Count > 0)
+		for (int PersonCount = 0; PersonCount < PersonController.control.People.Count; PersonCount++)
 		{
-			for (int i = 0; i < winman.RunningPrograms.Count; i++)
+			var pwinman = PersonController.control.People[PersonCount].Gateway;
+
+			if (pwinman.RunningPrograms.Count > 0)
 			{
-				if (winman.RunningPrograms[i].ProgramName == "Context Menu")
+				for (int i = 0; i < pwinman.RunningPrograms.Count; i++)
 				{
-					winman.RunningPrograms.RemoveAt(i);
-					SelectedOption = "";
+					if (pwinman.RunningPrograms[i].ProgramName == ContextMenuName)
+					{
+						pwinman.RunningPrograms.RemoveAt(i);
+						SelectedOption = "";
+					}
 				}
 			}
 		}
@@ -114,19 +136,24 @@ public class Notepadv3 : MonoBehaviour {
 	{
 		GUI.skin = com.Skin[GameControl.control.GUIID];
 
-		if (winman.RunningPrograms.Count > 0)
+		for (int PersonCount = 0; PersonCount < PersonController.control.People.Count; PersonCount++)
 		{
-			for (int i = 0; i < winman.RunningPrograms.Count; i++)
+			var pwinman = PersonController.control.People[PersonCount].Gateway;
+
+			if (pwinman.RunningPrograms.Count > 0)
 			{
-				if (winman.RunningPrograms[i].ProgramName == ProgramNameForWinMan)
+				for (int i = 0; i < pwinman.RunningPrograms.Count; i++)
 				{
-					GUI.color = com.colors[Customize.cust.WindowColorInt];
-					winman.RunningPrograms[i].windowRect = WindowClamp.ClampToScreen(GUI.Window(winman.RunningPrograms[i].WID, winman.RunningPrograms[i].windowRect, DoMyWindow, ""));
-				}
-				if(winman.RunningPrograms[i].ProgramName == "Context Menu")
-				{
-					winman.RunningPrograms[i].windowRect.height = 21 * ContextMenuOptions.Count + 2;
-					winman.RunningPrograms[i].windowRect = WindowClamp.ClampToScreen(GUI.Window(winman.RunningPrograms[i].WID, winman.RunningPrograms[i].windowRect, DoMyContextWindow, ""));
+					if (pwinman.RunningPrograms[i].ProgramName == ProgramNameForWinMan)
+					{
+						GUI.color = com.colors[Customize.cust.WindowColorInt];
+						pwinman.RunningPrograms[i].windowRect = WindowClamp.ClampToScreen(GUI.Window(pwinman.RunningPrograms[i].WID, pwinman.RunningPrograms[i].windowRect, DoMyWindow, ""));
+					}
+					if (pwinman.RunningPrograms[i].ProgramName == ContextMenuName)
+					{
+						pwinman.RunningPrograms[i].windowRect.height = 21 * ContextMenuOptions.Count + 2;
+						pwinman.RunningPrograms[i].windowRect = WindowClamp.ClampToScreen(GUI.Window(pwinman.RunningPrograms[i].WID, pwinman.RunningPrograms[i].windowRect, DoMyContextWindow, ""));
+					}
 				}
 			}
 		}
@@ -134,99 +161,107 @@ public class Notepadv3 : MonoBehaviour {
 
 	void SetID()
 	{
-		int count = 0;
-		for (int j = 0; j < winman.RunningPrograms.Count; j++)
+		for (int PersonCount = 0; PersonCount < PersonController.control.People.Count; PersonCount++)
 		{
-			if (winman.RunningPrograms[j].ProgramName == ProgramNameForWinMan)
+			var pwinman = PersonController.control.People[PersonCount].Gateway;
+
+			int count = 0;
+			for (int j = 0; j < pwinman.RunningPrograms.Count; j++)
 			{
-				count++;
-				winman.RunningPrograms[j].PID = count-1;
+				if (pwinman.RunningPrograms[j].ProgramName == ProgramNameForWinMan)
+				{
+					count++;
+					pwinman.RunningPrograms[j].PID = count - 1;
+				}
 			}
 		}
 	}
 
 	void DoMyWindow(int WindowID)
 	{
-		if(Input.GetMouseButtonDown(0))
-		{
-			SelectedWindowID = WindowID;
-			winman.SelectedWID = WindowID;
-		}
+		SelectWindowID(WindowID);
 
-		if (winman.RunningPrograms.Count > 0)
+		for (int PersonCount = 0; PersonCount < PersonController.control.People.Count; PersonCount++)
 		{
-			winman.WindowResize(SelectedWindowID);
+			var pwinman = PersonController.control.People[PersonCount].Gateway;
 
-			for (int i = 0; i < winman.RunningPrograms.Count; i++)
+
+			if (pwinman.RunningPrograms.Count > 0)
 			{
-				if (winman.RunningPrograms[i].ProgramName == ProgramNameForWinMan)
+				//winman.WindowResize(SelectedWindowID);
+
+				for (int i = 0; i < pwinman.RunningPrograms.Count; i++)
 				{
-					if (winman.RunningPrograms[i].WID == SelectedWindowID)
+					if (pwinman.RunningPrograms[i].ProgramName == ProgramNameForWinMan)
 					{
-						SelectedProgram = winman.RunningPrograms[i].PID;
-					}
-
-					if (WindowID == winman.RunningPrograms[i].WID)
-					{
-						CloseButton = new Rect(winman.RunningPrograms[i].windowRect.width - 23, 2, 21, 21);
-						if (CloseButton.Contains(Event.current.mousePosition))
+						if (pwinman.RunningPrograms[i].WID == SelectedWindowID)
 						{
-							if (GUI.Button(new Rect(CloseButton), "X", com.Skin[GameControl.control.GUIID].customStyles[0]))
-							{
-								Close(SelectedWindowID);
-							}
-
-							GUI.backgroundColor = com.colors[Customize.cust.ButtonColorInt];
-							GUI.contentColor = com.colors[Customize.cust.FontColorInt];
-						}
-						else
-						{
-							GUI.backgroundColor = com.colors[Customize.cust.ButtonColorInt];
-							GUI.contentColor = com.colors[Customize.cust.FontColorInt];
-
-							if (GUI.Button(new Rect(CloseButton), "X", com.Skin[GameControl.control.GUIID].customStyles[1]))
-							{
-								Close(SelectedWindowID);
-							}
+							SelectedProgram = pwinman.RunningPrograms[i].PID;
 						}
 
-						GUI.DragWindow(new Rect(40, 2, CloseButton.x-41, 21));
-						winman.WindowDragging(SelectedWindowID, new Rect(40, 2, CloseButton.x - 41, 21));
-
-						if (GUI.Button(new Rect(2, 2, 37, 21), "[---]"))
+						if (WindowID == pwinman.RunningPrograms[i].WID)
 						{
-							if (new Rect(2, 2, 37, 21).Contains(Event.current.mousePosition))
+							CloseButton = new Rect(pwinman.RunningPrograms[i].windowRect.width - 23, 2, 21, 21);
+							if (CloseButton.Contains(Event.current.mousePosition))
 							{
-								CreateContextWindow(winman.RunningPrograms[i].windowRect.x + Event.current.mousePosition.x, winman.RunningPrograms[i].windowRect.y + Event.current.mousePosition.y);
-							}
-						}
-
-						TextAreaRect = new Rect(2, 25, winman.RunningPrograms[i].windowRect.width - 4, winman.RunningPrograms[i].windowRect.height - 27);
-
-						if(winman.RunningPrograms[i].Resize == true)
-						{
-							winman.RunningPrograms[i].WindowResizeRect = new Rect(winman.RunningPrograms[i].windowRect.x, winman.RunningPrograms[i].windowRect.y, winman.RunningPrograms[i].windowRect.width - 4, winman.RunningPrograms[i].windowRect.height - 27);
-						}
-
-						if (NotepadData.Count > 0)
-						{
-							for (int j = 0; j < NotepadData.Count; j++)
-							{
-								if (j == winman.RunningPrograms[i].PID)
+								if (GUI.Button(new Rect(CloseButton), "X", com.Skin[GameControl.control.GUIID].customStyles[0]))
 								{
-									if (NotepadData[j].CurrentWorkingTitle == "")
-									{
-										NotepadData[j].CurrentWorkingTitle = "Untitled";
-									}
+									Close(SelectedWindowID);
+								}
 
-									GUI.Box(new Rect(40, 2, CloseButton.x - 41, 21), "" + NotepadData[j].CurrentWorkingTitle + " - Notepad");
+								GUI.backgroundColor = com.colors[Customize.cust.ButtonColorInt];
+								GUI.contentColor = com.colors[Customize.cust.FontColorInt];
+							}
+							else
+							{
+								GUI.backgroundColor = com.colors[Customize.cust.ButtonColorInt];
+								GUI.contentColor = com.colors[Customize.cust.FontColorInt];
 
-									NotepadData[j].TypedText = GUI.TextArea(TextAreaRect, NotepadData[j].TypedText);
+								if (GUI.Button(new Rect(CloseButton), "X", com.Skin[GameControl.control.GUIID].customStyles[1]))
+								{
+									Close(SelectedWindowID);
 								}
 							}
-						}
 
-						GUI.Box(new Rect(winman.RunningPrograms[i].ResizeRect), "");
+							GUI.DragWindow(new Rect(40, 2, CloseButton.x - 41, 21));
+							//winman.WindowDragging(SelectedWindowID, new Rect(40, 2, CloseButton.x - 41, 21));
+
+							if (GUI.Button(new Rect(2, 2, 37, 21), "[---]"))
+							{
+								CloseContextMenu();
+								if (new Rect(2, 2, 37, 21).Contains(Event.current.mousePosition))
+								{
+									CreateContextWindow(pwinman.RunningPrograms[i].windowRect.x + Event.current.mousePosition.x, pwinman.RunningPrograms[i].windowRect.y + Event.current.mousePosition.y);
+								}
+							}
+
+							TextAreaRect = new Rect(2, 25, pwinman.RunningPrograms[i].windowRect.width - 4, pwinman.RunningPrograms[i].windowRect.height - 27);
+
+							if (pwinman.RunningPrograms[i].Resize == true)
+							{
+								pwinman.RunningPrograms[i].WindowResizeRect = new Rect(pwinman.RunningPrograms[i].windowRect.x, pwinman.RunningPrograms[i].windowRect.y, pwinman.RunningPrograms[i].windowRect.width - 4, pwinman.RunningPrograms[i].windowRect.height - 27);
+							}
+
+							if (NotepadData.Count > 0)
+							{
+								for (int j = 0; j < NotepadData.Count; j++)
+								{
+									if (j == pwinman.RunningPrograms[i].PID)
+									{
+										if (NotepadData[j].CurrentWorkingTitle == "")
+										{
+											NotepadData[j].CurrentWorkingTitle = "Untitled";
+										}
+
+										GUI.Box(new Rect(40, 2, CloseButton.x - 41, 21), "" + NotepadData[j].CurrentWorkingTitle + " - Notepad");
+
+										NotepadData[j].TypedText = GUI.TextArea(TextAreaRect, NotepadData[j].TypedText);
+									}
+								}
+							}
+
+							GUI.Box(new Rect(pwinman.RunningPrograms[i].ResizeRect), "");
+						}
 					}
 				}
 			}
@@ -237,7 +272,7 @@ public class Notepadv3 : MonoBehaviour {
 
 	void CreateContextWindow(float x, float y)
 	{
-		winman.ProgramName = "Context Menu";
+		winman.ProgramName = ContextMenuName;
 		winman.windowRect = new Rect(x, y, 100 * Customize.cust.UIScale, 300 * Customize.cust.UIScale);
 		winman.AddProgramWindow();
 	}
@@ -306,7 +341,7 @@ public class Notepadv3 : MonoBehaviour {
 
 	void DoMyContextWindow(int WindowID)
 	{
-
+		SelectWindowID(WindowID);
 		//GUI.Box (new Rect (Input.mousePosition.x, Input.mousePosition.y, 100, 200), "");
 		GUI.backgroundColor = com.colors[Customize.cust.ButtonColorInt];
 		GUI.contentColor = com.colors[Customize.cust.FontColorInt];
@@ -323,6 +358,14 @@ public class Notepadv3 : MonoBehaviour {
 				if (GUI.Button(new Rect(1, 1 + 21 * i, 100 - 2, 21), ContextMenuOptions[i]))
 				{
 					SelectedOption = ContextMenuOptions[i];
+				}
+
+				if (Input.GetMouseButtonDown(0) && winman.SelectedWID != WindowID)
+				{
+					if (!new Rect(1, 1 + 21 * i, 100 - 2, 21).Contains(Event.current.mousePosition))
+					{
+						CloseContextMenu();
+					}
 				}
 			}
 		}

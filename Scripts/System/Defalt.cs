@@ -18,7 +18,6 @@ public class Defalt : MonoBehaviour
 	private Computer com;
     private Notepad note;
     private Notepadv2 notev2;
-    private Progtive pro;
     private Tracer trace;
     //private MissionBrow mb;
 	private EmailClient cc;
@@ -29,7 +28,7 @@ public class Defalt : MonoBehaviour
 	private TreeView tv;
 	private Clock clk;
 	private CLIV2 cmd2;
-	private OS os;
+	private DesktopEnviroment os;
 	private SystemMap sm;
 	private WebSecViewer wsv;
 	private ErrorProm ep;
@@ -46,7 +45,6 @@ public class Defalt : MonoBehaviour
 //	private SharePrompt shareprompt;
 	private CustomTheme ct;
 	private DicCrk dc;
-	private Calculator cal;
 	private VMDesigner vmd;
 	private NotfiPrompt notiprompt;
 	private PasswordCracker passcrk;
@@ -104,7 +102,9 @@ public class Defalt : MonoBehaviour
 		AfterStart();
 		AccountSetup();
 		SetProgramID ();
-    }
+
+		//Application.targetFrameRate = 60;
+	}
 
 	void ProgramSetup()
 	{
@@ -125,7 +125,6 @@ public class Defalt : MonoBehaviour
 		wsv = Computer.GetComponent<WebSecViewer>();
 
 		//Hacking Software
-		pro = HackingSoftware.GetComponent<Progtive>();
 		trace = HackingSoftware.GetComponent<Tracer>();
 		ds = HackingSoftware.GetComponent<DirSearch>();
 		dc = HackingSoftware.GetComponent<DicCrk>();
@@ -140,7 +139,7 @@ public class Defalt : MonoBehaviour
 		tasks = SysSoftware.GetComponent<TaskViewer>();
 		clk = SysSoftware.GetComponent<Clock>();
 		cmd2 = SysSoftware.GetComponent<CLIV2>();
-		os = SysSoftware.GetComponent<OS>();
+		os = SysSoftware.GetComponent<DesktopEnviroment>();
 		dmv2 = SysSoftware.GetComponent<DiskManV2>();
 		mouse = SysSoftware.GetComponent<Mouse>();
 		fp = SysSoftware.GetComponent<FileExplorer>();
@@ -170,7 +169,6 @@ public class Defalt : MonoBehaviour
 		eib = AppSoftware.GetComponent<NetViewer>();
 		fib = AppSoftware.GetComponent<Firefox>();
 		rv = AppSoftware.GetComponent<RemoteView>();
-		cal = AppSoftware.GetComponent<Calculator>();
 		mp = AppSoftware.GetComponent<MusicPlayer>();
 
 
@@ -246,7 +244,7 @@ public class Defalt : MonoBehaviour
 		//icon.windowID = 1;
 		com.windowID = 2;
 		note.windowID = 3;
-		pro.windowID = 4;
+//		pro.windowID = 4;
 		trace.windowID = 5;
 		//mb.windowID = 6;
 		cc.windowID = 7;
@@ -358,7 +356,6 @@ public class Defalt : MonoBehaviour
 			//GameControl.control.Balance[GameControl.control.SelectedBank] -= 500 * GameControl.control.Fines;
 			trace.startTrace = false;
 			ib.showAddressBar = true;
-			pro.Password = "";
 			ib.Username = "";
 		}
 

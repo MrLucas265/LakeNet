@@ -5,15 +5,19 @@ using UnityEngine;
 [System.Serializable]
 public class ColorSystem
 {
-    public ButtonColorSystem Button;
-    public FontColorSystem Font;
-    public WindowColorSystem Window;
+    public float Red;
+    public float Green;
+    public float Blue;
+    public float Alpha;
 
-    public ColorSystem(ButtonColorSystem button, FontColorSystem font, WindowColorSystem window)
+    public ColorSystem(float red, float green, float blue, float alpha)
     {
-        Button = button;
-        Font = font;
-        Window = window;
+        Red = red;
+        Green = green;
+        Blue = blue;
+        Alpha = alpha;
     }
+
+    public ColorSystem() { }
 
 }

@@ -17,7 +17,6 @@ public class ServerFileScanner : MonoBehaviour
 	private WebSec ws;
 	private ErrorProm ep;
 	private InternetBrowser ib;
-	private CPU cpu;
 	private Tracer trace;
 	private Computer com;
 	private SoundControl sc;
@@ -57,7 +56,6 @@ public class ServerFileScanner : MonoBehaviour
 		defalt = SysSoftware.GetComponent<Defalt>();
 		ib = AppSoftware.GetComponent<InternetBrowser>();
 		ws = AppSoftware.GetComponent<WebSec>();
-		cpu = Hardware.GetComponent<CPU>();
 		sc = SysSoftware.GetComponent<SoundControl>();
 
 		windowRect = new Rect(100, 100, 300, 400);

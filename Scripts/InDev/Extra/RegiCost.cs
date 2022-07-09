@@ -8,7 +8,6 @@ public class RegiCost : MonoBehaviour
 
 	private GameObject ai;
 	private GameObject go;
-	private NPCGen npcg;
 	private Computer com;
 	private Defalt def;
 	private SoundControl sc;
@@ -38,7 +37,6 @@ public class RegiCost : MonoBehaviour
 		windowID = 33;
 		ai = GameObject.Find("NPCs");
 		go = GameObject.Find("Computer");
-		npcg = ai.GetComponent<NPCGen>();
 		com = go.GetComponent<Computer>();
 		def = go.GetComponent<Defalt>();
 		sc = go.GetComponent<SoundControl>();

@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using System.Linq;
 
 public class DeviceManager : MonoBehaviour
 {
@@ -27,7 +28,6 @@ public class DeviceManager : MonoBehaviour
     public string Title;
 
     private GameObject Hardware;
-    private CPU cpu;
     private RAM ram;
     private PSU psu;
     private HardDrives hdd;
@@ -65,7 +65,6 @@ public class DeviceManager : MonoBehaviour
     {
         Hardware = GameObject.Find("Hardware");
 
-        cpu = Hardware.GetComponent<CPU>();
         ram = Hardware.GetComponent<RAM>();
         psu = Hardware.GetComponent<PSU>();
         com = GetComponent<Computer>();
@@ -182,7 +181,7 @@ public class DeviceManager : MonoBehaviour
         switch(SelectedMenu)
         {
             case Menu.CPU:
-                RenderCPUTab();
+               RenderCPUTab();
                 break;
             case Menu.GPU:
                 RenderGPUTab();
@@ -204,54 +203,55 @@ public class DeviceManager : MonoBehaviour
 
     void RenderCPUTab()
     {
+        var person = PersonController.control.People.FirstOrDefault(x => x.Name == "Player");
         GUI.Box(new Rect(1, 44, 63, 22), "Name");
 
         GUI.Box(new Rect(1, 67, 63, 22), "Socket");
 
         GUI.Box(new Rect(149, 67, 65, 22), "Voltage");
 
-        GUI.Box(new Rect(65, 44, 200, 22), GameControl.control.Gateway.InstalledCPU[SelectedDevice].Name);
+        GUI.Box(new Rect(65, 44, 200, 22), person.Gateway.CPU[SelectedDevice].Name);
 
-        GUI.Box(new Rect(65, 67, 50, 22), GameControl.control.Gateway.InstalledCPU[SelectedDevice].Socket);
+        GUI.Box(new Rect(65, 67, 50, 22), person.Gateway.CPU[SelectedDevice].ProductName);
 
-        GUI.Box(new Rect(215, 67, 50, 22), "" + GameControl.control.Gateway.InstalledCPU[SelectedDevice].Voltage.ToString("F2"));
+        GUI.Box(new Rect(215, 67, 50, 22), "" + person.Gateway.CPU[SelectedDevice].Voltage.ToString("F2"));
 
 
-        GUI.Box(new Rect(1,100,60,21), "Cores");
+        GUI.Box(new Rect(1, 100, 60, 21), "Cores");
 
-        GUI.Box(new Rect(62,100,50,21),"" + GameControl.control.Gateway.InstalledCPU[SelectedDevice].Cores);
+        GUI.Box(new Rect(62, 100, 50, 21), "" + person.Gateway.CPU[SelectedDevice].Cores);
 
         GUI.Box(new Rect(113, 122, 100, 21), "Speed");
 
-        GUI.Box(new Rect(214, 122, 50, 21), "" + GameControl.control.Gateway.InstalledCPU[SelectedDevice].CurrentSpeed.ToString("F3") + GameControl.control.SpaceName + "s");
+        GUI.Box(new Rect(214, 122, 50, 21), "" + person.Gateway.CPU[SelectedDevice].CurrentSpeed.ToString("F3") + GameControl.control.SpaceName + "s");
 
         GUI.Box(new Rect(1, 122, 60, 21), "Usage");
 
-        GUI.Box(new Rect(62,122,50,21), "" + GameControl.control.Gateway.InstalledCPU[SelectedDevice].UsagePercent.ToString("F2"));
+        GUI.Box(new Rect(62, 122, 50, 21), "" + person.Gateway.CPU[SelectedDevice].UsagePercent.ToString("F2"));
 
-        GUI.Box(new Rect(113,144,100,21), "Power Draw");
+        GUI.Box(new Rect(113, 144, 100, 21), "Power Draw");
 
-        GUI.Box(new Rect(214, 144, 50, 21), "" + GameControl.control.Gateway.InstalledCPU[SelectedDevice].PowerDraw.ToString("F2"));
+        GUI.Box(new Rect(214, 144, 50, 21), "" + person.Gateway.CPU[SelectedDevice].PowerDraw.ToString("F2"));
 
         GUI.Box(new Rect(1, 166, 60, 21), "Status");
 
-        if (GameControl.control.Gateway.InstalledCPU[SelectedDevice].HealthPercentage < 25)
+        if (person.Gateway.CPU[SelectedDevice].HealthPercentage < 25)
         {
             GUI.backgroundColor = Color.red;
             GUI.contentColor = Color.white;
         }
-        if (GameControl.control.Gateway.InstalledCPU[SelectedDevice].HealthPercentage > 25)
+        if (person.Gateway.CPU[SelectedDevice].HealthPercentage > 25)
         {
             GUI.backgroundColor = Color.yellow;
             GUI.contentColor = Color.grey;
         }
-        if (GameControl.control.Gateway.InstalledCPU[SelectedDevice].HealthPercentage > 50)
+        if (person.Gateway.CPU[SelectedDevice].HealthPercentage > 50)
         {
             GUI.backgroundColor = Color.green;
             GUI.contentColor = Color.grey;
         }
 
-        GUI.Box(new Rect(62, 166, 100, 21), GameControl.control.Gateway.InstalledCPU[SelectedDevice].Status);
+        GUI.Box(new Rect(62, 166, 100, 21), person.Gateway.CPU[SelectedDevice].Status);
 
         GUI.backgroundColor = com.colors[Customize.cust.ButtonColorInt];
         GUI.contentColor = com.colors[Customize.cust.FontColorInt];

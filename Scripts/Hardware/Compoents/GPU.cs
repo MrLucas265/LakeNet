@@ -71,7 +71,7 @@ public class GPU : MonoBehaviour
     void Start()
     {
         CoolDown = 0.15f;
-        UpdateCPUStats();
+        //UpdateCPUStats();
 
         FanSize = 92;
         FanEff = 0.9f;
@@ -81,118 +81,118 @@ public class GPU : MonoBehaviour
 
         MaxFlowRate = MaxFanRPM / FanSize * 2 * FanEff;
 
-        for (int i = 0; i < GameControl.control.Gateway.InstalledGPU.Count; i++)
-        {
-            GPUCores.Add(GameControl.control.Gateway.InstalledGPU[i].Cores);
-        }
+        //for (int i = 0; i < GameControl.control.Gateway.InstalledGPU.Count; i++)
+        //{
+        //    GPUCores.Add(GameControl.control.Gateway.InstalledGPU[i].Cores);
+        //}
 
-        for (int i = 0; i < GameControl.control.Gateway.InstalledGPU.Count; i++)
-        {
-            Voltages.Add(GameControl.control.Gateway.InstalledGPU[i].Voltage);
-        }
+        //for (int i = 0; i < GameControl.control.Gateway.InstalledGPU.Count; i++)
+        //{
+        //    Voltages.Add(GameControl.control.Gateway.InstalledGPU[i].Voltage);
+        //}
 
     }
 
-    public void UpdateCPUStats()
-    {
-        //Voltage = HardwareController.hdcon.CPUVoltage;
-    }
+    //public void UpdateCPUStats()
+    //{
+    //    //Voltage = HardwareController.hdcon.CPUVoltage;
+    //}
 
-    // Update is called once per frame
-    void AirFlowMath()
-    {
-        AirFlow = Random.Range(0.97f, 1.03f);
-    }
+    //// Update is called once per frame
+    //void AirFlowMath()
+    //{
+    //    AirFlow = Random.Range(0.97f, 1.03f);
+    //}
 
-    public void OverclockMath()
-    {
-       //if (HardwareController.hdcon.CPUVoltage != 0)
-       // {
-       //     MaxCPUSpeed = FactoryMaxSpeed * HardwareController.hdcon.CPUVoltage;
-       // }
-    }
+    //public void OverclockMath()
+    //{
+    //   //if (HardwareController.hdcon.CPUVoltage != 0)
+    //   // {
+    //   //     MaxCPUSpeed = FactoryMaxSpeed * HardwareController.hdcon.CPUVoltage;
+    //   // }
+    //}
 
-    void Update()
-    {
-        cd += Time.deltaTime;
-        Timer += Time.deltaTime;
+    //void Update()
+    //{
+    //    cd += Time.deltaTime;
+    //    Timer += Time.deltaTime;
 
-        CPUMath();
+    //    CPUMath();
 
-        if (Timer > 1)
-        {
-            CPUHealthDegredationMath();
-        }
+    //    if (Timer > 1)
+    //    {
+    //        CPUHealthDegredationMath();
+    //    }
 
-        if (cd >= CoolDown)
-        {
-            AirFlowMath();
-            cd = 0;
-        }
+    //    if (cd >= CoolDown)
+    //    {
+    //        AirFlowMath();
+    //        cd = 0;
+    //    }
 
-        if (Program == true)
-        {
-            SetProgramStuff();
-        }
-    }
+    //    if (Program == true)
+    //    {
+    //        SetProgramStuff();
+    //    }
+    //}
 
-    void CPUMath()
-    {
-        MaxCPUSpeed = GameControl.control.Gateway.InstalledCPU[0].MaxSpeed;
-        if (GPUCores.Count > 0)
-        {
-            TotalGPUPower = 0;
-            for (int i = 0; i < Cores; i++)
-            {
-                TotalGPUPower = TotalGPUPower + GPUSpeed[i];
-            }
+    //void CPUMath()
+    //{
+    //    MaxCPUSpeed = GameControl.control.Gateway.InstalledCPU[0].MaxSpeed;
+    //    if (GPUCores.Count > 0)
+    //    {
+    //        TotalGPUPower = 0;
+    //        for (int i = 0; i < Cores; i++)
+    //        {
+    //            TotalGPUPower = TotalGPUPower + GPUSpeed[i];
+    //        }
 
-            for (int i = 0; i < GameControl.control.Gateway.InstalledGPU.Count; i++)
-            {
-                GameControl.control.Gateway.InstalledGPU[i].PowerDraw = GameControl.control.Gateway.InstalledGPU[i].Usage / GameControl.control.Gateway.InstalledGPU[i].PowerEff * GameControl.control.Gateway.InstalledGPU[i].Voltage;
-            }
+    //        for (int i = 0; i < GameControl.control.Gateway.InstalledGPU.Count; i++)
+    //        {
+    //            GameControl.control.Gateway.InstalledGPU[i].PowerDraw = GameControl.control.Gateway.InstalledGPU[i].Usage / GameControl.control.Gateway.InstalledGPU[i].PowerEff * GameControl.control.Gateway.InstalledGPU[i].Voltage;
+    //        }
 
-            CPUTemp = 0;
+    //        CPUTemp = 0;
 
-            RemainingCPUUsage = MaxCPUSpeed - Usage;
+    //        RemainingCPUUsage = MaxCPUSpeed - Usage;
 
-            if (Locked == true && CPUTemp > ThrottleTEMP)
-            {
-                Usage -= 0.01f * Cores;
-                MaxCPUSpeed -= 0.01f * Cores;
-            }
-        }
-    }
+    //        if (Locked == true && CPUTemp > ThrottleTEMP)
+    //        {
+    //            Usage -= 0.01f * Cores;
+    //            MaxCPUSpeed -= 0.01f * Cores;
+    //        }
+    //    }
+    //}
 
-    public void CPUHealthDegredationMath()
-    {
-        for (int i = 0; i < GameControl.control.Gateway.InstalledGPU.Count; i++)
-        {
-            GameControl.control.Gateway.InstalledGPU[i].CurrentHealth -= GameControl.control.Gateway.InstalledGPU[i].DegredationRate * GameControl.control.Gateway.InstalledGPU[i].Voltage;
-            GameControl.control.Gateway.InstalledGPU[i].HealthPercentage = GameControl.control.Gateway.InstalledGPU[i].CurrentHealth / GameControl.control.Gateway.InstalledGPU[i].MaxHealth * 100;
-        }
-        Timer = 0;
-    }
+    //public void CPUHealthDegredationMath()
+    //{
+    //    for (int i = 0; i < GameControl.control.Gateway.InstalledGPU.Count; i++)
+    //    {
+    //        GameControl.control.Gateway.InstalledGPU[i].CurrentHealth -= GameControl.control.Gateway.InstalledGPU[i].DegredationRate * GameControl.control.Gateway.InstalledGPU[i].Voltage;
+    //        GameControl.control.Gateway.InstalledGPU[i].HealthPercentage = GameControl.control.Gateway.InstalledGPU[i].CurrentHealth / GameControl.control.Gateway.InstalledGPU[i].MaxHealth * 100;
+    //    }
+    //    Timer = 0;
+    //}
 
-    void SetProgramStuff()
-    {
-        ProTime = 1;
-        WebSecLevel = 240;
-        ProTime *= WebSecLevel;
-        ProTime /= Usage;
+    //void SetProgramStuff()
+    //{
+    //    ProTime = 1;
+    //    WebSecLevel = 240;
+    //    ProTime *= WebSecLevel;
+    //    ProTime /= Usage;
 
-        if (setSpeed == true)
-        {
-            SetSpeeds();
-        }
-    }
+    //    if (setSpeed == true)
+    //    {
+    //        SetSpeeds();
+    //    }
+    //}
 
-    public void SetSpeeds()
-    {
-        for (int i = 0; i < Cores; i++)
-        {
-            GPUSpeed[i] = Usage / Cores;
-        }
-        setSpeed = false;
-    }
+    //public void SetSpeeds()
+    //{
+    //    for (int i = 0; i < Cores; i++)
+    //    {
+    //        GPUSpeed[i] = Usage / Cores;
+    //    }
+    //    setSpeed = false;
+    //}
 }

@@ -9,13 +9,12 @@ public class OSFPCSystem
     public string ScreenSaverBackgroundAddress;
     public string ScreenSaverPictureAddress;
     public string MouseCursorAddress;
-
-    public OSFPCSystem(string backgroundaddress, string screensaverbackgroundaddress, string screensaverpictureaddress, string mousecursoraddress)
-    {
-        BackgroundAddress = backgroundaddress;
-        ScreenSaverBackgroundAddress = screensaverbackgroundaddress;
-        ScreenSaverPictureAddress = screensaverpictureaddress;
-        MouseCursorAddress = mousecursoraddress;
-    }
-
+    public bool ShowDesktopIcons;
+    public bool ShowDesktopBackground;
+    public int SelectedBackground;
+    public string DownloadPath;
+    public bool GridMode;
+    public List<ProgramSystemv2> QuickList;
+    public List<ProgramSystemv2> DesktopList;
+    public List<ProgramSystemv2> BarList;
 }

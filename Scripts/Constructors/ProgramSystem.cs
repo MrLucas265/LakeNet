@@ -58,7 +58,9 @@ public class ProgramSystem
 		RealWeb,
 		Real,
 		Voice,
-		Database
+		Database,
+		Black,
+		White
 	}
 
 	public enum FileType

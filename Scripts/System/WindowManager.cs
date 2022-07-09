@@ -1,11 +1,11 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using System.Linq;
+
 
 public class WindowManager : MonoBehaviour
 {
-    public List<WindowConSys> RunningPrograms = new List<WindowConSys>();
-
     public string WindowName;
     public string ProgramName;
     public string ProcessName;
@@ -15,7 +15,7 @@ public class WindowManager : MonoBehaviour
     public int PID;
     public Rect windowRect;
     public Rect TitleBoxRect;
-    public List<Rect> windowButtons = new List<Rect>();
+    public List<SRect> windowButtons = new List<SRect>();
     public TitleBarSystem titleBox;
     public bool Dragging;
 
@@ -37,31 +37,34 @@ public class WindowManager : MonoBehaviour
     public bool Resize;
     public Rect WindowResizeRect;
 
+    public string Name;
+
+    public static void QuitProgram(string PersonName,string ProgramName,int WPN)
+    {
+        var person = PersonController.control.People.FirstOrDefault(x => x.Name == PersonName);
+
+        person.Gateway.RunningPrograms.RemoveAt(WPN);
+
+        var pwinman = person.Gateway;
+
+        for (int i = 0; i < pwinman.RunningPrograms.Count; i++)
+        {
+            pwinman.RunningPrograms[i].WPN = i;
+            //for (int j = 0; j < pwinman.RunningPrograms.Count; j++)
+            //{
+            //    if (pwinman.RunningPrograms[j].ProgramName == ProgramName)
+            //    {
+            //        pwinman.RunningPrograms[j].PID++;
+            //        pwinman.RunningPrograms[j].PID = pwinman.RunningPrograms[j].PID - 1;
+            //    }
+            //}
+        }
+    }
+
     // Use this for initialization
     void Start ()
     {
         SelectedWID = -1;
-    }
-	
-	// Update is called once per frame
-	void Update ()
-    {
-        if (AddDebug == true)
-        {
-            Debug();
-        }
-        if (AddPDebug == true)
-        {
-            Debug1();
-            Debug2();
-            Debug3();
-            AddPDebug = false;
-        }
-        if (RemoveDebug == true)
-        {
-            RemoveProgramWindow();
-            RemoveDebug = false;
-        }
     }
 
     void OnGUI()
@@ -77,61 +80,214 @@ public class WindowManager : MonoBehaviour
 
         OSTitleBarSelector();
 
-        if (RunningPrograms.Count > 0)
+        if(PersonController.control.People.Count > 0)
         {
-            for (Index = 0; Index < RunningPrograms.Count; Index++)
+            for(int i = 0; i < PersonController.control.People.Count;i++)
             {
-                if (RunningPrograms[Index].ProgramName == ProgramName)
+                if(PersonController.control.People[i].Name == Name)
                 {
-                    if (RunningPrograms[Index].WID == WID)
+                    var RunningPrograms = PersonController.control.People[i].Gateway.RunningPrograms;
+
+                    if (RunningPrograms.Count > 0)
                     {
-                        WID = Random.Range(MinWindowValue, MaxWindowValue);
+                        for (Index = 0; Index < RunningPrograms.Count; Index++)
+                        {
+                            if (RunningPrograms[Index].ProgramName == ProgramName)
+                            {
+                                if (RunningPrograms[Index].WID == WID)
+                                {
+                                    WID = Random.Range(MinWindowValue, MaxWindowValue);
+                                }
+                                if (RunningPrograms[Index].PID == PID)
+                                {
+                                    PID++;
+                                }
+                            }
+                        }
+
+                        if (Index == RunningPrograms.Count)
+                        {
+                            RunningPrograms.Add(new WindowConSys(WindowName, ProgramName, ProcessName, Status, ProcessType, WID, PID,Index, windowRect, windowButtons, TitleBoxRect, Resize, ResizeRect, WindowResizeRect));
+                        }
                     }
                     else
                     {
-                        if (RunningPrograms[Index].PID == PID)
+                        RunningPrograms.Add(new WindowConSys(WindowName, ProgramName, ProcessName, Status, ProcessType, WID, PID,Index, windowRect, windowButtons, TitleBoxRect, Resize, ResizeRect, WindowResizeRect));
+                    }
+                    SetLocalRegistry();
+                    TempWID = WID;
+                    //ProgramLocalRegisterCheck();
+                    ResetValues();
+                }
+            }
+        }
+    }
+
+    public void SetLocalRegistry()
+    {
+        for (int i = 0; i < PersonController.control.People.Count; i++)
+        {
+            var RunningPrograms = PersonController.control.People[i].Gateway.RunningPrograms;
+            var Registry = PersonController.control.People[i].Gateway.Registry;
+
+            for (int j = 0; j < RunningPrograms.Count; j++)
+            {
+                for (int k = 0; k < Registry.Count; k++)
+                {
+                    if (RunningPrograms[j].ProcessName == Registry[k].KeyName)
+                    {
+                        for (int l = 0; l < Registry[k].Values.Count; l++)
                         {
-                            PID++;
+                            var RegVal = Registry[k].Values[l];
+
+                            if (RunningPrograms[j].LocalRegister.Count == 0)
+                            {
+                                RunningPrograms[j].LocalRegister.Add(new RegistrySystem("" + Registry[k].KeyName, new List<RegistryDataSystem>()));
+                            }
+                            else
+                            {
+                                for (int m = 0; m < RunningPrograms[j].LocalRegister.Count; m++)
+                                {
+                                    //if (RunningPrograms[j].LocalRegister.Count == 0)
+                                    //{
+                                    //    RunningPrograms[j].LocalRegister[m].KeyName = Registry[k].KeyName;
+                                    //    RunningPrograms[j].LocalRegister[m].Values.Add(new RegistryDataSystem(RegVal.ValueName,RegVal.DataString,RegVal.DataInt,
+                                    //        RegVal.DataBool,RegVal.DataFloat,RegVal.DataRect,RegVal.DataVector3,RegVal.DataVector2));
+                                    //}
+                                    //else
+                                    //{
+                                    //    if(RunningPrograms[j].LocalRegister.Count < Registry[k].Values.Count)
+                                    //    {
+                                    //        RunningPrograms[j].LocalRegister[m].Values.Add(new RegistryDataSystem(RegVal.ValueName, RegVal.DataString, RegVal.DataInt,
+                                    //        RegVal.DataBool, RegVal.DataFloat, RegVal.DataRect, RegVal.DataVector3, RegVal.DataVector2));
+                                    //    }
+                                    //}
+
+                                    if (RunningPrograms[j].LocalRegister[m].Values.Count < Registry[k].Values.Count)
+                                    {
+                                        //RunningPrograms[j].LocalRegister[m].KeyName = Registry[k].KeyName;
+                                        RunningPrograms[j].LocalRegister[m].Values.Add(new RegistryDataSystem(RegVal.ValueName, RegVal.DataString, RegVal.DataInt,
+                                        RegVal.DataBool, RegVal.DataFloat, RegVal.DataRect, RegVal.DataVector3, RegVal.DataVector2));
+                                    }
+
+
+                                    if (RunningPrograms[j].LocalRegister[m].Values[0].ValueName != Registry[k].Values[0].ValueName)
+                                    {
+                                        RunningPrograms[j].LocalRegister[m].Values.Insert(0, new RegistryDataSystem(Registry[k].Values[0].ValueName, Registry[k].Values[0].DataString, Registry[k].Values[0].DataInt,
+Registry[k].Values[0].DataBool, Registry[k].Values[0].DataFloat, Registry[k].Values[0].DataRect, Registry[k].Values[0].DataVector3, Registry[k].Values[0].DataVector2));
+                                    }
+                                }
+                            }
                         }
                     }
                 }
             }
+        }
+    }
 
-            if (Index == RunningPrograms.Count)
+    public Rect GetWindowInfo(string PersonName,int WPN)
+    {
+        var Rect = new Rect(0,0,0,0);
+        for (int i = 0; i < PersonController.control.People.Count; i++)
+        {
+            if(PersonController.control.People[i].Name == PersonName)
             {
-                RunningPrograms.Add(new WindowConSys(WindowName, ProgramName, ProcessName, Status, ProcessType, WID, PID, windowRect,windowButtons, TitleBoxRect, Resize, ResizeRect, WindowResizeRect));
+                var RunningPrograms = PersonController.control.People[i].Gateway.RunningPrograms;
+
+                if (RunningPrograms.Count > 0)
+                {
+                    for (int j = 0; j < RunningPrograms.Count; j++)
+                    {
+                        if (j == WPN)
+                        {
+                            return RunningPrograms[j].windowRect;
+                        }
+                    }
+                }
             }
         }
-        else
-        {
-            RunningPrograms.Add(new WindowConSys(WindowName, ProgramName, ProcessName, Status, ProcessType, WID, PID, windowRect, windowButtons, TitleBoxRect, Resize, ResizeRect, WindowResizeRect));
-        }
-        TempWID = WID;
-        ResetValues();
-    }
+        return Rect;
+     }
 
 
     public void WindowDragging(int WID,Rect rect)
     {
-        if (RunningPrograms.Count > 0)
+        for (int i = 0; i < PersonController.control.People.Count; i++)
         {
-            for (int i = 0; i < RunningPrograms.Count; i++)
+            var RunningPrograms = PersonController.control.People[i].Gateway.RunningPrograms;
+
+            if (RunningPrograms.Count > 0)
             {
-                if (RunningPrograms[i].WID == WID)
+                for (int j= 0; j < RunningPrograms.Count; j++)
                 {
-                    if (Input.GetMouseButton(0))
+                    if (RunningPrograms[j].WID == WID)
                     {
-                        if (rect.Contains(Event.current.mousePosition))
+                        if (Input.GetMouseButton(0))
                         {
-                           Dragging = true;
+                            if (rect.Contains(Event.current.mousePosition))
+                            {
+                                Dragging = true;
+                            }
+                        }
+                        else
+                        {
+                            if (Dragging == true)
+                            {
+                                SelectedWID = -1;
+                                Dragging = false;
+                            }
                         }
                     }
-                    else
+                }
+            }
+
+        }
+    }
+
+
+    public void WindowResize(string PersonName,int WID)
+    {
+        for (int i = 0; i < PersonController.control.People.Count; i++)
+        {
+            if(PersonController.control.People[i].Name == PersonName)
+            {
+                var RunningPrograms = PersonController.control.People[i].Gateway.RunningPrograms;
+
+                if (RunningPrograms.Count > 0 && Dragging == false)
+                {
+                    for (int j = 0; j < RunningPrograms.Count; j++)
                     {
-                        if (Dragging == true)
+                        if (RunningPrograms[j].WID == WID)
                         {
-                            SelectedWID = -1;
-                            Dragging = false;
+                            if (SelectedWID != -1)
+                            {
+                                RunningPrograms[j].ResizeRect = new Rect(RunningPrograms[j].windowRect.width - 16, RunningPrograms[j].windowRect.height - 16, 16, 16);
+                            }
+
+                            if (Input.GetMouseButton(0))
+                            {
+                                if (RunningPrograms[j].ResizeRect.Contains(Event.current.mousePosition))
+                                {
+                                    RunningPrograms[j].Resize = true;
+                                }
+                            }
+                            else
+                            {
+                                if (RunningPrograms[j].Resize == true)
+                                {
+                                    WindowResizeChecks(i, j);
+                                    RunningPrograms[j].Resize = false;
+                                    SelectedWID = -1;
+                                }
+                            }
+
+                            if (RunningPrograms[j].Resize == true)
+                            {
+                                RunningPrograms[j].WindowResizeRect.width = Event.current.mousePosition.x + Event.current.delta.x;
+                                RunningPrograms[j].WindowResizeRect.height = Event.current.mousePosition.y + Event.current.delta.y;
+
+                                RunningPrograms[j].WindowResizeRect = new Rect(RunningPrograms[j].windowRect.x, RunningPrograms[j].windowRect.y, RunningPrograms[j].WindowResizeRect.width, RunningPrograms[j].WindowResizeRect.height);
+                            }
                         }
                     }
                 }
@@ -139,135 +295,54 @@ public class WindowManager : MonoBehaviour
         }
     }
 
-
-    public void WindowResize(int WID)
+    void WindowResizeChecks(int i,int ProgramID)
     {
-        if (RunningPrograms.Count > 0 && Dragging == false)
+        var RunningPrograms = PersonController.control.People[i].Gateway.RunningPrograms;
+
+        RunningPrograms[ProgramID].windowRect.width = Event.current.mousePosition.x + Event.current.delta.x;
+        RunningPrograms[ProgramID].windowRect.height = Event.current.mousePosition.y + Event.current.delta.y;
+
+        if (RunningPrograms[ProgramID].windowRect.height > Screen.height - 50)
         {
-            for (int i = 0; i < RunningPrograms.Count; i++)
-            {
-                if(RunningPrograms[i].WID == WID)
-                {
-                    if(SelectedWID != -1)
-                    {
-                        RunningPrograms[i].ResizeRect = new Rect(RunningPrograms[i].windowRect.width - 16, RunningPrograms[i].windowRect.height - 16, 16, 16);
-                    }
-
-                    if (Input.GetMouseButton(0))
-                    {
-                        if (RunningPrograms[i].ResizeRect.Contains(Event.current.mousePosition))
-                        {
-                            RunningPrograms[i].Resize = true;
-                        }
-                    }
-                    else
-                    {
-                        if (RunningPrograms[i].Resize == true)
-                        {
-                            WindowResizeChecks(i);
-                            RunningPrograms[i].Resize = false;
-                            SelectedWID = -1;
-                        }
-                    }
-
-                    if (RunningPrograms[i].Resize == true)
-                    {
-                        RunningPrograms[i].WindowResizeRect.width = Event.current.mousePosition.x + Event.current.delta.x;
-                        RunningPrograms[i].WindowResizeRect.height = Event.current.mousePosition.y + Event.current.delta.y;
-
-                        RunningPrograms[i].WindowResizeRect = new Rect(RunningPrograms[i].windowRect.x, RunningPrograms[i].windowRect.y, RunningPrograms[i].WindowResizeRect.width, RunningPrograms[i].WindowResizeRect.height);
-                    }
-                }
-            }
+            RunningPrograms[ProgramID].windowRect.height = Screen.height - 50;
+        }
+        if (RunningPrograms[ProgramID].windowRect.width > Screen.width - 50)
+        {
+            RunningPrograms[ProgramID].windowRect.width = Screen.width - 50;
+        }
+        if (RunningPrograms[ProgramID].windowRect.width < 18)
+        {
+            RunningPrograms[ProgramID].windowRect.width = 18;
+        }
+        if (RunningPrograms[ProgramID].windowRect.height < 30)
+        {
+            RunningPrograms[ProgramID].windowRect.height = 30;
         }
     }
 
-    void WindowResizeChecks(int i)
-    {
-        RunningPrograms[i].windowRect.width = Event.current.mousePosition.x + Event.current.delta.x;
-        RunningPrograms[i].windowRect.height = Event.current.mousePosition.y + Event.current.delta.y;
+    //void RemoveProgramWindow()
+    //{
+    //    for (int i = 0; i < PersonController.control.People.Count; i++)
+    //    {
+    //        var RunningPrograms = PersonController.control.People[i].Gateway.RunningPrograms;
 
-        if (RunningPrograms[i].windowRect.height > Screen.height - 50)
-        {
-            RunningPrograms[i].windowRect.height = Screen.height - 50;
-        }
-        if (RunningPrograms[i].windowRect.width > Screen.width - 50)
-        {
-            RunningPrograms[i].windowRect.width = Screen.width - 50;
-        }
-        if (RunningPrograms[i].windowRect.width < 18)
-        {
-            RunningPrograms[i].windowRect.width = 18;
-        }
-        if (RunningPrograms[i].windowRect.height < 30)
-        {
-            RunningPrograms[i].windowRect.height = 30;
-        }
-    }
-
-    void RemoveProgramWindow()
-    {
-        string SelectedWindowProgram = RunningPrograms[SelectedWID].ProgramName;
-        for (int i = 0; i < RunningPrograms.Count; i++)
-        {
-            if (RunningPrograms[i].ProgramName == SelectedWindowProgram)
-            {
-                if (RunningPrograms[i].WID != SelectedWID)
-                {
-                    RunningPrograms[i].PID--;
-                }
-            }
-            if (i >= RunningPrograms.Count)
-            {
-                RunningPrograms.RemoveAt(SelectedWID);
-            }
-        }
-    }
-
-    void Debug()
-    {
-        AddProgramWindow();
-        AddDebug = false;
-    }
-
-    void Debug1()
-    {
-        WindowName = "Debug Test";
-        ProgramName = "Debug";
-        ProcessName = "Debug";
-        Status = "Testing";
-        ProcessType = "Test";
-        WID = 0;
-        PID = 0;
-        windowRect = new Rect(200, 200, 400, 200);
-        AddProgramWindow();
-    }
-
-    void Debug2()
-    {
-        WindowName = "Debug Test";
-        ProgramName = "Debug1";
-        ProcessName = "Debug";
-        Status = "Testing";
-        ProcessType = "Test";
-        WID = 0;
-        PID = 0;
-        windowRect = new Rect(200, 200, 400, 200);
-        AddProgramWindow();
-    }
-
-    void Debug3()
-    {
-        WindowName = "Debug Test";
-        ProgramName = "Debug";
-        ProcessName = "Debug";
-        Status = "Testing";
-        ProcessType = "Test";
-        WID = 0;
-        PID = 0;
-        windowRect = new Rect(200, 200, 400, 200);
-        AddProgramWindow();
-    }
+    //        string SelectedWindowProgram = RunningPrograms[SelectedWID].ProgramName;
+    //        for (int j = 0; j < RunningPrograms.Count; j++)
+    //        {
+    //            if (RunningPrograms[j].ProgramName == SelectedWindowProgram)
+    //            {
+    //                if (RunningPrograms[j].WID != SelectedWID)
+    //                {
+    //                    RunningPrograms[j].PID--;
+    //                }
+    //            }
+    //            if (j >= RunningPrograms.Count)
+    //            {
+    //                RunningPrograms.RemoveAt(SelectedWID);
+    //            }
+    //        }
+    //    }
+    //}
 
     void ResetValues()
     {
@@ -282,11 +357,6 @@ public class WindowManager : MonoBehaviour
         windowButtons.RemoveRange(0, windowButtons.Count);
         //titleBox.Name = "";
         //titleBox.Rect = new Rect(0, 0, 0, 0);
-    }
-
-    public void RenderWindows()
-    {
-
     }
 
     public void OSTitleBarSelector()

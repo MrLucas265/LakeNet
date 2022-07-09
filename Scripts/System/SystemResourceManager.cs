@@ -7,7 +7,6 @@ public class SystemResourceManager : MonoBehaviour
 	private GameObject SysSoftware;
 	private GameObject Hardware;
 
-	private CPU cpu;
 	private RAM ram;
 	//private  gpu;
 
@@ -39,7 +38,6 @@ public class SystemResourceManager : MonoBehaviour
 		Crash = GameObject.Find("Crash");
 		SCM = Crash.GetComponent<SysCrashMan>();
 
-		cpu = Hardware.GetComponent<CPU>();
 		ram = Hardware.GetComponent<RAM>();
 		tv = SysSoftware.GetComponent<TaskViewer>();
 	}
@@ -58,7 +56,7 @@ public class SystemResourceManager : MonoBehaviour
 	public void AddProgramUsage(string ProgramName, string ApplicationName)
 	{
 		float CPUUsagePercent = 0;
-		CPUUsagePercent = CPUUsage / GameControl.control.Gateway.InstalledCPU[0].MaxSpeed * 100;
+		//CPUUsagePercent = CPUUsage / GameControl.control.Gateway.InstalledCPU[0].MaxSpeed * 100;
 
 		float RAMUsagePercent = 0;
 		RAMUsagePercent = MemoryUsage / ram.MaxRAM * 100;
@@ -66,10 +64,10 @@ public class SystemResourceManager : MonoBehaviour
 		//float GPUUsagePercent = 0;
 		//GPUUsagePercent = GraphicsUsage / gpu.MaxRAM * 100;
 
-        for (int i = 0; i < GameControl.control.Gateway.InstalledCPU.Count; i++)
-        {
-            GameControl.control.Gateway.InstalledCPU[i].Usage += CPUUsage;
-        }
+        //for (int i = 0; i < GameControl.control.Gateway.InstalledCPU.Count; i++)
+        //{
+        //    GameControl.control.Gateway.InstalledCPU[i].Usage += CPUUsage;
+        //}
 		ram.UsedRAM += MemoryUsage;
         tv.RunningTasks.Add(new TasksSystem(ProgramName, ApplicationName, SelectedProgramsWindowID, CPUUsagePercent, RAMUsagePercent, GraphicsUsage, DiskUsage, NetworkUsage));
 		//tv.RunningApplications.Add(ApplicationName);
@@ -104,7 +102,7 @@ public class SystemResourceManager : MonoBehaviour
 	public void UpdateProgramUsage()
 	{
 		float CPUUsagePercent = 0;
-		CPUUsagePercent = CPUUsage / cpu.MaxCPUSpeed * 100;
+		//CPUUsagePercent = CPUUsage / cpu.MaxCPUSpeed * 100;
 
 		float RAMUsagePercent = 0;
 		RAMUsagePercent = MemoryUsage / ram.MaxRAM * 100;
@@ -145,10 +143,10 @@ public class SystemResourceManager : MonoBehaviour
 				SelectedProgram = i;
 			}
 		}
-        for (int i = 0; i < GameControl.control.Gateway.InstalledCPU.Count; i++)
-        {
-            GameControl.control.Gateway.InstalledCPU[i].Usage -= CPUUsage;
-        }
+        //for (int i = 0; i < GameControl.control.Gateway.InstalledCPU.Count; i++)
+        //{
+        //    GameControl.control.Gateway.InstalledCPU[i].Usage -= CPUUsage;
+        //}
         ram.UsedRAM -= MemoryUsage;
         tv.RunningTasks.RemoveAt(SelectedProgram);
 		ResetProgramUsage();

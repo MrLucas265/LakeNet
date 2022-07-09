@@ -100,12 +100,23 @@ public class ProfileUI : MonoBehaviour
 
 		ProfileController.procon.Load();
 
-        SelectedBackground = Random.Range(0, BackgroundPics.Count - 1);
-
 		showAccountsList = true;
+
+		LoadPics();
 	}
 
-    void Update()
+
+	void LoadPics()
+	{
+		for (int PhotoNumber = 0; PhotoNumber < 131; PhotoNumber++)
+		{
+			BackgroundPics.Add(Resources.Load<Texture2D>("DesktopBackgrounds/" + PhotoNumber));
+		}
+
+		SelectedBackground = Random.Range(0, BackgroundPics.Count - 1);
+	}
+
+	void Update()
     {
         Counting();
 

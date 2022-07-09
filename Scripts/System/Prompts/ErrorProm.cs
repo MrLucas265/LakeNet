@@ -82,24 +82,25 @@ public class ErrorProm : MonoBehaviour
 			sc.SoundSelect = SoundSelect;
 			sc.PlaySound();
 		}
+        for (int PersonCount = 0; PersonCount < PersonController.control.People.Count; PersonCount++)
+        {
+            var pwinman = PersonController.control.People[PersonCount].Gateway;
 
-        if (show == true)
-		{
-            if (winman.RunningPrograms.Count > 0)
+            if (pwinman.RunningPrograms.Count > 0)
             {
                 ProgramCount = 0;
-                for (int i = 0; i < winman.RunningPrograms.Count; i++)
+                for (int i = 0; i < pwinman.RunningPrograms.Count; i++)
                 {
                     ProgramCount++;
-                    if (winman.RunningPrograms[i].ProgramName == "Error Prompt")
+                    if (pwinman.RunningPrograms[i].ProgramName == "Error Prompt")
                     {
-                        CloseButton = new Rect(winman.RunningPrograms[i].windowRect.width - 22, 1, 21, 21);
+                        CloseButton = new Rect(pwinman.RunningPrograms[i].windowRect.width - 22, 1, 21, 21);
                         //MiniButton = new Rect(CloseButton.x - 21, 1, 21, 21);
                         TitleBox = new Rect(22, 1, CloseButton.x - 22, 21);
                         MessageBox = new Rect(5, 30, 385, 90);
 
                         GUI.color = com.colors[Customize.cust.WindowColorInt];
-                        winman.RunningPrograms[i].windowRect = WindowClamp.ClampToScreen(GUI.Window(winman.RunningPrograms[i].WID, winman.RunningPrograms[i].windowRect, DoMyWindow, ""));
+                        pwinman.RunningPrograms[i].windowRect = WindowClamp.ClampToScreen(GUI.Window(pwinman.RunningPrograms[i].WID, pwinman.RunningPrograms[i].windowRect, DoMyWindow, ""));
                     }
                 }
             }
@@ -110,31 +111,36 @@ public class ErrorProm : MonoBehaviour
     {
         if (ProgramCount > 0)
         {
-            for (int i = 0; i < winman.RunningPrograms.Count; i++)
+            for (int PersonCount = 0; PersonCount < PersonController.control.People.Count; PersonCount++)
             {
-                if (winman.RunningPrograms[i].WID == SelectedWindowID)
+                var pwinman = PersonController.control.People[PersonCount].Gateway;
+
+                for (int i = 0; i < pwinman.RunningPrograms.Count; i++)
                 {
-                    if (ProgramCount == 1)
+                    if (pwinman.RunningPrograms[i].WID == SelectedWindowID)
                     {
-                        show = false;
-                        enabled = false;
-                        Restart = false;
-                        quit = true;
-                        appman.SelectedApp = "Error Prompt";
-                    }
-                    else
-                    {
-                        quit = true;
-                        appman.SelectedApp = "Error Prompt";
-                    }
-                    for(int e = 0; e < ErrorList.Count; e++)
-                    {
-                        if(ErrorList[e].WindowID == SelectedWindowID)
+                        if (ProgramCount == 1)
                         {
-                            ErrorList.RemoveAt(e);
+                            show = false;
+                            enabled = false;
+                            Restart = false;
+                            quit = true;
+                            appman.SelectedApp = "Error Prompt";
                         }
+                        else
+                        {
+                            quit = true;
+                            appman.SelectedApp = "Error Prompt";
+                        }
+                        for (int e = 0; e < ErrorList.Count; e++)
+                        {
+                            if (ErrorList[e].WindowID == SelectedWindowID)
+                            {
+                                ErrorList.RemoveAt(e);
+                            }
+                        }
+                        pwinman.RunningPrograms.RemoveAt(i);
                     }
-                    winman.RunningPrograms.RemoveAt(i);
                 }
             }
         }
@@ -150,15 +156,20 @@ public class ErrorProm : MonoBehaviour
     {
         SelectedWindowID = WindowID;
 
-        for (int i = 0; i < winman.RunningPrograms.Count; i++)
+        for (int PersonCount = 0; PersonCount < PersonController.control.People.Count; PersonCount++)
         {
-            if (winman.RunningPrograms[i].WID == SelectedWindowID)
+            var pwinman = PersonController.control.People[PersonCount].Gateway;
+
+            for (int i = 0; i < pwinman.RunningPrograms.Count; i++)
             {
-                if (winman.RunningPrograms[i].PID > ErrorList.Count - 1)
+                if (pwinman.RunningPrograms[i].WID == SelectedWindowID)
                 {
-                    winman.RunningPrograms[i].PID = ErrorList.Count - 1;
+                    if (pwinman.RunningPrograms[i].PID > ErrorList.Count - 1)
+                    {
+                        pwinman.RunningPrograms[i].PID = ErrorList.Count - 1;
+                    }
+                    SelectedProgram = pwinman.RunningPrograms[i].PID;
                 }
-                SelectedProgram = winman.RunningPrograms[i].PID;
             }
         }
 

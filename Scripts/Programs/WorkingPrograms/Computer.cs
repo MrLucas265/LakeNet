@@ -16,7 +16,8 @@ public class Computer : MonoBehaviour
     public bool Drag;
     public bool show;
     public int GUIID;
-    public GUISkin[] Skin;
+    //public GUISkin[] Skin;
+	public List<GUISkin> Skin = new List<GUISkin>();
 	//public Color[] colors = {Color.black, Color.blue, Color.cyan, Color.gray, Color.green, Color.red, Color.magenta, Color.white, Color.yellow, new Color (255,255,255,255)};
 	public List<Color> colors = new List<Color>();
     public string ComAddress;
@@ -119,6 +120,7 @@ public class Computer : MonoBehaviour
 	public string FileContent;
 	public float FileVersion;
 	public float FileSize;
+	public ProgramSystemv2 ProgramFile;
 
 	public bool Focused;
 
@@ -238,41 +240,52 @@ public class Computer : MonoBehaviour
 
 	public void SetColors()
 	{
-		SetFontColor();
+		if (Registry.GetBoolData("Player", "System", "WindowColor"))
+		{
+			SetWindowColor(Registry.GetColorData("Player", "System", "WindowColor"));
+			Registry.SetBoolData("Player", "System", "WindowColor", false);
+		}
 
-		SetButtonColor();
+		if (Registry.GetBoolData("Player", "System", "FontColor"))
+		{
+			SetFontColor(Registry.GetColorData("Player", "System", "FontColor"));
+			Registry.SetBoolData("Player", "System", "FontColor", false);
+		}
 
-		SetWindowColor();
-
+		if (Registry.GetBoolData("Player", "System", "ButtonColor"))
+		{
+			SetButtonColor(Registry.GetColorData("Player", "System", "ButtonColor"));
+			Registry.SetBoolData("Player", "System", "ButtonColor", false);
+		}
 	}
 
-	public void SetFontColor()
+	public void SetFontColor(SColor Color)
 	{
 		Color32 Fontcolor;
-		Fontcolor.r = (byte)GameControl.control.SelectedOS.Colour.Font.Red;
-		Fontcolor.g = (byte)GameControl.control.SelectedOS.Colour.Font.Green;
-		Fontcolor.b = (byte)GameControl.control.SelectedOS.Colour.Font.Blue;
-		Fontcolor.a = (byte)GameControl.control.SelectedOS.Colour.Font.Alpha;
+		Fontcolor.r = Color.r;
+		Fontcolor.g = Color.g;
+		Fontcolor.b = Color.b;
+		Fontcolor.a = Color.a;
 		colors[1] = Fontcolor;
 	}
 
-	public void SetButtonColor()
+	public void SetButtonColor(SColor Color)
 	{
 		Color32 ButtonColor;
-		ButtonColor.r = (byte)GameControl.control.SelectedOS.Colour.Button.Red;
-		ButtonColor.g = (byte)GameControl.control.SelectedOS.Colour.Button.Green;
-		ButtonColor.b = (byte)GameControl.control.SelectedOS.Colour.Button.Blue;
-		ButtonColor.a = (byte)GameControl.control.SelectedOS.Colour.Button.Alpha;
+		ButtonColor.r = Color.r;
+		ButtonColor.g = Color.g;
+		ButtonColor.b = Color.b;
+		ButtonColor.a = Color.a;
 		colors[2] = ButtonColor;
 	}
 
-	public void SetWindowColor()
+	public void SetWindowColor(SColor Color)
 	{
 		Color32 WindowColor;
-		WindowColor.r = (byte)GameControl.control.SelectedOS.Colour.Window.Red;
-		WindowColor.g = (byte)GameControl.control.SelectedOS.Colour.Window.Green;
-		WindowColor.b = (byte)GameControl.control.SelectedOS.Colour.Window.Blue;
-		WindowColor.a = (byte)GameControl.control.SelectedOS.Colour.Window.Alpha;
+		WindowColor.r = Color.r;
+		WindowColor.g = Color.g;
+		WindowColor.b = Color.b;
+		WindowColor.a = Color.a;
 		colors[3] = WindowColor;
 	}
 
@@ -286,8 +299,9 @@ public class Computer : MonoBehaviour
 			GameControl.control.wh = 1;
 		}
 
-        SetIconSet();
-    }
+		SetIconSet();
+		SetColors();
+	}
 
 	void PlayClickSound()
 	{
@@ -537,6 +551,7 @@ public class Computer : MonoBehaviour
 			if (GameControl.control.ProgramFiles[Index].Name == PageFile[SelectedProgram].Name && GameControl.control.ProgramFiles[Index].Location == PageFile[SelectedProgram].Location)
 			{
 				FileIndex = Index;
+				ProgramFile = PersonController.control.People[0].Gateway.StorageDevices[0].OS[0].Partitions[0].Files[Index];
 				FileName = GameControl.control.ProgramFiles[Index].Name;
 				FileSize = GameControl.control.ProgramFiles[Index].Used;
 				FileContent = GameControl.control.ProgramFiles[Index].Content;
@@ -555,7 +570,7 @@ public class Computer : MonoBehaviour
 			{
 				string FileLocation = ComAddress;
 				fu.Local = true;
-				fu.ProgramHandle.Add(new FileUtilitySystem("Paste", FileName, FileLocation,"", "", FileTarget, FileContent, FileType, false, true, true, false, FileVersion, 0, 0, 0, 0, 0, 0, 0, FileSize, 0, 0, 0, FileUtilitySystem.ProgramType.Paste));
+				fu.ProgramHandle.Add(new FileUtilitySystem("Paste", FileLocation, false, true, true, false, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, FileUtilitySystem.ProgramType.DownloadProgram, 0, 0, ProgramFile));
 				fu.AddWindow();
 			}
 		}
@@ -634,19 +649,19 @@ public class Computer : MonoBehaviour
 
 	void OpenIns()
 	{
-		PlayClickSound ();
-		ip.enabled = true;
-		ip.show = true;
-		ip.Install = true;
-		ip.ProgramName = PageFile[SelectedProgram].Name;
-		ip.Size = PageFile[SelectedProgram].Used;
-		ip.ProgramVersion = PageFile[SelectedProgram].Version;
-		ip.ProgramTarget = PageFile[SelectedProgram].Target;
-		ip.ProgramType = PageFile[SelectedProgram].Content;
-		ip.ErrorTitle = ip.ProgramName + " Setup";
-		ip.ErrorMsg = "Do you wish to execute this file?" + "\n" +
-			"Name: " + ip.ProgramName + "_setup.inspkg";
-		ip.ConfirmationMsg = "Install";
+		//PlayClickSound ();
+		//ip.enabled = true;
+		//ip.show = true;
+		//ip.Install = true;
+		//ip.ProgramName = PageFile[SelectedProgram].Name;
+		//ip.Size = PageFile[SelectedProgram].Used;
+		//ip.ProgramVersion = PageFile[SelectedProgram].Version;
+		//ip.ProgramTarget = PageFile[SelectedProgram].Target;
+		//ip.ProgramType = PageFile[SelectedProgram].Content;
+		//ip.ErrorTitle = ip.ProgramName + " Setup";
+		//ip.ErrorMsg = "Do you wish to execute this file?" + "\n" +
+		//	"Name: " + ip.ProgramName + "_setup.inspkg";
+		//ip.ConfirmationMsg = "Install";
 	}
 
 	void OpenFld()

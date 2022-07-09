@@ -167,7 +167,7 @@ public class CLIV3 : MonoBehaviour
             {
                 if (GUI.Button(new Rect(CloseButton), "X", Skin.customStyles[0]))
                 {
-                    appman.SelectedApp = "Command Line V3";
+                    appman.SelectedApp = "CLI";
                 }
             }
             else

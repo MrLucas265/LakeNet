@@ -9,11 +9,12 @@ public class EmailSystem
 	public string Sender;
 	public string Date;
 	public string Content;
-	public EmailType Type;
+	public string Location;
 	public int Encryption;
 	public int Id;
 	public int Size;
 	public bool Infected;
+	public EmailType Type;
 
 	public enum EmailType
 	{
@@ -25,17 +26,18 @@ public class EmailSystem
 		Contract
 	}
 
-	public EmailSystem(string subject, string sender, string date,string content,int encryption,int id,int size,bool infected, EmailType type)
+	public EmailSystem(string subject, string sender, string date,string content,string location,int encryption,int id,int size,bool infected, EmailType type)
 	{
 		Subject = subject;
 		Sender = sender;
 		Date = date;
 		Content = content;
-		Type = type;
+		Location = location;
 		Encryption = encryption;
 		Id = id;
 		Size = size;
 		Infected = infected;
+		Type = type;
 	}
 
 	public EmailSystem()

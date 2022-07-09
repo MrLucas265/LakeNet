@@ -28,7 +28,6 @@ public class JailDew : MonoBehaviour
 	private Tracer trace;
 	private SystemMap sm;
 	private TextReader tr;
-	private Progtive prog;
 	private Defalt def;
 
 	private WebSec ws;
@@ -58,8 +57,6 @@ public class JailDew : MonoBehaviour
 
 	public bool GenFiles;
 
-    public List<UACSystem> Accounts = new List<UACSystem>();
-
 	public List<RemoteFileSystem> PageFile1 = new List<RemoteFileSystem>();
 	public List<ProgramSystem> PageFile2 = new List<ProgramSystem>();
 
@@ -67,6 +64,8 @@ public class JailDew : MonoBehaviour
 	public List<ProgramSystem.FileType> BlankFileType = new List<ProgramSystem.FileType>();
 
 	public UACSystem LoggedInAs;
+
+	public int CorrectSite;
 
 	void Start()
 	{
@@ -123,7 +122,6 @@ public class JailDew : MonoBehaviour
 		ep = Prompts.GetComponent<ErrorProm>();
 		// HACKING
 		trace = Hacking.GetComponent<Tracer>();
-		prog = Hacking.GetComponent<Progtive>();
 		// SYSTEM
 		com = System.GetComponent<Computer>();
 		def = System.GetComponent<Defalt>();
@@ -133,28 +131,26 @@ public class JailDew : MonoBehaviour
 
 	void Update()
 	{
-		if (Accounts.Count == 0) 
-		{
-            PasswordSetup();
-        }
-
 		if (GameControl.control.CompanyServerData.Count > 0)
 		{
 			for (int Index = 0; Index < GameControl.control.CompanyServerData.Count; Index++)
 			{
 				if (GameControl.control.CompanyServerData[Index].Name == "Jaildew")
 				{
+					CorrectSite = Index;
 					PublicFileCount = 0;
 					PrivateFileCount = 0;
-					if (GameControl.control.CompanyServerData[Index].Files.Count > 0)
+					PasswordSetup();
+
+					if (GameControl.control.CompanyServerData[CorrectSite].Files.Count > 0)
 					{
-						for (int i = 0; i < GameControl.control.CompanyServerData[Index].Files.Count; i++)
+						for (int i = 0; i < GameControl.control.CompanyServerData[CorrectSite].Files.Count; i++)
 						{
-							if (GameControl.control.CompanyServerData[Index].Files[i].Description == "Public")
+							if (GameControl.control.CompanyServerData[CorrectSite].Files[i].Description == "Public")
 							{
 								PublicFileCount++;
 							}
-							if (GameControl.control.CompanyServerData[Index].Files[i].Description == "Private")
+							if (GameControl.control.CompanyServerData[CorrectSite].Files[i].Description == "Private")
 							{
 								PrivateFileCount++;
 							}
@@ -182,52 +178,63 @@ public class JailDew : MonoBehaviour
 
 	void PasswordSetup()
 	{
-		if(Accounts.Count > 0)
+		if(GameControl.control.CompanyServerData[CorrectSite].Accounts.Count > 0)
 		{
-			for (int j = 0; j < Accounts.Count; j++)
-			{
-				if (Accounts[j].UserName == LoggedInAs.UserName)
-				{
-					if (ib.CurrentSecurity.Count > 0)
-					{
-						for (int i = 0; i < ib.CurrentSecurity.Count; i++)
-						{
-							if (ib.CurrentSecurity[i].Type == WebSecSystem.SecType.UAC)
-							{
-								if (ib.CurrentSecurity[i].Level > 3)
-								{
-									Accounts[j].Password = StringGenerator.RandomMixedChar(8, 8);
+			UpdatePasswords();
+		}
+		else
+		{
+			AddAccounts();
+		}
+	}
 
-								}
-								else
-								{
-									Accounts[j].Password = pl.PasswordWords[Random.Range(0, pl.PasswordWords.Count)].Trim();
-								}
+
+	public void UpdatePasswords()
+	{
+		for (int j = 0; j < GameControl.control.CompanyServerData[CorrectSite].Accounts.Count; j++)
+		{
+			if (GameControl.control.CompanyServerData[CorrectSite].Accounts[j].UserName == LoggedInAs.UserName)
+			{
+				if (ib.CurrentSecurity.Count > 0)
+				{
+					for (int i = 0; i < ib.CurrentSecurity.Count; i++)
+					{
+						if (ib.CurrentSecurity[i].Type == WebSecSystem.SecType.UAC)
+						{
+							if (ib.CurrentSecurity[i].Level > 3)
+							{
+								GameControl.control.CompanyServerData[CorrectSite].Accounts[j].Password = StringGenerator.RandomMixedChar(8, 8);
+
+							}
+							else
+							{
+								GameControl.control.CompanyServerData[CorrectSite].Accounts[j].Password = pl.PasswordWords[Random.Range(0, pl.PasswordWords.Count)].Trim();
 							}
 						}
 					}
 				}
 			}
 		}
-		else
-		{
-			if (ib.CurrentSecurity.Count > 0)
-			{
-				for (int i = 0; i < ib.CurrentSecurity.Count; i++)
-				{
-					if (ib.CurrentSecurity[i].Type == WebSecSystem.SecType.UAC)
-					{
-						if (ib.CurrentSecurity[i].Level > 3)
-						{
-							Accounts.Add(new UACSystem("Admin", StringGenerator.RandomMixedChar(8, 8), "", "123.456.789","", false, UACSystem.AccountType.Admin));
-							Accounts.Add(new UACSystem("SysAdmin", StringGenerator.RandomMixedChar(8, 8), "", "123.456.789", "", false, UACSystem.AccountType.Admin));
+	}
 
-						}
-						else
-						{
-							Accounts.Add(new UACSystem("Admin", pl.PasswordWords[Random.Range(0, pl.PasswordWords.Count)].Trim(), "", "123.456.789","", false, UACSystem.AccountType.Admin));
-							Accounts.Add(new UACSystem("SysAdmin", pl.PasswordWords[Random.Range(0, pl.PasswordWords.Count)].Trim(), "", "123.456.789", "", false, UACSystem.AccountType.Admin));
-						}
+	public void AddAccounts()
+	{
+		if (ib.CurrentSecurity.Count > 0)
+		{
+			for (int i = 0; i < ib.CurrentSecurity.Count; i++)
+			{
+				if (ib.CurrentSecurity[i].Type == WebSecSystem.SecType.UAC)
+				{
+					if (ib.CurrentSecurity[i].Level > 3)
+					{
+						GameControl.control.CompanyServerData[CorrectSite].Accounts.Add(new UACSystem("Admin", StringGenerator.RandomMixedChar(8, 8), "", "123.456.789", "", false, UACSystem.AccountType.Admin));
+						GameControl.control.CompanyServerData[CorrectSite].Accounts.Add(new UACSystem("SysAdmin", StringGenerator.RandomMixedChar(8, 8), "", "123.456.789", "", false, UACSystem.AccountType.Admin));
+
+					}
+					else
+					{
+						GameControl.control.CompanyServerData[CorrectSite].Accounts.Add(new UACSystem("Admin", pl.PasswordWords[Random.Range(0, pl.PasswordWords.Count)].Trim(), "", "123.456.789", "", false, UACSystem.AccountType.Admin));
+						GameControl.control.CompanyServerData[CorrectSite].Accounts.Add(new UACSystem("SysAdmin", pl.PasswordWords[Random.Range(0, pl.PasswordWords.Count)].Trim(), "", "123.456.789", "", false, UACSystem.AccountType.Admin));
 					}
 				}
 			}
@@ -312,7 +319,8 @@ public class JailDew : MonoBehaviour
 	{
 		if (ib.AddressBar == "www.jaildew.com")
 		{
-			ib.AddressBar = "www.jaildew.com/home";
+			ib.DisplayAddress = "www.jaildew.com/home";
+			ib.CurrentPage = "home";
 		}
 	}
 
@@ -327,15 +335,15 @@ public class JailDew : MonoBehaviour
 
 	public void SignOut()
     {
-		PasswordSetup();
-		if(Accounts.Count > 0)
+		UpdatePasswords();
+		if(GameControl.control.CompanyServerData[CorrectSite].Accounts.Count > 0)
 		{
-			for (int i = 0; i < Accounts.Count; i++)
+			for (int i = 0; i < GameControl.control.CompanyServerData[CorrectSite].Accounts.Count; i++)
 			{
-				if (LoggedInAs.UserName == Accounts[i].UserName)
+				if (LoggedInAs.UserName == GameControl.control.CompanyServerData[CorrectSite].Accounts[i].UserName)
 				{
-					Accounts[i].LoggedIn = false;
-					Accounts[i].LoggedInIP = "";
+					GameControl.control.CompanyServerData[CorrectSite].Accounts[i].LoggedIn = false;
+					GameControl.control.CompanyServerData[CorrectSite].Accounts[i].LoggedInIP = "";
 					ResetLoggedInData();
 					//LoggedInAs = null;
 				}
@@ -586,18 +594,18 @@ public class JailDew : MonoBehaviour
 					ib.AddressBar = "www.jaildew.com/home";
 				}
 
-				for (int i = 0; i < Accounts.Count; i++)
+				for (int i = 0; i < GameControl.control.CompanyServerData[CorrectSite].Accounts.Count; i++)
 				{
-					if (UsrName == Accounts[i].UserName)
+					if (UsrName == GameControl.control.CompanyServerData[CorrectSite].Accounts[i].UserName)
 					{
 						ib.Username = UsrName;
-						ib.SiteAdminPass = Accounts[i].Password;
+						ib.SiteAdminPass = GameControl.control.CompanyServerData[CorrectSite].Accounts[i].Password;
 
-						if (Accounts[i].Password == password)
+						if (GameControl.control.CompanyServerData[CorrectSite].Accounts[i].Password == password)
 						{
 							if (GUI.Button(new Rect(10, 125, 100, 20), "Login"))
 							{
-								LoggedInAs = new UACSystem(Accounts[i].UserName, Accounts[i].Password, Accounts[i].AccountHolder, Accounts[i].IP, GameControl.control.Gateway.InstalledModem[0].ModemIP, true, UACSystem.AccountType.LoggedIn);
+								//LoggedInAs = new UACSystem(GameControl.control.CompanyServerData[CorrectSite].Accounts[i].UserName, GameControl.control.CompanyServerData[CorrectSite].Accounts[i].Password, GameControl.control.CompanyServerData[CorrectSite].Accounts[i].AccountHolder, GameControl.control.CompanyServerData[CorrectSite].Accounts[i].IP, GameControl.control.Gateway.InstalledModem[0].ModemIP, true, UACSystem.AccountType.LoggedIn);
 								//trace.UpdateTimer = true;
 								ib.showAddressBar = false;
 								ib.AddressBar = "www.jaildew.com/internal";

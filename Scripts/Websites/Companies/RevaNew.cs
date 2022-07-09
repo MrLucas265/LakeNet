@@ -27,7 +27,6 @@ public class RevaNew : MonoBehaviour
 	private MissionGen misgen;
 	private MissionBrow brow;
 	private ErrorProm ep;
-	private Upgrade upg;
 	private Defalt defalt;
 	private PurchasePrompt pp;
 	private SystemMap sm;
@@ -44,7 +43,6 @@ public class RevaNew : MonoBehaviour
 	public float revatw;
 	public float revath;
 
-	private Progtive prog;
 	private Tracer trace;
 
 	public List<string> RevaSoftware = new List<string>();
@@ -101,10 +99,8 @@ public class RevaNew : MonoBehaviour
 		ib = AppsSoftware.GetComponent<InternetBrowser>();
 		misgen = Missions.GetComponent<MissionGen>();
 		ep = Prompts.GetComponent<ErrorProm>();
-		upg = Computer.GetComponent<Upgrade>();
 		defalt = SysSoftware.GetComponent<Defalt>();
 		pp = Prompts.GetComponent<PurchasePrompt>();
-		prog = HackingSoftware.GetComponent<Progtive>();
 		trace = HackingSoftware.GetComponent<Tracer>();
 		brow = Missions.GetComponent<MissionBrow>();
 		sm = AppsSoftware.GetComponent<SystemMap>();
@@ -483,11 +479,6 @@ public class RevaNew : MonoBehaviour
 
 				if (logged == true)
 				{
-					upg.Display = false;
-					upg.Desc = "";
-					upg.Cost = 0;
-					upg.Selected = "";
-					upg.Specs = "";
 
 					if (GUI.Button(new Rect(245, 30, 50, 20), "Home"))
 					{

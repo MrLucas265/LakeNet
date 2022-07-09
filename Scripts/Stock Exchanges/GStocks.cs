@@ -5,12 +5,7 @@ using UnityEngine;
 
 public class GStocks : MonoBehaviour
 {
-	public List<string> ListOfCompaniesNames = new List<string>();
-
-
-	public List<string> ListOfSavedCompanies = new List<string>();
-
-	public List<StockExchangeShareSystem> Exchange = new List<StockExchangeShareSystem>();
+	public List<StockInfoSys> Exchange = new List<StockInfoSys>();
 
 	public List<int> StockPrice = new List<int>();
 
@@ -51,18 +46,21 @@ public class GStocks : MonoBehaviour
 	public string ShareQTY;
 	public int Amount;
 
+	public int CorrectExchangeID;
+
 	// Use this for initialization
 	void Start () 
 	{
+		CorrectExchangeID = -1;
 		ExchangeName = "Memes Exchange";
 		AppSoftware = GameObject.Find("Applications");
 		SysSoftware = GameObject.Find("System");
 		WebSearch();
-		AddCorps();
+		//AddCorps();
 		LoadPresetColors();
 		EnableTime = true;
 		Cooldown = 60;
-		Cal();
+		cd = Cooldown - 5;
 	}
 
 	// Update is called once per frame
@@ -77,61 +75,77 @@ public class GStocks : MonoBehaviour
 		def = SysSoftware.GetComponent<Defalt>();
 	}
 
-	void AddCorps()
+	void CheckLists()
 	{
-		ListOfCompaniesNames.Add("Dat Boii Pepe");
-		ListOfCompaniesNames.Add("Nyan Cat");
-		ListOfCompaniesNames.Add("Trolol");
-		ListOfCompaniesNames.Add("Darude Sandstorm");
-		ListOfCompaniesNames.Add("MLG");
-		ListOfCompaniesNames.Add("Vine");
-		ListOfCompaniesNames.Add("Star Wars Kid");
-		ListOfCompaniesNames.Add("Clippy");
-		ListOfCompaniesNames.Add("Cheeki Breeki");
-		ListOfCompaniesNames.Add("Remove Kebab");
-		ListOfCompaniesNames.Add("Air Horn Remixes");
-		ListOfCompaniesNames.Add("Harambe");
-		ListOfCompaniesNames.Add("DANK");
-		ListOfCompaniesNames.Add("EMOJI");
-		ListOfCompaniesNames.Add("Doge");
-		ListOfCompaniesNames.Add("Cats");
-		ListOfCompaniesNames.Add("Leave Birtany Alone");
-		ListOfCompaniesNames.Add("Ennuya Guy");
-		ListOfCompaniesNames.Add("Hey Hey Hey");
-		ListOfCompaniesNames.Add("Overwatch Memes");
-		ListOfCompaniesNames.Add("Lemme Smash");
-
-
-		if (GameControl.control.Exchanges.Count > 0)
+		if (GameControl.control.CompanyServerData.Count > 0)
 		{
-			for (int i = 0; i < GameControl.control.Exchanges.Count; i++)
+			for (int i = 0; i < GameControl.control.CompanyServerData.Count; i++)
 			{
-				if (GameControl.control.Exchanges [i].Exchange == ExchangeName)
+				if(GameControl.control.CompanyServerData[i].StockExchange != null)
 				{
-					Count++;
-				}	
+					if (GameControl.control.CompanyServerData[i].StockExchange.ExchangeName == ExchangeName)
+					{
+						CorrectExchangeID = i;
+					}
+				}
 			}
-
-			if (Count < ListOfCompaniesNames.Count) 
-			{
-				for (int i = 0; i < ListOfCompaniesNames.Count; i++) 
-				{
-					GameControl.control.Exchanges.Add (new StockExchangeShareSystem (ListOfCompaniesNames[i],ExchangeName,"","","","","",Random.Range(1,300),Random.Range(1,300),Random.Range(1,300),Random.Range(1,300),0,0));
-				}
-			}	
-
-		} 
-		else 
-		{
-			if (GameControl.control.Exchanges.Count < ListOfCompaniesNames.Count) 
-			{
-				for (int i = 0; i < ListOfCompaniesNames.Count; i++) 
-				{
-					GameControl.control.Exchanges.Add (new StockExchangeShareSystem (ListOfCompaniesNames[i],ExchangeName,"","","","","",Random.Range(1,300),Random.Range(1,300),Random.Range(1,300),Random.Range(1,300),0,0));
-				}
-			}	
 		}
 	}
+
+	//void AddCorps()
+	//{
+	//	ListOfCompaniesNames.Add("Nyan Cat");
+	//	ListOfCompaniesNames.Add("Trolol");
+	//	ListOfCompaniesNames.Add("Darude Sandstorm");
+	//	ListOfCompaniesNames.Add("MLG");
+	//	ListOfCompaniesNames.Add("Vine");
+	//	ListOfCompaniesNames.Add("Star Wars Kid");
+	//	ListOfCompaniesNames.Add("Clippy");
+	//	ListOfCompaniesNames.Add("Cheeki Breeki");
+	//	ListOfCompaniesNames.Add("Remove Kebab");
+	//	ListOfCompaniesNames.Add("Air Horn Remixes");
+	//	ListOfCompaniesNames.Add("Harambe");
+	//	ListOfCompaniesNames.Add("DANK");
+	//	ListOfCompaniesNames.Add("EMOJI");
+	//	ListOfCompaniesNames.Add("Doge");
+	//	ListOfCompaniesNames.Add("Cats");
+	//	ListOfCompaniesNames.Add("Leave Birtany Alone");
+	//	ListOfCompaniesNames.Add("Ennuya Guy");
+	//	ListOfCompaniesNames.Add("Hey Hey Hey");
+	//	ListOfCompaniesNames.Add("Overwatch Memes");
+	//	ListOfCompaniesNames.Add("Lemme Smash");
+
+
+	//	if (GameControl.control.Exchanges.Count > 0)
+	//	{
+	//		for (int i = 0; i < GameControl.control.Exchanges.Count; i++)
+	//		{
+	//			if (GameControl.control.Exchanges [i].Exchange == ExchangeName)
+	//			{
+	//				Count++;
+	//			}	
+	//		}
+
+	//		if (Count < ListOfCompaniesNames.Count) 
+	//		{
+	//			for (int i = 0; i < ListOfCompaniesNames.Count; i++) 
+	//			{
+	//				GameControl.control.Exchanges.Add (new StockExchangeShareSystem (ListOfCompaniesNames[i],ExchangeName,"","","","","",Random.Range(1,300),Random.Range(1,300),Random.Range(1,300),Random.Range(1,300),0,0));
+	//			}
+	//		}	
+
+	//	} 
+	//	else 
+	//	{
+	//		if (GameControl.control.Exchanges.Count < ListOfCompaniesNames.Count) 
+	//		{
+	//			for (int i = 0; i < ListOfCompaniesNames.Count; i++) 
+	//			{
+	//				GameControl.control.Exchanges.Add (new StockExchangeShareSystem (ListOfCompaniesNames[i],ExchangeName,"","","","","",Random.Range(1,300),Random.Range(1,300),Random.Range(1,300),Random.Range(1,300),0,0));
+	//			}
+	//		}	
+	//	}
+	//}
 
 	void Timers()
 	{
@@ -142,7 +156,11 @@ public class GStocks : MonoBehaviour
 
 		if (cd >= Cooldown) 
 		{
-			Cal();
+			CheckLists();
+			if(CorrectExchangeID != -1)
+			{
+				Cal();
+			}
 			cd = 0;
 		}
 		//
@@ -172,91 +190,74 @@ public class GStocks : MonoBehaviour
 
 	void Math()
 	{
-		Exchange.RemoveRange (0, Exchange.Count);
-
-		if (GameControl.control.Exchanges.Count > 0)
+		for (int j = 0; j < GameControl.control.CompanyServerData[CorrectExchangeID].StockExchange.Stocks.Count; j++)
 		{
-			for (int i = 0; i < GameControl.control.Exchanges.Count; i++)
+			BuyingOrSeling = Random.Range(1, 3);
+
+			if (GameControl.control.CompanyServerData[CorrectExchangeID].StockExchange.Stocks[j].CurPrice < Random.Range(10, 50))
 			{
-				if (GameControl.control.Exchanges [i].Exchange == ExchangeName)
-				{
-					BuyingOrSeling = Random.Range(1, 3);
-
-					if (GameControl.control.Exchanges [i].CurPrice < Random.Range (10, 50))
-					{
-						BuyingOrSeling = 1;
-						BoughtShareAmmount = Random.Range(25, 50);
-					}
-
-					if (GameControl.control.Exchanges [i].CurPrice > Random.Range (300, 500))
-					{
-						BuyingOrSeling = 2;
-						BoughtShareAmmount = Random.Range(25, 50);
-					}
-
-					if (BuyingOrSeling == 1) 
-					{
-						//Buying
-						BoughtShareAmmount = Random.Range(1, 25);
-						//GStockSave.stocks.CurrentShareVolume[i] -= BoughtShareAmmount;
-						GameControl.control.Exchanges[i].CurPrice += 1 * BoughtShareAmmount;
-					}
-
-					if (BuyingOrSeling == 2) 
-					{
-						//Selling
-						BoughtShareAmmount = Random.Range(1, 25);
-						//GStockSave.stocks.CurrentShareVolume[i] += BoughtShareAmmount;
-						GameControl.control.Exchanges[i].CurPrice -= 1 * BoughtShareAmmount;
-					}
-
-					//PercentValue[i] = GStockSave.stocks.CurrentSharePrice[i] - GStockSave.stocks.PastSharePrice[i];
-
-					GameControl.control.Exchanges [i].ChangeVal = GameControl.control.Exchanges [i].CurPrice - GameControl.control.Exchanges [i].PPrice;
-
-					float PercentMath = (GameControl.control.Exchanges [i].CurPrice - GameControl.control.Exchanges [i].PPrice) / GameControl.control.Exchanges [i].PPrice * 100;
-					GameControl.control.Exchanges [i].ChangePercent = PercentMath;
-
-					Exchange.Add (GameControl.control.Exchanges [i]);
-				}
+				BuyingOrSeling = 1;
+				BoughtShareAmmount = Random.Range(25, 50);
 			}
+
+			if (GameControl.control.CompanyServerData[CorrectExchangeID].StockExchange.Stocks[j].CurPrice > Random.Range(300, 500))
+			{
+				BuyingOrSeling = 2;
+				BoughtShareAmmount = Random.Range(25, 50);
+			}
+
+			if (BuyingOrSeling == 1)
+			{
+				//Buying
+				BoughtShareAmmount = Random.Range(1, 25);
+				//GStockSave.stocks.CurrentShareVolume[i] -= BoughtShareAmmount;
+				GameControl.control.CompanyServerData[CorrectExchangeID].StockExchange.Stocks[j].CurPrice += 1 * BoughtShareAmmount;
+			}
+
+			if (BuyingOrSeling == 2)
+			{
+				//Selling
+				BoughtShareAmmount = Random.Range(1, 25);
+				//GStockSave.stocks.CurrentShareVolume[i] += BoughtShareAmmount;
+				GameControl.control.CompanyServerData[CorrectExchangeID].StockExchange.Stocks[j].CurPrice -= 1 * BoughtShareAmmount;
+			}
+
+			//PercentValue[i] = GStockSave.stocks.CurrentSharePrice[i] - GStockSave.stocks.PastSharePrice[i];
+
+			GameControl.control.CompanyServerData[CorrectExchangeID].StockExchange.Stocks[j].ChangeVal = GameControl.control.CompanyServerData[CorrectExchangeID].StockExchange.Stocks[j].CurPrice - GameControl.control.CompanyServerData[CorrectExchangeID].StockExchange.Stocks[j].PPrice;
+
+			float PercentMath = (GameControl.control.CompanyServerData[CorrectExchangeID].StockExchange.Stocks[j].CurPrice - GameControl.control.CompanyServerData[CorrectExchangeID].StockExchange.Stocks[j].PPrice) / GameControl.control.CompanyServerData[CorrectExchangeID].StockExchange.Stocks[j].PPrice * 100;
+			GameControl.control.CompanyServerData[CorrectExchangeID].StockExchange.Stocks[j].ChangePercent = PercentMath;
 		}
 	}
 
 	void Cal()
 	{
-		if (GameControl.control.Exchanges.Count > 0)
+		for (int j = 0; j < GameControl.control.CompanyServerData[CorrectExchangeID].StockExchange.Stocks.Count; j++)
 		{
-			for (int i = 0; i < GameControl.control.Exchanges.Count; i++)
-			{
-				if (GameControl.control.Exchanges [i].Exchange == ExchangeName)
-				{
-					GameControl.control.Exchanges [i].PPrice = GameControl.control.Exchanges [i].CurPrice;
-				}
-			}
-
-			Math();
+			GameControl.control.CompanyServerData[CorrectExchangeID].StockExchange.Stocks[j].PPrice = GameControl.control.CompanyServerData[CorrectExchangeID].StockExchange.Stocks[j].CurPrice;
 		}
+		Math();
 	}
 
-	void PurchaseShares()
-	{
-		float cost = Exchange [SelectedCompany].CurPrice * Amount;
-		for(int i = 0; i < GameControl.control.BankData.Count;i++)
-		{
-			for (int j = 0; j < GameControl.control.BankData[i].Accounts.Count; j++)
-			{
-				if(GameControl.control.BankData[i].Accounts[j].Primary == true)
-				{
-					GameControl.control.BankData[i].Accounts[j].AccountBalance -= cost;
-				}
-			}
-		}
-		GameControl.control.Portfolio.Add (new StockPortfolioSystem (Exchange [SelectedCompany].Exchange, "", Exchange [SelectedCompany].Company, "", GameControl.control.Time.FullDate, Exchange [SelectedCompany].CurPrice, Amount));
-        GameControl.control.TransactionHistory.Add(new StockPortfolioSystem(Exchange[SelectedCompany].Exchange, "B", Exchange[SelectedCompany].Company, "", GameControl.control.Time.FullDate, Exchange[SelectedCompany].CurPrice, Amount));
-        Amount = 0;
-		showBuyMenu = false;
-	}
+	//void PurchaseShares()
+	//{
+	//	float cost = Exchange [SelectedCompany].CurPrice * Amount;
+	//	for(int i = 0; i < GameControl.control.BankData.Count;i++)
+	//	{
+	//		for (int j = 0; j < GameControl.control.BankData[i].Accounts.Count; j++)
+	//		{
+	//			if(GameControl.control.BankData[i].Accounts[j].Primary == true)
+	//			{
+	//				GameControl.control.BankData[i].Accounts[j].AccountBalance -= cost;
+	//			}
+	//		}
+	//	}
+	//	GameControl.control.Portfolio.Add (new StockPortfolioSystem (Exchange [SelectedCompany].Exchange, "", Exchange [SelectedCompany].Company, "", GameControl.control.Time.FullDate, Exchange [SelectedCompany].CurPrice, Amount,null));
+ //       GameControl.control.TransactionHistory.Add(new StockPortfolioSystem(Exchange[SelectedCompany].Exchange, "B", Exchange[SelectedCompany].Company, "", GameControl.control.Time.FullDate, Exchange[SelectedCompany].CurPrice, Amount, null));
+ //       Amount = 0;
+	//	showBuyMenu = false;
+	//}
 
 	public void RenderSite()
 	{
@@ -282,32 +283,32 @@ public class GStocks : MonoBehaviour
 			ShareQTY = Regex.Replace(ShareQTY, @"[^0-9]", "");
 			if (ShareQTY != "") 
 			{
-				Amount = int.Parse(ShareQTY);	
+				Amount = int.Parse(ShareQTY);
 			}
 			GUI.Label (new Rect(5,100,300,300),"" + Amount + " @ " + Exchange[SelectedCompany].CurPrice);
 
 			float cost = Exchange [SelectedCompany].CurPrice * Amount;
 			GUI.Label (new Rect(5,130,300,300),"Total Cost: " + cost);
 
-			if(GUI.Button(new Rect(250, 200, 35, 21), "Buy"))
-			{
-				if (Amount > 0)
-				{
-					for (int i = 0; i < GameControl.control.BankData.Count; i++)
-					{
-						for (int j = 0; j < GameControl.control.BankData[i].Accounts.Count; j++)
-						{
-							if (GameControl.control.BankData[i].Accounts[j].Primary == true)
-							{
-								if (GameControl.control.BankData[i].Accounts[j].AccountBalance >= cost)
-								{
-									PurchaseShares();
-								}
-							}
-						}
-					}
-				}
-			}
+			//if (GUI.Button(new Rect(250, 200, 35, 21), "Buy"))
+			//{
+			//	if (Amount > 0)
+			//	{
+			//		for (int i = 0; i < GameControl.control.BankData.Count; i++)
+			//		{
+			//			for (int j = 0; j < GameControl.control.BankData[i].Accounts.Count; j++)
+			//			{
+			//				if (GameControl.control.BankData[i].Accounts[j].Primary == true)
+			//				{
+			//					if (GameControl.control.BankData[i].Accounts[j].AccountBalance >= cost)
+			//					{
+			//						PurchaseShares();
+			//					}
+			//				}
+			//			}
+			//		}
+			//	}
+			//}
 		}
 		else
 		{
@@ -323,22 +324,22 @@ public class GStocks : MonoBehaviour
 
 			//GUI.Label(new Rect(205,55,100,100),"Selected: " + GStockSave.stocks.SelectedCompanyIndex);
 
-			if (Exchange.Count > 0)
+			if (GameControl.control.CompanyServerData[CorrectExchangeID].StockExchange.Stocks.Count > 0)
 			{
 				scrollpos = GUI.BeginScrollView(new Rect(0, 47, 499, 240), scrollpos, new Rect(0, 0, 0, scrollsize*22));
-				for (scrollsize = 0; scrollsize < Exchange.Count; scrollsize++)
+				for (scrollsize = 0; scrollsize < GameControl.control.CompanyServerData[CorrectExchangeID].StockExchange.Stocks.Count; scrollsize++)
 				{
-					if(Exchange[scrollsize].ChangeVal < 0)
+					if(GameControl.control.CompanyServerData[CorrectExchangeID].StockExchange.Stocks[scrollsize].ChangeVal < 0)
 					{
 						GUI.contentColor = Color.red;
 					}
 
-					if (Exchange[scrollsize].ChangeVal > 0)
+					if (GameControl.control.CompanyServerData[CorrectExchangeID].StockExchange.Stocks[scrollsize].ChangeVal > 0)
 					{
 						GUI.contentColor = Color.green;
 					}
 
-					if(GUI.Button(new Rect(359, scrollsize * 22, 60, 21), "" + Exchange[scrollsize].ChangeVal))
+					if(GUI.Button(new Rect(359, scrollsize * 22, 60, 21), "" + GameControl.control.CompanyServerData[CorrectExchangeID].StockExchange.Stocks[scrollsize].ChangeVal))
 					{
 
 					}
@@ -350,31 +351,31 @@ public class GStocks : MonoBehaviour
 					//
 					//				}
 
-					if(GUI.Button(new Rect(2, scrollsize * 22, 174, 21), "" + Exchange[scrollsize].Company))
+					if(GUI.Button(new Rect(2, scrollsize * 22, 174, 21), "" + GameControl.control.CompanyServerData[CorrectExchangeID].StockExchange.Stocks[scrollsize].Company))
 					{
 						//GStockSave.stocks.SelectedCompanyIndex = scrollsize;
 						//GStockSave.stocks.SelectedCompanyName = ListOfCompaniesNames[GStockSave.stocks.SelectedCompanyIndex];
 						//GStockSave.stocks.SelectedPrice = GStockSave.stocks.CurrentSharePrice[GStockSave.stocks.SelectedCompanyIndex];
 					}
 
-					if(Exchange[scrollsize].ChangePercent < 0)
+					if(GameControl.control.CompanyServerData[CorrectExchangeID].StockExchange.Stocks[scrollsize].ChangePercent < 0)
 					{
 						GUI.contentColor = Color.red;
 					}
 
-					if (Exchange[scrollsize].ChangePercent > 0)
+					if (GameControl.control.CompanyServerData[CorrectExchangeID].StockExchange.Stocks[scrollsize].ChangePercent > 0)
 					{
 						GUI.contentColor = Color.green;
 					}
 
-					if(GUI.Button(new Rect(177, scrollsize * 22, 100, 21), "" + Exchange[scrollsize].ChangePercent.ToString("0.00") + "%"))
+					if(GUI.Button(new Rect(177, scrollsize * 22, 100, 21), "" + GameControl.control.CompanyServerData[CorrectExchangeID].StockExchange.Stocks[scrollsize].ChangePercent.ToString("0.00") + "%"))
 					{
 
 					}
 
 					GUI.contentColor = Color.white;
 
-					if(GUI.Button(new Rect(278, scrollsize * 22, 80, 21), "$" + Exchange[scrollsize].CurPrice))
+					if(GUI.Button(new Rect(278, scrollsize * 22, 80, 21), "$" + GameControl.control.CompanyServerData[CorrectExchangeID].StockExchange.Stocks[scrollsize].CurPrice))
 					{
 
 					}

@@ -11,6 +11,9 @@ public class CompanyServerSystem
     public List<ProgramSystem> Files = new List<ProgramSystem>();
     public List<ProgramSystem> QuickList = new List<ProgramSystem>();
     public List<ProgramSystem> DesktopList = new List<ProgramSystem>();
+    public List<UACSystem> Accounts = new List<UACSystem>();
+    public List<BankAccountsSystem> BankDetails = new List<BankAccountsSystem>();
+    public StockTradeSys StockExchange;
     public ServerType Type;
 
     public enum ServerType
@@ -19,10 +22,13 @@ public class CompanyServerSystem
         Webserver,
         FileServer,
         EmailServer,
-        PhoneServer
+        PhoneServer,
+        BankServer,
+        StockServer,
+        StoreServer
     }
 
-    public CompanyServerSystem(string name,string ip, List<RemoteFileSystem> webpages, List<ProgramSystem> files, List<ProgramSystem> quicklist, List<ProgramSystem> desktoplist, ServerType type)
+    public CompanyServerSystem(string name,string ip, List<RemoteFileSystem> webpages, List<ProgramSystem> files, List<ProgramSystem> quicklist, List<ProgramSystem> desktoplist, ServerType type, List<UACSystem> accounts, List<BankAccountsSystem> bank, StockTradeSys stockexchange)
     {
         Name = name;
         IP = ip;
@@ -31,5 +37,8 @@ public class CompanyServerSystem
         QuickList = quicklist;
         DesktopList = desktoplist;
         Type = type;
+        Accounts = accounts;
+        BankDetails = bank;
+        StockExchange = stockexchange;
     }
 }

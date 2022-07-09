@@ -21,11 +21,11 @@ public class RAM : MonoBehaviour
 
 	void Math()
 	{
-        MaxRAM = 0;
-        for (int i = 0; i < GameControl.control.Gateway.InstalledRAM.Count; i++)
-        {
-            MaxRAM = MaxRAM + GameControl.control.Gateway.InstalledRAM[i].Max;
-        }
+        //MaxRAM = 0;
+        //for (int i = 0; i < GameControl.control.Gateway.InstalledRAM.Count; i++)
+        //{
+        //    MaxRAM = MaxRAM + GameControl.control.Gateway.InstalledRAM[i].Max;
+        //}
 
         RemainingRAM = MaxRAM - UsedRAM;
     }

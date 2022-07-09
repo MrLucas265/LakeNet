@@ -181,15 +181,15 @@ public class TUG : MonoBehaviour
 
 		if(GUI.Button(new Rect(2,40,150,20),"Set Network Speed"))
 		{
-            GameControl.control.Gateway.InstalledModem[0].MaxSpeed = SelectedSpeed;
-            GameControl.control.Gateway.InstalledModem[0].CurrentSpeed = SelectedSpeed;
+            //GameControl.control.Gateway.InstalledModem[0].MaxSpeed = SelectedSpeed;
+           // GameControl.control.Gateway.InstalledModem[0].CurrentSpeed = SelectedSpeed;
             
-            DateSystem InitalPlanDate = new DateSystem(GameControl.control.Time.Seconds, GameControl.control.Time.Miniutes, GameControl.control.Time.Hours, GameControl.control.Time.Day, GameControl.control.Time.Month, GameControl.control.Time.Year, 0, "", false, "", 0, 0, 0, false, "" + GameControl.control.Time.Day.ToString("00") + "" + "/" + GameControl.control.Time.Month.ToString("00") + "/" + GameControl.control.Time.Year.ToString("0000"), "", "");
+            DateSystem InitalPlanDate = new DateSystem(GameControl.control.Time.Seconds, GameControl.control.Time.Miniutes, GameControl.control.Time.Hours, GameControl.control.Time.TwelveHours, GameControl.control.Time.Day, GameControl.control.Time.Month, GameControl.control.Time.Year, 0, "", false, "", 0, 0, 0, false, "" + GameControl.control.Time.Day.ToString("00") + "" + "/" + GameControl.control.Time.Month.ToString("00") + "/" + GameControl.control.Time.Year.ToString("0000"), "", "", "", false);
             int MonthMath = InitalPlanDate.Month + 1;
             int DDay = InitalPlanDate.Day;
             int DYear = InitalPlanDate.Year;
             string DString = "" + DDay.ToString("00") + "/" + MonthMath.ToString("00") + "/" + DYear.ToString("0000");
-            DateSystem DuePlanDate = new DateSystem(InitalPlanDate.Seconds, InitalPlanDate.Miniutes, InitalPlanDate.Hours, InitalPlanDate.Day, MonthMath, InitalPlanDate.Year, 0, "", false, "", 0, 0, 0, false,DString, "", "");
+            DateSystem DuePlanDate = new DateSystem(InitalPlanDate.Seconds, InitalPlanDate.Miniutes, InitalPlanDate.Hours,InitalPlanDate.TwelveHours, InitalPlanDate.Day, MonthMath, InitalPlanDate.Year, 0, "", false, "", 0, 0, 0, false,DString, "", "", "", false);
 
             for (int i = 0; i < GameControl.control.Plans.Count; i++)
             {
@@ -207,8 +207,8 @@ public class TUG : MonoBehaviour
            // GameControl.control.MyBankDetails[GameControl.control.SelectedBank].AccountBalance -= MonthlyPrice;
         }
 
-        GUI.Label(new Rect(315, 60, 300, 20), "Current Max Speed: " + GameControl.control.Gateway.InstalledModem[0].MaxSpeed);
-        GUI.Label(new Rect(315, 80, 300, 20), "Current Speed: " + GameControl.control.Gateway.InstalledModem[0].CurrentSpeed);
+        //GUI.Label(new Rect(315, 60, 300, 20), "Current Max Speed: " + GameControl.control.Gateway.InstalledModem[0].MaxSpeed);
+        //GUI.Label(new Rect(315, 80, 300, 20), "Current Speed: " + GameControl.control.Gateway.InstalledModem[0].CurrentSpeed);
 
         if (GUI.Button(new Rect(5,80,100,20),"Dial Up"))
 		{

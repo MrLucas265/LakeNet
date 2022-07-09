@@ -8,16 +8,30 @@ public class ServerCreator : MonoBehaviour
 
 	public List<RemoteFileSystem> JaildewWebPages = new List<RemoteFileSystem>();
 	public List<ProgramSystem> JaildewFiles = new List<ProgramSystem>();
+	public List<UACSystem> JaildewAccounts = new List<UACSystem>();
 
 
 	public List<RemoteFileSystem> BecasWebPages = new List<RemoteFileSystem>();
 	public List<ProgramSystem> BecasFiles = new List<ProgramSystem>();
+	public List<UACSystem> BecasAccounts = new List<UACSystem>();
 
 	public List<RemoteFileSystem> UnicomWebPages = new List<RemoteFileSystem>();
 	public List<ProgramSystem> UnicomFiles = new List<ProgramSystem>();
+	public List<UACSystem> UnicomAccounts = new List<UACSystem>();
 
 	public List<RemoteFileSystem> RevaTestWebPages = new List<RemoteFileSystem>();
 	public List<ProgramSystem> RevaTestFiles = new List<ProgramSystem>();
+	public List<UACSystem> RevaTestAccounts = new List<UACSystem>();
+
+	//public List<RemoteFileSystem> RevaTestWebPages = new List<RemoteFileSystem>();
+	//public List<ProgramSystem> RevaTestFiles = new List<ProgramSystem>();
+	public List<UACSystem> GStocksAccounts = new List<UACSystem>();
+	public StockTradeSys GStocks;
+	public List<StockInfoSys> GStocksStocks = new List<StockInfoSys>();
+	public List<UACStockSystem> GStockUAC = new List<UACStockSystem>();
+
+	public List<RemoteFileSystem> LECBankPages = new List<RemoteFileSystem>();
+	public List<BankAccountsSystem> LECBankDetails = new List<BankAccountsSystem>();
 
 	// Use this for initialization
 	void Start ()
@@ -46,16 +60,16 @@ public class ServerCreator : MonoBehaviour
 		PingWebPages.Add(new ProgramSystem("Unicom LTD", "", "", "", "", "", FileLocation, "www.unicom.com", "", "", ProgramSystem.FileExtension.File, ProgramSystem.FileExtension.Null, 0, 0, 0, 0, 0, 0, 0, 100, 0, 0, 0, 0, 0, 0, 0, 0, false, false, false, false, null, null));
 		PingWebPages.Add(new ProgramSystem("LEC Bank", "", "", "", "", "", FileLocation, "www.lecbank.com", "", "", ProgramSystem.FileExtension.File, ProgramSystem.FileExtension.Null, 0, 0, 0, 0, 0, 0, 0, 100, 0, 0, 0, 0, 0, 0, 0, 0, false, false, false, false, null, null));
 
-		GameControl.control.CompanyServerData.Add(new CompanyServerSystem("Ping", "123.456.789", null, PingWebPages, null, null, CompanyServerSystem.ServerType.FileServer));
+		GameControl.control.CompanyServerData.Add(new CompanyServerSystem("Ping", "123.456.789", null, PingWebPages, null, null, CompanyServerSystem.ServerType.FileServer, null, null,null));
 	}
 
 	void AddJaildewServer()
 	{
 		//Public
-		JaildewWebPages.Add(new RemoteFileSystem("< Back", "", "", "", "www.jaildew.com/public", "www.jaildew.com/home", 0, 0, 0, 0, 0, 0, false, RemoteFileSystem.ProgramType.Fdl));
+		JaildewWebPages.Add(new RemoteFileSystem("< Back", "", "", "", "www.jaildew.com/public", "www.jaildew.com", 0, 0, 0, 0, 0, 0, false, RemoteFileSystem.ProgramType.Fdl));
 		JaildewWebPages.Add(new RemoteFileSystem("< Back", "", "", "", "www.jaildew.com/tempfiles", "www.jaildew.com/public", 0, 0, 0, 0, 0, 0, false, RemoteFileSystem.ProgramType.Fdl));
-		JaildewWebPages.Add(new RemoteFileSystem("Public", "", "", "", "www.jaildew.com/home", "www.jaildew.com/public", 0, 0, 0, 0, 0, 0, false, RemoteFileSystem.ProgramType.Fdl));
-		JaildewWebPages.Add(new RemoteFileSystem("Sign in", "", "", "", "www.jaildew.com/home", "www.jaildew.com/login", 0, 0, 0, 0, 0, 0, false, RemoteFileSystem.ProgramType.Fdl));
+		JaildewWebPages.Add(new RemoteFileSystem("Public", "", "", "", "www.jaildew.com", "www.jaildew.com/public", 0, 0, 0, 0, 0, 0, false, RemoteFileSystem.ProgramType.Fdl));
+		JaildewWebPages.Add(new RemoteFileSystem("Sign in", "", "", "", "www.jaildew.com", "www.jaildew.com/login", 0, 0, 0, 0, 0, 0, false, RemoteFileSystem.ProgramType.Fdl));
 		JaildewWebPages.Add(new RemoteFileSystem("Temp Files", "", "", "", "www.jaildew.com/public", "www.jaildew.com/tempfiles", 0, 0, 0, 0, 0, 0, false, RemoteFileSystem.ProgramType.Fdl));
 		//Internal/Private
 		JaildewWebPages.Add(new RemoteFileSystem("< Back", "", "", "", "www.jaildew.com/internal/files", "www.jaildew.com/internal", 0, 0, 0, 0, 0, 0, false, RemoteFileSystem.ProgramType.Fdl));
@@ -72,7 +86,7 @@ public class ServerCreator : MonoBehaviour
 		//Private Logs
 		JaildewWebPages.Add(new RemoteFileSystem("< Back", "", "", "", "www.jaildew.com/internal/logs", "www.jaildew.com/internal", 0, 0, 0, 0, 0, 0, false, RemoteFileSystem.ProgramType.Fdl));
 
-		GameControl.control.CompanyServerData.Add(new CompanyServerSystem("Jaildew", "123.456.789", JaildewWebPages, JaildewFiles, null, null, CompanyServerSystem.ServerType.FileServer));
+		GameControl.control.CompanyServerData.Add(new CompanyServerSystem("Jaildew", "123.456.789", JaildewWebPages, JaildewFiles, null, null, CompanyServerSystem.ServerType.FileServer,JaildewAccounts,null,null));
 	}
 
 	void AddBecasServer()
@@ -98,7 +112,7 @@ public class ServerCreator : MonoBehaviour
 		//Private Logs
 		BecasWebPages.Add(new RemoteFileSystem("< Back", "", "", "", "www.becassystems.com/internal/logs", "www.becassystems.com/internal", 0, 0, 0, 0, 0, 0, false, RemoteFileSystem.ProgramType.Fdl));
 
-		GameControl.control.CompanyServerData.Add(new CompanyServerSystem("Becas", "123.456.789", BecasWebPages, BecasFiles, null, null, CompanyServerSystem.ServerType.FileServer));
+		GameControl.control.CompanyServerData.Add(new CompanyServerSystem("Becas", "123.456.789", BecasWebPages, BecasFiles, null, null, CompanyServerSystem.ServerType.FileServer,BecasAccounts, null, null));
 	}
 
 	void AddUnicomServer()
@@ -124,7 +138,7 @@ public class ServerCreator : MonoBehaviour
 		//Private Logs
 		UnicomWebPages.Add(new RemoteFileSystem("< Back", "", "", "", "www.unicom.com/internal/logs", "www.unicom.com/internal", 0, 0, 0, 0, 0, 0, false, RemoteFileSystem.ProgramType.Fdl));
 
-		GameControl.control.CompanyServerData.Add(new CompanyServerSystem("Unicom", "123.456.789", UnicomWebPages, UnicomFiles, null, null, CompanyServerSystem.ServerType.FileServer));
+		GameControl.control.CompanyServerData.Add(new CompanyServerSystem("Unicom", "123.456.789", UnicomWebPages, UnicomFiles, null, null, CompanyServerSystem.ServerType.FileServer,UnicomAccounts, null, null));
 	}
 
 	void AddRevaTestServer()
@@ -150,7 +164,62 @@ public class ServerCreator : MonoBehaviour
 		//Private Logs
 		RevaTestWebPages.Add(new RemoteFileSystem("< Back", "", "", "", "www.reva.com/test/internal/logs", "www.reva.com/test/internal", 0, 0, 0, 0, 0, 0, false, RemoteFileSystem.ProgramType.Fdl));
 
-		GameControl.control.CompanyServerData.Add(new CompanyServerSystem("RevaTest", "123.456.789", RevaTestWebPages, RevaTestFiles, null, null, CompanyServerSystem.ServerType.FileServer));
+		GameControl.control.CompanyServerData.Add(new CompanyServerSystem("RevaTest", "123.456.789", RevaTestWebPages, RevaTestFiles, null, null, CompanyServerSystem.ServerType.FileServer,RevaTestAccounts, null, null));
+	}
+
+	void AddGStocks()
+	{
+		GStocks.ExchangeName = "Memes Exchange";
+
+		GStocksStocks.Add(new StockInfoSys("Dat Boii Pepe", GStocks.ExchangeName, "", "", "", "", "", Random.Range(1, 300), Random.Range(1, 300), Random.Range(1, 300), Random.Range(1, 300), 0, 0));
+		GStocksStocks.Add(new StockInfoSys("Nyan Cat", GStocks.ExchangeName, "", "", "", "", "", Random.Range(1, 300), Random.Range(1, 300), Random.Range(1, 300), Random.Range(1, 300), 0, 0));
+		GStocksStocks.Add(new StockInfoSys("Trolol", GStocks.ExchangeName, "", "", "", "", "", Random.Range(1, 300), Random.Range(1, 300), Random.Range(1, 300), Random.Range(1, 300), 0, 0));
+		GStocksStocks.Add(new StockInfoSys("MLG", GStocks.ExchangeName, "", "", "", "", "", Random.Range(1, 300), Random.Range(1, 300), Random.Range(1, 300), Random.Range(1, 300), 0, 0));
+		GStocksStocks.Add(new StockInfoSys("Vine", GStocks.ExchangeName, "", "", "", "", "", Random.Range(1, 300), Random.Range(1, 300), Random.Range(1, 300), Random.Range(1, 300), 0, 0));
+		GStocksStocks.Add(new StockInfoSys("Star Wars Kid", GStocks.ExchangeName, "", "", "", "", "", Random.Range(1, 300), Random.Range(1, 300), Random.Range(1, 300), Random.Range(1, 300), 0, 0));
+		GStocksStocks.Add(new StockInfoSys("Clippy", GStocks.ExchangeName, "", "", "", "", "", Random.Range(1, 300), Random.Range(1, 300), Random.Range(1, 300), Random.Range(1, 300), 0, 0));
+		GStocksStocks.Add(new StockInfoSys("Cheeki Breeki", GStocks.ExchangeName, "", "", "", "", "", Random.Range(1, 300), Random.Range(1, 300), Random.Range(1, 300), Random.Range(1, 300), 0, 0));
+		GStocksStocks.Add(new StockInfoSys("Remove Kebab", GStocks.ExchangeName, "", "", "", "", "", Random.Range(1, 300), Random.Range(1, 300), Random.Range(1, 300), Random.Range(1, 300), 0, 0));
+		GStocksStocks.Add(new StockInfoSys("Air Horn Remixes", GStocks.ExchangeName, "", "", "", "", "", Random.Range(1, 300), Random.Range(1, 300), Random.Range(1, 300), Random.Range(1, 300), 0, 0));
+		GStocksStocks.Add(new StockInfoSys("Harambe", GStocks.ExchangeName, "", "", "", "", "", Random.Range(1, 300), Random.Range(1, 300), Random.Range(1, 300), Random.Range(1, 300), 0, 0));
+		GStocksStocks.Add(new StockInfoSys("DANK", GStocks.ExchangeName, "", "", "", "", "", Random.Range(1, 300), Random.Range(1, 300), Random.Range(1, 300), Random.Range(1, 300), 0, 0));
+		GStocksStocks.Add(new StockInfoSys("EMOJI", GStocks.ExchangeName, "", "", "", "", "", Random.Range(1, 300), Random.Range(1, 300), Random.Range(1, 300), Random.Range(1, 300), 0, 0));
+		GStocksStocks.Add(new StockInfoSys("Doge", GStocks.ExchangeName, "", "", "", "", "", Random.Range(1, 300), Random.Range(1, 300), Random.Range(1, 300), Random.Range(1, 300), 0, 0));
+		GStocksStocks.Add(new StockInfoSys("Cats", GStocks.ExchangeName, "", "", "", "", "", Random.Range(1, 300), Random.Range(1, 300), Random.Range(1, 300), Random.Range(1, 300), 0, 0));
+		GStocksStocks.Add(new StockInfoSys("Leave Birtany Alone", GStocks.ExchangeName, "", "", "", "", "", Random.Range(1, 300), Random.Range(1, 300), Random.Range(1, 300), Random.Range(1, 300), 0, 0));
+		GStocksStocks.Add(new StockInfoSys("Ennuya Guy", GStocks.ExchangeName, "", "", "", "", "", Random.Range(1, 300), Random.Range(1, 300), Random.Range(1, 300), Random.Range(1, 300), 0, 0));
+		GStocksStocks.Add(new StockInfoSys("Hey Hey Hey", GStocks.ExchangeName, "", "", "", "", "", Random.Range(1, 300), Random.Range(1, 300), Random.Range(1, 300), Random.Range(1, 300), 0, 0));
+		GStocksStocks.Add(new StockInfoSys("Overwatch Memes", GStocks.ExchangeName, "", "", "", "", "", Random.Range(1, 300), Random.Range(1, 300), Random.Range(1, 300), Random.Range(1, 300), 0, 0));
+		GStocksStocks.Add(new StockInfoSys("Lemme Smash", GStocks.ExchangeName, "", "", "", "", "", Random.Range(1, 300), Random.Range(1, 300), Random.Range(1, 300), Random.Range(1, 300), 0, 0));
+
+		GStocks = new StockTradeSys(GStocks.ExchangeName, GStockUAC, GStocksStocks);
+
+
+
+
+
+
+
+		GameControl.control.CompanyServerData.Add(new CompanyServerSystem("GStocks", "123.456.789", null, null, null, null, CompanyServerSystem.ServerType.StockServer, GStocksAccounts, null, GStocks));
+	}
+
+	void AddLECBank()
+	{
+		//Home Page
+		LECBankPages.Add(new RemoteFileSystem("Sign in", "", "", "", "www.lecbank.com", "www.lecbank.com/accountlogin", 0, 0, 0, 0, 0, 0, false, RemoteFileSystem.ProgramType.Fdl));
+		LECBankPages.Add(new RemoteFileSystem("Create Account", "", "", "", "www.lecbank.com", "www.lecbank.com/createaccount", 0, 0, 0, 0, 0, 0, false, RemoteFileSystem.ProgramType.Fdl));
+		LECBankPages.Add(new RemoteFileSystem("< Back", "", "", "", "www.lecbank.com/accountlogin", "www.lecbank.com", 0, 0, 0, 0, 0, 0, false, RemoteFileSystem.ProgramType.Fdl));
+		LECBankPages.Add(new RemoteFileSystem("< Back", "", "", "", "www.lecbank.com/createaccount", "www.lecbank.com", 0, 0, 0, 0, 0, 0, false, RemoteFileSystem.ProgramType.Fdl));
+
+		//Account Page
+		LECBankPages.Add(new RemoteFileSystem("< Back", "", "", "", "www.lecbank.com/accountinfo", "www.lecbank.com/account", 0, 0, 0, 0, 0, 0, false, RemoteFileSystem.ProgramType.Fdl));
+		LECBankPages.Add(new RemoteFileSystem("< Back", "", "", "", "www.lecbank.com/transfer", "www.lecbank.com/account", 0, 0, 0, 0, 0, 0, false, RemoteFileSystem.ProgramType.Fdl));
+		LECBankPages.Add(new RemoteFileSystem("< Back", "", "", "", "www.lecbank.com/loans", "www.lecbank.com/account", 0, 0, 0, 0, 0, 0, false, RemoteFileSystem.ProgramType.Fdl));
+		LECBankPages.Add(new RemoteFileSystem("Account Info", "", "", "", "www.lecbank.com/account", "www.lecbank.com/accountinfo", 0, 0, 0, 0, 0, 0, false, RemoteFileSystem.ProgramType.Fdl));
+		LECBankPages.Add(new RemoteFileSystem("Transfer", "", "", "", "www.lecbank.com/account", "www.lecbank.com/transfer", 0, 0, 0, 0, 0, 0, false, RemoteFileSystem.ProgramType.Fdl));
+		LECBankPages.Add(new RemoteFileSystem("Loans", "", "", "", "www.lecbank.com/account", "www.lecbank.com/loans", 0, 0, 0, 0, 0, 0, false, RemoteFileSystem.ProgramType.Fdl));
+
+		GameControl.control.CompanyServerData.Add(new CompanyServerSystem("LEC Bank", "123.456.789", LECBankPages, null, null, null, CompanyServerSystem.ServerType.BankServer, null, LECBankDetails, null));
 	}
 
 
@@ -161,5 +230,7 @@ public class ServerCreator : MonoBehaviour
 		AddBecasServer();
 		AddUnicomServer();
 		AddRevaTestServer();
+		AddGStocks();
+		AddLECBank();
 	}
 }

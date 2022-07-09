@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 
 public class Boot : MonoBehaviour
 {
@@ -56,7 +57,6 @@ public class Boot : MonoBehaviour
 	public int scrollsize;
 
 	private Notepad note;
-	private Progtive pro;
 	private Tracer trace;
 	private MissionBrow mb;
 	private CurContracts cc;
@@ -71,7 +71,7 @@ public class Boot : MonoBehaviour
 	private Test test;
 	private Defalt def;
 	private MissionGen mg;
-	private OS os;
+	private DesktopEnviroment os;
 	private SystemMap sm;
 	private WebSecViewer wsv;
 	private ErrorProm ep;
@@ -87,6 +87,8 @@ public class Boot : MonoBehaviour
 	private NotificationPrompt notip;
 	private SysHardwareCheck shc;
 
+	private GStocks gstocks;
+
 	private GameObject missions;
 
 	private MissionGen missiongen;
@@ -97,6 +99,8 @@ public class Boot : MonoBehaviour
 	private SysCrashMan SCM;
 
 	private GameObject Prompt;
+
+	public GameObject Database;
 
 	private Rect Pos;
 
@@ -134,43 +138,47 @@ public class Boot : MonoBehaviour
 
 	public bool SetColor;
 
+	public OperatingSystems SelectedOS;
+
 	void Awake()
 	{
 		Customize.cust.Load();
 	}
 
-	void SelectedOSBootDiskCheck()
-	{
-		for (int i = 0; i < GameControl.control.ProgramFiles.Count; i++)
-		{
-			if (GameControl.control.ProgramFiles[i].Extension == ProgramSystem.FileExtension.OS)
-			{
-				if (GameControl.control.ProgramFiles[i].Name == GameControl.control.SelectedOS.Name.ToString())
-				{
-					for (int j = 0; j < GameControl.control.Gateway.InstalledStorageDevice.Count; j++)
-					{
-						for (int k = 0; k < GameControl.control.Gateway.InstalledStorageDevice[j].Partitions.Count; k++)
-						{
-							if (GameControl.control.ProgramFiles[i].Location.StartsWith(GameControl.control.Gateway.InstalledStorageDevice[j].Partitions[k].DriveLetter))
-							{
-								GameControl.control.BootTime = GameControl.control.Gateway.InstalledStorageDevice[j].BootTime;
-							}
-						}
-					}
-				}
-			}
-		}
+	//void SelectedOSBootDiskCheck()
+	//{
+	//	for (int i = 0; i < GameControl.control.ProgramFiles.Count; i++)
+	//	{
+	//		if (GameControl.control.ProgramFiles[i].Extension == ProgramSystem.FileExtension.OS)
+	//		{
+	//			if (GameControl.control.ProgramFiles[i].Name == GameControl.control.SelectedOS.Name.ToString())
+	//			{
+	//				for (int j = 0; j < GameControl.control.Gateway.InstalledStorageDevice.Count; j++)
+	//				{
+	//					for (int k = 0; k < GameControl.control.Gateway.InstalledStorageDevice[j].Partitions.Count; k++)
+	//					{
+	//						if (GameControl.control.ProgramFiles[i].Location.StartsWith(GameControl.control.Gateway.InstalledStorageDevice[j].Partitions[k].DriveLetter))
+	//						{
+	//							GameControl.control.BootTime = GameControl.control.Gateway.InstalledStorageDevice[j].BootTime;
+	//						}
+	//					}
+	//				}
+	//			}
+	//		}
+	//	}
 
-		if(GameControl.control.BootTime == 0)
-		{
-			GameControl.control.BootTime = GameControl.control.Gateway.InstalledStorageDevice[0].BootTime;
-		}
-	}
+	//	if(GameControl.control.BootTime == 0)
+	//	{
+	//		GameControl.control.BootTime = GameControl.control.Gateway.InstalledStorageDevice[0].BootTime;
+	//	}
+	//}
 
 	// Use this for initialization
 	void Start ()
 	{
-		SelectedOSBootDiskCheck();
+		//SelectedOSBootDiskCheck();
+
+		GameControl.control.BootTime = 0.133f;
 
 		Kernal ();
 
@@ -178,6 +186,7 @@ public class Boot : MonoBehaviour
 
 		missions = GameObject.Find ("Missions");
 		Prompt = GameObject.Find("Prompts");
+		Database = GameObject.Find("Database");
 
 		jd = GetComponent<JailDew>();
 		uc = GetComponent<Unicom>();
@@ -185,7 +194,6 @@ public class Boot : MonoBehaviour
 		disk = GetComponent<CD>();
 		com = GetComponent<Computer>();
 		note = GetComponent<Notepad>();
-		pro = GetComponent<Progtive>();
 		trace = GetComponent<Tracer>();
 		mb = GetComponent<MissionBrow>();
 		cc = GetComponent<CurContracts>();
@@ -196,7 +204,7 @@ public class Boot : MonoBehaviour
 		clk = GetComponent<Clock>();
 		def = GetComponent<Defalt>();
 		mg = GetComponent<MissionGen>();
-		os = GetComponent<OS>();
+		os = GetComponent<DesktopEnviroment>();
 		sm = GetComponent<SystemMap>();
 		wsv = GetComponent<WebSecViewer>();
 		ep = GetComponent<ErrorProm>();
@@ -208,6 +216,8 @@ public class Boot : MonoBehaviour
 		ss = GetComponent<ScreenSaver>();
 		clic = GetComponent<CLICommandsV2>();
 		shc = GetComponent<SysHardwareCheck>();
+
+		gstocks = Database.GetComponent<GStocks>();
 
 		sdp = Prompt.GetComponent<ShutdownProm>();
 
@@ -412,10 +422,13 @@ public class Boot : MonoBehaviour
 
 	void Kernal()
 	{
+		var person = PersonController.control.People.FirstOrDefault(x => x.Name == "Player");
 		switch (Index) 
 		{
 		case 0:
 			BootInfo.Add ("Preparing systems check.");
+			person.Gateway.Status.POST = false;
+			person.Gateway.Status.Booting = true;
 			//GameControl.control.Load();
 			break;
 		case 1:
@@ -555,6 +568,7 @@ public class Boot : MonoBehaviour
 				BootInfo.Add ("[Initializing] Connecting Contract Database..");
 				break;
 			case 9:
+				gstocks.enabled = true;
 				BootInfo.Remove ("[Initializing] Connecting Contract Database..");
 				BootInfo.Add ("[Done] Connecting Contract Database");
 				break;
@@ -585,6 +599,7 @@ public class Boot : MonoBehaviour
 				BootInfo.Add ("[Done] Software");
 				break;
 			case 16:
+				notip.enabled = true;
 				BootInfo.Remove ("[Done] Software");
 				BootInfo.Add ("Loading Desktop.");
 				break;
@@ -597,12 +612,25 @@ public class Boot : MonoBehaviour
 
 	void DesktopIni()
 	{
-        if(TestMode == false)
+		var person = PersonController.control.People.FirstOrDefault(x => x.Name == "Player");
+
+		if (TestMode == false)
         {
 			if (Customize.cust.ScreenSaverEnabled == true)
 			{
 				ss.enabled = true;
 			}
+
+			if (Registry.GetColorData("Player", "System", "WindowColor") == null)
+            {
+				Registry.SetColorData("Player", "System", "WindowColor",new SColor(new Color(255,255,255,255)));
+				Registry.SetColorData("Player", "System", "FontColor", new SColor(new Color(0, 0, 0, 255)));
+				Registry.SetColorData("Player", "System", "ButtonColor", new SColor(new Color(255, 255, 255, 255)));
+            }
+
+			Registry.SetBoolData("Player", "System", "WindowColor",true);
+			Registry.SetBoolData("Player", "System", "FontColor", true);
+			Registry.SetBoolData("Player", "System", "ButtonColor", true);
 			GameControl.control.Gateway.Status.Booting = false;
 			os.enabled = true;
             desk.enabled = true;
@@ -612,8 +640,9 @@ public class Boot : MonoBehaviour
 			enabled = false;
             booting = false;
             show = false;
+			person.Gateway.Status.Booting = false;
+			person.Gateway.Status.Booted = true;
 			GameControl.control.Gateway.Status.Booted = true;
-
         }
 	}
 		
@@ -642,6 +671,20 @@ public class Boot : MonoBehaviour
 		GUI.contentColor = fontColor;
 		if (GameControl.control.Gateway.Status.Terminal == false)
 		{
+			var person = PersonController.control.People.FirstOrDefault(x => x.Name == "Player");
+
+			for (int i = 0; i < person.Gateway.StorageDevices.Count; i++)
+			{
+				for (int j = 0; j < person.Gateway.StorageDevices[i].OS.Count; j++)
+				{
+					if(person.Gateway.StorageDevices[i].OS[j].Options.Selected == true)
+					{
+						SelectedOS = person.Gateway.StorageDevices[i].OS[j];
+						person.Gateway.CurrentOS = person.Gateway.StorageDevices[i].OS[j];
+						GameControl.control.SelectedOS = SelectedOS;
+					}
+				}
+			}
 			OSCheck();
 		}
 		else
@@ -667,7 +710,7 @@ public class Boot : MonoBehaviour
 
 	void OSCheck()
 	{
-		switch (GameControl.control.SelectedOS.Name) 
+		switch (SelectedOS.Name) 
 		{
 		case OperatingSystems.OSName.FluidicIceOS:
 			BackgroundFade = true;

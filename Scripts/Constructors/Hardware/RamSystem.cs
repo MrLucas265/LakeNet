@@ -18,6 +18,8 @@ public class RamSystem
     public float HealthPercentage;
     public float PowerEff;
     public int SelectedImage;
+    public int PosX;
+    public int PosY;
 
     public RamSystem(string name,string type, float powerusage,float max,float remaining,float used,float speed,float degradationrate, float maxhealth, float currenthealth, float healthpercentage, float powereff,int selectedimage) //,Texture2D icon)
     {

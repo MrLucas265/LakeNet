@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Video;
 using System.IO;
+using System.Linq;
 
 public class MediaPlayer : MonoBehaviour
 {
@@ -16,34 +17,22 @@ public class MediaPlayer : MonoBehaviour
 
 	public int windowID;
 	public Rect windowRect = new Rect(100, 100, 512, 512);
-	public Rect VideoRect = new Rect(100, 100, 512, 512);
 	public float native_width = 1920;
 	public float native_height = 1080;
 	public bool Drag;
 	private Computer com;
-	private Defalt def;
 	public bool show;
+	public bool quit;
 
 	private ErrorProm ep;
 	private CustomTheme ct;
-	private OS os;
+	private DesktopEnviroment os;
 	private Desktop desk;
 	private AppMan appman;
 	private SoundControl sc;
 
-	public List<Texture2D> BackgroundPics = new List<Texture2D>();
-
 	public Vector2 scrollpos = Vector2.zero;
 	public int scrollsize;
-	public int Select;
-
-	public Rect CloseButton;
-	public Rect MiniButton;
-	public Rect SettingsButton;
-	public Rect ListButton;
-	public Rect HomeButton;
-	public Rect DefaltSetting;
-	public Rect DefaltBoxSetting;
 
 	public Rect Play;
 	public Rect Stop;
@@ -55,33 +44,30 @@ public class MediaPlayer : MonoBehaviour
 
 	public bool minimize;
 
-	public string CurrentFilePath = "";
-
-	public string DirectoryPath = "";
-
 	public List<string> PlayList = new List<string>();
 
-	public bool loadVideo;
-	public bool loadPlaylist;
-
-	public int SelectedFile;
+	public List<string> DisplayPlayList = new List<string>();
 
 	public float Seektime;
 
 
 	public bool NextFrame;
 	public bool BackFrame;
-	public bool Loop;
-	public bool Looping;
 
 	public bool AutoPlay;
 	public bool StopOnClose;
 
-	public string Menu;
+	public string RegProgramName;
+	public string RegPersonName;
+
+	public FileInfo Filename;
 
 	// Use this for initialization
 	void Start()
 	{
+		RegProgramName = "MediaPlayer";
+		RegPersonName = "Player";
+
 		System = GameObject.Find("System");
 
 		video = GetComponent<VideoPlayer>();
@@ -90,10 +76,6 @@ public class MediaPlayer : MonoBehaviour
 		windowRect.height = 220;
 		windowRect.x = Customize.cust.windowx[windowID];
 		windowRect.y = Customize.cust.windowy[windowID];
-		VideoRect.x = 2;
-		VideoRect.y = 0;
-		VideoRect.width = 256;
-		VideoRect.height = 256;
 
 		com = System.GetComponent<Computer>();
 
@@ -101,32 +83,44 @@ public class MediaPlayer : MonoBehaviour
 
 		SetPos();
 
-		CurrentFilePath = "C:/Users/lucas/Downloads/haachama.mp4";
-		DirectoryPath = "F:/";
+		SetVideoPos();
+
+		if(Registry.GetStringData(RegPersonName, RegProgramName, "Path") == "")
+        {
+			Registry.SetStringData(RegPersonName, RegProgramName, "Path", "E:/");
+		}
+
+		//Registry.CreateNewKeyValue(RegPersonName, RegPersonName, "Looping", "", false, 0, 0);
 
 		AddFileDirectory();
 
-		Menu = "Home";
+		Registry.SetStringData(RegPersonName, RegProgramName, "Menu", "Home");
+	}
+
+	void SetVideoPos()
+	{
+		Registry.SetRectData(RegPersonName, RegProgramName, "VideoRect", new Rect(0,0,windowRect.width,windowRect.height));
 	}
 
 	void SetPos()
 	{
-		CloseButton = new Rect(windowRect.width - 21, 1, 21, 20);
-		MiniButton = new Rect(CloseButton.x - 21, 1, 21, 20);
-		SettingsButton = new Rect(MiniButton.x - 21, 1, 21, 20);
-		ListButton = new Rect(SettingsButton.x - 21, 1, 21, 20);
-		HomeButton = new Rect(ListButton.x - 21, 1, 21, 20);
-		DefaltBoxSetting = new Rect(1, 1, HomeButton.x - 1, 20);
+		Registry.SetRectData(RegPersonName, RegProgramName, "CloseButton", new Rect(windowRect.width - 21, 1, 21, 20));
+		Registry.SetRectData(RegPersonName, RegProgramName, "MiniButton", new Rect(Registry.GetRectData(RegPersonName, RegProgramName, "CloseButton").x - 21, 1, 21, 20));
+		Registry.SetRectData(RegPersonName, RegProgramName, "SettingsButton", new Rect(Registry.GetRectData(RegPersonName, RegProgramName, "MiniButton").x - 21, 1, 21, 20));
+		Registry.SetRectData(RegPersonName, RegProgramName, "ListButton", new Rect(Registry.GetRectData(RegPersonName, RegProgramName, "SettingsButton").x - 21, 1, 21, 20));
+		Registry.SetRectData(RegPersonName, RegProgramName, "HomeButton", new Rect(Registry.GetRectData(RegPersonName, RegProgramName, "ListButton").x - 21, 1, 21, 20));
+		Registry.SetRectData(RegPersonName, RegProgramName, "DefaltBoxSetting", new Rect(1, 1, Registry.GetRectData(RegPersonName, RegProgramName, "HomeButton").x - 1, 20));
+		Registry.SetRectData(RegPersonName, RegProgramName, "Volume", new Rect(2, windowRect.height - 15, 200, 21));
 	}
 
 	// Update is called once per frame
 	void Update()
 	{
-		if(loadPlaylist == true)
+		if(Registry.GetBoolData(RegPersonName,RegProgramName,"LoadPlaylist") == true)
 		{
 			PlayList.RemoveRange(0, PlayList.Count);
 			AddFileDirectory();
-			loadPlaylist = false;
+			Registry.SetBoolData(RegPersonName, RegProgramName, "LoadPlaylist", false);
 		}
 	}
 
@@ -176,7 +170,7 @@ public class MediaPlayer : MonoBehaviour
 
 	void AddFileDirectory()
 	{
-		foreach (string file in Directory.GetFiles(DirectoryPath))
+		foreach (string file in Directory.GetFiles(Registry.GetStringData(RegPersonName, RegProgramName, "Path")))
 		{ 
 			if(file.Contains(".mp4"))
 			{
@@ -262,34 +256,36 @@ public class MediaPlayer : MonoBehaviour
 			GUI.color = com.colors[Customize.cust.WindowColorInt];
 			windowRect = WindowClamp.ClampToScreen(GUI.Window(windowID, windowRect, DoMyWindow, ""));
 		}
+
+		SetVideoPos();
 	}
 
 	void RenderMovie()
 	{
-		GUI.DrawTexture(new Rect(VideoRect), video.targetTexture);
+		GUI.DrawTexture(new Rect(Registry.GetRectData(RegPersonName, RegProgramName, "VideoRect")), video.targetTexture);
 	}
 
 	void RenderControls()
 	{
-		if (loadVideo == true)
+		if (Registry.GetBoolData(RegPersonName, RegProgramName, "LoadVideo"))
 		{
-			LoadVideoPath(CurrentFilePath);
+			LoadVideoPath(Registry.GetStringData(RegPersonName, RegProgramName, "CurrentFilePath"));
 			if (video.controlledAudioTrackCount == 0)
 			{
 				video.controlledAudioTrackCount = 1;
 				video.EnableAudioTrack(0, true);
 				video.SetTargetAudioSource(0, audio);
-				LoadVideoPath(CurrentFilePath);
+				LoadVideoPath(Registry.GetStringData(RegPersonName, RegProgramName, "CurrentFilePath"));
 			}
 			if (!audio.isPlaying)
 			{
-				LoadVideoPath(CurrentFilePath);
+				LoadVideoPath(Registry.GetStringData(RegPersonName, RegProgramName, "CurrentFilePath"));
 			}
 			if (AutoPlay == false)
 			{
 				video.Pause();
 			}
-			loadVideo = false;
+			Registry.SetBoolData(RegPersonName, RegProgramName, "LoadVideo", false);
 
 		}
 		HomeScreen();
@@ -311,19 +307,27 @@ public class MediaPlayer : MonoBehaviour
 			BackFrame = false;
 		}
 
-		if(Loop == true)
+		if(Registry.GetBoolData(RegPersonName, RegProgramName, "Loop") == true)
 		{
 			LoopVideo();
-			Loop = false;
+			Registry.SetBoolData(RegPersonName, RegProgramName, "Loop", false);
 		}
 
-		Looping = IsLooping;
+		Registry.SetBoolData(RegPersonName, RegProgramName, "Looping", IsLooping);
 
 		if (!video.isPlaying)
 		{
 			if (GUI.Button(new Rect(48, 22, 21, 21), ">"))
 			{
-				PlayVideo();
+				if(!IsPrepared)
+                {
+					Registry.SetBoolData(RegPersonName, RegProgramName, "LoadVideo", true);
+					PlayVideo();
+				}
+				else
+                {
+					PlayVideo();
+				}
 			}
 		}
 		else
@@ -341,34 +345,34 @@ public class MediaPlayer : MonoBehaviour
 
 		if (GUI.Button(new Rect(96,22, 21, 21), ">>"))
 		{
-			SelectedFile++;
-			if (SelectedFile > PlayList.Count)
+			Registry.SetIntData(RegPersonName, RegProgramName, "SelectedFile", Registry.GetIntData(RegPersonName, RegProgramName, "SelectedFile")+1);
+			if (Registry.GetIntData(RegPersonName, RegProgramName, "SelectedFile") > PlayList.Count)
 			{
-				SelectedFile = 0;
+				Registry.SetIntData(RegPersonName, RegProgramName, "SelectedFile",0);
 			}
 
-			CurrentFilePath = PlayList[SelectedFile];
+			Registry.SetStringData(RegPersonName, RegProgramName, "CurrentFilePath",PlayList[Registry.GetIntData(RegPersonName, RegProgramName, "SelectedFile")]);
 
-			loadVideo = true;
+			Registry.SetBoolData(RegPersonName, RegProgramName, "LoadVideo", true);
 		}
 
 
 		if (GUI.Button(new Rect(24, 22, 21, 21), "<<"))
 		{
-			if (SelectedFile > 0)
+			if (Registry.GetIntData(RegPersonName, RegProgramName, "SelectedFile") > 0)
 			{
-				SelectedFile--;
+				Registry.SetIntData(RegPersonName, RegProgramName, "SelectedFile", Registry.GetIntData(RegPersonName, RegProgramName, "SelectedFile") - 1);
 			}
 
-			CurrentFilePath = PlayList[SelectedFile];
+			Registry.SetStringData(RegPersonName, RegProgramName, "CurrentFilePath", PlayList[Registry.GetIntData(RegPersonName, RegProgramName, "SelectedFile")]);
 
-			loadVideo = true;
+			Registry.SetBoolData(RegPersonName, RegProgramName, "LoadVideo", true);
 		}
 
-		float TempVol = audio.volume * 100;
-		audio.volume = GUI.HorizontalSlider(new Rect(2, windowRect.height - 15, 200, 21), audio.volume, 0, 1);
+		float TempVol = Registry.GetFloatData(RegPersonName, RegProgramName, "Volume") * 100;
+		Registry.SetFloatData(RegPersonName, RegProgramName, "Volume",GUI.HorizontalSlider(Registry.GetRectData(RegPersonName, RegProgramName, "Volume"), Registry.GetFloatData(RegPersonName, RegProgramName, "Volume"), 0, 1));
 		GUI.Label(new Rect(204, windowRect.height - 22, 100, 21), "% " + TempVol.ToString("F0"));
-
+		audio.volume = Registry.GetFloatData(RegPersonName, RegProgramName, "Volume");
 		//var minutes = Duration / 60;
 		//var seconds = (Duration % 60);
 		string DurationDisplay = FormatTime3(Duration);
@@ -416,28 +420,29 @@ public class MediaPlayer : MonoBehaviour
 	void Settings()
 	{
 		GUI.Label(new Rect(2, 22, 60, 21), "Path: ");
-		DirectoryPath =  GUI.TextField(new Rect(40, 22, 125, 21), DirectoryPath);
+
+		Registry.SetStringData(RegPersonName, RegProgramName, "Path", GUI.TextField(new Rect(40, 22, 125, 21), Registry.GetStringData(RegPersonName, RegProgramName, "Path")));
 
 		if (GUI.Button(new Rect(170, 22, 80, 21), "Load"))
 		{
 			//PlayList.RemoveRange()
-			loadPlaylist = true;
+			Registry.SetBoolData(RegPersonName, RegProgramName, "LoadPlaylist", true);
 		}
 
 		float ButtonWidth = 175;
 
-		if(Loop == true)
+		if (Registry.GetBoolData(RegPersonName, RegProgramName, "Loop") == true)
 		{
 			if (GUI.Button(new Rect(2, 44, ButtonWidth, 21), "Loop Enabled"))
 			{
-				Loop = false;
+				Registry.SetBoolData(RegPersonName, RegProgramName, "Loop", false);
 			}
 		}
 		else
 		{
 			if (GUI.Button(new Rect(2, 44, ButtonWidth, 21), "Loop Disabled"))
 			{
-				Loop = true;
+				Registry.SetBoolData(RegPersonName, RegProgramName, "Loop", true);
 			}
 		}
 
@@ -474,87 +479,111 @@ public class MediaPlayer : MonoBehaviour
 
 	void List()
 	{
-		scrollpos = GUI.BeginScrollView(new Rect(2,22,250,windowRect.height-21), scrollpos, new Rect(0, 0, 0, scrollsize * 21));
-		for (scrollsize = 0; scrollsize < PlayList.Count; scrollsize++)
-		{
-			if (GUI.Button(new Rect(1, 1 + scrollsize * 21, 225, 20), PlayList[scrollsize]))
-			{
-				SelectedFile = scrollsize;
-				CurrentFilePath = PlayList[SelectedFile];
-				loadVideo = true;
-				Menu = "Home";
-			}
-		}
-		GUI.EndScrollView();
+        scrollpos = GUILayout.BeginScrollView(scrollpos, true, true);
+        int FirstIndex = (int)(scrollpos.y / 32);
+        FirstIndex = Mathf.Clamp(FirstIndex, 0, Mathf.Max(0, PlayList.Count - 10));
+        GUILayout.Space(FirstIndex * 32);
+
+        for (int i = FirstIndex; i < Mathf.Min(PlayList.Count, FirstIndex + 10); i++)
+        {
+            string item = PlayList[i];
+            GUILayout.BeginVertical("box", GUILayout.Height(32));
+
+            Filename = new FileInfo(PlayList[i]);
+            if (GUILayout.Button(Filename.Name))
+            {
+                Registry.SetIntData(RegPersonName, RegProgramName, "SelectedFile", i);
+                Registry.SetStringData(RegPersonName, RegProgramName, "CurrentFilePath", PlayList[Registry.GetIntData(RegPersonName, RegProgramName, "SelectedFile")]);
+                Registry.SetBoolData(RegPersonName, RegProgramName, "LoadVideo", true);
+                Registry.SetStringData(RegPersonName, RegProgramName, "Menu", "Home");
+            }
+
+            GUILayout.EndVertical();
+        }
+        GUILayout.Space(Mathf.Max(0, (PlayList.Count - FirstIndex - 10) * 32));
+        GUILayout.EndScrollView();
+
 	}
 
 	void DoMyWindow(int WindowID)
 	{
-		if (CloseButton.Contains(Event.current.mousePosition))
+		if (Event.current.type == EventType.keyDown && Event.current.keyCode == KeyCode.H)
 		{
-			if (GUI.Button(new Rect(CloseButton), "X", com.Skin[GameControl.control.GUIID].customStyles[0]))
+			Registry.SetBoolData(RegPersonName, RegProgramName, "HideUI", !Registry.GetBoolData(RegPersonName, RegProgramName, "HideUI"));
+		}
+
+		if (Registry.GetStringData(RegPersonName, RegProgramName, "Menu") == "Home")
+		{
+			RenderMovie();
+		}
+
+		if (Registry.GetBoolData(RegPersonName, RegProgramName, "HideUI") == false)
+		{
+			if (Registry.GetRectData(RegPersonName, RegProgramName, "CloseButton").Contains(Event.current.mousePosition))
 			{
-				if(StopOnClose == true)
+				if (GUI.Button(Registry.GetRectData(RegPersonName, RegProgramName, "CloseButton"), "X", com.Skin[GameControl.control.GUIID].customStyles[0]))
 				{
-					video.Stop();
+					if (StopOnClose == true)
+					{
+						video.Stop();
+					}
+					appman.SelectedApp = "Media Player";
 				}
-				appman.SelectedApp = "Media Player";
 			}
-		}
-		else
-		{
-			GUI.backgroundColor = com.colors[Customize.cust.ButtonColorInt];
-			GUI.contentColor = com.colors[Customize.cust.FontColorInt];
-			GUI.Button(new Rect(CloseButton), "X", com.Skin[GameControl.control.GUIID].customStyles[1]);
-		}
-
-		if (MiniButton.Contains(Event.current.mousePosition))
-		{
-			if (GUI.Button(new Rect(MiniButton), "-", com.Skin[GameControl.control.GUIID].customStyles[2]))
+			else
 			{
-				//minimize = !minimize;
-				//Minimize();
+				GUI.backgroundColor = com.colors[Customize.cust.ButtonColorInt];
+				GUI.contentColor = com.colors[Customize.cust.FontColorInt];
+				GUI.Button(new Rect(Registry.GetRectData(RegPersonName, RegProgramName, "CloseButton")), "X", com.Skin[GameControl.control.GUIID].customStyles[1]);
 			}
-		}
-		else
-		{
-			GUI.backgroundColor = com.colors[Customize.cust.ButtonColorInt];
-			GUI.contentColor = com.colors[Customize.cust.FontColorInt];
-			if (GUI.Button(new Rect(MiniButton), "-", com.Skin[GameControl.control.GUIID].customStyles[2]))
+
+			if (Registry.GetRectData(RegPersonName, RegProgramName, "MiniButton").Contains(Event.current.mousePosition))
 			{
-				//minimize = !minimize;
-				//Minimize();
+				if (GUI.Button(Registry.GetRectData(RegPersonName, RegProgramName, "MiniButton"), "-", com.Skin[GameControl.control.GUIID].customStyles[2]))
+				{
+					//minimize = !minimize;
+					//Minimize();
+				}
 			}
-		}
+			else
+			{
+				GUI.backgroundColor = com.colors[Customize.cust.ButtonColorInt];
+				GUI.contentColor = com.colors[Customize.cust.FontColorInt];
+				if (GUI.Button(Registry.GetRectData(RegPersonName, RegProgramName, "MiniButton"), "-", com.Skin[GameControl.control.GUIID].customStyles[2]))
+				{
+					//minimize = !minimize;
+					//Minimize();
+				}
+			}
 
-		if (GUI.Button(new Rect(SettingsButton), "S"))
-		{
-			Menu = "Settings";
-		}
-		if (GUI.Button(new Rect(ListButton), "L"))
-		{
-			Menu = "List";
-		}
-		if (GUI.Button(new Rect(HomeButton), "H"))
-		{
-			Menu = "Home";
-		}
+			if (GUI.Button(Registry.GetRectData(RegPersonName, RegProgramName, "SettingsButton"), "S"))
+			{
+				Registry.SetStringData(RegPersonName, RegProgramName, "Menu","Settings");
+			}
+			if (GUI.Button(Registry.GetRectData(RegPersonName, RegProgramName, "ListButton"), "L"))
+			{
+				Registry.SetStringData(RegPersonName, RegProgramName, "Menu", "List");
+			}
+			if (GUI.Button(Registry.GetRectData(RegPersonName, RegProgramName, "HomeButton"), "H"))
+			{
+				Registry.SetStringData(RegPersonName, RegProgramName, "Menu", "Home");
+			}
 
-		switch(Menu)
-		{
-			case "Settings":
-				Settings();
-				break;
-			case "List":
-				List();
-				break;
-			case "Home":
-				RenderMovie();
-				RenderControls();
-				break;
-		}
+			switch (Registry.GetStringData(RegPersonName, RegProgramName, "Menu"))
+			{
+				case "Settings":
+					Settings();
+					break;
+				case "List":
+					List();
+					break;
+				case "Home":
+					RenderControls();
+					break;
+			}
 
-		GUI.DragWindow(new Rect(DefaltBoxSetting));
-		GUI.Box(new Rect(DefaltBoxSetting), "Media Player - " + Menu);
+			GUI.DragWindow(Registry.GetRectData(RegPersonName, RegProgramName, "DefaltBoxSetting"));
+			GUI.Box(Registry.GetRectData(RegPersonName, RegProgramName, "DefaltBoxSetting"), "Media Player - " + Registry.GetStringData(RegPersonName, RegProgramName, "Menu"));
+		}
 	}
 }

@@ -58,6 +58,10 @@ public class StockExchangeBrowser : MonoBehaviour
 	public string ErrorDesc;
 	public string ErrorSoloution;
 
+	public int CompanyID;
+	public string Password;
+	private StockSystem UserStocks;
+
 	public void ClearDirContents()
 	{
 		DirContents.RemoveRange(0,DirContents.Count);
@@ -81,6 +85,9 @@ public class StockExchangeBrowser : MonoBehaviour
 		stockexchange = Database.GetComponent<StockExchange>();
 		port = Database.GetComponent<Portfolio>();
         history = Database.GetComponent<StockTransactionHistory>();
+
+		Password = "";
+		CompanyID = -1;
     }
 
 	public void Foward()
@@ -121,6 +128,20 @@ public class StockExchangeBrowser : MonoBehaviour
 			if (!AddressBar.Contains ("/")) 
 			{
 				Inputted = TempHistory[SelectedPage];
+			}
+		}
+	}
+
+	void Update()
+	{
+		if (CompanyID == -1)
+		{
+			for (int i = 0; i < GameControl.control.CompanyServerData.Count; i++)
+			{
+				if (GameControl.control.CompanyServerData[i].Name == "GStocks")
+				{
+					CompanyID = i;
+				}
 			}
 		}
 	}
@@ -171,6 +192,39 @@ public class StockExchangeBrowser : MonoBehaviour
 		switch(Inputted)
 		{
 
+		case "www.stockexchange.com/createaccount":
+
+			Username = GUI.TextField(new Rect(115, 55, 200, 20), Username, 500);
+			Password = GUI.PasswordField(new Rect(115, 75, 200, 20), Password, "*"[0], 500);
+
+			if (GUI.Button(new Rect(10, 120, 100, 20), "Create Account"))
+			{
+				GameControl.control.CompanyServerData[CompanyID].StockExchange.TradeAccounts.Add(new UACStockSystem(Username,Password,"","","",false,UACStockSystem.AccountType.User, UserStocks));
+				Home();
+			}
+			break;
+
+		case "www.stockexchange.com/signin":
+
+			Username = GUI.TextField(new Rect(115, 55, 200, 20), Username, 500);
+			Password = GUI.PasswordField(new Rect(115, 75, 200, 20), Password, "*"[0], 500);
+
+			if (GUI.Button(new Rect(10, 120, 100, 20), "Sign In"))
+			{
+				for(int i = 0; i < GameControl.control.CompanyServerData[CompanyID].StockExchange.TradeAccounts.Count;i++)
+				{
+					if(GameControl.control.CompanyServerData[CompanyID].StockExchange.TradeAccounts[i].UserName == Username)
+					{
+						if(GameControl.control.CompanyServerData[CompanyID].StockExchange.TradeAccounts[i].Password == Password)
+						{
+
+						}
+					}
+				}
+				Home();
+			}
+			break;
+
 		case "www.stockexchange.com":
 			stockexchange.RenderSite ();
 			//sm.Connect ();
@@ -179,7 +233,15 @@ public class StockExchangeBrowser : MonoBehaviour
 			MainPage = true;
 			break;
 
-		case "www.stockexchange.com/properexchange":
+		case "www.stockexchange.com/exchanges":
+			stockexchange.RenderSite();
+			//sm.Connect ();
+			//clic.storedConnection = "www.stockexchange.com";
+			connected = true;
+			MainPage = true;
+			break;
+
+			case "www.stockexchange.com/exchanges/proper":
 			st.RenderSite ();
 			//sm.Connect ();
 			//clic.storedConnection = "www.stockexchange.com/properexchange";
@@ -187,7 +249,7 @@ public class StockExchangeBrowser : MonoBehaviour
 			MainPage = false;
 			break;
 
-		case "www.stockexchange.com/memeexchange":
+		case "www.stockexchange.com/exchanges/meme":
 			gstocks.RenderSite ();
 			//sm.Connect ();
 			//clic.storedConnection = "www.stockexchange.com/memeexchange";

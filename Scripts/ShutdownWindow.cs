@@ -56,7 +56,6 @@ public class ShutdownWindow : MonoBehaviour
 	public int scrollsize;
 
 	private Notepad note;
-	private Progtive pro;
 	private Tracer trace;
 	private MissionBrow mb;
 	private CurContracts cc;
@@ -71,7 +70,7 @@ public class ShutdownWindow : MonoBehaviour
 	private Test test;
 	private Defalt def;
 	private MissionGen mg;
-	private OS os;
+	private DesktopEnviroment os;
 	private SystemMap sm;
 	private WebSecViewer wsv;
 	private ErrorProm ep;
@@ -135,7 +134,6 @@ public class ShutdownWindow : MonoBehaviour
 		disk = GetComponent<CD>();
 		com = GetComponent<Computer>();
 		note = GetComponent<Notepad>();
-		pro = GetComponent<Progtive>();
 		trace = GetComponent<Tracer>();
 		mb = GetComponent<MissionBrow>();
 		cc = GetComponent<CurContracts>();
@@ -146,7 +144,7 @@ public class ShutdownWindow : MonoBehaviour
 		clk = GetComponent<Clock>();
 		def = GetComponent<Defalt>();
 		mg = GetComponent<MissionGen>();
-		os = GetComponent<OS>();
+		os = GetComponent<DesktopEnviroment>();
 		sm = GetComponent<SystemMap>();
 		wsv = GetComponent<WebSecViewer>();
 		ep = GetComponent<ErrorProm>();

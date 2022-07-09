@@ -33,13 +33,13 @@ public class Clock : MonoBehaviour
 
     void Update()
     {
+        GlobalClock();
         GameControl.control.Time.Miniutes += GameControl.control.TimeMulti * Time.deltaTime;
 
         if(Customize.cust.EnableAutoSave)
         {
             autosave += 1 * Time.deltaTime;
         }
-
 
         CurrentTime();
 
@@ -59,21 +59,33 @@ public class Clock : MonoBehaviour
         }
     }
 
+    void GlobalClock()
+    {
+        if (PersonController.control.People.Count > 0)
+        {
+            for (int i = 0; i < PersonController.control.People.Count; i++)
+            {
+                if (PersonController.control.People[i].Gateway.Status.On == true)
+                {
+                    if (PersonController.control.People[i].Gateway.Timer.TimeRemain <= 0)
+                    {
+                        PersonController.control.People[i].Gateway.Timer.TimeRemain = PersonController.control.People[i].Gateway.Timer.InitalTimer;
+                    }
+                    else
+                    {
+                        PersonController.control.People[i].Gateway.Timer.TimeRemain -= Time.deltaTime * GameControl.control.TimeMulti;
+                    }
+                }
+            }
+        }
+    }
+
     void SaveFunction()
 	{
 		GameControl.control.Save();
 		ProfileController.procon.Save();
 		Customize.cust.Save();
         PersonController.control.Save();
-	}
-
-	void TimeFormat()
-	{
-		switch (Customize.cust.TimeFormat)
-		{
-		case"":
-			break;
-		}
 	}
 
     void MonthlyStuff()
@@ -103,7 +115,7 @@ public class Clock : MonoBehaviour
 
                     GameControl.control.EmailData.Add(new EmailSystem("Monthly Plan",
     GameControl.control.Plans[i].Company, GameControl.control.Time.FullDate,
-    GameControl.control.Plans[i].Name + " " + GameControl.control.Plans[i].Price + "Has been redacted from your account.", 0, 1, 1, false,
+    GameControl.control.Plans[i].Name + " " + GameControl.control.Plans[i].Price + "Has been redacted from your account.", null, 0, 1, 1, false,
     EmailSystem.EmailType.New));
 
                     noti.NewNotification("New Mail", GameControl.control.Plans[i].Company, "Monthly Plan");
@@ -124,6 +136,14 @@ public class Clock : MonoBehaviour
 
         if (GameControl.control.Time.Miniutes >= 59)
         {
+            if(GameControl.control.Time.Hours == 11)
+            {
+                GameControl.control.Time.AM = false;
+            }
+            if (GameControl.control.Time.Hours == 23)
+            {
+                GameControl.control.Time.AM = true;
+            }
             UpdateHours();
         }
     }
@@ -132,6 +152,15 @@ public class Clock : MonoBehaviour
     {
         GameControl.control.Time.Hours++;
         GameControl.control.Time.Miniutes = 0;
+
+        if (GameControl.control.Time.Hours > 12)
+        {
+            GameControl.control.Time.TwelveHours = GameControl.control.Time.Hours - 12;
+        }
+        else
+        {
+            GameControl.control.Time.TwelveHours = GameControl.control.Time.Hours;
+        }
 
         if (GameControl.control.Time.Hours >= 24)
         {
@@ -359,6 +388,14 @@ public class Clock : MonoBehaviour
     void CurrentTime()
     {
         GameControl.control.Time.CurrentTime = GameControl.control.Time.Hours.ToString("00") + ":" + GameControl.control.Time.Miniutes.ToString("00");
+        if(GameControl.control.Time.AM == true)
+        {
+            GameControl.control.Time.CurrentTwTime = GameControl.control.Time.TwelveHours.ToString("00") + ":" + GameControl.control.Time.Miniutes.ToString("00") + " AM";
+        }
+        else
+        {
+            GameControl.control.Time.CurrentTwTime = GameControl.control.Time.TwelveHours.ToString("00") + ":" + GameControl.control.Time.Miniutes.ToString("00") + " PM";
+        }
         FullDate();
     }
 

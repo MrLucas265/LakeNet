@@ -6,18 +6,11 @@ using UnityEngine;
 public class FileUtilitySystem
 {
 	public string Name;
-	public string FileName;
-	public string Location;
-	public string ServerLocationName;
-	public string Target;
-	public string FileTarget;
-	public string FileType;
-	public string FileContent;
+	public string DestinationPath;
 	public bool Minimize;
 	public bool Start;
 	public bool Show;
 	public bool Done;
-	public float FileVersion;
 	public float Percentage;
 	public float TimeRemainSeconds;
 	public float TimeRemainUISeconds;
@@ -25,12 +18,13 @@ public class FileUtilitySystem
 	public float TimeRemainHour;
 	public float ItemRemain;
 	public float OurFileSize;
-	public float FileSize;
 	public float Count;
 	public float Timer;
 	public float StartTime;
 	public ProgramType Type;
-	//public Texture2D Icon;
+	public int RequestedPersonID;
+	public int DestinationPersonID;
+	public ProgramSystemv2 ProgramFile;
 
 	public enum ProgramType
 	{
@@ -46,21 +40,16 @@ public class FileUtilitySystem
 		Paste
 	}
 
-	public FileUtilitySystem (string name,string filename,string location,string serverlocationname,string target,string filetarget,string filecontent,string filetype,bool minimize,bool start,bool show,bool done,float fileversion,float percentage,float timeremainseconds,float timeremainuiseconds, float timeremainmin, float timeremainhour, float itemtemain, float ourfilesize, float filesize,float count,float timer,float starttime, ProgramType type) //,Texture2D icon)
+	public FileUtilitySystem (string name,string destinationpath,bool minimize,bool start,bool show,bool done,float percentage,float timeremainseconds,
+		float timeremainuiseconds, float timeremainmin, float timeremainhour, float itemtemain, float ourfilesize,float count,float timer,
+		float starttime, ProgramType type,int requestedpersonid,int destinationpersonid,ProgramSystemv2 programfile)
 	{
 		Name = name;
-		FileName = filename;
-		Location = location;
-		ServerLocationName = serverlocationname;
-		Target = target;
-		FileTarget = filetarget;
-		FileContent = filecontent;
-		FileType = filetype;
+		DestinationPath = destinationpath;
 		Minimize = minimize;
 		Start = start;
 		Show = show;
 		Done = done;
-		FileVersion = fileversion;
 		Percentage = percentage;
 		TimeRemainSeconds = timeremainseconds;
 		TimeRemainUISeconds = timeremainuiseconds;
@@ -68,10 +57,12 @@ public class FileUtilitySystem
 		TimeRemainHour = timeremainhour;
 		ItemRemain = itemtemain;
 		OurFileSize = ourfilesize;
-		FileSize = filesize;
 		Count = count;
 		Timer = timer;
 		StartTime = starttime;
 		Type = type;
+		RequestedPersonID = requestedpersonid;
+		DestinationPersonID = destinationpersonid;
+		ProgramFile = programfile;
 	}
 }

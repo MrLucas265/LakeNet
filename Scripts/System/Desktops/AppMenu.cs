@@ -9,6 +9,8 @@ public class AppMenu : MonoBehaviour
 
 	private GameObject AppMenus;
 
+	private Boot boot;
+
 	private AppatureAppMenu appatureAppMenu;
 	private TreeOSAppMenu treeOSAppMenu;
 	private IceOSAppMenu iceOSAppMenu;
@@ -16,6 +18,8 @@ public class AppMenu : MonoBehaviour
 
 	void Start () 
 	{
+		boot = GetComponent<Boot>();
+
 		AppMenus = GameObject.Find("AppMenus");
 		//Desktop Enviros
 		appatureAppMenu = AppMenus.GetComponent<AppatureAppMenu>();
@@ -24,9 +28,81 @@ public class AppMenu : MonoBehaviour
 		ethelOSAppMenu = AppMenus.GetComponent<EthelOSAppMenu>();
 	}
 
+	void UpdateDesktopListV2()
+	{
+		for (int i = 0; i < PersonController.control.People.Count; i++)
+		{
+			for (int j = 0; j < PersonController.control.People[i].Gateway.CurrentOS.Partitions.Count; j++)
+			{
+				for (int k = 0; k < PersonController.control.People[i].Gateway.CurrentOS.Partitions[j].Files.Count; k++)
+				{
+					if (PersonController.control.People[i].Gateway.CurrentOS.Partitions[j].Files[k].PinToDesktop)
+					{
+						if (!PersonController.control.People[i].Gateway.CurrentOS.FPC.DesktopList.Contains(PersonController.control.People[i].Gateway.CurrentOS.Partitions[j].Files[k]))
+						{
+							PersonController.control.People[i].Gateway.CurrentOS.FPC.DesktopList.Add(PersonController.control.People[i].Gateway.CurrentOS.Partitions[j].Files[k]);
+						}
+					}
+				}
+			}
+		}
+	}
+	void UpdateQuickListV2()
+	{
+		for (int i = 0; i < PersonController.control.People.Count; i++)
+		{
+			for (int j = 0; j < PersonController.control.People[i].Gateway.CurrentOS.Partitions.Count; j++)
+			{
+				for (int k = 0; k < PersonController.control.People[i].Gateway.CurrentOS.Partitions[j].Files.Count; k++)
+				{
+					if (PersonController.control.People[i].Gateway.CurrentOS.Partitions[j].Files[k].PinToMenu)
+					{
+						if (!PersonController.control.People[i].Gateway.CurrentOS.FPC.QuickList.Contains(PersonController.control.People[i].Gateway.CurrentOS.Partitions[j].Files[k]))
+						{
+							PersonController.control.People[i].Gateway.CurrentOS.FPC.QuickList.Add(PersonController.control.People[i].Gateway.CurrentOS.Partitions[j].Files[k]);
+						}
+					}
+				}
+			}
+		}
+	}
+	void UpdateTaskBarListV2()
+	{
+		for (int i = 0; i < PersonController.control.People.Count; i++)
+		{
+			for (int j = 0; j < PersonController.control.People[i].Gateway.CurrentOS.Partitions.Count; j++)
+			{
+				for (int k = 0; k <= PersonController.control.People[i].Gateway.CurrentOS.Partitions[j].Files.Count; k++)
+				{
+					if(k < PersonController.control.People[i].Gateway.CurrentOS.Partitions[j].Files.Count)
+                    {
+						if (PersonController.control.People[i].Gateway.CurrentOS.Partitions[j].Files[k].PinToBar)
+						{
+							if (!PersonController.control.People[i].Gateway.CurrentOS.FPC.BarList.Contains(PersonController.control.People[i].Gateway.CurrentOS.Partitions[j].Files[k]))
+							{
+								PersonController.control.People[i].Gateway.CurrentOS.FPC.BarList.Add(PersonController.control.People[i].Gateway.CurrentOS.Partitions[j].Files[k]);
+							}
+						}
+					}
+					else
+                    {
+						GameControl.control.GlobalCheckForPinnedFiles = false;
+					}
+				}
+			}
+		}
+	}
+
 	void Update()
 	{
-		switch (GameControl.control.SelectedOS.Name) 
+		if(GameControl.control.GlobalCheckForPinnedFiles)
+        {
+			UpdateDesktopListV2();
+			UpdateQuickListV2();
+			UpdateTaskBarListV2();
+		}
+
+		switch (boot.SelectedOS.Name) 
 		{
 		case OperatingSystems.OSName.AppatureOS:
 			if (show == true) 

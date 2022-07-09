@@ -359,12 +359,12 @@ public class EmailClient : MonoBehaviour
 
 		if (Attachment != "") 
 		{
-			GameControl.control.EmailData.Add (new EmailSystem ("RE: " + GameControl.control.Contracts[ContractSelect].Name, GameControl.control.ProfileName,GameControl.control.Time.FullDate, "Attached: " + Attachment + "\n" + Content, 0, 0, 0, false, EmailSystem.EmailType.Sent));
+			GameControl.control.EmailData.Add (new EmailSystem ("RE: " + GameControl.control.Contracts[ContractSelect].Name, GameControl.control.ProfileName,GameControl.control.Time.FullDate, "Attached: " + Attachment + "\n" + Content, null, 0, 0, 0, false, EmailSystem.EmailType.Sent));
 			cc.Complete();
 		} 
 		else 
 		{
-			GameControl.control.EmailData.Add (new EmailSystem ("RE: " + GameControl.control.Contracts[ContractSelect].Name,GameControl.control.ProfileName, GameControl.control.Time.FullDate, Content, 0, 0, 0, false, EmailSystem.EmailType.Sent));
+			GameControl.control.EmailData.Add (new EmailSystem ("RE: " + GameControl.control.Contracts[ContractSelect].Name,GameControl.control.ProfileName, GameControl.control.Time.FullDate, Content, null, 0, 0, 0, false, EmailSystem.EmailType.Sent));
 			cc.Complete();
 		}
 

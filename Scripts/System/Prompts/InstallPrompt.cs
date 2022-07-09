@@ -37,20 +37,13 @@ public class InstallPrompt : MonoBehaviour
 	public bool Run;
 	public bool ShowMenu1;
 
-	public string ProgramName;
-	public string ProgramTarget;
-	public string ProgramType;
-	public float ProgramVersion;
-	public float Size;
-
 	public int ProgramID;
 
 	public int IndexOFItem;
 
-    public bool AddToQuickList;
     public string FileLocation;
 
-	public ProgramSystem HeldFile;
+	public ProgramSystemv2 HeldFile;
 
 	// Use this for initialization
 	void Start () 
@@ -97,26 +90,6 @@ public class InstallPrompt : MonoBehaviour
 			windowRect = GUI.Window(windowID,windowRect,DoMyWindow,"");
 		}
 	}
-
-	void UpdateUI()
-	{
-		switch (ProgramName) 
-		{
-		case "Password Breaker":
-			ProgramID = 2;
-			break;
-		case "Trace Tracker":
-			ProgramID = 3;
-			break;
-		case "System Map":
-			ProgramID = 4;
-			break;
-		case "Directory Cracker":
-			ProgramID = 5;
-			break;
-		}
-	}
-
 //	void ProgressBar()
 //	{
 //		icon.IconXPos = 0;
@@ -163,7 +136,7 @@ public class InstallPrompt : MonoBehaviour
                 if (fu.ProgramHandle.Count <= 0)
                 {
                     fu.Local = true;
-					fu.ProgramHandle.Add(new FileUtilitySystem("Installer", ProgramName, FileLocation,"", "", ProgramTarget, "", ProgramType, false, true, true, false, ProgramVersion, 0, 0, 0, 0, 0, 0, 0, Size, 0, 0, 0, FileUtilitySystem.ProgramType.Installer));
+					fu.ProgramHandle.Add(new FileUtilitySystem("Installer", FileLocation, false, true, true, false, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, FileUtilitySystem.ProgramType.Installer, 0, 0, HeldFile));
 					//fu.ProgramHandle.Add(new FileUtilitySystem("Installer", ProgramName, FileLocation, "", ProgramTarget, "", ProgramType, false, true, true, false, ProgramVersion, 0, 0, 0, 0, 0, 0, 0, Size, 0, 0, 0, FileUtilitySystem.ProgramType.Installer));
 					fu.AddWindow();
                 }
@@ -172,14 +145,13 @@ public class InstallPrompt : MonoBehaviour
 				this.enabled = false;
 			}
 
-			AddToQuickList = GUI.Toggle(new Rect (100, 125, 100, 20),AddToQuickList,"Add To QuickList");
+			HeldFile.PinToMenu = GUI.Toggle(new Rect (100, 125, 100, 20), HeldFile.PinToMenu, "Add To QuickList");
 
 			FileLocation = GUI.TextField (new Rect (100, 175, 100, 20), FileLocation);
 		}
 
 		if (Install == true) 
 		{
-			UpdateUI();
 			if(GUI.Button(new Rect(5, 125, 75, 20),"Yes"))
 			{
 				ShowMenu1 = true;

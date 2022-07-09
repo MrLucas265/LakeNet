@@ -8,14 +8,14 @@ public class WindowSwitcher : MonoBehaviour
 	public int SelectedProgram;
 	public bool changeWindow;
 	private TaskViewer tasks;
-    private OS os;
+    private DesktopEnviroment os;
     private AppMan appman;
     public string CurrentSelectedProgramName;
     // Use this for initialization
     void Start ()
 	{
 		tasks = GetComponent<TaskViewer>();
-        os = GetComponent<OS>();
+        os = GetComponent<DesktopEnviroment>();
         appman = GetComponent<AppMan>();
     }
 

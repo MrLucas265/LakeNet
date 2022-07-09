@@ -23,7 +23,6 @@ public class Firefox : MonoBehaviour
 	public bool Search;
 
 	// collection of scripts
-	private TestSite testsite;
 	private Becas becas;
 	private Test RevaTest;
 	private Test1 test1;
@@ -115,7 +114,6 @@ public class Firefox : MonoBehaviour
 		ws = AppSoftware.GetComponent<WebSec>();
 		sm = AppSoftware.GetComponent<SystemMap>();
 
-		testsite = Database.GetComponent<TestSite>();
 		becas = Database.GetComponent<Becas>();
 		RevaTest = Database.GetComponent<Test>();
 		ping = Database.GetComponent<Ping>();
@@ -406,10 +404,6 @@ public class Firefox : MonoBehaviour
 
 		switch(ib.Inputted)
 		{
-		case "test":
-			testsite.RenderSite();
-			sm.Connect();
-			break;
 		case "www.becassystems.com":
 			SiteName = "Becas";
 			ws.UpdateSecCheck = true;

@@ -15,9 +15,12 @@ public class PeopleCreator : MonoBehaviour
     public MotherboardSystem TempGatewayDetails;
     public DOBSystem TempDOB;
     public GatewaySystem TempGateway;
+    public GatewaySystem BlankGateway;
     public MotherboardSystem TempMotherboard;
     public List<ProgramSystem> TempFiles = new List<ProgramSystem>();
     public List<Texture2D> Faces = new List<Texture2D>();
+
+    public List<DiskPartSystem> BlankDrivePat = new List<DiskPartSystem>();
 
     public List<string> CollageClasses = new List<string>();
     public List<string> CollageGrades = new List<string>();
@@ -50,6 +53,8 @@ public class PeopleCreator : MonoBehaviour
     public List<ProgramSystem.FileType> BlankFileType = new List<ProgramSystem.FileType>();
     public List<string> ListOfFilePaths = new List<string>();
 
+    public bool UpdateGatewayInfo;
+
     // Use this for initialization
     void Start()
     {
@@ -57,20 +62,22 @@ public class PeopleCreator : MonoBehaviour
         PopulateUni();
         NamesList = GetComponent<NamesList>();
         NamesList.NameListResource();
-        Ammount = 100;
+        Ammount = 2;
         PopulatePhoto();
-        PopulateMotherboard();
-        PopulateFiles();
     }
 
     // Update is called once per frame
     void Update ()
     {
+        if(UpdateGatewayInfo)
+        {
+            PopulateMotherboard();
+        }
         if(PersonController.control.People.Count <= 0)
         {
             AddNewPeople = true;
         }
-		if(AddNewPeople == true)
+		if(AddNewPeople)
         {
             for (int i = 0; i <= Ammount; i++)
             {
@@ -79,13 +86,17 @@ public class PeopleCreator : MonoBehaviour
                 PopulateBankInformation();
                 PopulateAcademicInformation();
                 int Photo = Random.Range(0, 800);
-                TempGateway.Name = Name + "'s Gateway";
-                PersonController.control.People.Add(new PeopleSystem(Name, PID, PhoneNumber, IPAddress, MaritalStatus, PersonalStatus, IQ, Photo, TempDOB, TempCollage1, TempUni1, TempBankDetails,TempGateway,null,null));
+                PersonController.control.People.Add(new PeopleSystem(Name, PID, PhoneNumber, IPAddress, MaritalStatus, PersonalStatus, IQ, Photo));
                 PersonController.control.PeoplesName.Add(Name);
                 Count = i;
                 ResetAllInformation();
             }
 
+        }
+
+        if(Count == Ammount)
+        {
+            UpdateGatewayInfo = true;
         }
 
         if (WipeData == true)
@@ -241,30 +252,73 @@ public class PeopleCreator : MonoBehaviour
         TempDOB = new DOBSystem(TempDOB.Day, TempDOB.Month, TempDOB.Year,TempDOB.Age);
     }
 
-    void PopulateFiles()
+    void PopulateDrives(int i)
     {
-        TempGateway.SelectedOS.Name = OperatingSystems.OSName.AppatureOS;
-        TempGateway.Files.FileList.Add(new ProgramSystem("C:/", "System", "", "", "", "", "Gateway", "C:/", "", "", ProgramSystem.FileExtension.Dir, ProgramSystem.FileExtension.Null, 0, 0, 60, 0, 0, 0, 0, 100, 0, 0, 0, 0, 0, 0, 0, 0, false, false, false, false, BlankInfections, BlankFileType));
-        TempGateway.Files.FileList.Add(new ProgramSystem("Downloads", "", "", "", "", "", "C:/", "C:/Downloads", "", "", ProgramSystem.FileExtension.Fdl, ProgramSystem.FileExtension.Null, 0, 0, 0, 0, 0, 0, 0, 100, 0, 0, 0, 0, 0, 0, 0, 0, false, false, false, false, BlankInfections, BlankFileType));
-        TempGateway.Files.FileList.Add(new ProgramSystem("Documents", "", "", "", "", "", "C:/", "C:/Documents", "", "", ProgramSystem.FileExtension.Fdl, ProgramSystem.FileExtension.Null, 0, 0, 0, 0, 0, 0, 0, 100, 0, 0, 0, 0, 0, 0, 0, 0, false, false, false, false, BlankInfections, BlankFileType));
-        TempGateway.Files.FileList.Add(new ProgramSystem("Programs", "", "", "", "", "", "C:/", "C:/Programs", "", "", ProgramSystem.FileExtension.Fdl, ProgramSystem.FileExtension.Null, 0, 0, 0, 0, 0, 0, 0, 100, 0, 0, 0, 0, 0, 0, 0, 0, false, false, false, false, BlankInfections, BlankFileType));
-        TempGateway.Files.FileList.Add(new ProgramSystem("System", "", "", "", "", "", "C:/", "C:/System", "", "", ProgramSystem.FileExtension.Fdl, ProgramSystem.FileExtension.Null, 0, 0, 0, 0, 0, 0, 0, 100, 0, 0, 0, 0, 0, 0, 0, 0, false, false, false, false, BlankInfections, BlankFileType));
-        TempGateway.Files.FileList.Add(new ProgramSystem("" + TempGateway.SelectedOS.Name, "", "", "", "", "", "C:/System", "", "", "", ProgramSystem.FileExtension.OS, ProgramSystem.FileExtension.Null, 0, 0, 10, 0, 0, 0, 0, 100, 1, 0, 0, 0, 0, 0, 0, 0, false, false, false, false, BlankInfections, BlankFileType));
-        //TempGateway.Add(new FileSystem(TempFiles, null,null));
-        TempGateway.Motherboard.InstalledStorageDevice[0].UsedSpace += 60;
-        TempGateway.Motherboard.InstalledStorageDevice[0].FreeSpace = GameControl.control.Gateway.InstalledStorageDevice[0].Capacity - GameControl.control.Gateway.InstalledStorageDevice[0].UsedSpace;
+        //for(int j = 0; j < PersonController.control.People[i].Gateway.Motherboard.StorageSlots.Count; j++)
+        //{
+        //    PersonController.control.People[i].Gateway.Motherboard.StorageSlots[j].Devices[0].Partitions = new List<DiskPartSystem>();
+        //    PersonController.control.People[i].Gateway.Motherboard.StorageSlots[j].Devices[0].Partitions.Add(new DiskPartSystem("System", "C", 128, 0, 0, 0));
+        //    PopulateFiles(i, j);
+        //}
+    }
+
+    void PopulateFiles(int i, int j)
+    {
+        //for (int k = 0; k < PersonController.control.People[i].Gateway.Motherboard.StorageSlots[j].Devices[0].Partitions.Count; k++)
+        //{
+        //    if (PersonController.control.People[i].Gateway.Motherboard.StorageSlots[j].Devices[0].Partitions[k].DriveLetter == "C")
+        //    {
+        //        //for (int l = 0; l < PersonController.control.People[i].Gateway.Motherboard.InstalledStorageDevice[j].Partitions[k].Files.OSList.Count; l++)
+        //        //{
+        //        //    PersonController.control.People[i].Gateway.Motherboard.InstalledStorageDevice[j].Partitions[k].Files.OSList[l].FPC.BackgroundAddress = "";
+        //        //}
+        //        //PersonController.control.People[i].Gateway.Motherboard.InstalledStorageDevice[j].Partitions[k].Files.FileList.Add(new ProgramSystem("C:/", "System", "", "", "", "", "Gateway", "C:/", "", "", ProgramSystem.FileExtension.Dir, ProgramSystem.FileExtension.Null, 0, 0, 60, 0, 0, 0, 0, 100, 0, 0, 0, 0, 0, 0, 0, 0, false, false, false, false, BlankInfections, BlankFileType));
+        //        //PersonController.control.People[i].Gateway.Motherboard.InstalledStorageDevice[j].Partitions[k].Files.FileList.Add(new ProgramSystem("Downloads", "", "", "", "", "", "C:/", "C:/Downloads", "", "", ProgramSystem.FileExtension.Fdl, ProgramSystem.FileExtension.Null, 0, 0, 0, 0, 0, 0, 0, 100, 0, 0, 0, 0, 0, 0, 0, 0, false, false, false, false, BlankInfections, BlankFileType));
+        //        //PersonController.control.People[i].Gateway.Motherboard.InstalledStorageDevice[j].Partitions[k].Files.FileList.Add(new ProgramSystem("Documents", "", "", "", "", "", "C:/", "C:/Documents", "", "", ProgramSystem.FileExtension.Fdl, ProgramSystem.FileExtension.Null, 0, 0, 0, 0, 0, 0, 0, 100, 0, 0, 0, 0, 0, 0, 0, 0, false, false, false, false, BlankInfections, BlankFileType));
+        //        //PersonController.control.People[i].Gateway.Motherboard.InstalledStorageDevice[j].Partitions[k].Files.FileList.Add(new ProgramSystem("Programs", "", "", "", "", "", "C:/", "C:/Programs", "", "", ProgramSystem.FileExtension.Fdl, ProgramSystem.FileExtension.Null, 0, 0, 0, 0, 0, 0, 0, 100, 0, 0, 0, 0, 0, 0, 0, 0, false, false, false, false, BlankInfections, BlankFileType));
+        //        //PersonController.control.People[i].Gateway.Motherboard.InstalledStorageDevice[j].Partitions[k].Files.FileList.Add(new ProgramSystem("System", "", "", "", "", "", "C:/", "C:/System", "", "", ProgramSystem.FileExtension.Fdl, ProgramSystem.FileExtension.Null, 0, 0, 0, 0, 0, 0, 0, 100, 0, 0, 0, 0, 0, 0, 0, 0, false, false, false, false, BlankInfections, BlankFileType));
+        //        //PersonController.control.People[i].Gateway.Motherboard.InstalledStorageDevice[j].Partitions[k].Files.FileList.Add(new ProgramSystem("" + TempGateway.SelectedOS.Name, "", "", "", "", "", "C:/System", "", "", "", ProgramSystem.FileExtension.OS, ProgramSystem.FileExtension.Null, 0, 0, 10, 0, 0, 0, 0, 100, 1, 0, 0, 0, 0, 0, 0, 0, false, false, false, false, BlankInfections, BlankFileType));
+        //    }
+
+        //    PersonController.control.People[i].Gateway.Motherboard.StorageSlots[j].Devices[0].UsedSpace += 60;
+        //    PersonController.control.People[i].Gateway.Motherboard.StorageSlots[j].Devices[0].FreeSpace = PersonController.control.People[i].Gateway.Motherboard.StorageSlots[j].Devices[0].Capacity - PersonController.control.People[i].Gateway.Motherboard.StorageSlots[j].Devices[0].UsedSpace;
+        //}
+
+        //for (int j = 0; j < TempGateway.Motherboard.InstalledStorageDevice.Count; j++)
+        //{
+        //    for (int k = 0; k < TempGateway.Motherboard.InstalledStorageDevice[j].Partitions.Count; k++)
+        //    {
+        //        if(TempGateway.Motherboard.InstalledStorageDevice[j].Partitions[k].Files.FileList.Count == 0)
+        //        {
+        //            for (int l = 0; l < BlankFiles.FileList.Count; l++)
+        //            {
+        //                TempGateway.Motherboard.InstalledStorageDevice[j].Partitions[k].Files.FileList.Add(BlankFiles.FileList[l]);
+        //            }
+        //        }
+        //    }
+        //}
+
+        UpdateGatewayInfo = false;
     }
 
     void PopulateMotherboard()
     {
         string IPAddress = StringGenerator.RandomNumberChar(3, 3) + "." + StringGenerator.RandomNumberChar(3, 3) + "." + StringGenerator.RandomNumberChar(3, 3) + "." + StringGenerator.RandomNumberChar(3, 3);
+        if(PersonController.control.People.Count > 0)
+        {
+            for (int i = 0; i < PersonController.control.People.Count; i++)
+            {
+                PersonController.control.People[i].Gateway.Name = PersonController.control.People[i].Name + "'s Gateway";
+                PersonController.control.People[i].Gateway.CPU.Add(new CPUSystem("Zion Z-14", "Zion", "Z-14", "140", 32, 1, 0.5f, 0.1f, 0.5f, 0, 0, 0, 0, 0, 1, 0.01f, 0, 100, 100, 0, "", 0, 20, 0.0025f, 0, 0, 0));
+                PersonController.control.People[i].Gateway.GPU.Add(new GPUSystem("Qividia 970", "PCI-E", 970, 2, 0.1f, 2f, 256, 0, 0, 0, 1, 0.01f, 100, 100, 0, 120, 0.0025f));
+                PersonController.control.People[i].Gateway.RAM.Add(new RamSystem("Vortex 2GB", "DDR1", 0, 2048, 0, 0, 100, 0.01f, 100, 100, 0, 0.0025f, 0));
+                PersonController.control.People[i].Gateway.StorageDevices.Add(new StorageDevice("EasternVirtual 128", "", "", "", 133, 0, 128, 128, 15, 0.001f, 100, 100, 0, 0.0025f, 0.14f, StorageDevice.StorageType.HDD));
+                PersonController.control.People[i].Gateway.PSU.Add(new PowerSupplySystem("Toughpower-2pack", "", 450, 0, 0, 0.01f, 100, 100, 0, 0.0025f));
+                PersonController.control.People[i].Gateway.Modem.Add(new ModemSystem("TUGs Basic Modem", "", "", "", 0.56f, 0.56f, 0.56f, 0.28f, 0, 15, 0.01f, 100, 100, 0, 0.0025f, 50, 25, IPAddress, ModemSystem.ModemConnectionType.DialUp));
 
-        TempGateway.Motherboard.InstalledCPU.Add(new CPUSystem("Zion Z-14", "Zion", "Z-14", "140", 32, 1, 0.5f, 0.1f, 0.5f, 0, 0, 0, 0, 0, 1, 0.01f, 0, 100, 100, 0, "", 0, 20, 0.0025f, 0, 0, 0));
-        TempGateway.Motherboard.InstalledGPU.Add(new GPUSystem("Qividia 970", "PCI-E", 970, 2, 0.1f, 2f, 256, 0, 0, 0, 1, 0.01f, 100, 100, 0, 120, 0.0025f));
-        TempGateway.Motherboard.InstalledRAM.Add(new RamSystem("Vortex 2GB", "DDR1", 0, 2048, 0, 0, 100, 0.01f, 100, 100, 0, 0.0025f,0));
-        TempGateway.Motherboard.InstalledStorageDevice.Add(new StorageDevice("EasternVirtual 128", "", "", "", 0.133f, 0, 128, 128, 15, 0.001f, 100, 100, 0, 0.0025f, 0.14f, 0, 1, StorageDevice.StorageType.HDD,0,0,0,null));
-        TempGateway.Motherboard.InstalledPSU.Add(new PowerSupplySystem("Toughpower-2pack", "", 450, 0, 0, 0.01f, 100, 100, 0, 0.0025f));
-        TempGateway.Motherboard.InstalledModem.Add(new ModemSystem("TUGs Basic Modem", "", "", "", 0.56f, 0.56f, 0.56f, 0.28f, 0, 15, 0.01f, 100, 100, 0, 0.0025f, 50, 25,IPAddress, ModemSystem.ModemConnectionType.DialUp));
+                PopulateDrives(i);
+            }
+        }
     }
 
     void PopulateBankInformation()

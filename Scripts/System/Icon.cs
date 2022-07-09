@@ -13,7 +13,7 @@ public class Icon : MonoBehaviour
 
 	private Defalt defalt;
 	private Computer com;
-	private OS os;
+	private DesktopEnviroment os;
 
 	public Rect Pos;
 	public Texture2D Pic;
@@ -24,7 +24,7 @@ public class Icon : MonoBehaviour
 		SysSoftware = GameObject.Find("System");
 		com = SysSoftware.GetComponent<Computer>();
 		defalt = SysSoftware.GetComponent<Defalt>();
-		os = SysSoftware.GetComponent<OS>();
+		os = SysSoftware.GetComponent<DesktopEnviroment>();
 		windowRect.x = Customize.cust.windowx[windowID];
 		windowRect.y = Customize.cust.windowy[windowID];
 

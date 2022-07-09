@@ -18,7 +18,7 @@ public class HardwareCFile : MonoBehaviour {
 
     public List<ModemSystem> ListOfModems = new List<ModemSystem>();
 
-    public List<DrivePatSystem> Partitions = new List<DrivePatSystem>();
+    public List<DiskPartSystem> Partitions = new List<DiskPartSystem>();
 
     //IMAGES
     public List<string> ListOfFilePaths = new List<string>();
@@ -44,6 +44,9 @@ public class HardwareCFile : MonoBehaviour {
         ListOfFilePaths.Add("Hardware/CPUs/blank_cpu_1");
         ListOfFilePaths.Add("Hardware/Memory/memory");
         ListOfFilePaths.Add("Hardware/Memory/memory_plugged");
+        ListOfFilePaths.Add("Hardware/Memory/memory_2");
+        ListOfFilePaths.Add("Hardware/Memory/memory_2_plugged");
+        ListOfFilePaths.Add("Hardware/Memory/memory_3");
         ListOfFilePaths.Add("Hardware/Storage/storage");
         ListOfFilePaths.Add("Hardware/Storage/storage_plugged");
         ListOfFilePaths.Add("Hardware/Storage/storage1");
@@ -130,7 +133,7 @@ public class HardwareCFile : MonoBehaviour {
 
         HealthStatSystem Health = new HealthStatSystem(0.00001f,0,100,100,100,100,0,1);
 
-        ListOfMotherboards.Add(new MotherboardSystem(ManufactorName, BrandName,Chipset,Socket,ProductName,Description,Image,MaxCPUSockets,MaxStorageSlots,MaxMemorySlots,MaxExpansionSlots, MaxInstalledMemory, null,null,null,null,null,null,null,null,null,null,null,null,null,null,Health,null));
+        ListOfMotherboards.Add(new MotherboardSystem());
     }
 
     void CPU()
@@ -279,8 +282,8 @@ public class HardwareCFile : MonoBehaviour {
         string Connector = "";
         string Name = "";
         string Desc = "";
-        float Speed = 0; // Speed at which local files transffer.
-        float MaxMemory = 0; // What the max memory is by default
+        long Speed = 0; // Speed at which local files transffer.
+        long MaxMemory = 0; // What the max memory is by default
         float DegredationRate = 0f; // The rate that health is lost
         float MaxHealth = 0;
         float Health = MaxHealth;
@@ -300,7 +303,7 @@ public class HardwareCFile : MonoBehaviour {
         MemorySizeName = MaxMemory + "";
         Name = ManufactorName + " " + ProductName + " " + Connector + " " + MemorySizeName;
         Desc = "";
-        Speed = 0.03325f;
+        Speed = 3325;
         DegredationRate = 0.001f;
         MaxHealth = 100;
         Health = MaxHealth;
@@ -313,7 +316,7 @@ public class HardwareCFile : MonoBehaviour {
         UIPosY = 0;
         Image = 0;
 
-        ListOfStorage.Add(new StorageDevice(Name, ManufactorName, Desc, Connector, Speed, 0, MaxMemory, MaxMemory, PowerDraw, DegredationRate, MaxHealth, Health, 0, PowerEffRating, BootTime,Timer,InitalTimer, StorageDevice.StorageType.HDD, UIPosX,UIPosY,Image,Partitions));
+        ListOfStorage.Add(new StorageDevice(Name, ManufactorName, Desc, Connector, Speed, 0, MaxMemory, MaxMemory, PowerDraw, DegredationRate, MaxHealth, Health, 0, PowerEffRating, BootTime, StorageDevice.StorageType.HDD));
 
         ManufactorName = "EasternVirtual";
         ProductName = "Red";
@@ -322,7 +325,7 @@ public class HardwareCFile : MonoBehaviour {
         MemorySizeName = MaxMemory + "";
         Name = ManufactorName + " " + ProductName + " " + Connector + " " + MemorySizeName;
         Desc = "";
-        Speed = 0.133f;
+        Speed = 133;
         DegredationRate = 0.001f;
         MaxHealth = 100;
         Health = MaxHealth;
@@ -334,7 +337,7 @@ public class HardwareCFile : MonoBehaviour {
         UIPosX = 0;
         UIPosY = 0;
         Image = 0;
-        ListOfStorage.Add(new StorageDevice(Name, ManufactorName, Desc, Connector, Speed, 0, MaxMemory, MaxMemory, PowerDraw, DegredationRate, MaxHealth, Health, 0, PowerEffRating, BootTime, Timer, InitalTimer, StorageDevice.StorageType.HDD, UIPosX, UIPosY, Image, Partitions));
+        ListOfStorage.Add(new StorageDevice(Name, ManufactorName, Desc, Connector, Speed, 0, MaxMemory, MaxMemory, PowerDraw, DegredationRate, MaxHealth, Health, 0, PowerEffRating, BootTime, StorageDevice.StorageType.HDD));
     }
 
     void PSU()

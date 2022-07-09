@@ -8,6 +8,7 @@ using UnityEngine;
 using System.Collections;
 using System.Runtime.InteropServices;
 using System;
+using System.Linq;
 
 public class LogiStart : MonoBehaviour
 {
@@ -40,7 +41,9 @@ public class LogiStart : MonoBehaviour
         {
             int StoredPage = GameControl.control.LCDPage;
 
-            if (GameControl.control.Gateway.Status.Shutdown == true)
+            var person = PersonController.control.People.FirstOrDefault(x => x.Name == "Player");
+
+            if (person.Gateway.Status.Shutdown == true)
             {
                 LogitechGSDK.LogiLcdShutdown();
             }

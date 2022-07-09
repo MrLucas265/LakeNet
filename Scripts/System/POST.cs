@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 
 public class POST : MonoBehaviour
 {
@@ -49,8 +50,8 @@ public class POST : MonoBehaviour
 	private BIOSSelect biosselect;
 	private GameObject Crash;
 	private SysCrashMan SCM;
-	private OSCheck OScheck;
-	private CPU cpu;
+	private BootLoader bootloader;
+	//private CPU cpu;
 	private HardDrives harddrives;
 
 	public bool MemoryCheck;
@@ -73,10 +74,10 @@ public class POST : MonoBehaviour
 		//lbg = GetComponent<LoginBackground>();
 		biosselect = bios.GetComponent<BIOSSelect>();
 		boot = GetComponent<Boot>();
-		OScheck = GetComponent<OSCheck>();
+		bootloader = GetComponent<BootLoader>();
 		ram = hardware.GetComponent<RAM>();
 		harddrives = hardware.GetComponent<HardDrives>();
-		cpu = hardware.GetComponent<CPU>();
+		//cpu = hardware.GetComponent<CPU>();
 		Crash = GameObject.Find("Crash");
 		SCM = Crash.GetComponent<SysCrashMan>();
 		cd = GameControl.control.BootTime;
@@ -100,20 +101,16 @@ public class POST : MonoBehaviour
 	// Update is called once per frame
 	void Update ()
 	{
+		var person = PersonController.control.People.FirstOrDefault(x => x.Name == "Player");
 
-		if (GameControl.control.Gateway.InstalledCPU.Count > 0)
-		{
-			cpu.enabled = true;
-		}
-
-		if (GameControl.control.Gateway.InstalledRAM.Count > 0)
-		{
-			ram.enabled = true;
-		}
-		if (GameControl.control.Gateway.InstalledStorageDevice.Count > 0)
-		{
-			harddrives.enabled = true;
-		}
+		//if (GameControl.control.Gateway.InstalledRAM.Count > 0)
+		//{
+		//	ram.enabled = true;
+		//}
+		//if (GameControl.control.Gateway.InstalledStorageDevice.Count > 0)
+		//{
+		//	harddrives.enabled = true;
+		//}
 
 		if (GameControl.control.Gateway.Status.Booting == true) 
 		{
@@ -133,12 +130,12 @@ public class POST : MonoBehaviour
 
 		if (Input.GetKeyDown (KeyCode.Alpha8)) 
 		{
-			OScheck.ChangeOS = true;
+			bootloader.ChangeOS = true;
 		}
 
 		if(GameControl.control.SelectedOS.Name == OperatingSystems.OSName.SafeMode && GameControl.control.Gateway.Status.Terminal == false)
 		{
-			OScheck.ChangeOS = true;
+			bootloader.ChangeOS = true;
 		}
 
 		if (rebooting == true)
@@ -201,13 +198,13 @@ public class POST : MonoBehaviour
 			{
 				MemoryTimer -= 1 * Time.deltaTime;
 
-				MemoryCheckSpeed = GameControl.control.Gateway.InstalledRAM[0].Speed;
+				MemoryCheckSpeed = person.Gateway.RAM[0].Speed;
 
 				if (MemoryTimer <= 0) 
 				{
 					MemoryTimer = MemoryStart;
-					TestedMemory +=MemoryCheckSpeed*cpu.MaxCPUSpeed;
-					float past = TestedMemory -MemoryCheckSpeed*cpu.MaxCPUSpeed;
+					TestedMemory +=MemoryCheckSpeed*1;
+					float past = TestedMemory -MemoryCheckSpeed*1;
 					BootInfo.Remove ("MEMORY TEST: " + past);
 					BootInfo.Add ("MEMORY TEST: " + TestedMemory);
 				}
@@ -234,16 +231,46 @@ public class POST : MonoBehaviour
 		showBIOS = true;
 	}
 
+	void StatusReset()
+	{
+		var person = PersonController.control.People.FirstOrDefault(x => x.Name == "Player");
+		person.Gateway.Status.Active = false;
+		person.Gateway.Status.BIOS = false;
+		person.Gateway.Status.Booted = false;
+		person.Gateway.Status.Booting = false;
+		person.Gateway.Status.LoggedIn = false;
+		person.Gateway.Status.Off = false;
+		person.Gateway.Status.On = false;
+		person.Gateway.Status.POST = false;
+		person.Gateway.Status.SafeMode = false;
+		person.Gateway.Status.Shutdown = false;
+		person.Gateway.Status.SigningIn = false;
+		person.Gateway.Status.SigningOut = false;
+		person.Gateway.Status.Sleep = false;
+		person.Gateway.Status.Terminal = false;
+		person.Gateway.Status.Restart = false;
+	}
+
 	void Kernal()
 	{
+		var person = PersonController.control.People.FirstOrDefault(x => x.Name == "Player");
+
 		switch (Index[0]) 
 		{
 		case 0:
+
 				break;
 		case 1:
-			break;
+				if (person.Gateway.Status.BIOS == true)
+				{
+					BIOS();
+				}
+				break;
 		case 2:
-			BootInfo.Add ("IMABIOS(C)2017 REVA. LTD.");
+				StatusReset();
+				person.Gateway.Status.On = true;
+				person.Gateway.Status.POST = true;
+				BootInfo.Add ("IMABIOS(C)2017 REVA. LTD.");
 			//ProfileController.procon.Load ();
 			//GameControl.control.Load ();
 			//Customize.cust.Load();
@@ -252,27 +279,29 @@ public class POST : MonoBehaviour
 		case 3:
 			//BootInfo.Add (HardwareController.hdcon.Motherboard [0] + " BIOS Version 0.1");
 			BootInfo.Add ("");
-			//HardwareController.hdcon.CPUCheck = true;
-			//ProfileController.procon.Save ();
-			//GameControl.control.Save ();
-			//HardwareController.hdcon.Save();
-			break;
+				person.Gateway.RunningPrograms.RemoveRange(0, person.Gateway.RunningPrograms.Count);
+				person.Gateway.RunningTasks.RemoveRange(0, person.Gateway.RunningTasks.Count);
+				//HardwareController.hdcon.CPUCheck = true;
+				//ProfileController.procon.Save ();
+				//GameControl.control.Save ();
+				//HardwareController.hdcon.Save();
+				break;
 		case 4:
-			BootInfo.Add ("CPU: " + GameControl.control.Gateway.InstalledCPU[0].Name + "CPU @ " + GameControl.control.Gateway.InstalledCPU[0].MaxSpeed.ToString("F2"));
-            break;
+				BootInfo.Add("CPU: " + person.Gateway.CPU[0].Name + "CPU @ " + person.Gateway.CPU[0].MaxSpeed.ToString("F2"));
+				break;
 		case 5:
-            for (int i = 0; i < GameControl.control.Gateway.InstalledCPU.Count; i++)
-            {
-                GameControl.control.Gateway.InstalledCPU[i].Usage = 0;
-            }
-            for (int i = 0; i < GameControl.control.Gateway.InstalledGPU.Count; i++)
-            {
-                GameControl.control.Gateway.InstalledGPU[i].Usage = 0;
-            }
-            for (int i = 0; i < GameControl.control.Gateway.InstalledRAM.Count; i++)
-            {
-                GameControl.control.Gateway.InstalledRAM[i].Used = 0;
-            }
+            //for (int i = 0; i < GameControl.control.Gateway.InstalledCPU.Count; i++)
+            //{
+            //    GameControl.control.Gateway.InstalledCPU[i].Usage = 0;
+            //}
+            //for (int i = 0; i < GameControl.control.Gateway.InstalledGPU.Count; i++)
+            //{
+            //    GameControl.control.Gateway.InstalledGPU[i].Usage = 0;
+            //}
+            //for (int i = 0; i < GameControl.control.Gateway.InstalledRAM.Count; i++)
+            //{
+            //    GameControl.control.Gateway.InstalledRAM[i].Used = 0;
+            //}
             //for (int i = 0; i < GameControl.control.Gateway.InstalledPSU.Count; i++)
             //{
             //    GameControl.control.Gateway.InstalledRAM[i].Used = 0;
@@ -317,7 +346,7 @@ public class POST : MonoBehaviour
 				break;
 			case 1:
 				BootInfo.Remove("Primary Master : ");
-				BootInfo.Add("Primary Master : " + GameControl.control.Gateway.InstalledStorageDevice[0].Name);
+				BootInfo.Add("Primary Master : " + person.Gateway.StorageDevices[0].Name);
 				break;
 			case 2:
 				BootInfo.Add("Primary Slave : ");
@@ -350,9 +379,9 @@ public class POST : MonoBehaviour
 				pause = false;
                 booted = true;
 
-                OScheck.show = true;
+				bootloader.show = true;
 				this.enabled = false;
-				OScheck.enabled = true;
+				bootloader.enabled = true;
 
 				GameControl.control.Gateway.Status.POST = false;
 

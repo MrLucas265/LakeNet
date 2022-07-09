@@ -490,18 +490,18 @@ public class FileExplorer : MonoBehaviour
 
 	void OpenIns()
 	{
-		PlayClickSound ();
-		ip.enabled = true;
-		ip.show = true;
-		ip.Install = true;
-		ip.ProgramName = PageFile[SelectedProgram].Name;
-		ip.Size = PageFile[SelectedProgram].Used;
-		ip.ProgramVersion = PageFile[SelectedProgram].Version;
-		ip.ProgramTarget = PageFile[SelectedProgram].Target;
-		ip.ErrorTitle = ip.ProgramName + " Setup";
-		ip.ErrorMsg = "Do you wish to execute this file?" + "\n" +
-			"Name: " + ip.ProgramName + "_setup.inspkg";
-		ip.ConfirmationMsg = "Install";
+		//PlayClickSound ();
+		//ip.enabled = true;
+		//ip.show = true;
+		//ip.Install = true;
+		//ip.ProgramName = PageFile[SelectedProgram].Name;
+		//ip.Size = PageFile[SelectedProgram].Used;
+		//ip.ProgramVersion = PageFile[SelectedProgram].Version;
+		//ip.ProgramTarget = PageFile[SelectedProgram].Target;
+		//ip.ErrorTitle = ip.ProgramName + " Setup";
+		//ip.ErrorMsg = "Do you wish to execute this file?" + "\n" +
+		//	"Name: " + ip.ProgramName + "_setup.inspkg";
+		//ip.ConfirmationMsg = "Install";
 	}
 
 	void OpenFld()

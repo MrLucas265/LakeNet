@@ -13,13 +13,11 @@ public class SiteList : MonoBehaviour
     public int scrollsize;
     public int Select;
     private Computer com;
-    private Progtive pro;
 
 	// Use this for initialization
 	void Start ()
     {
         com = GetComponent<Computer>();
-        pro = GetComponent<Progtive>();
         windowRect.x = Customize.cust.windowx[windowID];
         windowRect.y = Customize.cust.windowy[windowID];
 	}

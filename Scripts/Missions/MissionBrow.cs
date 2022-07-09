@@ -35,7 +35,7 @@ public class MissionBrow : MonoBehaviour
 
 		GameControl.control.EmailData.Add(new EmailSystem(misgen.MissionList[Select].Name,
 			misgen.MissionList[Select].Address,GameControl.control.Time.FullDate,
-			misgen.MissionList[Select].EDesc,0,1,1,false,
+			misgen.MissionList[Select].EDesc, null, 0,1,1,false,
 			EmailSystem.EmailType.Contract));
 
 		noti.NewNotification("New Contract",misgen.MissionList[Select].Name,"You got a new contract.");

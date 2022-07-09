@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using System.Linq;
 
 public class AccSetup : MonoBehaviour
 {
@@ -125,8 +126,10 @@ public class AccSetup : MonoBehaviour
 
     public bool AcceptedKey;
 
-    public List<DrivePatSystem> Partitions = new List<DrivePatSystem>();
-    public List<DrivePatSystem> PartitionsBlank = new List<DrivePatSystem>();
+    public bool CreatePlayerData;
+
+    public List<DiskPartSystem> Partitions = new List<DiskPartSystem>();
+    public List<DiskPartSystem> PartitionsBlank = new List<DiskPartSystem>();
     public List<InfectionSystem> BlankInfections = new List<InfectionSystem>();
     public List<ProgramSystem.FileType> BlankFileType = new List<ProgramSystem.FileType>();
     public List<ProgramSystem.FileType> DocumentFileType = new List<ProgramSystem.FileType>();
@@ -191,29 +194,16 @@ public class AccSetup : MonoBehaviour
 
         serial = GetComponent<Serial>();
 
-
-        Colour.Button.Red = 255;
-        Colour.Button.Green = 255;
-        Colour.Button.Blue = 255;
-        Colour.Button.Alpha = 255;
-
-        Colour.Window.Red = 255;
-        Colour.Window.Green = 255;
-        Colour.Window.Blue = 255;
-        Colour.Window.Alpha = 255;
-
-        Colour.Font.Alpha = 255;
-
         OSFPC.BackgroundAddress = "";
         OSFPC.MouseCursorAddress = "";
         OSFPC.ScreenSaverBackgroundAddress = "";
         OSFPC.ScreenSaverPictureAddress = "";
 
 
-        AvalibleOS.Add(new OperatingSystems(OperatingSystems.OSName.TreeOS,"TreeOS", Colour, OSFPC, false,9999,false));
-        AvalibleOS.Add(new OperatingSystems(OperatingSystems.OSName.FluidicIceOS,"FluidicIceOS", Colour, OSFPC, false, 9999, false));
-        AvalibleOS.Add(new OperatingSystems(OperatingSystems.OSName.AppatureOS, "AppatureOS", Colour, OSFPC, false, 9999, false));
-        AvalibleOS.Add(new OperatingSystems(OperatingSystems.OSName.EthelOS, "EthelOS", Colour, OSFPC, true, 9999, false));
+        AvalibleOS.Add(new OperatingSystems("TreeOS", OperatingSystems.OSName.TreeOS));
+        AvalibleOS.Add(new OperatingSystems("FluidicIceOS", OperatingSystems.OSName.FluidicIceOS));
+        AvalibleOS.Add(new OperatingSystems("AppatureOS", OperatingSystems.OSName.AppatureOS));
+        AvalibleOS.Add(new OperatingSystems("EthelOS", OperatingSystems.OSName.EthelOS));
     }
 
     void Reset()
@@ -280,6 +270,10 @@ public class AccSetup : MonoBehaviour
 
     void Update()
     {
+        if (CreatePlayerData == true)
+        {
+            StartSetupV2();
+        }
         string day = System.DateTime.Now.ToString("dd/MM");
 
         if (day == "25/12")
@@ -630,6 +624,11 @@ public class AccSetup : MonoBehaviour
             TestAccount1();
         }
 
+        if(InputtedText == "STREAM")
+        {
+            SelectedMenu = 12;
+        }
+
         if (InputtedText == serial.SerialKey || InputtedText == SerialKey || InputtedText == "THNKUFOR8UY1N9TH3FNVMLEV1" || InputtedText == "7H4NKY0UF0R73271N97H3G4M3" || InputtedText == "M33RY-CHR12-7M42F-R0MFN-VMD3V" || InputtedText == "SKIP")
         {
             AcceptedKey = true;
@@ -855,6 +854,10 @@ public class AccSetup : MonoBehaviour
                 Customize.cust.RezX = 640;
                 Customize.cust.RezY = 480;
                 break;
+            case 12:
+                Customize.cust.RezX = 751;
+                Customize.cust.RezY = 785;
+                break;
         }
     }
 
@@ -871,6 +874,7 @@ public class AccSetup : MonoBehaviour
         Rez.Add("1680x1050");
         Rez.Add("1920x1080");
         Rez.Add("1440x2560");
+        Rez.Add("751x785");
     }
 
     void CustomSettings()
@@ -1252,13 +1256,87 @@ public class AccSetup : MonoBehaviour
         SelectedMenu = 9;
     }
 
+    void StartSetupV2()
+    {
+        if (PersonController.control.People.Count > 0)
+        {
+            var person = PersonController.control.People.FirstOrDefault(x => x.Name == "Player");
+            // person.Gateway.ProgramAttribues.Add("OS", new RegistrySystem());
+            // person.Gateway.ProgramAttribues.Add("CLI", new RegistrySystem());
+
+            person.Gateway.Motherboard.CPUSockets.Add(new SocketSystem(88, 108));
+
+            person.Gateway.Motherboard.StorageSlots.Add(new SocketSystem(130, 180));
+            person.Gateway.Motherboard.StorageSlots.Add(new SocketSystem(130, 180));
+
+            person.Gateway.Motherboard.RAMSlots.Add(new SocketSystem(138, 70));
+
+            person.Gateway.CPU.Add(new CPUSystem("Zion Z-14", "Zion", "Z-14", "140", 32, 1, 0.5f, 0.1f, 0.5f, 0, 0, 0, 0, 0, 1, 0.01f, 0, 100, 100, 0, "", 0, 20, 0.0025f, 0, 0, 0));
+            person.Gateway.StorageDevices.Add(new StorageDevice("EasternVirtual 128", "", "", "", 133, 0, 128, 128, 15, 0.001f, 100, 100, 0, 0.0025f, 0.14f, StorageDevice.StorageType.HDD));
+            person.Gateway.StorageDevices.Add(new StorageDevice("EasternVirtual 128", "", "", "", 133, 0, 128, 128, 15, 0.001f, 100, 100, 0, 0.0025f, 0.14f, StorageDevice.StorageType.HDD));
+
+            person.Gateway.Name = person.Name + "'s Gateway";
+            person.Gateway.GPU.Add(new GPUSystem("Qividia 970", "PCI-E", 970, 2, 0.1f, 2f, 256, 0, 0, 0, 1, 0.01f, 100, 100, 0, 120, 0.0025f));
+            person.Gateway.RAM.Add(new RamSystem("Vortex 2GB", "DDR1", 0, 2048, 0, 0, 100, 0.01f, 100, 100, 0, 0.0025f, 0));
+            person.Gateway.PSU.Add(new PowerSupplySystem("Toughpower-2pack", "", 450, 0, 0, 0.01f, 100, 100, 0, 0.0025f));
+            person.Gateway.Modem.Add(new ModemSystem("TUGs Basic Modem", "", "", "", 0.56f, 0.56f, 0.56f, 0.28f, 0, 15, 0.01f, 100, 100, 0, 0.0025f, 50, 25, "", ModemSystem.ModemConnectionType.DialUp));
+
+            person.Gateway.StorageDevices.First().OS.Add(new OperatingSystems("Kernal-Sanders", OperatingSystems.OSName.SafeMode));
+            person.Gateway.StorageDevices.First().OS.Add(new OperatingSystems(SelectedOS.Title, SelectedOS.Name));
+            person.Gateway.StorageDevices.First().InstalledOS.Add(SelectedOS.Title);
+
+            person.Gateway.StorageDevices.First().OS[0].Partitions.Add(new DiskPartSystem("System", "C", 8, 0, 0, 0));
+            person.Gateway.StorageDevices.First().OS[1].Partitions.Add(new DiskPartSystem("System", "C", 120, 0, 0, 0));
+
+            person.Gateway.Timer.InitalTimer = 1;
+
+            for (int i = 0; i < person.Gateway.StorageDevices.First().OS.Count; i++)
+            {
+                person.Gateway.StorageDevices.First().OS[i].Colour.Window = new ColorSystem(255, 255, 255, 255);
+                person.Gateway.StorageDevices.First().OS[i].Colour.Button = new ColorSystem(255, 255, 255, 255);
+                person.Gateway.StorageDevices.First().OS[i].Colour.Font = new ColorSystem(0, 0, 0, 255);
+
+                person.Gateway.StorageDevices.First().OS[i].Options.FirstBoot = true;
+                person.Gateway.StorageDevices.First().OS[i].Options.EnableDesktopEnviroment = true;
+                person.Gateway.StorageDevices.First().OS[i].FPC.ShowDesktopBackground = true;
+                person.Gateway.StorageDevices.First().OS[i].FPC.ShowDesktopIcons = true;
+
+                person.Gateway.StorageDevices.First().OS[i].Partitions.First().Files.Add(new ProgramSystemv2("C:/", "System", "", "", "", "System", "Gateway", "C:/", "", "", ProgramSystemv2.FileExtension.Dir, ProgramSystemv2.FileExtension.Null, 0, 0, 60, 0, 0, 0, 0, 100, 0, 0, 0, 0, 0, 0, 0, 0, false, false, false, false, false, false, false));
+                person.Gateway.StorageDevices.First().OS[i].Partitions.First().Files.Add(new ProgramSystemv2("Downloads", "", "", "", "", "", "C:/", "C:/Downloads", "", "", ProgramSystemv2.FileExtension.Fdl, ProgramSystemv2.FileExtension.Null, 0, 0, 0, 0, 0, 0, 0, 100, 0, 0, 0, 0, 0, 0, 0, 0, false, false, false, false, false, false, false));
+                person.Gateway.StorageDevices.First().OS[i].Partitions.First().Files.Add(new ProgramSystemv2("Documents", "", "", "", "", "", "C:/", "C:/Documents", "", "", ProgramSystemv2.FileExtension.Fdl, ProgramSystemv2.FileExtension.Null, 0, 0, 0, 0, 0, 0, 0, 100, 0, 0, 0, 0, 0, 0, 0, 0, false, false, false, false, false, false, false));
+                person.Gateway.StorageDevices.First().OS[i].Partitions.First().Files.Add(new ProgramSystemv2("Programs", "", "", "", "", "", "C:/", "C:/Programs", "", "", ProgramSystemv2.FileExtension.Fdl, ProgramSystemv2.FileExtension.Null, 0, 0, 0, 0, 0, 0, 0, 100, 0, 0, 0, 0, 0, 0, 0, 0, false, false, false, false, false, false, false));
+                person.Gateway.StorageDevices.First().OS[i].Partitions.First().Files.Add(new ProgramSystemv2("System", "", "", "", "", "", "C:/", "C:/System", "", "", ProgramSystemv2.FileExtension.Fdl, ProgramSystemv2.FileExtension.Null, 0, 0, 0, 0, 0, 0, 0, 100, 0, 0, 0, 0, 0, 0, 0, 0, false, false, false, false, false, false, false));
+
+                person.Gateway.StorageDevices.First().OS[i].Partitions.First().Files.Add(new ProgramSystemv2("Control Panel", "", "", "", "", "", "C:/Programs", "Control Panel", "", "", ProgramSystemv2.FileExtension.Exe, ProgramSystemv2.FileExtension.Null, 0, 0, 0, 0, 0, 0, 0, 100, 0, 0, 0, 0, 0, 0, 0, 0, false, false, false, false, false, false, false));
+                person.Gateway.StorageDevices.First().OS[i].Partitions.First().Files.Add(new ProgramSystemv2("File Manager", "", "", "", "", "", "C:/Programs", "FileManager", "", "", ProgramSystemv2.FileExtension.Exe, ProgramSystemv2.FileExtension.Null, 0, 0, 0, 0, 0, 0, 0, 100, 0, 0, 0, 0, 0, 0, 0, 0, false, false, false, false, false, false, false));
+                person.Gateway.StorageDevices.First().OS[i].Partitions.First().Files.Add(new ProgramSystemv2("CLI", "", "", "", "", "", "C:/Programs", "CLI", "", "", ProgramSystemv2.FileExtension.Exe, ProgramSystemv2.FileExtension.Null, 0, 0, 0, 0, 0, 0, 0, 100, 0, 0, 0, 0, 0, 0, 0, 0, false, false, false, false, false, false, false));
+                person.Gateway.StorageDevices.First().OS[i].Partitions.First().Files.Add(new ProgramSystemv2("Task Viewer", "", "", "", "", "", "C:/Programs", "Task Viewer", "", "", ProgramSystemv2.FileExtension.Exe, ProgramSystemv2.FileExtension.Null, 0, 0, 0, 0, 0, 0, 0, 100, 0, 0, 0, 0, 0, 0, 0, 0, false, false, false, false, false, false, false));
+                person.Gateway.StorageDevices.First().OS[i].Partitions.First().Files.Add(new ProgramSystemv2("Disk Manager", "", "", "", "", "", "C:/Programs", "Disk Manager", "", "", ProgramSystemv2.FileExtension.Exe, ProgramSystemv2.FileExtension.Null, 0, 0, 0, 0, 0, 0, 0, 100, 0, 0, 0, 0, 0, 0, 0, 0, false, false, false, false, false, false, false));
+                person.Gateway.StorageDevices.First().OS[i].Partitions.First().Files.Add(new ProgramSystemv2("Gateway Viewer", "", "", "", "", "", "C:/Programs", "Gateway Viewer", "", "", ProgramSystemv2.FileExtension.Exe, ProgramSystemv2.FileExtension.Null, 0, 0, 0, 0, 0, 0, 0, 100, 0, 0, 0, 0, 0, 0, 0, 0, false, false, false, false, false, false, false));
+                person.Gateway.StorageDevices.First().OS[i].Partitions.First().Files.Add(new ProgramSystemv2("Device Manager", "", "", "", "", "", "C:/Programs", "Device Manager", "", "", ProgramSystemv2.FileExtension.Exe, ProgramSystemv2.FileExtension.Null, 0, 0, 0, 0, 0, 0, 0, 100, 0, 0, 0, 0, 0, 0, 0, 0, false, false, false, false, false, false, false));
+                person.Gateway.StorageDevices.First().OS[i].Partitions.First().Files.Add(new ProgramSystemv2("System Panel", "", "", "", "", "", "C:/Programs", "System Panel", "", "", ProgramSystemv2.FileExtension.Exe, ProgramSystemv2.FileExtension.Null, 0, 0, 0, 0, 0, 0, 0, 100, 0, 0, 0, 0, 0, 0, 0, 0, false, false, false, false, false, false, false));
+                person.Gateway.StorageDevices.First().OS[i].Partitions.First().Files.Add(new ProgramSystemv2("Clock", "", "", "", "", "", "C:/Programs", "ClockPro", "", "", ProgramSystemv2.FileExtension.Exe, ProgramSystemv2.FileExtension.Null, 0, 0, 0, 0, 0, 0, 0, 100, 0, 0, 0, 0, 0, 0, 0, 0, false, false, false, false, false, false, false));
+                person.Gateway.StorageDevices.First().OS[i].Partitions.First().Files.Add(new ProgramSystemv2("MediaPlayer", "", "", "", "", "", "C:/Programs", "MediaPlayer", "", "", ProgramSystemv2.FileExtension.Exe, ProgramSystemv2.FileExtension.Null, 0, 0, 0, 0, 0, 0, 0, 100, 0, 0, 0, 0, 0, 0, 0, 0, false, false, false, false, false, false, false));
+                person.Gateway.StorageDevices.First().OS[i].Partitions.First().Files.Add(new ProgramSystemv2("Exchange", "", "", "", "", "", "C:/Programs", "Exchange Viewer", "", "", ProgramSystemv2.FileExtension.Exe, ProgramSystemv2.FileExtension.Null, 0, 0, 0, 0, 0, 0, 0, 100, 0, 0, 0, 0, 0, 0, 0, 0, false, false, false, false, false, false, false));
+            }
+
+            person.Gateway.StorageDevices.First().OS[0].Partitions.First().Files.Add(new ProgramSystemv2("" + "Kernal-Sanders", "", "", "", "", "", "C:/System", "", "", "", ProgramSystemv2.FileExtension.OS, ProgramSystemv2.FileExtension.Null, 0, 0, 1, 0, 0, 0, 0, 100, 1, 0, 0, 0, 0, 0, 0, 0, false, false, false, false, false, false, false));
+            person.Gateway.StorageDevices.First().OS[1].Partitions.First().Files.Add(new ProgramSystemv2("" + SelectedOS.Name, "", "", "", "", "", "C:/System", "", "", "", ProgramSystemv2.FileExtension.OS, ProgramSystemv2.FileExtension.Null, 0, 0, 10, 0, 0, 0, 0, 100, 1, 0, 0, 0, 0, 0, 0, 0, false, false, false, false, false, false, false));
+
+            person.Reputation.Add(new RepSystem("REVA", 0, 0, 0, 0, 0, 0));
+        }
+
+        POST();
+        CreatePlayerData = false;
+    }
+
     void StartSetup()
     {
         GameControl.control.NewAccount = true;
         ProfileController.procon.ProfilePassWord.Add(PrimaryPassword);
         ProfileController.procon.Profiles.Add(PrimaryUsername);
         ProfileController.procon.ProfileID.Add(1);
-        ProfileController.procon.SelectedOS.Add(new OperatingSystems(SelectedOS.Name,SelectedOS.Title, SelectedOS.Colour, SelectedOS.FPC, SelectedOS.DisableColourOption, 9999, SelectedOS.GridMode));
+        ProfileController.procon.SelectedOS.Add(new OperatingSystems(SelectedOS.Title, SelectedOS.Name));
         ProfileController.procon.PasswordHint.Add(PrimaryPassHint);
         ProfileController.procon.ProfilePic.Add(SelectedProfilePic);
         PrimaryPassword = "";
@@ -1272,8 +1350,8 @@ public class AccSetup : MonoBehaviour
         GameControl.control.GatewayPosX = MapX;
         GameControl.control.GatewayPosY = MapY;
         GameControl.control.Rep.Add(new RepSystem("REVA", 0, 0, 0, 0, 0, 0));
-        GameControl.control.OSName.Add(new OperatingSystems(OperatingSystems.OSName.SafeMode, "Kernal-Sanders", SelectedOS.Colour, SelectedOS.FPC, SelectedOS.DisableColourOption, 9999, SelectedOS.GridMode));
-        GameControl.control.OSName.Add(new OperatingSystems(SelectedOS.Name, SelectedOS.Title, SelectedOS.Colour, SelectedOS.FPC, SelectedOS.DisableColourOption, 9999, SelectedOS.GridMode));
+        GameControl.control.OSName.Add(new OperatingSystems("Kernal-Sanders",OperatingSystems.OSName.SafeMode));
+        GameControl.control.OSName.Add(new OperatingSystems(SelectedOS.Title, SelectedOS.Name));
         GameControl.control.SelectedOS = SelectedOS;
         GameControl.control.SerialKey = SerialKey;
         GameControl.control.ProgramFiles.Add(new ProgramSystem("Kernal-Sanders", "", "", "","","", "Reserved", "","","",ProgramSystem.FileExtension.OS, ProgramSystem.FileExtension.Null,0, 0, 0, 0, 0,0,0, 100, 1,0,0,0,0,0,0,0,false,false,false,false,BlankInfections,BlankFileType));
@@ -1283,7 +1361,7 @@ public class AccSetup : MonoBehaviour
         Customize.cust.GatewayName = GatewayName;
         Customize.cust.DoubleClickDelayMenu = 0.5f;
         PersonController.control.ProfileName = ProfileController.procon.Profiles[Select];
-        PersonController.control.People.RemoveRange(0, PersonController.control.People.Count);
+        //PersonController.control.People.RemoveRange(0, PersonController.control.People.Count);
 
         GameControl.control.Time.Day = 1;
         GameControl.control.Time.DayNumber = 5;
@@ -1331,24 +1409,26 @@ public class AccSetup : MonoBehaviour
         GameControl.control.ProgramFiles.Add(new ProgramSystem("Gateway Viewer", "", "", "", "", "", SysInstallLocation, "Gateway Viewer", "", "", ProgramSystem.FileExtension.Exe, ProgramSystem.FileExtension.Null, 0, 0, 2, 0, 0, 0, 0, 100, 1.0f, 0, 0, 0, 0, 0, 0, 0, false, false, false, false, BlankInfections, BlankFileType));
         GameControl.control.ProgramFiles.Add(new ProgramSystem("Media Player", "", "", "", "", "", SysInstallLocation, "Media Player", "", "", ProgramSystem.FileExtension.Exe, ProgramSystem.FileExtension.Null, 0, 0, 2, 0, 0, 0, 0, 100, 1.0f, 0, 0, 0, 0, 0, 0, 0, false, false, false, false, BlankInfections, BlankFileType));
         GameControl.control.ProgramFiles.Add(new ProgramSystem("Real Exe Creator", "", "", "", "", "", SysInstallLocation, "Real Exe Creator", "", "", ProgramSystem.FileExtension.Exe, ProgramSystem.FileExtension.Null, 0, 0, 2, 0, 0, 0, 0, 100, 1.0f, 0, 0, 0, 0, 0, 0, 0, false, false, false, false, BlankInfections, BlankFileType));
+        GameControl.control.ProgramFiles.Add(new ProgramSystem("Clock", "", "", "", "", "", SysInstallLocation, "ClockPro", "", "", ProgramSystem.FileExtension.Exe, ProgramSystem.FileExtension.Null, 0, 0, 2, 0, 0, 0, 0, 100, 1.0f, 0, 0, 0, 0, 0, 0, 0, false, false, false, false, BlankInfections, DocumentFileType));
+        GameControl.control.ProgramFiles.Add(new ProgramSystem("ICQ", "", "", "", "", "", SysInstallLocation, "ICQ", "", "", ProgramSystem.FileExtension.Exe, ProgramSystem.FileExtension.Null, 0, 0, 2, 0, 0, 0, 0, 100, 1.0f, 0, 0, 0, 0, 0, 0, 0, false, false, false, false, BlankInfections, DocumentFileType));
+        GameControl.control.ProgramFiles.Add(new ProgramSystem("File Manager", "", "", "", "", "", SysInstallLocation, "FileManager", "", "", ProgramSystem.FileExtension.Exe, ProgramSystem.FileExtension.Null, 0, 0, 2, 0, 0, 0, 0, 100, 1.0f, 0, 0, 0, 0, 0, 0, 0, false, false, false, false, BlankInfections, DocumentFileType));
 
         string IPAddress = StringGenerator.RandomNumberChar(3, 3) + "." + StringGenerator.RandomNumberChar(3, 3) + "." + StringGenerator.RandomNumberChar(3, 3) + "." + StringGenerator.RandomNumberChar(3, 3);
 
-        GameControl.control.Gateway.CPUSockets.Add(new SocketSystem("420",88,108,0));
-        GameControl.control.Gateway.StorageSockets.Add(new SocketSystem("SS1", 128, 180, 1));
-        GameControl.control.Gateway.MemorySockets.Add(new SocketSystem("DDR1", 139, 70, 1));
-        GameControl.control.Gateway.InstalledCPU.Add(new CPUSystem("Zion Z-14", "Zion", "Z-14", "420", 32, 1, 0.5f, 0.1f, 0.5f, 0, 0, 0, 0, 0, 1, 0.01f, 0, 100, 100, 0, "", 0, 20, 0.0025f, 0, 0, 0));
-        GameControl.control.Gateway.InstalledGPU.Add(new GPUSystem("Qividia 970", "PCI-E", 970, 2, 0.1f, 2f, 256, 0, 0, 0, 1, 0.01f, 100, 100, 0, 120, 0.0025f));
-        GameControl.control.Gateway.InstalledRAM.Add(new RamSystem("Vortex 2GB", "DDR1", 0, 2048, 0, 0, 100, 0.01f, 100, 100, 0, 0.0025f,0));
-        GameControl.control.Gateway.InstalledPSU.Add(new PowerSupplySystem("Toughpower-2pack", "", 450, 0, 0, 0.01f, 100, 100, 0, 0.0025f));
-        GameControl.control.Gateway.InstalledModem.Add(new ModemSystem("TUGs Basic Modem", "", "", "", 0.056f, 0.056f, 0.056f, 0.029f, 0, 15, 0.01f, 100, 100, 0, 0.0025f, 150, 0,IPAddress, ModemSystem.ModemConnectionType.DialUp));
+        //GameControl.control.Gateway.CPUSockets.Add(new CPUSocketSystem("420",88,108,0,null));
+        GameControl.control.Gateway.RAMSlots.Add(new SocketSystem(139, 70));
+        //GameControl.control.Gateway.InstalledCPU.Add(new CPUSystem("Zion Z-14", "Zion", "Z-14", "420", 32, 1, 0.5f, 0.1f, 0.5f, 0, 0, 0, 0, 0, 1, 0.01f, 0, 100, 100, 0, "", 0, 20, 0.0025f, 0, 0, 0));
+       // GameControl.control.Gateway.InstalledGPU.Add(new GPUSystem("Qividia 970", "PCI-E", 970, 2, 0.1f, 2f, 256, 0, 0, 0, 1, 0.01f, 100, 100, 0, 120, 0.0025f));
+      ///  GameControl.control.Gateway.InstalledRAM.Add(new RamSystem("Vortex 2GB", "DDR1", 0, 2048, 0, 0, 100, 0.01f, 100, 100, 0, 0.0025f,0));
+      //  GameControl.control.Gateway.InstalledPSU.Add(new PowerSupplySystem("Toughpower-2pack", "", 450, 0, 0, 0.01f, 100, 100, 0, 0.0025f));
+       // GameControl.control.Gateway.InstalledModem.Add(new ModemSystem("TUGs Basic Modem", "", "", "", 0.056f, 0.056f, 0.056f, 0.029f, 0, 15, 0.01f, 100, 100, 0, 0.0025f, 150, 0,IPAddress, ModemSystem.ModemConnectionType.DialUp));
 
-        GameControl.control.Gateway.InstalledStorageDevice.Add(new StorageDevice("EasternVirtual 128", "", "", "", 0.133f, 0, 128, 128, 15, 0.001f, 100, 100, 0, 0.0025f, 0.14f,0.25f,0.25f, StorageDevice.StorageType.HDD,0,0,0, Partitions));
+        //GameControl.control.Gateway.StorageDevices.Add(new StorageDevice("EasternVirtual 128", "", "", "", 133, 0, 128, 128, 15, 0.001f, 100, 100, 0, 0.0025f, 0.14f, StorageDevice.StorageType.HDD));
 
-        Partitions.Add(new DrivePatSystem("System", "C", 60,0,0, 0));
-        Partitions.Add(new DrivePatSystem("Storage", "D", 60,0,0, 0));
+       // Partitions.Add(new DiskPartSystem("System", "C", 60,0,0, 0));
+       // Partitions.Add(new DiskPartSystem("Storage", "D", 60,0,0, 0));
 
-        GameControl.control.Gateway.InstalledStorageDevice.Add(new StorageDevice("EasternVirtual 128", "", "", "", 0.133f, 0, 128, 128, 15, 0.001f, 100, 100, 0, 0.0025f, 0.14f, 30, 30, StorageDevice.StorageType.HDD, 0, 0, 0, PartitionsBlank));
+       // GameControl.control.Gateway.StorageDevices.Add(new StorageDevice("EasternVirtual 128", "", "", "", 133, 0, 128, 128, 15, 0.001f, 100, 100, 0, 0.0025f, 0.14f, StorageDevice.StorageType.HDD));
 
         int IDay = 1;
         int IMonth = 1;
@@ -1356,14 +1436,14 @@ public class AccSetup : MonoBehaviour
         int DDay = 2;
         int DMonth = 1;
         int DYear = 1970;
-        DateSystem InitalPlanDate = new DateSystem(0, 0, 0, IDay, IMonth, IYear, 0, "", false, "", 0, 0, 0, false, "" + IDay.ToString("00") + "/" + IMonth.ToString("00") + "/" + IYear.ToString("0000"), "", "");
-        DateSystem DuePlanDate = new DateSystem(0, 0, 0, DDay, DMonth, DYear, 0, "", false, "", 0, 0, 0, false, "" + DDay.ToString("00") + "/" + DMonth.ToString("00") + "/" + DYear.ToString("0000"), "", "");
+        DateSystem InitalPlanDate = new DateSystem(0, 0, 0, 0, IDay, IMonth, IYear, 0, "", false, "", 0, 0, 0, false, "" + IDay.ToString("00") + "/" + IMonth.ToString("00") + "/" + IYear.ToString("0000"), "","", "",false);
+        DateSystem DuePlanDate = new DateSystem(0, 0, 0, 0, DDay, DMonth, DYear, 0, "", false, "", 0, 0, 0, false, "" + DDay.ToString("00") + "/" + DMonth.ToString("00") + "/" + DYear.ToString("0000"), "", "", "", false);
 
         GameControl.control.Plans.Add(new PlanSystem("TUG", "www.tugs.com", "Basic Modem Package", "A basic modem package that comes with dialup and a modem for 150 a month", 150, InitalPlanDate, DuePlanDate));
 
         GameControl.control.ProgramFiles.Add(new ProgramSystem("C:/", "System", "", "", "", "", "Gateway","C:/", "", "", ProgramSystem.FileExtension.Dir, ProgramSystem.FileExtension.Null, 0, 0, 60, 0, 0, 0, 0, 100, 0, 0, 0, 0, 0, 0, 0, 0, false, false, false, false, BlankInfections, BlankFileType));
-        GameControl.control.Gateway.InstalledStorageDevice[0].UsedSpace += 60;
-        GameControl.control.Gateway.InstalledStorageDevice[0].FreeSpace = GameControl.control.Gateway.InstalledStorageDevice[0].Capacity - GameControl.control.Gateway.InstalledStorageDevice[0].UsedSpace;
+        //GameControl.control.Gateway.InstalledStorageDevice[0].UsedSpace += 60;
+        //GameControl.control.Gateway.InstalledStorageDevice[0].FreeSpace = GameControl.control.Gateway.InstalledStorageDevice[0].Capacity - GameControl.control.Gateway.InstalledStorageDevice[0].UsedSpace;
         GameControl.control.ProgramFiles.Add(new ProgramSystem("Downloads", "", "", "", "", "", "C:/", "C:/Downloads", "", "", ProgramSystem.FileExtension.Fdl, ProgramSystem.FileExtension.Null, 0, 0, 0, 0, 0, 0, 0, 100, 0, 0, 0, 0, 0, 0, 0, 0, false, false, false, false, BlankInfections, BlankFileType));
         GameControl.control.ProgramFiles.Add(new ProgramSystem("Documents", "", "", "", "", "", "C:/", "C:/Documents", "", "", ProgramSystem.FileExtension.Fdl, ProgramSystem.FileExtension.Null, 0, 0, 0, 0, 0, 0, 0, 100, 0, 0, 0, 0, 0, 0, 0, 0, false, false, false, false, BlankInfections, BlankFileType));
         GameControl.control.ProgramFiles.Add(new ProgramSystem("Programs", "", "", "", "", "", "C:/", "C:/Programs", "", "", ProgramSystem.FileExtension.Fdl, ProgramSystem.FileExtension.Null, 0, 0, 0, 0, 0, 0, 0, 100, 0, 0, 0, 0, 0, 0, 0, 0, false, false, false, false, BlankInfections, BlankFileType));
@@ -1371,23 +1451,10 @@ public class AccSetup : MonoBehaviour
         GameControl.control.ProgramFiles.Add(new ProgramSystem("Real", "", "", "", "", "", "C:/", "C:/Real", "", "", ProgramSystem.FileExtension.Fdl, ProgramSystem.FileExtension.Null, 0, 0, 0, 0, 0, 0, 0, 100, 0, 0, 0, 0, 0, 0, 0, 0, false, false, false, false, BlankInfections, BlankFileType));
 
         GameControl.control.ProgramFiles.Add(new ProgramSystem("D:/", "Storage", "", "", "", "", "Gateway", "D:/", "", "", ProgramSystem.FileExtension.Dir, ProgramSystem.FileExtension.Null, 0, 0, 60, 0, 0, 0, 0, 100, 0, 0, 0, 0, 0, 0, 0, 0, false, false, false, false, BlankInfections, BlankFileType));
-        GameControl.control.Gateway.InstalledStorageDevice[0].UsedSpace += 60;
-        GameControl.control.Gateway.InstalledStorageDevice[0].FreeSpace = GameControl.control.Gateway.InstalledStorageDevice[0].Capacity - GameControl.control.Gateway.InstalledStorageDevice[0].UsedSpace;
+        //GameControl.control.Gateway.InstalledStorageDevice[0].UsedSpace += 60;
+        //GameControl.control.Gateway.InstalledStorageDevice[0].FreeSpace = GameControl.control.Gateway.InstalledStorageDevice[0].Capacity - GameControl.control.Gateway.InstalledStorageDevice[0].UsedSpace;
 
         GameControl.control.ProgramFiles.Add(new ProgramSystem("Programs", "", "", "", "", "", "D:/", "D:/Programs", "", "", ProgramSystem.FileExtension.Fdl, ProgramSystem.FileExtension.Null, 0, 0, 0, 0, 0, 0, 0, 100, 0, 0, 0, 0, 0, 0, 0, 0, false, false, false, false, BlankInfections, BlankFileType));
-
-        GameControl.control.StoredLogins.Add(new LoginSystem("LEC Bank", StringGenerator.RandomNumberChar(6, 6), StringGenerator.RandomMixedChar(15, 15), 0));
-        StartingBank.Add(new BankAccountsSystem(IPAddress, "LEC Bank", GameControl.control.StoredLogins[0].Username, GameControl.control.StoredLogins[0].Username, GameControl.control.StoredLogins[0].Password, 0, 1,0, 0, 0, 1,true,true, BlankBankLogs));
-        GameControl.control.BankData.Add(new BankSystem("LEC Bank", "192.168.56.91", StartingBank));
-        string EmailSender = "14K3N37 VMB";
-        string EmailSubject = "LEC Bank Account Details";
-        string EmailContent = "Due to being a new member of 14K3N37 VMB we have created a new LEC Account for you as you complete contracts funds will automatically go there." +
-            "\n" + "URL: www.lecbank.com" +
-            //"\n" + "Account Name: " + GameControl.control.StoredLogins[0].Username +
-            "\n" + "Account Number: " + GameControl.control.StoredLogins[0].Username +
-            "\n" + "Account Password: " + GameControl.control.StoredLogins[0].Password;
-
-        GameControl.control.EmailData.Add(new EmailSystem(EmailSubject, EmailSender, InitalPlanDate.TodaysDate, EmailContent, 0, 0, 0, false, EmailSystem.EmailType.New));
 
         Customize.cust.TerminalCommandCharacterSplit = CommandCharacterCheck;
         Customize.cust.TerminalSpaceCharacterSplit = SpacingCharacterCheck;
@@ -1402,10 +1469,10 @@ public class AccSetup : MonoBehaviour
         Customize.cust.AutoSaveTime = 60;
         Customize.cust.EnableAutoSave = true;
 
-        GameControl.control.GameVersion.Add("Version: 0.0.395");
+        GameControl.control.GameVersion.Add("Version: 0.0.397");
         GameControl.control.GameVersion.Add("Iteration: 0");
         GameControl.control.GameVersion.Add("Build: 1");
-        GameControl.control.GameVersion.Add("Build State: Inside Devloperment Build");
+        GameControl.control.GameVersion.Add("Build State: Internal Dev Build");
 
 
         for (int i = 0; i < GameControl.control.ProgramFiles.Count; i++)
@@ -1413,9 +1480,8 @@ public class AccSetup : MonoBehaviour
             GameControl.control.ProgramFiles[i].Date = FullDate;
         }
 
-        Customize.cust.Load();
-        GameControl.control.Load();
-        Application.LoadLevel("Game");
+        PersonController.control.People.Add(new PeopleSystem("Player", "", "", "", "", "", 0, 0));
+        CreatePlayerData = true;
     }
 
     void Dev()
@@ -1427,12 +1493,22 @@ public class AccSetup : MonoBehaviour
         MaxTimer = GUI.HorizontalSlider(new Rect(Screen.width / 4f, Screen.height / 2.25f, 500, 25), MaxTimer, 0, 0.1f);
     }
 
+    void POST()
+    {
+        Customize.cust.Load();
+        GameControl.control.Load();
+        Application.LoadLevel("Game");
+    }
+
     void Stream()
     {
         showSetup = true;
-        GUI.Label(new Rect(Screen.width / 4f, Screen.height / 2f, 150, 25), "FakeNetVM");
-        GUI.Label(new Rect(Screen.width / 4f, Screen.height / 1.75f, 150, 25), " STREAM");
-        GUI.Label(new Rect(Screen.width / 4f, Screen.height / 1.5f, 150, 25), "Pre-Show");
+        windowRect.width = Screen.width;
+        windowRect.height = Screen.height;
+        ss.CurrentVolume = 0;
+       // GUI.Label(new Rect(Screen.width / 4f, Screen.height / 2f, 150, 25), "FakeNetVM");
+       // GUI.Label(new Rect(Screen.width / 4f, Screen.height / 1.75f, 150, 25), " STREAM");
+       // GUI.Label(new Rect(Screen.width / 4f, Screen.height / 1.5f, 150, 25), "Pre-Show");
     }
 
     void ChristmasDevMode()

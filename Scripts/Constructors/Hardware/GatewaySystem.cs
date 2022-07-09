@@ -6,20 +6,21 @@ using UnityEngine;
 public class GatewaySystem
 {
     public string Name;
-    //public string Statusl
-    public OperatingSystems SelectedOS;
-    public MotherboardSystem Motherboard;
-    public FileSystem Files;
+    public List<RegistrySystem> Registry = new List<RegistrySystem>();
     public List<TasksSystem> RunningTasks = new List<TasksSystem>();
+    public List<WindowConSys> RunningPrograms = new List<WindowConSys>();
     public List<EmailSystem> Emails = new List<EmailSystem>();
+    public List<string> PartitionList = new List<string>();
+    public OperatingSystems CurrentOS = new OperatingSystems();
+    public GatewayStatusSystem Status = new GatewayStatusSystem();
+    public TimerSystem Timer = new TimerSystem();
+    public DateSystem DateTime;
 
-    public GatewaySystem(string name, OperatingSystems selectedos, MotherboardSystem motherboard, FileSystem files, List<TasksSystem> runningtasks, List<EmailSystem> emails) //,Texture2D icon)
-    {
-        Name = name;
-        SelectedOS = selectedos;
-        Motherboard = motherboard;
-        Files = files;
-        RunningTasks = runningtasks;
-        Emails = emails;
-    }
+    public MotherboardSystem Motherboard = new MotherboardSystem();
+    public List<StorageDevice> StorageDevices = new List<StorageDevice>();
+    public List<RamSystem> RAM = new List<RamSystem>();
+    public List<PowerSupplySystem> PSU = new List<PowerSupplySystem>();
+    public List<GPUSystem> GPU = new List<GPUSystem>();
+    public List<ModemSystem> Modem = new List<ModemSystem>();
+    public List<CPUSystem> CPU = new List<CPUSystem>();
 }

@@ -40,27 +40,27 @@ public class SysHardwareCheck : MonoBehaviour
 	// Update is called once per frame
 	void Update ()
 	{
-		if (GameControl.control.Gateway.InstalledCPU [0].UsagePercent > 100) 
-		{
-			noti.ForcedMusicSetting = true;
-			noti.ForcedMusicOption = false;
-			noti.NewNotification("Critical Error", "OS Kernal Panic", "Insuffcient CPU resource pool.");
-			KernalPanic ();
-		}
-		if (GameControl.control.Gateway.InstalledPSU [0].Remaining < 0) 
-		{
-			noti.ForcedMusicSetting = true;
-			noti.ForcedMusicOption = false;
-			noti.NewNotification("Critical Error", "OS Kernal Panic", "Insuffcient PSU resource pool.");
-			KernalPanic ();
-		}
-		if (GameControl.control.Gateway.InstalledRAM [0].Remaining < 0) 
-		{
-			noti.ForcedMusicSetting = true;
-			noti.ForcedMusicOption = false;
-			noti.NewNotification("Critical Error", "OS Kernal Panic", "Insuffcient RAM resource pool.");
-			KernalPanic ();
-		}
+		//if (GameControl.control.Gateway.InstalledCPU [0].UsagePercent > 100) 
+		//{
+		//	noti.ForcedMusicSetting = true;
+		//	noti.ForcedMusicOption = false;
+		//	noti.NewNotification("Critical Error", "OS Kernal Panic", "Insuffcient CPU resource pool.");
+		//	KernalPanic ();
+		//}
+		//if (GameControl.control.Gateway.InstalledPSU [0].Remaining < 0) 
+		//{
+		//	noti.ForcedMusicSetting = true;
+		//	noti.ForcedMusicOption = false;
+		//	noti.NewNotification("Critical Error", "OS Kernal Panic", "Insuffcient PSU resource pool.");
+		//	KernalPanic ();
+		//}
+		//if (GameControl.control.Gateway.InstalledRAM [0].Remaining < 0) 
+		//{
+		//	noti.ForcedMusicSetting = true;
+		//	noti.ForcedMusicOption = false;
+		//	noti.NewNotification("Critical Error", "OS Kernal Panic", "Insuffcient RAM resource pool.");
+		//	KernalPanic ();
+		//}
 	}
 
 	void ClosePrograms()

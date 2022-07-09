@@ -1,31 +1,33 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using System.Linq;
 
-public class BIOSSelect : MonoBehaviour 
+public class BIOSSelect : MonoBehaviour
 {
 	private BIOS1 bios1;
 	// Use this for initialization
-	void Start () 
+	void Start()
 	{
 		bios1 = GetComponent<BIOS1>();
 		//GameControl.control.Load();
 	}
-	
+
 	// Update is called once per frame
-	void Update () 
+	void Update()
 	{
-		
+
 	}
 
 	void OnGUI()
 	{
-		
+
 	}
 
 	public void RenderBios()
 	{
-		switch (GameControl.control.Gateway.Brand)
+		var person = PersonController.control.People.FirstOrDefault(x => x.Name == "Player");
+		switch (person.Gateway.Motherboard.Brand)
 		{
 
 			case "":

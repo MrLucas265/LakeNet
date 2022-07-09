@@ -248,6 +248,11 @@ public class Notepad : MonoBehaviour
 				Save();
 			}
 
+			if (GUI.Button(new Rect(183, 24, 37, 21), "Compile"))
+			{
+				TestCode.KeywordCheck(TypedText);
+			}
+
 			if (SelectedMenu > 0)
 			{
 				if(GUI.Button(new Rect(182,24,50,21),"Cancel"))

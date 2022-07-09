@@ -21,26 +21,26 @@ public class PSU : MonoBehaviour
 
 	void Math()
 	{
-        for (int i = 0; i < GameControl.control.Gateway.InstalledPSU.Count; i++)
-        {
-            GameControl.control.Gateway.InstalledPSU[i].Remaining = GameControl.control.Gateway.InstalledPSU[i].Max - GameControl.control.Gateway.InstalledPSU[i].Used;
-            GameControl.control.Gateway.InstalledPSU[i].Used = 0;
-        }
+        //for (int i = 0; i < GameControl.control.Gateway.InstalledPSU.Count; i++)
+        //{
+        //    GameControl.control.Gateway.InstalledPSU[i].Remaining = GameControl.control.Gateway.InstalledPSU[i].Max - GameControl.control.Gateway.InstalledPSU[i].Used;
+        //    GameControl.control.Gateway.InstalledPSU[i].Used = 0;
+        //}
 
-        for (int i = 0; i < GameControl.control.Gateway.InstalledCPU.Count; i++)
-        {
-            GameControl.control.Gateway.InstalledPSU[0].Used = GameControl.control.Gateway.InstalledPSU[0].Used + GameControl.control.Gateway.InstalledCPU[i].PowerDraw;
-        }
+        //for (int i = 0; i < GameControl.control.Gateway.InstalledCPU.Count; i++)
+        //{
+        //    GameControl.control.Gateway.InstalledPSU[0].Used = GameControl.control.Gateway.InstalledPSU[0].Used + GameControl.control.Gateway.InstalledCPU[i].PowerDraw;
+        //}
 
-        for (int i = 0; i < GameControl.control.Gateway.InstalledRAM.Count; i++)
-        {
-            GameControl.control.Gateway.InstalledPSU[0].Used = GameControl.control.Gateway.InstalledPSU[0].Used + GameControl.control.Gateway.InstalledRAM[i].PowerUsage;
-        }
+        //for (int i = 0; i < GameControl.control.Gateway.InstalledRAM.Count; i++)
+        //{
+        //    GameControl.control.Gateway.InstalledPSU[0].Used = GameControl.control.Gateway.InstalledPSU[0].Used + GameControl.control.Gateway.InstalledRAM[i].PowerUsage;
+        //}
 
-        for (int i = 0; i < GameControl.control.Gateway.InstalledStorageDevice.Count; i++)
-        {
-            GameControl.control.Gateway.InstalledPSU[0].Used = GameControl.control.Gateway.InstalledPSU[0].Used + GameControl.control.Gateway.InstalledStorageDevice[i].PowerUsage;
-        }
+        //for (int i = 0; i < GameControl.control.Gateway.InstalledStorageDevice.Count; i++)
+        //{
+        //    GameControl.control.Gateway.InstalledPSU[0].Used = GameControl.control.Gateway.InstalledPSU[0].Used + GameControl.control.Gateway.InstalledStorageDevice[i].PowerUsage;
+        //}
 
 
     }

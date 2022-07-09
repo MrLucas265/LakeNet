@@ -12,6 +12,8 @@ public class InternetBrowser : MonoBehaviour
 
 	public string AddressBar;
 	public string Inputted;
+	public string DisplayAddress;
+	public string CurrentPage;
 
 	private GameObject Database;
 	private GameObject Minigames;
@@ -25,7 +27,6 @@ public class InternetBrowser : MonoBehaviour
     public WebSecSystem ConntectedWebSec;
 
 	// collection of scripts
-	private TestSite testsite;
 	private Becas becas;
 	private Test RevaTest;
 	private Test1 test1;
@@ -102,7 +103,6 @@ public class InternetBrowser : MonoBehaviour
 		ws = AppSoftware.GetComponent<WebSec>();
 		sm = AppSoftware.GetComponent<SystemMap>();
 
-		testsite = Database.GetComponent<TestSite>();
 		becas = Database.GetComponent<Becas>();
         //aki = Database.GetComponent<Aki>();
         RevaTest = Database.GetComponent<Test>();
@@ -219,23 +219,50 @@ public class InternetBrowser : MonoBehaviour
 		SiteConnection();
 	}
 
-	public void DownloadManager(ProgramSystem file)
+	public void DownloadManager(ProgramSystemv2 file)
 	{
-		for (int i = 0; i < GameControl.control.Gateway.InstalledStorageDevice.Count; i++)
+		string SelectedOSPath = "";
+
+		if (PersonController.control.People.Count > 0)
 		{
-			for (int k = 0; k < GameControl.control.Gateway.InstalledStorageDevice[i].Partitions.Count; k++)
+			for (int i = 0; i < PersonController.control.People.Count; i++)
 			{
-				if (Customize.cust.DownloadPath.StartsWith(GameControl.control.Gateway.InstalledStorageDevice[i].Partitions[k].DriveLetter))
+				if(PersonController.control.People[i].Action == "Download")
 				{
-					if(GameControl.control.Gateway.InstalledStorageDevice[i].Partitions[k].Free >= file.Used)
+					if (PersonController.control.People[i].Gateway.StorageDevices.Count > 0)
 					{
-						if (fu.ProgramHandle.Count <= 0)
+						for (int j = 0; j < PersonController.control.People[i].Gateway.StorageDevices.Count; j++)
 						{
-							fu.ProgramHandle.Add(new FileUtilitySystem("Download", file.Name, Customize.cust.DownloadPath,"", "", file.Target, file.Extension.ToString(), file.FileInstallExtension.ToString(), false, true, true, false, file.Version, 0, 0, 0, 0, 0, 0, 0, file.Used, 0, 0, 0, FileUtilitySystem.ProgramType.DownloadProgram));
-							string FileOrigin = file.Location;
-							file.Location = Customize.cust.DownloadPath;
-							//fu.ProgramHandle.Add(new FUSv2("Download","", FileOrigin, false,true,true,false,0,0,0,0,0,0,0,0,0,0,FUSv2.UtilityType.DownloadProgram,file));
-							fu.AddWindow();
+							if (PersonController.control.People[i].Gateway.StorageDevices[j].OS.Count > 0)
+							{
+								for (int k = 0; k < PersonController.control.People[i].Gateway.StorageDevices[j].OS.Count; k++)
+								{
+									if (PersonController.control.People[i].Gateway.StorageDevices[j].OS[k].Options.Selected == true)
+									{
+										SelectedOSPath = PersonController.control.People[i].Gateway.StorageDevices[j].OS[k].FPC.DownloadPath;
+									}
+
+									if (PersonController.control.People[i].Gateway.StorageDevices[j].OS[k].Partitions.Count > 0)
+									{
+										for (int l = 0; l < PersonController.control.People[i].Gateway.StorageDevices[j].OS[k].Partitions.Count; l++)
+										{
+											if (SelectedOSPath.StartsWith(PersonController.control.People[i].Gateway.StorageDevices[j].OS[k].Partitions[l].DriveLetter))
+											{
+												if (PersonController.control.People[i].Gateway.StorageDevices[j].OS[k].Partitions[l].Free >= file.Used)
+												{
+													if (fu.ProgramHandle.Count <= 0)
+													{
+														fu.ProgramHandle.Add(new FileUtilitySystem("Download", SelectedOSPath, false, true, true, false, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, FileUtilitySystem.ProgramType.DownloadProgram, i, 0, file));
+														file.Location = SelectedOSPath;
+														//fu.ProgramHandle.Add(new FUSv2("Download","", FileOrigin, false,true,true,false,0,0,0,0,0,0,0,0,0,0,FUSv2.UtilityType.DownloadProgram,file));
+														fu.AddWindow();
+													}
+												}
+											}
+										}
+									}
+								}
+							}
 						}
 					}
 				}
@@ -278,174 +305,17 @@ public class InternetBrowser : MonoBehaviour
 
 	public void WebSiteInfo()
 	{
-		if (Timer <= 0)
+		InstantConnection();
+		//NormalConnection();
+	}
+
+	public void InstantConnection()
+	{
+		if (Timer > 0)
 		{
 			FinishedConnecting = true;
-			switch (Inputted)
-			{
-				case "test":
-					testsite.RenderSite();
-					sm.Connect();
-					clic.storedConnection = "www.test.com";
-					connected = true;
-					break;
-				case "www.becassystems.com":
-					SiteName = "Becas";
-					ws.UpdateSecCheck = true;
-					becas.RenderSite();
-					CurrentAccounts = becas.Accounts;
-					sm.Connect();
-					clic.storedConnection = "www.becassystems.com";
-					connected = true;
-					break;
-				case "www.reva.com/test":
-					SiteName = "Reva Test";
-					ws.UpdateSecCheck = true;
-					revatest.RenderSite();
-					CurrentAccounts = revatest.Accounts;
-					connected = true;
-					clic.storedConnection = "www.reva.com/test";
-					sm.Connect();
-					break;
-				case "www.ping.com":
-					ping.RenderSite();
-					sm.Connect();
-					clic.storedConnection = "www.ping.com";
-					connected = true;
-					break;
-				case "www.unicom.com":
-					SiteName = "Unicom";
-					ws.UpdateSecCheck = true;
-					uc.RenderSite();
-					CurrentAccounts = uc.Accounts;
-					sm.Connect();
-					clic.storedConnection = "www.unicom.com";
-					connected = true;
-					break;
-				case "www.jaildew.com":
-					SiteName = "Jaildew";
-					ws.UpdateSecCheck = true;
-					jd.RenderSite();
-					CurrentAccounts = jd.Accounts;
-					sm.Connect();
-					connected = true;
-					clic.storedConnection = "www.jaildew.com";
-					break;
-				//case "www.aki.com":
-				//	SiteName = "Aki";
-				//	ws.UpdateSecCheck = true;
-				//	aki.RenderSite();
-				//	//SiteAdminPass = jd.SiteAdminPass;
-				//	sm.Connect();
-				//	connected = true;
-				//	clic.storedConnection = "www.aki.com";
-				//	break;
-				//		case "www.para.com":
-				//			SiteName = "Para";
-				//			ws.UpdateSecCheck = true;
-				//			para.RenderSite ();
-				//			SiteAdminPass = para.ЫшеуФвьштЗфыы;
-				//			sm.Connect ();
-				//			connected = true;
-				//			clic.storedConnection = "www.para.com";
-				//			break;
-				//		case "www.cabbagecorp.com":
-				//			ib.SiteName = "Cabbage Corp";
-				//			ws.UpdateSecCheck = true;
-				//			cc.RenderSite ();
-				//			SiteAdminPass = cc.SiteAdminPass;
-				//			sm.Connect ();
-				//			break;
-				case "www.reva.com":
-					SiteName = "Reva";
-					ws.UpdateSecCheck = true;
-					reva.RenderSite();
-					sm.Connect();
-					clic.storedConnection = "www.reva.com";
-					connected = true;
-					break;
-				case "www.lecbank.com":
-					SiteName = "LEC";
-					ws.UpdateSecCheck = true;
-					LEC.RenderSite();
-					sm.Connect();
-					clic.storedConnection = "www.lecbank.com";
-					connected = true;
-					break;
-				case "www.games.com":
-					mgw.RenderSite();
-					mgw.showMenu = true;
-					sm.Connect();
-					clic.storedConnection = "www.game.com";
-					connected = true;
-					break;
-				case "www.melvena.com":
-					melvenauni.RenderSite();
-					sm.Connect();
-					clic.storedConnection = "www.melvena.com";
-					connected = true;
-					break;
-				case "shares":
-					st.RenderSite();
-					sm.Connect();
-					clic.storedConnection = "www.shares.com";
-					connected = true;
-					break;
-				case "servers":
-					sh.RenderSite();
-					sm.Connect();
-					clic.storedConnection = "www.servers.com";
-					connected = true;
-					break;
-				case "www.tugs.com":
-					tug.RenderSite();
-					sm.Connect();
-					clic.storedConnection = "www.tugs.com";
-					connected = true;
-					break;
-				case "www.isd.com":
-					isd.RenderSite();
-					sm.Connect();
-					clic.storedConnection = "www.isd.com";
-					connected = true;
-					break;
-				case "drag":
-					dr.GameRender();
-					sm.Connect();
-					clic.storedConnection = "www.drag.com";
-					connected = true;
-					break;
-				case "www.stock.com":
-					st.RenderSite();
-					sm.Connect();
-					clic.storedConnection = "www.stock.com";
-					connected = true;
-					break;
-				case "test1":
-					test1.RenderSite();
-					sm.Connect();
-					clic.storedConnection = "www.test1.com";
-					connected = true;
-					break;
-				case "test2":
-					hs.RenderSite();
-					sm.Connect();
-					clic.storedConnection = "www.test2.com";
-					connected = true;
-					break;
-				case "www.gstocks.com":
-					gstocks.RenderSite();
-					sm.Connect();
-					clic.storedConnection = "www.gstocks.com";
-					connected = true;
-					break;
-				case "www.store.com":
-					store.RenderSite();
-					clic.storedConnection = "www.store.com";
-					connected = true;
-					break;
-			}
 
+			Domains();
 
 			if (connected == false)
 			{
@@ -454,8 +324,199 @@ public class InternetBrowser : MonoBehaviour
 		}
 		else
 		{
-			Timer -= GameControl.control.Gateway.InstalledModem[0].CurrentSpeed * Time.deltaTime;
+			//Timer -= GameControl.control.Gateway.InstalledModem[0].CurrentSpeed * Time.deltaTime;
 			FinishedConnecting = false;
+		}
+	}
+
+	public void NormalConnection()
+	{
+		if (Timer <= 0)
+		{
+			FinishedConnecting = true;
+
+			Domains();
+
+			if (connected == false)
+			{
+				ConnectionError();
+			}
+		}
+		else
+		{
+			//Timer -= GameControl.control.Gateway.InstalledModem[0].CurrentSpeed * Time.deltaTime;
+			FinishedConnecting = false;
+		}
+	}
+
+	public void Domains()
+	{
+		switch (Inputted)
+		{
+			case "www.becassystems.com":
+				SiteName = "Becas";
+				ws.UpdateSecCheck = true;
+				becas.RenderSite();
+				CurrentAccounts = becas.Accounts;
+				sm.Connect();
+				clic.storedConnection = "www.becassystems.com";
+				connected = true;
+				break;
+			case "www.reva.com/test":
+				SiteName = "Reva Test";
+				ws.UpdateSecCheck = true;
+				revatest.RenderSite();
+				CurrentAccounts = revatest.Accounts;
+				connected = true;
+				clic.storedConnection = "www.reva.com/test";
+				sm.Connect();
+				break;
+			case "www.ping.com":
+				ping.RenderSite();
+				sm.Connect();
+				clic.storedConnection = "www.ping.com";
+				connected = true;
+				break;
+			case "www.unicom.com":
+				SiteName = "Unicom";
+				ws.UpdateSecCheck = true;
+				uc.RenderSite();
+				CurrentAccounts = uc.Accounts;
+				sm.Connect();
+				clic.storedConnection = "www.unicom.com";
+				connected = true;
+				break;
+			case "www.jaildew.com":
+				SiteName = "Jaildew";
+				ws.UpdateSecCheck = true;
+				jd.RenderSite();
+				for(int i = 0; i < GameControl.control.CompanyServerData.Count; i++)
+				{
+					for (int j = 0; j < GameControl.control.CompanyServerData.Count; j++)
+					{
+						if(GameControl.control.CompanyServerData[i].Name == "Jaildew")
+						{
+							CurrentAccounts = GameControl.control.CompanyServerData[i].Accounts;
+						}
+					}
+				}
+				sm.Connect();
+				connected = true;
+				clic.storedConnection = "www.jaildew.com";
+				break;
+			//case "www.aki.com":
+			//	SiteName = "Aki";
+			//	ws.UpdateSecCheck = true;
+			//	aki.RenderSite();
+			//	//SiteAdminPass = jd.SiteAdminPass;
+			//	sm.Connect();
+			//	connected = true;
+			//	clic.storedConnection = "www.aki.com";
+			//	break;
+			//		case "www.para.com":
+			//			SiteName = "Para";
+			//			ws.UpdateSecCheck = true;
+			//			para.RenderSite ();
+			//			SiteAdminPass = para.ЫшеуФвьштЗфыы;
+			//			sm.Connect ();
+			//			connected = true;
+			//			clic.storedConnection = "www.para.com";
+			//			break;
+			//		case "www.cabbagecorp.com":
+			//			ib.SiteName = "Cabbage Corp";
+			//			ws.UpdateSecCheck = true;
+			//			cc.RenderSite ();
+			//			SiteAdminPass = cc.SiteAdminPass;
+			//			sm.Connect ();
+			//			break;
+			case "www.reva.com":
+				SiteName = "Reva";
+				ws.UpdateSecCheck = true;
+				reva.RenderSite();
+				sm.Connect();
+				clic.storedConnection = "www.reva.com";
+				connected = true;
+				break;
+			case "www.lecbank.com":
+				SiteName = "LEC";
+				ws.UpdateSecCheck = true;
+				LEC.RenderSite();
+				sm.Connect();
+				clic.storedConnection = "www.lecbank.com";
+				connected = true;
+				break;
+			case "www.games.com":
+				mgw.RenderSite();
+				mgw.showMenu = true;
+				sm.Connect();
+				clic.storedConnection = "www.game.com";
+				connected = true;
+				break;
+			case "www.melvena.com":
+				melvenauni.RenderSite();
+				sm.Connect();
+				clic.storedConnection = "www.melvena.com";
+				connected = true;
+				break;
+			case "shares":
+				st.RenderSite();
+				sm.Connect();
+				clic.storedConnection = "www.shares.com";
+				connected = true;
+				break;
+			case "servers":
+				sh.RenderSite();
+				sm.Connect();
+				clic.storedConnection = "www.servers.com";
+				connected = true;
+				break;
+			case "www.tugs.com":
+				tug.RenderSite();
+				sm.Connect();
+				clic.storedConnection = "www.tugs.com";
+				connected = true;
+				break;
+			case "www.isd.com":
+				isd.RenderSite();
+				sm.Connect();
+				clic.storedConnection = "www.isd.com";
+				connected = true;
+				break;
+			case "drag":
+				dr.GameRender();
+				sm.Connect();
+				clic.storedConnection = "www.drag.com";
+				connected = true;
+				break;
+			case "www.stock.com":
+				st.RenderSite();
+				sm.Connect();
+				clic.storedConnection = "www.stock.com";
+				connected = true;
+				break;
+			case "test1":
+				test1.RenderSite();
+				sm.Connect();
+				clic.storedConnection = "www.test1.com";
+				connected = true;
+				break;
+			case "test2":
+				hs.RenderSite();
+				sm.Connect();
+				clic.storedConnection = "www.test2.com";
+				connected = true;
+				break;
+			case "www.gstocks.com":
+				gstocks.RenderSite();
+				sm.Connect();
+				clic.storedConnection = "www.gstocks.com";
+				connected = true;
+				break;
+			case "www.store.com":
+				store.RenderSite();
+				clic.storedConnection = "www.store.com";
+				connected = true;
+				break;
 		}
 	}
 }

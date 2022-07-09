@@ -28,7 +28,6 @@ public class RevaTest : MonoBehaviour
 	private Tracer trace;
 	private SystemMap sm;
 	private TextReader tr;
-	private Progtive prog;
 	private Defalt def;
 
 	private WebSec ws;
@@ -123,7 +122,6 @@ public class RevaTest : MonoBehaviour
 		ep = Prompts.GetComponent<ErrorProm>();
 		// HACKING
 		trace = Hacking.GetComponent<Tracer>();
-		prog = Hacking.GetComponent<Progtive>();
 		// SYSTEM
 		com = System.GetComponent<Computer>();
 		def = System.GetComponent<Defalt>();
@@ -591,7 +589,7 @@ public class RevaTest : MonoBehaviour
 						{
 							if (GUI.Button(new Rect(10, 125, 100, 20), "Login"))
 							{
-								Accounts[i].LoggedInIP = GameControl.control.Gateway.InstalledModem[0].ModemIP;
+								//Accounts[i].LoggedInIP = GameControl.control.Gateway.InstalledModem[0].ModemIP;
 								Accounts[i].LoggedIn = true;
 								LoggedInAs = Accounts[i];
 								//trace.UpdateTimer = true;

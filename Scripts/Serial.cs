@@ -31,7 +31,7 @@ public class Serial : MonoBehaviour
     {
         TextAsset txt = (TextAsset)Resources.Load("Serials", typeof(TextAsset));
         VersionLines = new List<string>(txt.text.Split('\n'));
-        if(VersionLines.Count > 0)
+        if (VersionLines.Count > 0)
         {
             SerialKey = VersionLines[0];
         }

@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 
 public class GatewayViewer : MonoBehaviour
 {
@@ -29,7 +30,7 @@ public class GatewayViewer : MonoBehaviour
     private Clock clk;
     private CD cd;
     private Boot boot;
-    private OS os;
+    private DesktopEnviroment os;
     private Defalt def;
     private Computer com;
     private SoundControl sc;
@@ -40,11 +41,10 @@ public class GatewayViewer : MonoBehaviour
 
     public Rect Gateway;
     public Texture2D GatewayPic;
-    public List<SocketSystem> CPUSockets = new List<SocketSystem>();
     public List<Rect> CPU = new List<Rect>();
     public List<Texture2D> CPUPic = new List<Texture2D>();
 
-    public List<SocketSystem> StorageSockets = new List<SocketSystem>();
+ //   public List<StorageSlotSystem> StorageSockets = new List<StorageSlotSystem>();
     public List<Rect> Storage = new List<Rect>();
     public List<Texture2D> StoragePic = new List<Texture2D>();
 
@@ -63,7 +63,7 @@ public class GatewayViewer : MonoBehaviour
         com = Puter.GetComponent<Computer>();
         clk = Puter.GetComponent<Clock>();
         boot = Puter.GetComponent<Boot>();
-        os = Puter.GetComponent<OS>();
+        os = Puter.GetComponent<DesktopEnviroment>();
         sc = Puter.GetComponent<SoundControl>();
         def = Puter.GetComponent<Defalt>();
         hcf = Hardware.GetComponent<HardwareCFile>();
@@ -86,8 +86,25 @@ public class GatewayViewer : MonoBehaviour
         windowRect.y = Customize.cust.windowy[windowID];
     }
 
+    public void UpdateDevicePOS()
+    {
+        var person = PersonController.control.People.FirstOrDefault(x => x.Name == "Player");
+        for (int i = 0; i < person.Gateway.CPU.Count;i++)
+        {
+            person.Gateway.CPU[i].UIPosX = person.Gateway.Motherboard.CPUSockets[i].POSX;
+            person.Gateway.CPU[i].UIPosY = person.Gateway.Motherboard.CPUSockets[i].POSY;
+        }
+        for (int i = 0; i < person.Gateway.StorageDevices.Count; i++)
+        {
+            person.Gateway.StorageDevices[i].POSX = person.Gateway.Motherboard.StorageSlots[i].POSX;
+            person.Gateway.StorageDevices[i].POSY = person.Gateway.Motherboard.StorageSlots[i].POSY;
+        }
+    }
+
     public void UpdatePos()
     {
+        UpdateDevicePOS();
+
         MotherboardCheck();
 
         CPUCheck();
@@ -123,20 +140,21 @@ public class GatewayViewer : MonoBehaviour
 
     void CPUCheck()
     {
-        CPUSockets.RemoveRange(0, CPUSockets.Count);
+        var person = PersonController.control.People.FirstOrDefault(x => x.Name == "Player");
+
+        var PlayerCPU = person.Gateway.CPU;
+
         CPU.RemoveRange(0, CPU.Count);
         CPUPic.RemoveRange(0, CPUPic.Count);
 
-        for (int i = 0; i < GameControl.control.Gateway.CPUSockets.Count; i++)
+        for (int i = 0; i < PlayerCPU.Count; i++)
         {
-            CPUSockets.Add(GameControl.control.Gateway.CPUSockets[i]);
-
             for (int j = 0; j < hcf.ListOfCPUImages.Count; j++)
             {
-                if (GameControl.control.Gateway.CPUSockets[i].SelectedImageNumber == j)
+                if (PlayerCPU[i].SelectedCPUImage == j)
                 {
                     CPUPic.Add(hcf.ListOfCPUImages[j]);
-                    CPU.Add(new Rect(CPUSockets[i].POSX, CPUSockets[i].POSY, CPUPic[i].width, CPUPic[i].height));
+                    CPU.Add(new Rect(PlayerCPU[i].UIPosX, PlayerCPU[i].UIPosY, CPUPic[i].width, CPUPic[i].height));
                 }
             }
         }
@@ -144,20 +162,24 @@ public class GatewayViewer : MonoBehaviour
 
     void StorageCheck()
     {
-        StorageSockets.RemoveRange(0, StorageSockets.Count);
+        var person = PersonController.control.People.FirstOrDefault(x => x.Name == "Player");
+
+        var PlayerStorageDevice = person.Gateway.StorageDevices;
+
+//        StorageSockets.RemoveRange(0, StorageSockets.Count);
         Storage.RemoveRange(0, Storage.Count);
         StoragePic.RemoveRange(0, StoragePic.Count);
 
-        for (int i = 0; i < GameControl.control.Gateway.StorageSockets.Count; i++)
+        for (int i = 0; i < PlayerStorageDevice.Count; i++)
         {
-            StorageSockets.Add(GameControl.control.Gateway.StorageSockets[i]);
+ //           StorageSockets.Add(person.Gateway.Motherboard.StorageSlots[i]);
 
             for (int j = 0; j < hcf.ListOfStorageImages.Count; j++)
             {
-                if (GameControl.control.Gateway.StorageSockets[i].SelectedImageNumber == j)
+                if (PlayerStorageDevice[i].SelectedImageNumber == j)
                 {
                     StoragePic.Add(hcf.ListOfStorageImages[j]);
-                    Storage.Add(new Rect(StorageSockets[i].POSX, StorageSockets[i].POSY, StoragePic[i].width, StoragePic[i].height));
+                    Storage.Add(new Rect(PlayerStorageDevice[i].POSX, PlayerStorageDevice[i].POSY, StoragePic[i].width, StoragePic[i].height));
                 }
             }
         }
@@ -165,20 +187,22 @@ public class GatewayViewer : MonoBehaviour
 
     void MemoryCheck()
     {
-        MemorySockets.RemoveRange(0, MemorySockets.Count);
+        var person = PersonController.control.People.FirstOrDefault(x => x.Name == "Player");
+
+        var PlayerRAM = person.Gateway.RAM;
+
         Memory.RemoveRange(0, Memory.Count);
         MemoryPic.RemoveRange(0, MemoryPic.Count);
 
-        for (int i = 0; i < GameControl.control.Gateway.MemorySockets.Count; i++)
+        for (int i = 0; i < PlayerRAM.Count; i++)
         {
-            MemorySockets.Add(GameControl.control.Gateway.MemorySockets[i]);
 
             for (int j = 0; j < hcf.ListOfMemoryImages.Count; j++)
             {
-                if (GameControl.control.Gateway.MemorySockets[i].SelectedImageNumber == j)
+                if (PlayerRAM[i].SelectedImage == j)
                 {
                     MemoryPic.Add(hcf.ListOfMemoryImages[j]);
-                    Memory.Add(new Rect(MemorySockets[i].POSX, MemorySockets[i].POSY, MemoryPic[i].width, MemoryPic[i].height));
+                    Memory.Add(new Rect(PlayerRAM[i].PosX, PlayerRAM[i].PosY, MemoryPic[i].width, MemoryPic[i].height));
                 }
             }
         }
@@ -219,6 +243,11 @@ public class GatewayViewer : MonoBehaviour
 
     void Render()
     {
+        var person = PersonController.control.People.FirstOrDefault(x => x.Name == "Player");
+
+        var PlayerStorageDevice = person.Gateway.StorageDevices;
+        var PlayerCPU = person.Gateway.CPU;
+
         GUI.backgroundColor = com.colors[Customize.cust.ButtonColorInt];
         GUI.contentColor = com.colors[Customize.cust.FontColorInt];
 
@@ -229,17 +258,17 @@ public class GatewayViewer : MonoBehaviour
 
         GUI.DrawTexture(new Rect(Gateway), GatewayPic);
 
-        if(CPUSockets.Count > 0)
+        if(PlayerCPU.Count > 0)
         {
-            for (int i = 0; i < CPUSockets.Count; i++)
+            for (int i = 0; i < PlayerCPU.Count; i++)
             {
                 GUI.DrawTexture(new Rect(CPU[i]), CPUPic[i]);
             }
         }
 
-        if (StorageSockets.Count > 0)
+        if (PlayerStorageDevice.Count > 0)
         {
-            for (int i = 0; i < StorageSockets.Count; i++)
+            for (int i = 0; i < PlayerStorageDevice.Count; i++)
             {
                 GUI.DrawTexture(new Rect(Storage[i]), StoragePic[i]);
             }

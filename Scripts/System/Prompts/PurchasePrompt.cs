@@ -19,7 +19,6 @@ public class PurchasePrompt : MonoBehaviour
 
 	private Defalt def;
 	private Computer com;
-	private Upgrade upg;
 
 	public bool Bought;
 
@@ -28,7 +27,6 @@ public class PurchasePrompt : MonoBehaviour
 	{
 		com = GetComponent<Computer>();
 		def = GetComponent<Defalt>();
-		upg = GetComponent<Upgrade>();
 		native_height = Customize.cust.native_height;
 		native_width = Customize.cust.native_width;
 	}

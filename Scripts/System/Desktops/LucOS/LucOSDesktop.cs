@@ -45,7 +45,6 @@ public class LucOSDesktop : MonoBehaviour
 
 	private Computer com;
 	private InternetBrowser ib;
-	private Progtive prog;
 	private Notepad note;
 	private MissionBrow mb;
 	private CurContracts cc;
@@ -69,7 +68,7 @@ public class LucOSDesktop : MonoBehaviour
 	private AppMan appman;
 	private Boot boot;
 	private POST post;
-	private OS os;
+	private DesktopEnviroment os;
 	private Mouse mouse;
 	private Desktop desk;
 	private Clock clock;
@@ -187,7 +186,7 @@ public class LucOSDesktop : MonoBehaviour
 		appman = SysSoftware.GetComponent<AppMan>();
 		boot = SysSoftware.GetComponent<Boot>();
 		post = SysSoftware.GetComponent<POST>();
-		os = SysSoftware.GetComponent<OS>();
+		os = SysSoftware.GetComponent<DesktopEnviroment>();
 		mouse = SysSoftware.GetComponent<Mouse>();
 		desk = SysSoftware.GetComponent<Desktop>();
 		clock = SysSoftware.GetComponent<Clock>();
@@ -200,7 +199,6 @@ public class LucOSDesktop : MonoBehaviour
 		ib = AppSoftware.GetComponent<InternetBrowser>();
 
 		//Hacking
-		prog = HackingSoftware.GetComponent<Progtive>();
 		trace = HackingSoftware.GetComponent<Tracer>();
 		cy = HackingSoftware.GetComponent<Descy>();
 		ds = HackingSoftware.GetComponent<DirSearch>();

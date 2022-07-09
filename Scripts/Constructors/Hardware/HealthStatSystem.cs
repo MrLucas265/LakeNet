@@ -25,5 +25,10 @@ public class HealthStatSystem
         Timer = timer;
         StartTime = starttime;
     }
+
+    public HealthStatSystem()
+    {
+
+    }
 }
 

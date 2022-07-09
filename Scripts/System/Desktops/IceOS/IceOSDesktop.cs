@@ -45,7 +45,6 @@ public class IceOSDesktop : MonoBehaviour
 
 	private Computer com;
 	private InternetBrowser ib;
-	private Progtive prog;
 	private Notepad note;
 	private MissionBrow mb;
 	private CurContracts cc;
@@ -69,7 +68,7 @@ public class IceOSDesktop : MonoBehaviour
 	private AppMan appman;
 	private Boot boot;
 	private POST post;
-	private OS os;
+	private DesktopEnviroment os;
 	private Mouse mouse;
 	private Desktop desk;
 
@@ -170,7 +169,7 @@ public class IceOSDesktop : MonoBehaviour
 		appman = SysSoftware.GetComponent<AppMan>();
 		boot = SysSoftware.GetComponent<Boot>();
 		post = SysSoftware.GetComponent<POST>();
-		os = SysSoftware.GetComponent<OS>();
+		os = SysSoftware.GetComponent<DesktopEnviroment>();
 		mouse = SysSoftware.GetComponent<Mouse>();
 		desk = SysSoftware.GetComponent<Desktop>();
 
@@ -180,7 +179,6 @@ public class IceOSDesktop : MonoBehaviour
 		ib = AppSoftware.GetComponent<InternetBrowser>();
 
 		//Hacking
-		prog = HackingSoftware.GetComponent<Progtive>();
 		trace = HackingSoftware.GetComponent<Tracer>();
 		cy = HackingSoftware.GetComponent<Descy>();
 		ds = HackingSoftware.GetComponent<DirSearch>();
@@ -382,11 +380,6 @@ public class IceOSDesktop : MonoBehaviour
 		}
 	}
 
-	void Update()
-	{
-
-	}
-
 	public void DesktopEnv()
 	{
 		GUI.backgroundColor = com.colors[Customize.cust.ButtonColorInt];
@@ -418,8 +411,8 @@ public class IceOSDesktop : MonoBehaviour
             //        appman.SelectedApp = GameControl.control.ProgramFiles[i].Target;
             //    }
             //}
-            appman.SelectedApp = "Start Menu";
-        }
+			appman.LaunchRequest = Program.Run("Start Menu", "Start Menu", "Player");
+		}
 
 		if(new Rect(AppButton).Contains (Event.current.mousePosition)) 
 		{

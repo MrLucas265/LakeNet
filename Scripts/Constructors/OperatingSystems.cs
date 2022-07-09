@@ -5,14 +5,12 @@ using UnityEngine;
 [System.Serializable]
 public class OperatingSystems
 {
-	public OSName Name;
 	public string Title;
-	public ColorSystem Colour;
-	public OSFPCSystem FPC;
-	public bool DisableColourOption;
-	public int SelectedBackground;
-	public bool GridMode;
-
+	public OSName Name;
+	public OSColorSystem Colour = new OSColorSystem();
+	public OSFPCSystem FPC = new OSFPCSystem();
+	public OSOptionsSystem Options = new OSOptionsSystem();
+	public List<DiskPartSystem> Partitions = new List<DiskPartSystem>();
 	public enum OSName
 	{
 		FluidicIceOS,
@@ -29,14 +27,19 @@ public class OperatingSystems
 		EthelOS
     }
 
-	public OperatingSystems(OSName name,string title, ColorSystem colour,OSFPCSystem fpc,bool disablecolouroption,int selectedbackground, bool gridmode) //,Texture2D icon)
+	public OperatingSystems(string title, OSName name) //,Texture2D icon)
 	{
-		Name = name;
 		Title = title;
-		Colour = colour;
-		FPC = fpc;
-		DisableColourOption = disablecolouroption;
-		SelectedBackground = selectedbackground;
-		GridMode = gridmode;
+		Name = name;
+	}
+	public OperatingSystems(string title, OSName name,OSOptionsSystem options) //,Texture2D icon)
+	{
+		Title = title;
+		Name = name;
+		Options = options;
+	}
+	public OperatingSystems() //,Texture2D icon)
+	{
+
 	}
 }

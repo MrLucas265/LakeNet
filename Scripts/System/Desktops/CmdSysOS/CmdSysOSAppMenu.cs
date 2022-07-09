@@ -11,7 +11,6 @@ public class CmdSysOSAppMenu : MonoBehaviour
 
 	private Computer com;
 	private InternetBrowser ib;
-	private Progtive prog;
 	private Notepad note;
 	private MissionBrow mb;
 	private CurContracts cc;
@@ -132,7 +131,6 @@ public class CmdSysOSAppMenu : MonoBehaviour
 		com = SysSoftware.GetComponent<Computer>();
 		ib = AppSoftware.GetComponent<InternetBrowser>();
 		note = AppSoftware.GetComponent<Notepad>();
-		prog = HackingSoftware.GetComponent<Progtive>();
 		al = SysSoftware.GetComponent<AccLog>();
 
 		trace = HackingSoftware.GetComponent<Tracer>();

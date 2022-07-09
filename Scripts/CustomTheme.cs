@@ -14,7 +14,7 @@ public class CustomTheme : MonoBehaviour
 	private Computer com;
 	private ScreenSaver ss;
 	private SystemPanel sp;
-	private OS os;
+	private DesktopEnviroment os;
 	private Mouse mouse;
 
 	public bool PicLoad;
@@ -27,7 +27,7 @@ public class CustomTheme : MonoBehaviour
 		com = GetComponent<Computer>();
 		ss = System.GetComponent<ScreenSaver>();
 		sp = System.GetComponent<SystemPanel>();
-		os = System.GetComponent<OS>();
+		os = System.GetComponent<DesktopEnviroment>();
 		mouse = System.GetComponent<Mouse>();
 	}
 	
@@ -59,11 +59,11 @@ public class CustomTheme : MonoBehaviour
 			{
 				if(scrollsize == 4)
 				{
-					tex1.Add(LoadPNG(GameControl.control.SelectedOS.FPC.BackgroundAddress));
+					tex1.Add(TextureLoader.LoadPNG(GameControl.control.SelectedOS.FPC.BackgroundAddress));
 				}
 				else
 				{
-					tex1.Add(LoadPNG(Customize.cust.CustomTexFileNames[scrollsize]));
+					tex1.Add(TextureLoader.LoadPNG(Customize.cust.CustomTexFileNames[scrollsize]));
 				}
 			}
 		} 
@@ -73,11 +73,11 @@ public class CustomTheme : MonoBehaviour
 			{
 				if (scrollsize == 4)
 				{
-					tex1.Add(LoadPNG(GameControl.control.SelectedOS.FPC.BackgroundAddress));
+					tex1.Add(TextureLoader.LoadPNG(GameControl.control.SelectedOS.FPC.BackgroundAddress));
 				}
 				else
 				{
-					tex1.Add(LoadPNG(Customize.cust.CustomTexFileNames[scrollsize]));
+					tex1.Add(TextureLoader.LoadPNG(Customize.cust.CustomTexFileNames[scrollsize]));
 				}
 			}
 			//tex1[4] = LoadPNG(GameControl.control.SelectedOS.FPC.BackgroundAddress);
@@ -97,19 +97,5 @@ public class CustomTheme : MonoBehaviour
 		mouse.cursorImage = tex1[3];
 
 		Once = true;
-	}
-
-	public static Texture2D LoadPNG(string filePath)
-	{
-		Texture2D tex = null;
-		byte[] fileData;
-
-		if (File.Exists(filePath))   
-		{
-			fileData = File.ReadAllBytes(filePath);
-			tex = new Texture2D(2, 2);
-			tex.LoadImage(fileData); //..this will auto-resize the texture dimensions.
-		}
-        return tex;
 	}
 }

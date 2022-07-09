@@ -9,19 +9,19 @@ public class CLIV2 : MonoBehaviour
 	public float native_width = 1920;
 	public float native_height = 1080;
 	public bool show;
-	public Vector2 scrollpos = Vector2.zero;
-	public int scrollsize;
+	//public Vector2 scrollpos = Vector2.zero;
+	//public int scrollsize;
 
 	public bool terminal;
 
 	public int TempValue;
-	public int PastCommandSelect;
+	//public int PastCommandSelect;
 
 	public bool minimize;
 	public Rect CloseButton;
 	public Rect MiniButton;
 	public Rect DefaltSetting;
-	public Rect DefaltBoxSetting;
+	//public Rect DefaltBoxSetting;
 
 	private Defalt def;
 	private CLICommandsV2 cli;
@@ -29,6 +29,7 @@ public class CLIV2 : MonoBehaviour
 	private Computer com;
 	private AppMan appman;
 
+	private GameObject WindowHandel;
 	private GameObject prompt;
 	private GameObject system;
 
@@ -53,17 +54,35 @@ public class CLIV2 : MonoBehaviour
 
     public float ScrollValue;
 
+	private WindowManager winman;
+
+	public string PersonName;
+	public string ProgramName;
+	public string ProgramNameForWinMan;
+	public string ContextMenuName;
+	public List<string> ContextMenuOptions = new List<string>();
+	public string SelectedOption;
+	public int SelectedProgramID;
+	public int SelectedWindowID;
+	public bool quit;
 
 	// Use this for initialization
 	void Start () 
 	{
 		prompt = GameObject.Find("Prompts");
 		system = GameObject.Find("System");
+		WindowHandel = GameObject.Find("WindowHandel");
 
 		HMod = 20;
 		
 		AfterStart();
-	}
+
+		ProgramNameForWinMan = "CLI";
+		ContextMenuName = "CLI Context Menu";
+
+		ProgramName = "CLI";
+		PersonName = "Player";
+    }
 
 	void AfterStart()
 	{
@@ -76,6 +95,8 @@ public class CLIV2 : MonoBehaviour
 
 		native_height = Customize.cust.native_height;
 		native_width = Customize.cust.native_width;
+
+		winman = WindowHandel.GetComponent<WindowManager>();
 
 		PosCheck();
 	}
@@ -127,115 +148,151 @@ public class CLIV2 : MonoBehaviour
 
 		CloseButton = new Rect (windowRect.width-22,1,21,21);
 		MiniButton = new Rect (windowRect.width-44,1,21,21);
-		DefaltSetting = new Rect (0,1,windowRect.width,windowRect.height);
-		DefaltBoxSetting = new Rect (1,1,windowRect.width-46,21);
-	}
-
-	void Minimize()
-	{
-		if (minimize == true) 
-		{
-			windowRect = (new Rect(windowRect.x,windowRect.y,DefaltSetting.width,23));
-		}
-		else
-		{
-			windowRect = (new Rect(windowRect.x,windowRect.y,DefaltSetting.width,DefaltSetting.height));
-		}
+		DefaltSetting = new Rect(0, 1, windowRect.width, windowRect.height);
 	}
 
 	void OnGUI()
 	{
-		Skin = com.Skin[GameControl.control.GUIID];
-		GUI.skin = Skin;
+		GUI.skin = com.Skin[Registry.GetIntData(PersonName, ProgramName, "Skin")];
 
-		Customize.cust.windowx[windowID] = windowRect.x;
-		Customize.cust.windowy[windowID] = windowRect.y;
-
-		if(show == true)
+		for (int PersonCount = 0; PersonCount < PersonController.control.People.Count; PersonCount++)
 		{
-			GUI.color = Color.black;
-			windowRect = WindowClamp.ClampToScreen(GUI.Window(windowID,windowRect,DoMyWindow,""));
+			var pwinman = PersonController.control.People[PersonCount].Gateway;
+
+			if (pwinman.RunningPrograms.Count > 0)
+			{
+				for (int i = 0; i < pwinman.RunningPrograms.Count; i++)
+				{
+					if (pwinman.RunningPrograms[i].ProgramName == ProgramNameForWinMan)
+					{
+						ColorUI(pwinman.RunningPrograms[i].WPN);
+
+						GUI.color = new Color32(Registry.GetRedColorData(PersonName,ProgramName,"WindowColor"), Registry.GetGreenColorData(PersonName, ProgramName, "WindowColor"), Registry.GetBlueColorData(PersonName, ProgramName, "WindowColor"), Registry.GetAlphaColorData(PersonName, ProgramName, "WindowColor"));
+						//GUI.color = Color.black;
+						pwinman.RunningPrograms[i].windowRect = WindowClamp.ClampToScreen(GUI.Window(pwinman.RunningPrograms[i].WID, pwinman.RunningPrograms[i].windowRect, DoMyWindow, ""));
+
+						if (!pwinman.RunningPrograms[i].windowRect.Contains(Event.current.mousePosition))
+						{
+							if (Input.GetMouseButtonUp(0) || Input.GetMouseButtonUp(1) || Input.GetMouseButtonUp(2))
+							{
+								CloseContextMenu();
+							}
+						}
+					}
+				}
+			}
 		}
+	}
 
-        if (GameControl.control.LCDPage > 100 && GameControl.control.LCDPage < 150)
-        {
-            LogitechGSDK.LogiLcdColorSetTitle("CLI", 0, 255, 0);
-            LogitechGSDK.LogiLcdColorSetText(7, "> " + cli.Parse, 0, 255, 0);
-
-            if(cli.PastCommands.Count > 0)
-            {
-                LogitechGSDK.LogiLcdColorSetText(6, cli.PastCommands[cli.PastCommands.Count-1], 0, 255, 0);
-            }
-            if (cli.PastCommands.Count > 1)
-            {
-                LogitechGSDK.LogiLcdColorSetText(5, cli.PastCommands[cli.PastCommands.Count-2], 0, 255, 0);
-                LogitechGSDK.LogiLcdColorSetText(6, cli.PastCommands[cli.PastCommands.Count-1], 0, 255, 0);
-            }
-            if (cli.PastCommands.Count > 2)
-            {
-                LogitechGSDK.LogiLcdColorSetText(4, cli.PastCommands[cli.PastCommands.Count-3], 0, 255, 0);
-                LogitechGSDK.LogiLcdColorSetText(5, cli.PastCommands[cli.PastCommands.Count-2], 0, 255, 0);
-                LogitechGSDK.LogiLcdColorSetText(6, cli.PastCommands[cli.PastCommands.Count-1], 0, 255, 0);
-            }
-            if (cli.PastCommands.Count > 4)
-            {
-                LogitechGSDK.LogiLcdColorSetText(3, cli.PastCommands[cli.PastCommands.Count-4], 0, 255, 0);
-                LogitechGSDK.LogiLcdColorSetText(4, cli.PastCommands[cli.PastCommands.Count-3], 0, 255, 0);
-                LogitechGSDK.LogiLcdColorSetText(5, cli.PastCommands[cli.PastCommands.Count-2], 0, 255, 0);
-                LogitechGSDK.LogiLcdColorSetText(6, cli.PastCommands[cli.PastCommands.Count-1], 0, 255, 0);
-            }
-            if (cli.PastCommands.Count > 5)
-            {
-                LogitechGSDK.LogiLcdColorSetText(2, cli.PastCommands[cli.PastCommands.Count-5], 0, 255, 0);
-                LogitechGSDK.LogiLcdColorSetText(3, cli.PastCommands[cli.PastCommands.Count-4], 0, 255, 0);
-                LogitechGSDK.LogiLcdColorSetText(4, cli.PastCommands[cli.PastCommands.Count-3], 0, 255, 0);
-                LogitechGSDK.LogiLcdColorSetText(5, cli.PastCommands[cli.PastCommands.Count-2], 0, 255, 0);
-                LogitechGSDK.LogiLcdColorSetText(6, cli.PastCommands[cli.PastCommands.Count-1], 0, 255, 0);
-            }
-            if (cli.PastCommands.Count > 6)
-            {
-                LogitechGSDK.LogiLcdColorSetText(1, cli.PastCommands[cli.PastCommands.Count-6], 0, 255, 0);
-                LogitechGSDK.LogiLcdColorSetText(2, cli.PastCommands[cli.PastCommands.Count-5], 0, 255, 0);
-                LogitechGSDK.LogiLcdColorSetText(3, cli.PastCommands[cli.PastCommands.Count-4], 0, 255, 0);
-                LogitechGSDK.LogiLcdColorSetText(4, cli.PastCommands[cli.PastCommands.Count-3], 0, 255, 0);
-                LogitechGSDK.LogiLcdColorSetText(5, cli.PastCommands[cli.PastCommands.Count-2], 0, 255, 0);
-                LogitechGSDK.LogiLcdColorSetText(6, cli.PastCommands[cli.PastCommands.Count-1], 0, 255, 0);
-            }
-            if (cli.PastCommands.Count > 7)
-            {
-                LogitechGSDK.LogiLcdColorSetText(0, cli.PastCommands[cli.PastCommands.Count - 7], 0, 255, 0);
-                LogitechGSDK.LogiLcdColorSetText(1, cli.PastCommands[cli.PastCommands.Count - 6], 0, 255, 0);
-                LogitechGSDK.LogiLcdColorSetText(2, cli.PastCommands[cli.PastCommands.Count - 5], 0, 255, 0);
-                LogitechGSDK.LogiLcdColorSetText(3, cli.PastCommands[cli.PastCommands.Count - 4], 0, 255, 0);
-                LogitechGSDK.LogiLcdColorSetText(4, cli.PastCommands[cli.PastCommands.Count - 3], 0, 255, 0);
-                LogitechGSDK.LogiLcdColorSetText(5, cli.PastCommands[cli.PastCommands.Count - 2], 0, 255, 0);
-                LogitechGSDK.LogiLcdColorSetText(6, cli.PastCommands[cli.PastCommands.Count - 1], 0, 255, 0);
-            }
-        }
-    }
+	void SelectWindowID(int WindowID)
+	{
+		if (Input.GetMouseButtonDown(0))
+		{
+			SelectedWindowID = WindowID;
+			winman.SelectedWID = WindowID;
+		}
+	}
 
 	void DoMyWindow(int WindowID)
 	{
+		SelectWindowID(WindowID);
 
-		if (cli.PastCommands.Count > Customize.cust.DeletionAmt) 
+		for (int PersonCount = 0; PersonCount < PersonController.control.People.Count; PersonCount++)
 		{
-			cli.PastCommands.RemoveAt (0);
+			var pwinman = PersonController.control.People[PersonCount].Gateway;
+
+			if (pwinman.RunningPrograms.Count > 0)
+			{
+				winman.WindowResize(PersonName, SelectedWindowID);
+
+				for (int i = 0; i < pwinman.RunningPrograms.Count; i++)
+				{
+					if (pwinman.RunningPrograms[i].ProgramName == ProgramNameForWinMan)
+					{
+						if (pwinman.RunningPrograms[i].WID == SelectedWindowID)
+						{
+							SelectedProgramID = pwinman.RunningPrograms[i].PID;
+						}
+
+						if (WindowID == pwinman.RunningPrograms[i].WID)
+						{
+							CloseButton = new Rect(pwinman.RunningPrograms[i].windowRect.width - 22, 1, 21, 21);
+							if (CloseButton.Contains(Event.current.mousePosition))
+							{
+								GUI.backgroundColor = Color.red;
+								GUI.contentColor = Color.white;
+
+								if (GUI.Button(new Rect(CloseButton), "X", com.Skin[Registry.GetIntData(PersonName,ProgramName,"Skin")].customStyles[0]))
+								{
+									WindowManager.QuitProgram(PersonName,ProgramName, pwinman.RunningPrograms[i].WPN);
+								}
+
+								GUI.backgroundColor = com.colors[Customize.cust.ButtonColorInt];
+								GUI.contentColor = com.colors[Customize.cust.FontColorInt];
+							}
+							else
+							{
+								GUI.backgroundColor = com.colors[Customize.cust.ButtonColorInt];
+								GUI.contentColor = com.colors[Customize.cust.FontColorInt];
+
+								if (GUI.Button(new Rect(CloseButton), "X", com.Skin[Registry.GetIntData(PersonName, ProgramName, "Skin")].customStyles[1]))
+								{
+									WindowManager.QuitProgram(PersonName, ProgramName, pwinman.RunningPrograms[i].WPN);
+								}
+							}
+							RenderTitleBar(pwinman.RunningPrograms[i].WPN, pwinman.RunningPrograms[i].WindowName);
+							RenderUI(pwinman.RunningPrograms[i].WPN);
+						}
+					}
+				}
+			}
+		}
+	}
+
+	void RenderTitleBar(int WindowID,string WindowName)
+    {
+		GUI.contentColor = new Color32(Registry.GetRedColorData(PersonName, ProgramName, "WindowColor"), Registry.GetGreenColorData(PersonName, ProgramName, "WindowColor"), Registry.GetBlueColorData(PersonName, ProgramName, "WindowColor"), Registry.GetAlphaColorData(PersonName, ProgramName, "WindowColor"));
+
+		if (Registry.GetBoolData("Player", "CLI", "Pinned") == false)
+		{
+			GUI.DragWindow(new Rect(1, 1, LocalRegistry.GetRectData(PersonName, WindowID, ProgramName, "TextFieldPos").width-22, 21));
+		}
+		GUI.Box(new Rect(1, 1, LocalRegistry.GetRectData(PersonName, WindowID, ProgramName, "TextFieldPos").width-22, 21), WindowName);
+	}
+
+	void ColorUI(int WPN)
+	{
+		LocalRegistry.SetColorData(PersonName, WPN, ProgramName, "FontColor", new SColor(new Color32(0, 255, 0, 255)));
+		LocalRegistry.SetFloatColorData(PersonName, WPN, ProgramName, "FontColor", 0, 255, 0, 255);
+
+		LocalRegistry.SetColorData(PersonName, WPN, ProgramName, "WindowColor", new SColor(new Color32(0, 0, 0, 255)));
+		LocalRegistry.SetFloatColorData(PersonName, WPN, ProgramName, "WindowColor", 0, 0, 0, 255);
+		print("" + LocalRegistry.GetRedColorData(PersonName, WPN, ProgramName, "WindowColor"));
+	}
+
+	void RenderUI(int WindowID)
+	{
+		GUI.contentColor = new Color32(Registry.GetRedColorData(PersonName, ProgramName, "FontColor"), Registry.GetGreenColorData(PersonName, ProgramName, "FontColor"), Registry.GetBlueColorData(PersonName, ProgramName, "FontColor"), Registry.GetAlphaColorData(PersonName, ProgramName, "FontColor"));
+
+		if (LocalRegistry.GetStringDataCount(PersonName, WindowID, ProgramName, "Input") > Customize.cust.DeletionAmt)
+		{
+			LocalRegistry.RemoveAtStringListData(PersonName, WindowID, ProgramName, "CommandHistory",0);
 		}
 
-		if (cli.AutoScroll == true) 
+		if (cli.AutoScroll == true)
 		{
-			scrollpos.y = scrollsize*20;
+			LocalRegistry.SetVector2Data(PersonName, WindowID, ProgramName, "ScrollPos", new SVector2(new Vector2(0, LocalRegistry.GetIntData(PersonName, WindowID, ProgramName, "Scrollsize") * 20)));
+			//localr.y = scrollsize * 20;
 			cli.AutoScroll = false;
 		}
 
-		if (cli.SetScrollPos == true) 
+		if (cli.SetScrollPos == true)
 		{
-			scrollpos.y = scrollsize * 20 / ScrollValue;
+			LocalRegistry.SetVector2Data(PersonName, WindowID, ProgramName, "ScrollPos", new SVector2(new Vector2(0, LocalRegistry.GetIntData(PersonName, WindowID, ProgramName, "Scrollsize") * 20) / ScrollValue));
 			cli.SetScrollPos = false;
 		}
 
 		Style.fontSize = Customize.cust.TerminalFontSize;
-
 		//if (Event.current.type == EventType.KeyDown) 
 		//{
 		//	AudioSoucres.pitch = Random.Range (0.96f, 1.04f);
@@ -243,171 +300,133 @@ public class CLIV2 : MonoBehaviour
 		//	//AudioSoucres.pitch = 1;
 		//}
 
-		if (Event.current.type == EventType.keyDown && Event.current.keyCode == KeyCode.Return) 
+		if (Event.current.type == EventType.keyDown && Event.current.keyCode == KeyCode.Return)
 		{
-			cli.PastCommands.Add (cli.Parse);
-			cli.CommandCheck();
-			cli.Parse = "";
-			cli.SetScrollPos = true;
-
-            for (int i = 0; i < 8; i++)
+			//cli.PastCommands.Add (cli.Parse);
+			//cli.CommandCheck();
+			//cli.Parse = "";
+			//pastcommands.Add();
+			if (LocalRegistry.GetStringData(PersonName, WindowID, ProgramName, "Input") != "")
+			{
+				LocalRegistry.AddStringData(PersonName, WindowID, ProgramName, "CommandHistory", LocalRegistry.GetStringData(PersonName, WindowID, ProgramName, "Input"));
+				GlobalStuff.RunCommand(PersonName, WindowID, ProgramName, "Input", LocalRegistry.GetStringData(PersonName, WindowID, ProgramName, "Input"));
+			}
+			if(LocalRegistry.GetStringData(PersonName, WindowID, ProgramName, "Output") != "")
             {
-                LogitechGSDK.LogiLcdColorSetText(i, "", 0, 0, 0);
-            }
+				LocalRegistry.AddStringData(PersonName, WindowID, ProgramName, "CommandHistory", LocalRegistry.GetStringData(PersonName, WindowID, ProgramName, "Output"));
+			}
+			LocalRegistry.SetStringData(PersonName, WindowID, ProgramName, "Input", "");
+			LocalRegistry.SetStringData(PersonName, WindowID, ProgramName, "Output", "");
 
-            LogitechGSDK.LogiLcdUpdate();
+			for (int i = 0; i < 8; i++)
+			{
+				LogitechGSDK.LogiLcdColorSetText(i, "", 0, 0, 0);
+			}
+
+			LogitechGSDK.LogiLcdUpdate();
+		}
+
+		if (Event.current.type == EventType.keyDown && Event.current.keyCode == KeyCode.DownArrow)
+		{
+			if (LocalRegistry.GetIntData(PersonName, WindowID, ProgramName, "SelectedPastCommand") < LocalRegistry.GetIntData(PersonName, WindowID, ProgramName, "Scrollsize") - 1)
+			{
+				LocalRegistry.SetIntData(PersonName, WindowID, ProgramName, "SelectedPastCommand", LocalRegistry.GetIntData(PersonName, WindowID, ProgramName, "SelectedPastCommand") +1);
+				LocalRegistry.SetStringData(PersonName, WindowID, ProgramName, "Input",LocalRegistry.GetStringListData(PersonName, WindowID, ProgramName, "CommandHistory", LocalRegistry.GetIntData(PersonName, WindowID, ProgramName, "SelectedPastCommand")));
+			}
+		}
+
+        if (Event.current.type == EventType.keyDown && Event.current.keyCode == KeyCode.UpArrow)
+        {
+            if (LocalRegistry.GetIntData(PersonName, WindowID, ProgramName, "SelectedPastCommand") >= 1)
+            {
+				LocalRegistry.SetIntData(PersonName, WindowID, ProgramName, "SelectedPastCommand", LocalRegistry.GetIntData(PersonName, WindowID, ProgramName, "SelectedPastCommand") - 1);
+				LocalRegistry.SetStringData(PersonName, WindowID, ProgramName, "Input", LocalRegistry.GetStringListData(PersonName, WindowID, ProgramName, "CommandHistory", LocalRegistry.GetIntData(PersonName, WindowID, ProgramName, "SelectedPastCommand")));
+			}
         }
-
-		if (Event.current.type == EventType.keyDown && Event.current.keyCode == KeyCode.DownArrow) 
-		{
-			if (PastCommandSelect < scrollsize - 1)
-			{
-				PastCommandSelect++;
-				cli.Parse = cli.PastCommands[PastCommandSelect];
-			}
-		}
-
-		if (Event.current.type == EventType.keyDown && Event.current.keyCode == KeyCode.UpArrow) 
-		{
-			if (PastCommandSelect >= 1)
-			{
-				PastCommandSelect--;
-				cli.Parse = cli.PastCommands[PastCommandSelect];
-			}
-		}
 
         //Customize.cust.TerminalTextPosMod = SMod * User.Length;
 
 
-        if (GameControl.control.Gateway.Status.Terminal == true)
-		{
-			if (MiniButton.Contains(Event.current.mousePosition))
-			{
-				if (GUI.Button(new Rect(MiniButton), "-", Skin.customStyles[2]))
-				{
-					minimize = !minimize;
-					Minimize();
-				}
-			}
-			else
-			{
-				GUI.backgroundColor = com.colors[Customize.cust.ButtonColorInt];
-				GUI.contentColor = com.colors[Customize.cust.FontColorInt];
-				if (GUI.Button(new Rect(MiniButton), "-", Skin.customStyles[2]))
-				{
-					minimize = !minimize;
-					Minimize();
-				}
-			}
-
-			//GUI.DragWindow(new Rect(DefaltBoxSetting));
-			GUI.Box(new Rect(DefaltBoxSetting), "CLI Terminal - Safemode");
-
-			TerminalModeV2();
-		}
-		else
-		{
-			if (CloseButton.Contains(Event.current.mousePosition))
-			{
-				if (GUI.Button(new Rect(CloseButton), "X", Skin.customStyles[0]))
-				{
-					appman.SelectedApp = "Command Line V3";
-				}
-			}
-			else
-			{
-				GUI.backgroundColor = com.colors[Customize.cust.ButtonColorInt];
-				GUI.contentColor = com.colors[Customize.cust.FontColorInt];
-				GUI.Button(new Rect(CloseButton), "X", Skin.customStyles[1]);
-			}
-
-			if (MiniButton.Contains(Event.current.mousePosition))
-			{
-				if (GUI.Button(new Rect(MiniButton), "-", Skin.customStyles[2]))
-				{
-					minimize = !minimize;
-					Minimize();
-				}
-			}
-			else
-			{
-				GUI.backgroundColor = com.colors[Customize.cust.ButtonColorInt];
-				GUI.contentColor = com.colors[Customize.cust.FontColorInt];
-				if (GUI.Button(new Rect(MiniButton), "-", Skin.customStyles[2]))
-				{
-					minimize = !minimize;
-					Minimize();
-				}
-			}
-
-			GUI.DragWindow(new Rect(DefaltBoxSetting));
-			GUI.Box(new Rect(DefaltBoxSetting), "Command-Line Interface");
-
-			GUI.contentColor = Color.green;
-
-
-			scrollpos = GUI.BeginScrollView(new Rect(2, 25, windowRect.width-4, windowRect.height-40), scrollpos, new Rect(0, 0, 0,scrollsize * 24));
+		if(LocalRegistry.GetStringDataCount(PersonName, WindowID, ProgramName, "CommandHistory") > 0)
+        {
+			LocalRegistry.SetVector2Data(PersonName, WindowID, ProgramName, "ScrollPos", GUI.BeginScrollView(new Rect(2, 25, winman.GetWindowInfo(PersonName, WindowID).width - 20, winman.GetWindowInfo(PersonName, WindowID).height - (Customize.cust.FontSize + 10) * 2), LocalRegistry.GetVector2Data(PersonName, WindowID, ProgramName, "ScrollPos"), new Rect(0, 0, 0, LocalRegistry.GetIntData(PersonName, WindowID, ProgramName, "Scrollsize") * 24)));
 
 			//GUI.Label (new Rect (2, windowRect.height - 50, windowRect.width-2, Customize.cust.FontSize+2),User,Style);
 
 			//cli.Parse = GUI.TextField(new Rect(User.Length + Customize.cust.TerminalTextPosMod * Customize.cust.TerminalFontSize, scrollsize*20-1*SMod, windowRect.width-84, 23), cli.Parse, 500,Style);
 			//cli.Parse = GUI.TextField(new Rect(User.Length + Customize.cust.TerminalTextPosMod * Customize.cust.TerminalFontSize, windowRect.height - 50, windowRect.width-84, Customize.cust.FontSize+2), cli.Parse, 500,Style);
 
-			for (scrollsize = 0; scrollsize < cli.PastCommands.Count; scrollsize++)
+			for (LocalRegistry.SetIntData(PersonName, WindowID, ProgramName, "Scrollsize", 0); LocalRegistry.GetIntData(PersonName, WindowID, ProgramName, "Scrollsize") < LocalRegistry.GetStringDataCount(PersonName, WindowID, ProgramName, "CommandHistory"); LocalRegistry.SetIntData(PersonName, WindowID, ProgramName, "Scrollsize", LocalRegistry.GetIntData(PersonName, WindowID, ProgramName, "Scrollsize") + 1))
 			{
-				GUI.Label (new Rect (2, scrollsize * 24, windowRect.width-2, 20), "" + cli.PastCommands [scrollsize],Style);
+				GUI.Label(new Rect(2, LocalRegistry.GetIntData(PersonName, WindowID, ProgramName, "Scrollsize") * 24, windowRect.width - 2, 20), "" + LocalRegistry.GetStringListData(PersonName, WindowID, ProgramName, "CommandHistory", LocalRegistry.GetIntData(PersonName, WindowID, ProgramName, "Scrollsize")), Style);
 			}
 
 			GUI.EndScrollView();
-            GUI.Label(new Rect(2, windowRect.height - 20, windowRect.width - 2, Customize.cust.FontSize + 2), ">", Style);
-
-            cli.Parse = GUI.TextField(new Rect(12, windowRect.height - 20, windowRect.width - 84, Customize.cust.FontSize + 2), cli.Parse, 500, Style);
-        }
-	}
-
-	void TerminalModeV1()
-	{
-
-		User = "" + GameControl.control.ProfileName + "@" + Customize.cust.GatewayName + ">";
-
-		SMod = Customize.cust.TerminalFontSize / 2 * 0.1f;
-
-		GUI.contentColor = Color.white;
-
-		scrollpos = GUI.BeginScrollView(new Rect(2, 2, windowRect.width - 4, windowRect.height - HMod), scrollpos, new Rect(0, 0, 0, scrollsize * 22));
-
-		GUI.Label(new Rect(2, scrollsize * 20 * SMod, windowRect.width - 2, Customize.cust.FontSize + 2), User, Style);
-
-		//cli.Parse = GUI.TextField(new Rect(User.Length + Customize.cust.TerminalTextPosMod * Customize.cust.TerminalFontSize, scrollsize*20-1*SMod, windowRect.width-84, 23), cli.Parse, 500,Style);
-		cli.Parse = GUI.TextField(new Rect(User.Length + Customize.cust.TerminalTextPosMod * Customize.cust.TerminalFontSize, scrollsize * 20 * SMod, windowRect.width - 84, Customize.cust.FontSize + 2), cli.Parse, 500, Style);
-
-		for (scrollsize = 0; scrollsize < cli.PastCommands.Count; scrollsize++)
-		{
-			GUI.Label(new Rect(2, scrollsize * 20 * SMod, windowRect.width - 2, 25), "" + cli.PastCommands[scrollsize], Style);
 		}
 
-		GUI.EndScrollView();
+
+		LocalRegistry.SetRectData(PersonName, WindowID, ProgramName, "TextFieldPos", new Rect(2, winman.GetWindowInfo(PersonName, WindowID).height-20, winman.GetWindowInfo(PersonName, WindowID).width-2, 22));
+		GUI.Label(new Rect(2, LocalRegistry.GetRectData(PersonName, WindowID, ProgramName, "TextFieldPos").y, LocalRegistry.GetRectData(PersonName, WindowID, ProgramName, "TextFieldPos").width, Customize.cust.FontSize + 2), ">", Style);
+
+		LocalRegistry.SetRectData(PersonName, WindowID, ProgramName, "TextFieldPos", new Rect(12, winman.GetWindowInfo(PersonName, WindowID).height-20, winman.GetWindowInfo(PersonName, WindowID).width-2, 22));
+		//LocalRegistry.SetRectData(PersonName, WindowID, ProgramName, "TextFieldPos", new Rect(12, winman.GetWindowInfo(PersonName, WindowID).height / 2, winman.GetWindowInfo(PersonName, WindowID).height - 2, 23));
+
+		LocalRegistry.SetStringData(PersonName, WindowID, ProgramName, "Input", GUI.TextField(new Rect(12, LocalRegistry.GetRectData(PersonName, WindowID, ProgramName, "TextFieldPos").y, LocalRegistry.GetRectData(PersonName, WindowID, ProgramName, "TextFieldPos").width, Customize.cust.FontSize + 2), LocalRegistry.GetStringData(PersonName, WindowID, ProgramName, "Input"), 500, Style));
 	}
 
-	void TerminalModeV2()
+	void Minimize()
 	{
-		GUI.contentColor = Color.white;
-
-		scrollpos = GUI.BeginScrollView(new Rect(2, 25, windowRect.width - 4, windowRect.height - 40), scrollpos, new Rect(0, 0, 0, scrollsize * 24));
-
-		//GUI.Label (new Rect (2, windowRect.height - 50, windowRect.width-2, Customize.cust.FontSize+2),User,Style);
-
-		//cli.Parse = GUI.TextField(new Rect(User.Length + Customize.cust.TerminalTextPosMod * Customize.cust.TerminalFontSize, scrollsize*20-1*SMod, windowRect.width-84, 23), cli.Parse, 500,Style);
-		//cli.Parse = GUI.TextField(new Rect(User.Length + Customize.cust.TerminalTextPosMod * Customize.cust.TerminalFontSize, windowRect.height - 50, windowRect.width-84, Customize.cust.FontSize+2), cli.Parse, 500,Style);
-
-		for (scrollsize = 0; scrollsize < cli.PastCommands.Count; scrollsize++)
+		if (minimize == true)
 		{
-			GUI.Label(new Rect(2, scrollsize * 24, windowRect.width - 2, 20), "" + cli.PastCommands[scrollsize], Style);
+			if(Registry.GetBoolData("Player","CLI","Pinned") == false)
+            {
+				Registry.SetRectData("Player", "CLI", "CustomPos", new SRect(windowRect));
+			}
+			Registry.SetBoolData("Player", "CLI", "Pinned", minimize);
+			//windowRect = (new Rect(windowRect.x,windowRect.y,DefaltSetting.width,23));
+			windowRect = Registry.GetRectData("Player", "CLI", "Pinned");
 		}
+		else
+		{
+			Registry.SetBoolData("Player", "CLI", "Pinned", minimize);
+			windowRect = Registry.GetRectData("Player", "CLI", "CustomPos");
+			//windowRect = (new Rect(windowRect.x,windowRect.y,DefaltSetting.width,DefaltSetting.height));
+		}
+	}
 
-		GUI.EndScrollView();
-		GUI.Label(new Rect(2, windowRect.height - 20, windowRect.width - 2, Customize.cust.FontSize + 2), ">", Style);
+	//void OnGUI()
+	//{
+	//	Skin = com.Skin[GameControl.control.GUIID];
+	//	GUI.skin = Skin;
 
-		cli.Parse = GUI.TextField(new Rect(12, windowRect.height - 20, windowRect.width - 84, Customize.cust.FontSize + 2), cli.Parse, 500, Style);
+	//	Customize.cust.windowx[windowID] = windowRect.x;
+	//	Customize.cust.windowy[windowID] = windowRect.y;
+
+	//	if(show == true)
+	//	{
+	//		GUI.color = Color.black;
+	//		windowRect = WindowClamp.ClampToScreen(GUI.Window(windowID,windowRect,DoMyWindow,""));
+	//	}
+	//   }
+
+	void CloseContextMenu()
+	{
+		for (int PersonCount = 0; PersonCount < PersonController.control.People.Count; PersonCount++)
+		{
+			var pwinman = PersonController.control.People[PersonCount].Gateway;
+
+			if (pwinman.RunningPrograms.Count > 0)
+			{
+				for (int i = 0; i < pwinman.RunningPrograms.Count; i++)
+				{
+					if (pwinman.RunningPrograms[i].ProgramName == ContextMenuName)
+					{
+						ContextMenuOptions.RemoveRange(0, ContextMenuOptions.Count);
+						pwinman.RunningPrograms.RemoveAt(i);
+						SelectedOption = "";
+					}
+				}
+			}
+		}
 	}
 }

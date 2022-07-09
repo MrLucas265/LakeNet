@@ -55,7 +55,6 @@ public class TaskViewer : MonoBehaviour
 	public string CompactModeName;
 
 	private GameObject Hardware;
-	private CPU cpu;
 	private RAM ram;
 	private PSU psu;
 	private HardDrives hdd;
@@ -83,7 +82,6 @@ public class TaskViewer : MonoBehaviour
 	{
 		Hardware = GameObject.Find("Hardware");
 
-		cpu = Hardware.GetComponent<CPU>();
 		ram = Hardware.GetComponent<RAM>();
 		psu = Hardware.GetComponent<PSU>();
 		com = GetComponent<Computer>();
@@ -453,109 +451,109 @@ public class TaskViewer : MonoBehaviour
 		{
 			showSettings = false;
 
-            if (showCPU == true)
-            {
-                for (int i = 0; i < GameControl.control.Gateway.InstalledCPU.Count; i++)
-                {
-                    if (Selected == -1)
-                    {
-                        if (GUI.Button(new Rect(1, 46 + 22 * i, 150, 22), "Slot" + i + " - " + GameControl.control.Gateway.InstalledCPU[i].Name))
-                        {
-                            Selected = i;
-                        }
-                    }
+            //if (showCPU == true)
+            //{
+            //    for (int i = 0; i < GameControl.control.Gateway.InstalledCPU.Count; i++)
+            //    {
+            //        if (Selected == -1)
+            //        {
+            //            if (GUI.Button(new Rect(1, 46 + 22 * i, 150, 22), "Slot" + i + " - " + GameControl.control.Gateway.InstalledCPU[i].Name))
+            //            {
+            //                Selected = i;
+            //            }
+            //        }
 
-                    if (Selected != -1)
-                    {
-                        for (Index = 0; Index < GameControl.control.Gateway.InstalledCPU[Selected].Cores; Index++)
-                        {
-                            GUI.Label(new Rect(1, 66 + 22 * Index, 150, 22), "Core" + Index + "-" + GameControl.control.Gateway.InstalledCPU[Selected].Cores + GameControl.control.SpaceName + "s");
-                        }
+            //        if (Selected != -1)
+            //        {
+            //            for (Index = 0; Index < GameControl.control.Gateway.InstalledCPU[Selected].Cores; Index++)
+            //            {
+            //                GUI.Label(new Rect(1, 66 + 22 * Index, 150, 22), "Core" + Index + "-" + GameControl.control.Gateway.InstalledCPU[Selected].Cores + GameControl.control.SpaceName + "s");
+            //            }
 
-                        GUI.Label(new Rect(1, 84 + 22 * Index, 150, 22), "Core Voltage: " + GameControl.control.Gateway.InstalledCPU[Selected].Voltage.ToString("F2"));
+            //            GUI.Label(new Rect(1, 84 + 22 * Index, 150, 22), "Core Voltage: " + GameControl.control.Gateway.InstalledCPU[Selected].Voltage.ToString("F2"));
 
-                        GUI.Label(new Rect(1, 84 + 44 * Index, 150, 22), "Health: %" + GameControl.control.Gateway.InstalledCPU[Selected].HealthPercentage.ToString("F0"));
-                    }
-                }
-                //for (Index = 0; Index < cpu.CPUSpeed.Count; Index++)
-                //{
-                //    GUI.Label(new Rect(1, 66 + 22 * Index, 150, 22), "Core" + Index + "-" + cpu.CPUSpeed[Index] + GameControl.control.SpaceName + "s");
-                //}
-                ////GUI.Label(new Rect (1, 66 + 22 * Index, 150, 22), "Core Temp: " + cpu.CPUTemp.ToString("F0"));
-                //GUI.Label(new Rect(1, 84 + 22 * Index, 150, 22), "Core Voltage: " + cpu.Voltage.ToString("F2"));
-            }
-            if (showGPU == true)
-            {
-                for (int i = 0; i < GameControl.control.Gateway.InstalledGPU.Count; i++)
-                {
-                    if (Selected == -1)
-                    {
-                        if (GUI.Button(new Rect(1, 46 + 22 * i, 150, 22), "Slot" + i + " - " + GameControl.control.Gateway.InstalledGPU[i].Name))
-                        {
-                            Selected = i;
-                        }
-                    }
+            //            GUI.Label(new Rect(1, 84 + 44 * Index, 150, 22), "Health: %" + GameControl.control.Gateway.InstalledCPU[Selected].HealthPercentage.ToString("F0"));
+            //        }
+            //    }
+            //    //for (Index = 0; Index < cpu.CPUSpeed.Count; Index++)
+            //    //{
+            //    //    GUI.Label(new Rect(1, 66 + 22 * Index, 150, 22), "Core" + Index + "-" + cpu.CPUSpeed[Index] + GameControl.control.SpaceName + "s");
+            //    //}
+            //    ////GUI.Label(new Rect (1, 66 + 22 * Index, 150, 22), "Core Temp: " + cpu.CPUTemp.ToString("F0"));
+            //    //GUI.Label(new Rect(1, 84 + 22 * Index, 150, 22), "Core Voltage: " + cpu.Voltage.ToString("F2"));
+            //}
+            //if (showGPU == true)
+            //{
+            //    for (int i = 0; i < GameControl.control.Gateway.InstalledGPU.Count; i++)
+            //    {
+            //        if (Selected == -1)
+            //        {
+            //            if (GUI.Button(new Rect(1, 46 + 22 * i, 150, 22), "Slot" + i + " - " + GameControl.control.Gateway.InstalledGPU[i].Name))
+            //            {
+            //                Selected = i;
+            //            }
+            //        }
 
-                    if (Selected != -1)
-                    {
-                        GUI.Label(new Rect(1, 22 + 22, 250, 22), "Total Memory" + "-" + GameControl.control.Gateway.InstalledGPU[Selected].MaxMemory + GameControl.control.SpaceName + "s");
+            //        if (Selected != -1)
+            //        {
+            //            //GUI.Label(new Rect(1, 22 + 22, 250, 22), "Total Memory" + "-" + GameControl.control.Gateway.InstalledGPU[Selected].MaxMemory + GameControl.control.SpaceName + "s");
 
-                        GUI.Label(new Rect(1, 44 + 22, 250, 22), "Used Memory" + "-" + GameControl.control.Gateway.InstalledGPU[Selected].MemoryUsage + GameControl.control.SpaceName + "s");
+            //            //GUI.Label(new Rect(1, 44 + 22, 250, 22), "Used Memory" + "-" + GameControl.control.Gateway.InstalledGPU[Selected].MemoryUsage + GameControl.control.SpaceName + "s");
 
-                        GUI.Label(new Rect(1, 66 + 22, 150, 22), "GPU Cores" + "-" + GameControl.control.Gateway.InstalledGPU[Selected].Cores);
+            //            //GUI.Label(new Rect(1, 66 + 22, 150, 22), "GPU Cores" + "-" + GameControl.control.Gateway.InstalledGPU[Selected].Cores);
 
-                        GUI.Label(new Rect(1, 84 + 22, 150, 22), "GPU Voltage: " + GameControl.control.Gateway.InstalledGPU[Selected].Voltage.ToString("F2"));
+            //            //GUI.Label(new Rect(1, 84 + 22, 150, 22), "GPU Voltage: " + GameControl.control.Gateway.InstalledGPU[Selected].Voltage.ToString("F2"));
 
-                        GUI.Label(new Rect(1, 84 + 44, 150, 22), "Speed: " + GameControl.control.Gateway.InstalledGPU[Selected].MaxSpeed + GameControl.control.SpaceName + "s");
+            //            //GUI.Label(new Rect(1, 84 + 44, 150, 22), "Speed: " + GameControl.control.Gateway.InstalledGPU[Selected].MaxSpeed + GameControl.control.SpaceName + "s");
 
-                        GUI.Label(new Rect(1, 84 + 66, 150, 22), "Health: %" + GameControl.control.Gateway.InstalledGPU[Selected].HealthPercentage.ToString("F0"));
-                    }
-                }
-                //for (Index = 0; Index < cpu.CPUSpeed.Count; Index++)
-                //{
-                //    GUI.Label(new Rect(1, 66 + 22 * Index, 150, 22), "Core" + Index + "-" + cpu.CPUSpeed[Index] + GameControl.control.SpaceName + "s");
-                //}
-                ////GUI.Label(new Rect (1, 66 + 22 * Index, 150, 22), "Core Temp: " + cpu.CPUTemp.ToString("F0"));
-                //GUI.Label(new Rect(1, 84 + 22 * Index, 150, 22), "Core Voltage: " + cpu.Voltage.ToString("F2"));
-            }
+            //            //GUI.Label(new Rect(1, 84 + 66, 150, 22), "Health: %" + GameControl.control.Gateway.InstalledGPU[Selected].HealthPercentage.ToString("F0"));
+            //        }
+            //    }
+            //    //for (Index = 0; Index < cpu.CPUSpeed.Count; Index++)
+            //    //{
+            //    //    GUI.Label(new Rect(1, 66 + 22 * Index, 150, 22), "Core" + Index + "-" + cpu.CPUSpeed[Index] + GameControl.control.SpaceName + "s");
+            //    //}
+            //    ////GUI.Label(new Rect (1, 66 + 22 * Index, 150, 22), "Core Temp: " + cpu.CPUTemp.ToString("F0"));
+            //    //GUI.Label(new Rect(1, 84 + 22 * Index, 150, 22), "Core Voltage: " + cpu.Voltage.ToString("F2"));
+            //}
 
-            if (showDisk == true)
-            {
-                for (int i = 0; i < GameControl.control.Gateway.InstalledStorageDevice.Count; i++)
-                {
-                    if (Selected == -1)
-                    {
-                        if (GUI.Button(new Rect(1, 46 + 22 * i, 150, 22), "" + i + " - " + GameControl.control.Gateway.InstalledStorageDevice[i].Name))
-                        {
-                            Selected = i;
-                        }
-                    }
+            //if (showDisk == true)
+            //{
+            //    for (int i = 0; i < GameControl.control.Gateway.InstalledStorageDevice.Count; i++)
+            //    {
+            //        if (Selected == -1)
+            //        {
+            //            if (GUI.Button(new Rect(1, 46 + 22 * i, 150, 22), "" + i + " - " + GameControl.control.Gateway.InstalledStorageDevice[i].Name))
+            //            {
+            //                Selected = i;
+            //            }
+            //        }
 
-                    if (Selected != -1)
-                    {
-                        GUI.Label(new Rect(1, 22 + 22, 250, 22), "Capacity: " + GameControl.control.Gateway.InstalledStorageDevice[Selected].Capacity + GameControl.control.SpaceName + "s");
+            //        if (Selected != -1)
+            //        {
+            //            GUI.Label(new Rect(1, 22 + 22, 250, 22), "Capacity: " + GameControl.control.Gateway.InstalledStorageDevice[Selected].Capacity + GameControl.control.SpaceName + "s");
 
-                        GUI.Label(new Rect(1, 44 + 22, 250, 22), "Free: " + GameControl.control.Gateway.InstalledStorageDevice[Selected].FreeSpace + GameControl.control.SpaceName + "s");
+            //            GUI.Label(new Rect(1, 44 + 22, 250, 22), "Free: " + GameControl.control.Gateway.InstalledStorageDevice[Selected].FreeSpace + GameControl.control.SpaceName + "s");
 
-                        GUI.Label(new Rect(1, 66 + 22, 250, 22), "Power Usage: " + GameControl.control.Gateway.InstalledStorageDevice[Selected].PowerUsage);
+            //            GUI.Label(new Rect(1, 66 + 22, 250, 22), "Power Usage: " + GameControl.control.Gateway.InstalledStorageDevice[Selected].PowerUsage);
 
-                        GUI.Label(new Rect(1, 84 + 22, 150, 22), "Type: " + GameControl.control.Gateway.InstalledStorageDevice[Selected].Type);
+            //            GUI.Label(new Rect(1, 84 + 22, 150, 22), "Type: " + GameControl.control.Gateway.InstalledStorageDevice[Selected].Type);
 
-                        GUI.Label(new Rect(1, 84 + 44, 150, 22), "Speed: " + GameControl.control.Gateway.InstalledStorageDevice[Selected].Speed + GameControl.control.SpaceName + "s");
+            //            GUI.Label(new Rect(1, 84 + 44, 150, 22), "Speed: " + GameControl.control.Gateway.InstalledStorageDevice[Selected].Speed + GameControl.control.SpaceName + "s");
 
-                        GUI.Label(new Rect(1, 84 + 66, 150, 22), "Health: %" + GameControl.control.Gateway.InstalledStorageDevice[Selected].HealthPercentage.ToString("F0"));
-                    }
-                }
-            }
+            //            GUI.Label(new Rect(1, 84 + 66, 150, 22), "Health: %" + GameControl.control.Gateway.InstalledStorageDevice[Selected].HealthPercentage.ToString("F0"));
+            //        }
+            //    }
+            //}
 
             if (AnyShowen == false) 
 			{
-				if(GUI.Button(new Rect (2, 46, 141, 20), "CPU:" + cpu.MaxCPUSpeed + GameControl.control.SpaceName + "s"))
-				{
-					CloseAllMainMenuSubMenus();
-					showCPU = true;
-					AnyShowen = true;
-				}
+				//if(GUI.Button(new Rect (2, 46, 141, 20), "CPU:" + cpu.MaxCPUSpeed + GameControl.control.SpaceName + "s"))
+				//{
+				//	CloseAllMainMenuSubMenus();
+				//	showCPU = true;
+				//	AnyShowen = true;
+				//}
 
 				float RemainingRAMUI = ram.RemainingRAM / 1024;
 				float MaxRAMUI = ram.MaxRAM / 1024;
@@ -581,19 +579,19 @@ public class TaskViewer : MonoBehaviour
 				//	AnyShowen = true;
 				//}
 
-				if(GUI.Button(new Rect (2, 130, 141, 20), "GPU:" + GameControl.control.Gateway.InstalledGPU[0].MemoryUsage + " / " + GameControl.control.Gateway.InstalledGPU[0].MaxMemory))
-				{
-					CloseAllMainMenuSubMenus();
-					showGPU = true;
-					AnyShowen = true;
-				}
+				//if(GUI.Button(new Rect (2, 130, 141, 20), "GPU:" + GameControl.control.Gateway.InstalledGPU[0].MemoryUsage + " / " + GameControl.control.Gateway.InstalledGPU[0].MaxMemory))
+				//{
+				//	CloseAllMainMenuSubMenus();
+				//	showGPU = true;
+				//	AnyShowen = true;
+				//}
 
-				if(GUI.Button(new Rect (2, 151, 141, 20), "PSU:" + GameControl.control.Gateway.InstalledPSU[0].Remaining + " / " + GameControl.control.Gateway.InstalledPSU[0].Max))
-				{
-					CloseAllMainMenuSubMenus();
-					showPSU = true;
-					AnyShowen = true;
-				}
+				//if(GUI.Button(new Rect (2, 151, 141, 20), "PSU:" + GameControl.control.Gateway.InstalledPSU[0].Remaining + " / " + GameControl.control.Gateway.InstalledPSU[0].Max))
+				//{
+				//	CloseAllMainMenuSubMenus();
+				//	showPSU = true;
+				//	AnyShowen = true;
+				//}
 			}
 		}
 	}

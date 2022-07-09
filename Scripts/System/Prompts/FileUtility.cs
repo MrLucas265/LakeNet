@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using System.Linq;
 
 public class FileUtility : MonoBehaviour
 {
@@ -160,14 +161,6 @@ public class FileUtility : MonoBehaviour
 
 	void Update()
 	{
-		if (Local == false)
-		{
-			Speed = GameControl.control.Gateway.InstalledModem[0].CurrentSpeed;
-		}
-		else
-		{
-			Speed = GameControl.control.Gateway.InstalledStorageDevice[0].Speed;
-		}
 		if (selectedID < 0)
 		{
 			selectedID = 0;
@@ -182,10 +175,10 @@ public class FileUtility : MonoBehaviour
 					ProgramHandle[selectedID].Percentage = 100;
 				}
 
-				if (ProgramHandle[selectedID].Start == true && ProgramHandle[selectedID].OurFileSize <= ProgramHandle[selectedID].FileSize)
+				if (ProgramHandle[selectedID].Start == true && ProgramHandle[selectedID].OurFileSize <= ProgramHandle[selectedID].ProgramFile.Used)
 				{
-					ProgramHandle[selectedID].Percentage = ProgramHandle[selectedID].OurFileSize / ProgramHandle[selectedID].FileSize * 100;
-					ProgramHandle[selectedID].ItemRemain = ProgramHandle[selectedID].FileSize - ProgramHandle[selectedID].OurFileSize;
+					ProgramHandle[selectedID].Percentage = ProgramHandle[selectedID].OurFileSize / ProgramHandle[selectedID].ProgramFile.Used * 100;
+					ProgramHandle[selectedID].ItemRemain = ProgramHandle[selectedID].ProgramFile.Used - ProgramHandle[selectedID].OurFileSize;
 					ProgramHandle[selectedID].TimeRemainSeconds = ProgramHandle[selectedID].ItemRemain / Speed / GameControl.control.TimeMulti;
 					ProgramHandle[selectedID].TimeRemainSeconds = Mathf.RoundToInt(ProgramHandle[selectedID].TimeRemainSeconds-1);
 					ProgramHandle[selectedID].TimeRemainUISeconds = (int)(ProgramHandle[selectedID].TimeRemainSeconds % 60); // return the remainder of the seconds divide by 60 as an int
@@ -195,12 +188,12 @@ public class FileUtility : MonoBehaviour
 					ProgramHandle[selectedID].TimeRemainHour = (int)(ProgramHandle[selectedID].TimeRemainSeconds % 24); // return the remainder of the hours divided by 60 as an int
 
 
-					if (Speed >= ProgramHandle[selectedID].FileSize)
+					if (Speed >= ProgramHandle[selectedID].ProgramFile.Used)
 					{
 						ProgramHandle[selectedID].OurFileSize += Speed;
 					}
 
-					if (ProgramHandle[selectedID].OurFileSize >= ProgramHandle[selectedID].FileSize)
+					if (ProgramHandle[selectedID].OurFileSize >= ProgramHandle[selectedID].ProgramFile.Used)
 					{
 						if (ForceDone == true)
 						{
@@ -208,7 +201,7 @@ public class FileUtility : MonoBehaviour
 						}
 					}
 
-					if (ProgramHandle[selectedID].FileSize <= 0)
+					if (ProgramHandle[selectedID].ProgramFile.Used <= 0)
 					{
 						if (ForceDone == true)
 						{
@@ -216,7 +209,7 @@ public class FileUtility : MonoBehaviour
 						}
 					}
 
-					if (ProgramHandle[selectedID].FileSize <= Speed)
+					if (ProgramHandle[selectedID].ProgramFile.Used <= Speed)
 					{
 						Done();
 					}
@@ -246,21 +239,26 @@ public class FileUtility : MonoBehaviour
 
 	public void CheckDiskSpace()
 	{
+		var person = PersonController.control.People.FirstOrDefault(x => x.Name == "Player");
+
 		for (int i = 0; i < ProgramHandle.Count; i++)
 		{
-			for (int j = 0; j < GameControl.control.Gateway.InstalledStorageDevice.Count; j++)
+			for (int k = 0; k < person.Gateway.StorageDevices.Count; k++)
 			{
-				for (int k = 0; k < GameControl.control.Gateway.InstalledStorageDevice[j].Partitions.Count; k++)
+				for (int l = 0; l < person.Gateway.StorageDevices[k].OS.Count; l++)
 				{
-					if (ProgramHandle[i].Location.StartsWith(GameControl.control.Gateway.InstalledStorageDevice[j].Partitions[k].DriveLetter))
+					for (int m = 0; m < person.Gateway.StorageDevices[k].OS[l].Partitions.Count; m++)
 					{
-						if (GameControl.control.Gateway.InstalledStorageDevice[j].Partitions[k].Free >= ProgramHandle[i].FileSize)
+						if (ProgramHandle[i].ProgramFile.Location.StartsWith(person.Gateway.StorageDevices[k].OS[l].Partitions[m].DriveLetter))
 						{
-							IsEnoughSpace = true;
-						}
-						else
-						{
-							IsEnoughSpace = false;
+							if (person.Gateway.StorageDevices[k].OS[l].Partitions[m].Free >= ProgramHandle[i].ProgramFile.Used)
+							{
+								IsEnoughSpace = true;
+							}
+							else
+							{
+								IsEnoughSpace = false;
+							}
 						}
 					}
 				}
@@ -311,7 +309,7 @@ public class FileUtility : MonoBehaviour
 		GUI.contentColor = com.colors[Customize.cust.FontColorInt];
 
 		GUI.DragWindow(new Rect(DefaltBoxSetting));
-		GUI.Box(new Rect(DefaltBoxSetting), "System Action " + ProgramHandle[selectedID].Type.ToString() + " " + ProgramHandle[selectedID].FileName);
+		GUI.Box(new Rect(DefaltBoxSetting), "System Action " + ProgramHandle[selectedID].Type.ToString() + " " + ProgramHandle[selectedID].ProgramFile.Used);
 
 		if (ProgramHandle.Count > 0)
 		{
@@ -321,7 +319,7 @@ public class FileUtility : MonoBehaviour
 
 	void Close()
 	{
-		if (ProgramHandle[selectedID].OurFileSize >= ProgramHandle[selectedID].FileSize)
+		if (ProgramHandle[selectedID].OurFileSize >= ProgramHandle[selectedID].ProgramFile.Used)
 		{
 			ID.RemoveAt(selectedID);
 			ProgramHandle.RemoveAt(selectedID);
@@ -351,68 +349,37 @@ public class FileUtility : MonoBehaviour
 
 		switch (ProgramHandle[selectedID].Type)
 		{
-			case FileUtilitySystem.ProgramType.RemoteDelete:
+			//case FileUtilitySystem.ProgramType.RemoteDelete:
 
-				for (int Index = 0; Index < GameControl.control.CompanyServerData.Count; Index++)
-				{
-					if(GameControl.control.CompanyServerData[Index].Name == ProgramHandle[selectedID].ServerLocationName)
-					{
-						if (GameControl.control.CompanyServerData[Index].Files.Count > 0)
-						{
-							for (int i = 0; i < GameControl.control.CompanyServerData[Index].Files.Count; i++)
-							{
-								if (GameControl.control.CompanyServerData[Index].Files[i].Name == ProgramHandle[selectedID].FileName)
-								{
-									if (clic.FileIndex != -1)
-									{
-										GameControl.control.CompanyServerData[Index].Files.RemoveAt(clic.FileIndex);
-										clic.FileIndex = -1;
-										FileIndex = -1;
-										Close();
-									}
-								}
-							}
-						}
-					}
-				}
-				break;
+			//	for (int Index = 0; Index < GameControl.control.CompanyServerData.Count; Index++)
+			//	{
+			//		if(GameControl.control.CompanyServerData[Index].Name == ProgramHandle[selectedID].ServerLocationName)
+			//		{
+			//			if (GameControl.control.CompanyServerData[Index].Files.Count > 0)
+			//			{
+			//				for (int i = 0; i < GameControl.control.CompanyServerData[Index].Files.Count; i++)
+			//				{
+			//					if (GameControl.control.CompanyServerData[Index].Files[i].Name == ProgramHandle[selectedID].ProgramFile.Name)
+			//					{
+			//						if (clic.FileIndex != -1)
+			//						{
+			//							GameControl.control.CompanyServerData[Index].Files.RemoveAt(clic.FileIndex);
+			//							clic.FileIndex = -1;
+			//							FileIndex = -1;
+			//							Close();
+			//						}
+			//					}
+			//				}
+			//			}
+			//		}
+			//	}
+			//	break;
 			case FileUtilitySystem.ProgramType.LocalFolderDelete:
-				//if (FileIndex > 0)
-				//{
-				//	if (GameControl.control.ProgramFiles[FileIndex].Location.Contains(ProgramHandle[selectedID].FileName))
-				//	{
-				//		ProgramHandle[selectedID].FileSize += GameControl.control.ProgramFiles[FileIndex].Used;
-				//		GameControl.control.ProgramFiles.RemoveAt (FileIndex);
-				//		FileIndex--;
-				//	}
-				//	if (!GameControl.control.ProgramFiles[FileIndex].Location.Contains(ProgramHandle[selectedID].FileName))
-				//	{
-				//		FileIndex--;
-				//	}
-				//}
-				//for (int i = 0; i < GameControl.control.ProgramFiles.Count; i++) 
-				//{
-				//	if (GameControl.control.ProgramFiles[i].Name == ProgramHandle[selectedID].FileName) 
-				//	{
-				//		if (GameControl.control.ProgramFiles[i].Location == ProgramHandle[selectedID].Location)
-				//		{
-				//			clic.FileIndex = i;
-				//			if (clic.FileIndex != -1 && FileIndex <= 0)
-				//			{
-				//				GameControl.control.ProgramFiles.RemoveAt (clic.FileIndex);
-				//				clic.FileIndex = -1;
-				//				FileIndex = -1;
-				//				ForceDone = false;
-				//				Close();
-				//			}
-				//		}
-				//	}
-				//}
 				for (int i = 0; i < GameControl.control.ProgramFiles.Count; i++)
 				{
-					if (GameControl.control.ProgramFiles[i].Name == ProgramHandle[selectedID].FileName)
+					if (GameControl.control.ProgramFiles[i].Name == ProgramHandle[selectedID].ProgramFile.Name)
 					{
-						if (GameControl.control.ProgramFiles[i].Location == ProgramHandle[selectedID].Location)
+						if (GameControl.control.ProgramFiles[i].Location == ProgramHandle[selectedID].ProgramFile.Location)
 						{
 							clic.FileIndex = i;
 							if (clic.FileIndex != -1)
@@ -426,43 +393,13 @@ public class FileUtility : MonoBehaviour
 						}
 					}
 				}
-				//if(FileIndex <= 0)
-				//{
-				//	//GameControl.control.ProgramFiles.RemoveAt (FileIndex);
-				//	clic.FileIndex = -1;
-				//	FileIndex = -1;
-				//	ForceDone = false;
-				//	Close ();
-				//}
-				//for (int Index = 0; Index < GameControl.control.ProgramFiles.Count; Index++)
-				//{
-				//	TempFileIndex = Index;
-				//	if (GameControl.control.ProgramFiles[Index].Location.Contains(ProgramHandle[selectedID].FileName))
-				//	{
-				//		if (!TempFileNames.Contains(GameControl.control.ProgramFiles[Index].Name))
-				//		{
-				//			TempFileNames.Add(GameControl.control.ProgramFiles[Index].Name);
-				//		}
-				//	}
-				//}
-				//if (TempFileIndex >= GameControl.control.ProgramFiles.Count)
-				//{
-				//	for (int Index = 0; Index < TempFileNames.Count; Index++)
-				//	{
-				//		if (GameControl.control.ProgramFiles[Index].Location.Contains(TempFileNames[Index]))
-				//		{
-				//			GameControl.control.ProgramFiles.RemoveAt (Index);
-				//			TempFileNames.RemoveAt (Index);
-				//		}
-				//	}
-				//}
 				break;
 			case FileUtilitySystem.ProgramType.LocalDelete:
 				for (int i = 0; i < GameControl.control.ProgramFiles.Count; i++)
 				{
-					if (GameControl.control.ProgramFiles[i].Name == ProgramHandle[selectedID].FileName)
+					if (GameControl.control.ProgramFiles[i].Name == ProgramHandle[selectedID].ProgramFile.Name)
 					{
-						if (GameControl.control.ProgramFiles[i].Location == ProgramHandle[selectedID].Location)
+						if (GameControl.control.ProgramFiles[i].Location == ProgramHandle[selectedID].ProgramFile.Location)
 						{
 							clic.FileIndex = i;
 							if (clic.FileIndex != -1)
@@ -481,7 +418,7 @@ public class FileUtility : MonoBehaviour
 			case FileUtilitySystem.ProgramType.Download:
 				if (clic.FileIndex != -1)
 				{
-					GameControl.control.ProgramFiles.Add(new ProgramSystem(ProgramHandle[selectedID].FileName, "", "", CurrentDateTime, "", "", ProgramHandle[selectedID].Location, "", "", "", ProgramSystem.FileExtension.File, ProgramSystem.FileExtension.Null, 0, 0, ProgramHandle[selectedID].FileSize, 0, 0, 0, 0, 100, 0f, 0, 0, 0, 0, 0, 0, 0, false, false, false, false, BlankInfections, BlankFileType));
+					//GameControl.control.ProgramFiles.Add(new ProgramSystem(ProgramHandle[selectedID].FileName, "", "", CurrentDateTime, "", "", ProgramHandle[selectedID].Location, "", "", "", ProgramSystem.FileExtension.File, ProgramSystem.FileExtension.Null, 0, 0, ProgramHandle[selectedID].FileSize, 0, 0, 0, 0, 100, 0f, 0, 0, 0, 0, 0, 0, 0, false, false, false, false, BlankInfections, BlankFileType));
 					//GameControl.control.ProgramFiles.Add (new ProgramSystem (ProgramHandle[selectedID].FileName, "", CurrentDateTime, "", ProgramHandle[selectedID].Location, "", 0, 0, ProgramHandle[selectedID].FileSize, 0, 100, 0, false, ProgramSystem.ProgramType.File));
 					clic.FileIndex = -1;
 					FileIndex = -1;
@@ -491,7 +428,7 @@ public class FileUtility : MonoBehaviour
 			case FileUtilitySystem.ProgramType.Download1:
 				if (clic.FileIndex != -1)
 				{
-					GameControl.control.ProgramFiles.Add(new ProgramSystem(ProgramHandle[selectedID].FileName, "", "", CurrentDateTime, "", "", ProgramHandle[selectedID].Location, "", "", "", ProgramSystem.FileExtension.File, ProgramSystem.FileExtension.Null, 0, 0, ProgramHandle[selectedID].FileSize, 0, 0, 0, 0, 100, 0f, 0, 0, 0, 0, 0, 0, 0, false, false, false, false, BlankInfections, BlankFileType));
+					//GameControl.control.ProgramFiles.Add(new ProgramSystem(ProgramHandle[selectedID].FileName, "", "", CurrentDateTime, "", "", ProgramHandle[selectedID].Location, "", "", "", ProgramSystem.FileExtension.File, ProgramSystem.FileExtension.Null, 0, 0, ProgramHandle[selectedID].FileSize, 0, 0, 0, 0, 100, 0f, 0, 0, 0, 0, 0, 0, 0, false, false, false, false, BlankInfections, BlankFileType));
 					//GameControl.control.ProgramFiles.Add (new ProgramSystem (ProgramHandle[selectedID].FileName, "", CurrentDateTime, "", ProgramHandle[selectedID].Location, "", 0, 0, ProgramHandle[selectedID].FileSize, 0, 100, 0, false, ProgramSystem.ProgramType.File));
 					clic.FileIndex = -1;
 					FileIndex = -1;
@@ -500,7 +437,7 @@ public class FileUtility : MonoBehaviour
 				break;
 			case FileUtilitySystem.ProgramType.DownloadProgram:
 
-				GameControl.control.ProgramFiles.Add(new ProgramSystem(ProgramHandle[selectedID].FileName, "", "", CurrentDateTime, ProgramHandle[selectedID].FileType, "", ProgramHandle[selectedID].Location, ProgramHandle[selectedID].FileTarget, "", "", ProgramSystem.FileExtension.Ins, ProgramSystem.FileExtension.Null, 0, 0, ProgramHandle[selectedID].FileSize, 0, 0, 0, 0, 100, ProgramHandle[selectedID].FileVersion, 0, 0, 0, 0, 0, 0, 0, false, false, false, false, BlankInfections, BlankFileType));
+				//GameControl.control.ProgramFiles.Add(new ProgramSystem(ProgramHandle[selectedID].FileName, "", "", CurrentDateTime, ProgramHandle[selectedID].FileType, "", ProgramHandle[selectedID].Location, ProgramHandle[selectedID].FileTarget, "", "", ProgramSystem.FileExtension.Ins, ProgramSystem.FileExtension.Null, 0, 0, ProgramHandle[selectedID].FileSize, 0, 0, 0, 0, 100, ProgramHandle[selectedID].FileVersion, 0, 0, 0, 0, 0, 0, 0, false, false, false, false, BlankInfections, BlankFileType));
 				clic.FileIndex = -1;
 				FileIndex = -1;
 				Close();
@@ -508,13 +445,13 @@ public class FileUtility : MonoBehaviour
 				break;
 			case FileUtilitySystem.ProgramType.Installer:
 
-				if (ProgramHandle[selectedID].FileType == "Exe")
+				if (ProgramHandle[selectedID].ProgramFile.Extension == ProgramSystemv2.FileExtension.Exe)
 				{
-					GameControl.control.ProgramFiles.Add(new ProgramSystem(ProgramHandle[selectedID].FileName, "", "", CurrentDateTime, "", "", ProgramHandle[selectedID].Location, ProgramHandle[selectedID].FileTarget, "", "", ProgramSystem.FileExtension.Exe, ProgramSystem.FileExtension.Null, 0, 0, ProgramHandle[selectedID].FileSize, 0, 0, 0, 0, 100, ProgramHandle[selectedID].FileVersion, 0, 0, 0, 0, 0, 0, 0, false, false, false, false, BlankInfections, BlankFileType));
+					//GameControl.control.ProgramFiles.Add(new ProgramSystem(ProgramHandle[selectedID].FileName, "", "", CurrentDateTime, "", "", ProgramHandle[selectedID].Location, ProgramHandle[selectedID].FileTarget, "", "", ProgramSystem.FileExtension.Exe, ProgramSystem.FileExtension.Null, 0, 0, ProgramHandle[selectedID].FileSize, 0, 0, 0, 0, 100, ProgramHandle[selectedID].FileVersion, 0, 0, 0, 0, 0, 0, 0, false, false, false, false, BlankInfections, BlankFileType));
 				}
-				if (ProgramHandle[selectedID].FileType == "OS")
+				if (ProgramHandle[selectedID].ProgramFile.Extension == ProgramSystemv2.FileExtension.OS)
 				{
-					GameControl.control.ProgramFiles.Add(new ProgramSystem(ProgramHandle[selectedID].FileName, "", "", CurrentDateTime, "", "", ProgramHandle[selectedID].Location, ProgramHandle[selectedID].FileTarget, "", "", ProgramSystem.FileExtension.OS, ProgramSystem.FileExtension.Null, 0, 0, ProgramHandle[selectedID].FileSize, 0, 0, 0, 0, 100, ProgramHandle[selectedID].FileVersion, 0, 0, 0, 0, 0, 0, 0, false, false, false, false, BlankInfections, BlankFileType));
+					//GameControl.control.ProgramFiles.Add(new ProgramSystem(ProgramHandle[selectedID].FileName, "", "", CurrentDateTime, "", "", ProgramHandle[selectedID].Location, ProgramHandle[selectedID].FileTarget, "", "", ProgramSystem.FileExtension.OS, ProgramSystem.FileExtension.Null, 0, 0, ProgramHandle[selectedID].FileSize, 0, 0, 0, 0, 100, ProgramHandle[selectedID].FileVersion, 0, 0, 0, 0, 0, 0, 0, false, false, false, false, BlankInfections, BlankFileType));
 				}
 				clic.FileIndex = -1;
 				FileIndex = -1;
@@ -530,34 +467,34 @@ public class FileUtility : MonoBehaviour
 				break;
 			case FileUtilitySystem.ProgramType.Paste:
 				Local = false;
-				switch (ProgramHandle[selectedID].FileType)
+				switch (ProgramHandle[selectedID].ProgramFile.Extension)
 				{
-					case "File":
-						GameControl.control.ProgramFiles.Add(new ProgramSystem(ProgramHandle[selectedID].FileName, "", "", CurrentDateTime, ProgramHandle[selectedID].FileContent, "", ProgramHandle[selectedID].Location, ProgramHandle[selectedID].FileTarget, "", "", ProgramSystem.FileExtension.File, ProgramSystem.FileExtension.Null, 0, 0, ProgramHandle[selectedID].FileSize, 0, 0, 0, 0, 100, ProgramHandle[selectedID].FileVersion, 0, 0, 0, 0, 0, 0, 0, false, false, false, false, BlankInfections, BlankFileType));
+					case ProgramSystemv2.FileExtension.File:
+						//GameControl.control.ProgramFiles.Add(new ProgramSystem(ProgramHandle[selectedID].FileName, "", "", CurrentDateTime, ProgramHandle[selectedID].FileContent, "", ProgramHandle[selectedID].Location, ProgramHandle[selectedID].FileTarget, "", "", ProgramSystem.FileExtension.File, ProgramSystem.FileExtension.Null, 0, 0, ProgramHandle[selectedID].FileSize, 0, 0, 0, 0, 100, ProgramHandle[selectedID].FileVersion, 0, 0, 0, 0, 0, 0, 0, false, false, false, false, BlankInfections, BlankFileType));
 						FileIndex = -1;
 						clic.FileIndex = -1;
 						Close();
 						break;
-					case "Ins":
-						GameControl.control.ProgramFiles.Add(new ProgramSystem(ProgramHandle[selectedID].FileName, "", "", CurrentDateTime, ProgramHandle[selectedID].FileContent, "", ProgramHandle[selectedID].Location, ProgramHandle[selectedID].FileTarget, "", "", ProgramSystem.FileExtension.Ins, ProgramSystem.FileExtension.Null, 0, 0, ProgramHandle[selectedID].FileSize, 0, 0, 0, 0, 100, ProgramHandle[selectedID].FileVersion, 0, 0, 0, 0, 0, 0, 0, false, false, false, false, BlankInfections, BlankFileType));
+					case ProgramSystemv2.FileExtension.Ins:
+						//GameControl.control.ProgramFiles.Add(new ProgramSystem(ProgramHandle[selectedID].FileName, "", "", CurrentDateTime, ProgramHandle[selectedID].FileContent, "", ProgramHandle[selectedID].Location, ProgramHandle[selectedID].FileTarget, "", "", ProgramSystem.FileExtension.Ins, ProgramSystem.FileExtension.Null, 0, 0, ProgramHandle[selectedID].FileSize, 0, 0, 0, 0, 100, ProgramHandle[selectedID].FileVersion, 0, 0, 0, 0, 0, 0, 0, false, false, false, false, BlankInfections, BlankFileType));
 						FileIndex = -1;
 						clic.FileIndex = -1;
 						Close();
 						break;
-					case "Exe":
-						GameControl.control.ProgramFiles.Add(new ProgramSystem(ProgramHandle[selectedID].FileName, "", "", CurrentDateTime, ProgramHandle[selectedID].FileContent, "", ProgramHandle[selectedID].Location, ProgramHandle[selectedID].FileTarget, "", "", ProgramSystem.FileExtension.Exe, ProgramSystem.FileExtension.Null, 0, 0, ProgramHandle[selectedID].FileSize, 0, 0, 0, 0, 100, ProgramHandle[selectedID].FileVersion, 0, 0, 0, 0, 0, 0, 0, false, false, false, false, BlankInfections, BlankFileType));
+					case ProgramSystemv2.FileExtension.Exe:
+						//GameControl.control.ProgramFiles.Add(new ProgramSystem(ProgramHandle[selectedID].FileName, "", "", CurrentDateTime, ProgramHandle[selectedID].FileContent, "", ProgramHandle[selectedID].Location, ProgramHandle[selectedID].FileTarget, "", "", ProgramSystem.FileExtension.Exe, ProgramSystem.FileExtension.Null, 0, 0, ProgramHandle[selectedID].FileSize, 0, 0, 0, 0, 100, ProgramHandle[selectedID].FileVersion, 0, 0, 0, 0, 0, 0, 0, false, false, false, false, BlankInfections, BlankFileType));
 						FileIndex = -1;
 						clic.FileIndex = -1;
 						Close();
 						break;
-					case "Real":
-						GameControl.control.ProgramFiles.Add(new ProgramSystem(ProgramHandle[selectedID].FileName, "", "", CurrentDateTime, ProgramHandle[selectedID].FileContent, "", ProgramHandle[selectedID].Location, ProgramHandle[selectedID].FileTarget, "", "", ProgramSystem.FileExtension.Real, ProgramSystem.FileExtension.Null, 0, 0, ProgramHandle[selectedID].FileSize, 0, 0, 0, 0, 100, ProgramHandle[selectedID].FileVersion, 0, 0, 0, 0, 0, 0, 0, false, false, false, false, BlankInfections, BlankFileType));
+					case ProgramSystemv2.FileExtension.Real:
+						//GameControl.control.ProgramFiles.Add(new ProgramSystem(ProgramHandle[selectedID].FileName, "", "", CurrentDateTime, ProgramHandle[selectedID].FileContent, "", ProgramHandle[selectedID].Location, ProgramHandle[selectedID].FileTarget, "", "", ProgramSystem.FileExtension.Real, ProgramSystem.FileExtension.Null, 0, 0, ProgramHandle[selectedID].FileSize, 0, 0, 0, 0, 100, ProgramHandle[selectedID].FileVersion, 0, 0, 0, 0, 0, 0, 0, false, false, false, false, BlankInfections, BlankFileType));
 						FileIndex = -1;
 						clic.FileIndex = -1;
 						Close();
 						break;
-					case "Txt":
-						GameControl.control.ProgramFiles.Add(new ProgramSystem(ProgramHandle[selectedID].FileName, "", "", CurrentDateTime, ProgramHandle[selectedID].FileContent, "", ProgramHandle[selectedID].Location, ProgramHandle[selectedID].FileTarget, "", "", ProgramSystem.FileExtension.Txt, ProgramSystem.FileExtension.Null, 0, 0, ProgramHandle[selectedID].FileSize, 0, 0, 0, 0, 100, ProgramHandle[selectedID].FileVersion, 0, 0, 0, 0, 0, 0, 0, false, false, false, false, BlankInfections, BlankFileType));
+					case ProgramSystemv2.FileExtension.Txt:
+						//GameControl.control.ProgramFiles.Add(new ProgramSystem(ProgramHandle[selectedID].FileName, "", "", CurrentDateTime, ProgramHandle[selectedID].FileContent, "", ProgramHandle[selectedID].Location, ProgramHandle[selectedID].FileTarget, "", "", ProgramSystem.FileExtension.Txt, ProgramSystem.FileExtension.Null, 0, 0, ProgramHandle[selectedID].FileSize, 0, 0, 0, 0, 100, ProgramHandle[selectedID].FileVersion, 0, 0, 0, 0, 0, 0, 0, false, false, false, false, BlankInfections, BlankFileType));
 						FileIndex = -1;
 						clic.FileIndex = -1;
 						Close();
@@ -592,24 +529,24 @@ public class FileUtility : MonoBehaviour
 
 		if (ProgramHandle[selectedID].Type == FileUtilitySystem.ProgramType.LocalFolderDelete)
 		{
-			GUI.Label(new Rect(5, 30, 300, 200), "File Name: " + GameControl.control.ProgramFiles[FileIndex].Name);
-			GUI.Label(new Rect(5, 50, 300, 200), "From: " + GameControl.control.ProgramFiles[FileIndex].Location);
+			GUI.Label(new Rect(5, 30, 300, 200), "File Name: " + ProgramHandle[selectedID].ProgramFile.Name);
+			GUI.Label(new Rect(5, 50, 300, 200), "From: " + ProgramHandle[selectedID].ProgramFile.Location);
 		}
 		else if (ProgramHandle[selectedID].Type == FileUtilitySystem.ProgramType.RemoteDelete)
 		{
-			GUI.Label(new Rect(5, 30, 300, 200), "File Name: " + ProgramHandle[selectedID].FileName);
-			GUI.Label(new Rect(5, 50, 300, 200), "From: " + ProgramHandle[selectedID].Location);
+			GUI.Label(new Rect(5, 30, 300, 200), "File Name: " + ProgramHandle[selectedID].ProgramFile.Name);
+			GUI.Label(new Rect(5, 50, 300, 200), "From: " + ProgramHandle[selectedID].ProgramFile.Location);
 		}
 		else if (ProgramHandle[selectedID].Type == FileUtilitySystem.ProgramType.LocalDelete)
 		{
-			GUI.Label(new Rect(5, 30, 300, 200), "File Name: " + ProgramHandle[selectedID].FileName);
-			GUI.Label(new Rect(5, 50, 300, 200), "From: " + ProgramHandle[selectedID].Location);
+			GUI.Label(new Rect(5, 30, 300, 200), "File Name: " + ProgramHandle[selectedID].ProgramFile.Name);
+			GUI.Label(new Rect(5, 50, 300, 200), "From: " + ProgramHandle[selectedID].ProgramFile.Location);
 		}
 		else
 		{
-			GUI.Label(new Rect(5, 30, 300, 200), "File Name: " + ProgramHandle[selectedID].FileName);
-			GUI.Label(new Rect(5, 50, 300, 200), "To: " + ProgramHandle[selectedID].Location);
-			GUI.Label(new Rect(5, 70, 300, 200), "From: " + ProgramHandle[selectedID].Target);
+			GUI.Label(new Rect(5, 30, 300, 200), "File Name: " + ProgramHandle[selectedID].ProgramFile.Name);
+			GUI.Label(new Rect(5, 50, 300, 200), "To: " + ProgramHandle[selectedID].DestinationPath);
+			GUI.Label(new Rect(5, 70, 300, 200), "From: " + ProgramHandle[selectedID].ProgramFile.Location);
 		}
 		//GUI.Label (new Rect (5, 30, 200, 200), "File Name: " + ProgramHandle[selectedID].FileName);
 		//GUI.Label (new Rect (5, 50, 200, 200), "From: " + ProgramHandle[selectedID].Location);

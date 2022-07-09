@@ -12,7 +12,6 @@ public class HardwareSite : MonoBehaviour
 	private GameObject Hardware;
 
 	private InternetBrowser ib;
-	private CPU cpu;
 
 	public List<Color> Colors = new List<Color>();
 	public Color32 rgb1 = new Color32(0,0,0,0);
@@ -83,7 +82,6 @@ public class HardwareSite : MonoBehaviour
 	void GetComp()
 	{
 		ib = Applications.GetComponent<InternetBrowser>();
-		cpu = Hardware.GetComponent<CPU>();
 	}
 
 	void LoadPresetColors()

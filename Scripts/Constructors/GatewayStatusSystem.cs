@@ -19,6 +19,7 @@ public class GatewayStatusSystem
     public bool SigningOut;
     public bool SigningIn;
     public bool Shutdown;
+    public bool Restart;
 
     public GatewayStatusSystem(bool booting, bool booted, bool sleep, bool off, bool on, bool active, bool post,bool bios,bool safemode,bool terminal,bool loggedin,bool signingin,bool signingout,bool shutdown)
     {
@@ -36,6 +37,11 @@ public class GatewayStatusSystem
         SigningOut = signingout;
         SigningIn = signingin;
         Shutdown = shutdown;
+    }
+
+    public GatewayStatusSystem()
+    {
+
     }
 }
 

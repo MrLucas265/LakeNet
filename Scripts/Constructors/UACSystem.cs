@@ -29,7 +29,8 @@ public class UACSystem
         Guest,
         Read,
         ReadWrite,
-        LoggedIn
+        LoggedIn,
+        Exchange
     }
 
     public UACSystem(string username, string password, string accountholder, string ip,string loggedinip,bool loggedin, AccountType type)

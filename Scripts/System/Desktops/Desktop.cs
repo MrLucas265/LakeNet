@@ -59,7 +59,7 @@ public class Desktop : MonoBehaviour
 
 	void DesktopCheck()
 	{
-		switch (GameControl.control.SelectedOS.Name) 
+		switch (boot.SelectedOS.Name) 
 		{
 		case OperatingSystems.OSName.AppatureOS:
 			appaDesktop.enabled = true;

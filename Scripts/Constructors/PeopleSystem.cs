@@ -17,11 +17,12 @@ public class PeopleSystem
     public CollageSystem Collage;
     public UniversitySystem University;
     public BankSystem BankDetails;
-    public GatewaySystem Gateway;
+    public GatewaySystem Gateway = new GatewaySystem();
     public List<MissionSystem> Contracts = new List<MissionSystem>();
     public List<RepSystem> Reputation = new List<RepSystem>();
+    public string Action;
 
-    public PeopleSystem(string name,string personid,string phonenumber,string ipaddress,string maritalstatus,string personalstatus,int iq,int photoid,DOBSystem dob,CollageSystem collage, UniversitySystem university, BankSystem bankdetails, GatewaySystem gateway, List<MissionSystem> contracts, List<RepSystem> reputation)
+    public PeopleSystem(string name,string personid,string phonenumber,string ipaddress,string maritalstatus,string personalstatus,int iq,int photoid)
     {
         Name = name;
         PersonID = personid;
@@ -31,13 +32,6 @@ public class PeopleSystem
         PersonalStatus = personalstatus;
         IQ = iq;
         PhotoID = photoid;
-        DOB = dob;
-        Collage = collage;
-        University = university;
-        BankDetails = bankdetails;
-        Gateway = gateway;
-        Contracts = contracts;
-        Reputation = reputation;
     }
 
 }

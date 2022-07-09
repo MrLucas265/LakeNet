@@ -27,7 +27,6 @@ public class Store : MonoBehaviour
 	private MissionGen misgen;
 	private MissionBrow brow;
 	private ErrorProm ep;
-	private Upgrade upg;
 	private Defalt defalt;
 	private PurchasePrompt pp;
 	private SystemMap sm;
@@ -44,7 +43,6 @@ public class Store : MonoBehaviour
 	public float revatw;
 	public float revath;
 
-	private Progtive prog;
 	private Tracer trace;
 
 	public List<string> RevaSoftware = new List<string>();
@@ -52,7 +50,7 @@ public class Store : MonoBehaviour
 
 	public string SelectedProgram;
 
-	public List<ProgramSystem> Catalog = new List<ProgramSystem>();
+	public List<ProgramSystemv2> Catalog = new List<ProgramSystemv2>();
 
 	public int Price;
 	public float Size;
@@ -97,10 +95,8 @@ public class Store : MonoBehaviour
 		ib = AppsSoftware.GetComponent<InternetBrowser>();
 		misgen = Missions.GetComponent<MissionGen>();
 		ep = Prompts.GetComponent<ErrorProm>();
-		upg = Computer.GetComponent<Upgrade>();
 		defalt = SysSoftware.GetComponent<Defalt>();
 		pp = Prompts.GetComponent<PurchasePrompt>();
-		prog = HackingSoftware.GetComponent<Progtive>();
 		trace = HackingSoftware.GetComponent<Tracer>();
 		brow = Missions.GetComponent<MissionBrow>();
 		sm = AppsSoftware.GetComponent<SystemMap>();
@@ -109,18 +105,18 @@ public class Store : MonoBehaviour
 
 	void UpdateCatalog()
 	{
-		Catalog.Add(new ProgramSystem("Notepad", "", "", "", "", "The notepad for all your typing needs.", "www.store.com", "Notepad", "", "", ProgramSystem.FileExtension.Ins, ProgramSystem.FileExtension.Exe, 0, 0, 2, 0, 0, 0, 0, 100, 1.0f, 250, 0, 0, 0, 0, 0, 0, false, false, false, false, BlankInfections, BlankFileType));
+		Catalog.Add(new ProgramSystemv2("Notepad", "", "", "", "", "The notepad for all your typing needs.", "www.store.com", "Notepad", "", "", ProgramSystemv2.FileExtension.Ins, ProgramSystemv2.FileExtension.Exe, 0, 0, 2, 0, 0, 0, 0, 100, 1.0f, 250, 0, 0, 0, 0, 0, 0, false, false, false, false,false,false,false));
 
-		Catalog.Add(new ProgramSystem("Notepad v2", "", "", "", "", "The notepad for all your typing needs.", "www.store.com", "Notepadv2", "", "", ProgramSystem.FileExtension.Ins, ProgramSystem.FileExtension.Exe, 0, 0, 4, 0, 0, 0, 0, 100, 2.0f, 500, 0, 0, 0, 0, 0, 0, false, false, false, false, BlankInfections, BlankFileType));
+		Catalog.Add(new ProgramSystemv2("Notepad v2", "", "", "", "", "The notepad for all your typing needs.", "www.store.com", "Notepadv2", "", "", ProgramSystemv2.FileExtension.Ins, ProgramSystemv2.FileExtension.Exe, 0, 0, 4, 0, 0, 0, 0, 100, 2.0f, 500, 0, 0, 0, 0, 0, 0, false, false, false, false, false, false, false));
 
 		OSName = OperatingSystems.OSName.FluidicIceOS.ToString();
-		Catalog.Add(new ProgramSystem(OSName, "", "", "", "", "FluidicIceOS", "www.store.com", OSName, "", "", ProgramSystem.FileExtension.Ins, ProgramSystem.FileExtension.Exe, 0, 0, 20, 0, 0, 0, 0, 100, 1.0f, 500, 0, 0, 0, 0, 0, 0, false, false, false, false, BlankInfections, BlankFileType));
+		Catalog.Add(new ProgramSystemv2(OSName, "", "", "", "", "FluidicIceOS", "www.store.com", OSName, "", "", ProgramSystemv2.FileExtension.Ins, ProgramSystemv2.FileExtension.Exe, 0, 0, 20, 0, 0, 0, 0, 100, 1.0f, 500, 0, 0, 0, 0, 0, 0, false, false, false, false, false, false, false));
 
 		OSName = OperatingSystems.OSName.AppatureOS.ToString();
-		Catalog.Add(new ProgramSystem(OSName, "", "", "", "", "The notepad for all your typing needs.", "www.store.com", OSName, "", "", ProgramSystem.FileExtension.Ins, ProgramSystem.FileExtension.OS, 0, 0, 15, 0, 0, 0, 0, 100, 1.0f, 500, 0, 0, 0, 0, 0, 0, false, false, false, false, BlankInfections, BlankFileType));
+		Catalog.Add(new ProgramSystemv2(OSName, "", "", "", "", "The notepad for all your typing needs.", "www.store.com", OSName, "", "", ProgramSystemv2.FileExtension.Ins, ProgramSystemv2.FileExtension.OS, 0, 0, 15, 0, 0, 0, 0, 100, 1.0f, 500, 0, 0, 0, 0, 0, 0, false, false, false, false, false, false, false));
 
 		OSName = OperatingSystems.OSName.TreeOS.ToString();
-		Catalog.Add(new ProgramSystem(OSName, "", "", "", "", "The notepad for all your typing needs.", "www.store.com", OSName, "", "", ProgramSystem.FileExtension.Ins, ProgramSystem.FileExtension.OS, 0, 0, 20, 0, 0, 0, 0, 100, 1.0f, 500, 0, 0, 0, 0, 0, 0, false, false, false, false, BlankInfections, BlankFileType));
+		Catalog.Add(new ProgramSystemv2(OSName, "", "", "", "", "The notepad for all your typing needs.", "www.store.com", OSName, "", "", ProgramSystemv2.FileExtension.Ins, ProgramSystemv2.FileExtension.OS, 0, 0, 20, 0, 0, 0, 0, 100, 1.0f, 500, 0, 0, 0, 0, 0, 0, false, false, false, false, false, false, false));
 	}
 
 	void Bought()
@@ -185,17 +181,17 @@ public class Store : MonoBehaviour
 				//	}
 				//}
 
-				if (GUI.Button(new Rect(200, 275, 85, 20), "Next Version"))
-				{
-					SelectedVersion++;
-					VersionControl();
-				}
+				//if (GUI.Button(new Rect(200, 275, 85, 20), "Next Version"))
+				//{
+				//	SelectedVersion++;
+				//	VersionControl();
+				//}
 
-				if (GUI.Button(new Rect(100, 275, 85, 20), "Prev Version"))
-				{
-					SelectedVersion--;
-					VersionControl();
-				}
+				//if (GUI.Button(new Rect(100, 275, 85, 20), "Prev Version"))
+				//{
+				//	SelectedVersion--;
+				//	VersionControl();
+				//}
 				break;
 		}
 	}

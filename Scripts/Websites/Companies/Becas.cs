@@ -28,7 +28,6 @@ public class Becas : MonoBehaviour
 	private Tracer trace;
 	private SystemMap sm;
 	private TextReader tr;
-	private Progtive prog;
 	private Defalt def;
 
 	private WebSec ws;
@@ -123,7 +122,6 @@ public class Becas : MonoBehaviour
 		ep = Prompts.GetComponent<ErrorProm>();
 		// HACKING
 		trace = Hacking.GetComponent<Tracer>();
-		prog = Hacking.GetComponent<Progtive>();
 		// SYSTEM
 		com = System.GetComponent<Computer>();
 		def = System.GetComponent<Defalt>();
@@ -616,19 +614,19 @@ public class Becas : MonoBehaviour
 				GUI.Label(new Rect(3, 75, 500, 500), "Password: ");
 				ib.showAddressBar = false;
 
-				if (prog.Running == false)
-				{
-					if (GUI.Button(new Rect(245, 30, 50, 20), "Back"))
-					{
-						//trace.UpdateTimer = false;
-						ib.showAddressBar = true;
-						UsrName = "";
-						password = "";
-						//sm.BounceIPs.Remove(sm.BecasIP);
-						//sm.BouncedConnections.Remove(sm.BecasPos);
-						ib.AddressBar = "www.becassystems.com";
-					}
-				}
+				//if (prog.Running == false)
+				//{
+				//	if (GUI.Button(new Rect(245, 30, 50, 20), "Back"))
+				//	{
+				//		//trace.UpdateTimer = false;
+				//		ib.showAddressBar = true;
+				//		UsrName = "";
+				//		password = "";
+				//		//sm.BounceIPs.Remove(sm.BecasIP);
+				//		//sm.BouncedConnections.Remove(sm.BecasPos);
+				//		ib.AddressBar = "www.becassystems.com";
+				//	}
+				//}
 
 				for (int i = 0; i < Accounts.Count; i++)
 				{
@@ -636,7 +634,7 @@ public class Becas : MonoBehaviour
 					{
 						if (GUI.Button(new Rect(10, 125, 100, 20), "Login"))
 						{
-							Accounts[i].LoggedInIP = GameControl.control.Gateway.InstalledModem[0].ModemIP;
+							//Accounts[i].LoggedInIP = GameControl.control.Gateway.InstalledModem[0].ModemIP;
 							Accounts[i].LoggedIn = true;
 							LoggedInAs = Accounts[i];
 							//trace.UpdateTimer = true;

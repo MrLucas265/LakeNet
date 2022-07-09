@@ -114,6 +114,10 @@ public class GameControl : MonoBehaviour
 
 	public List<ProgramSystem> DefaultLaunchedPrograms = new List<ProgramSystem>();
 
+	public List<DialogueCharacterSystem> Contacts = new List<DialogueCharacterSystem>();
+
+	public bool GlobalCheckForPinnedFiles;
+
 	// Use this for initialization
 
 	void Start()
@@ -193,6 +197,7 @@ public class GameControl : MonoBehaviour
 		data.GameVersion = GameVersion;
 		data.DefaultLaunchedPrograms = DefaultLaunchedPrograms;
 		data.CompanyServerData = CompanyServerData;
+		data.Contacts = Contacts;
 
 		bf.Serialize (file, data);
 		file.Close();
@@ -250,6 +255,7 @@ public class GameControl : MonoBehaviour
 			GameVersion = data.GameVersion;
 			DefaultLaunchedPrograms = data.DefaultLaunchedPrograms;
 			CompanyServerData = data.CompanyServerData;
+			Contacts = data.Contacts;
 		}
 	}
 }
@@ -339,4 +345,6 @@ class ComputerData
 	public List<CompanyServerSystem> CompanyServerData = new List<CompanyServerSystem>();
 
 	public List<ProgramSystem> DefaultLaunchedPrograms = new List<ProgramSystem>();
+
+	public List<DialogueCharacterSystem> Contacts = new List<DialogueCharacterSystem>();
 }

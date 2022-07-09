@@ -13,7 +13,6 @@ public class SystemMap : MonoBehaviour
 	private InternetBrowser ib;
 	private Defalt defalt;
 	private Tracer tt;
-	private Progtive prog;
 	public int windowID;
 	public Vector2 GatewayPos;
 	public Rect windowRect = new Rect(100, 100, 200, 200);
@@ -105,7 +104,6 @@ public class SystemMap : MonoBehaviour
 		com = SysApp.GetComponent<Computer>();
 		ib = SoftApp.GetComponent<InternetBrowser>();
 		tt = HackApp.GetComponent<Tracer>();
-		prog = HackApp.GetComponent<Progtive>();
 		defalt  = SysApp.GetComponent<Defalt>();
 		//windowRect.x = GameControl.control.windowx[windowID];
 		//windowRect.y = GameControl.control.windowy[windowID];
@@ -199,8 +197,6 @@ public class SystemMap : MonoBehaviour
 		tt.startTrace = false;
 		ib.showAddressBar = true;
 		ib.SiteAdminPass = StringGenerator.RandomMixedChar(8, 8);
-		prog.Animating = false;
-		prog.Password = "";
 	}
 
 	public void Connect()

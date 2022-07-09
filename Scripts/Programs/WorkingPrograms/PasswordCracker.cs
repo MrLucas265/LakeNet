@@ -14,7 +14,6 @@ public class PasswordCracker : MonoBehaviour
 	private WebSec ws;
 	private ErrorProm ep;
 	private InternetBrowser ib;
-	private CPU cpu;
 	private Tracer trace;
 	private Computer com;
 	private SoundControl sc;
@@ -62,7 +61,6 @@ public class PasswordCracker : MonoBehaviour
 		defalt = SysSoftware.GetComponent<Defalt>(); 
 		ib = AppSoftware.GetComponent<InternetBrowser>(); 
 		ws = AppSoftware.GetComponent<WebSec>();
-		cpu = Hardware.GetComponent<CPU>();
 		sc = SysSoftware.GetComponent<SoundControl>();
 		windowRect.x = Customize.cust.windowx[windowID];
 		windowRect.y = Customize.cust.windowy[windowID];

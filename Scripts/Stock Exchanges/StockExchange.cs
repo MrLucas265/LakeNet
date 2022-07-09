@@ -6,6 +6,8 @@ public class StockExchange : MonoBehaviour
 {
 	public List<StockExchangeSystem> ListOfExchanges = new List<StockExchangeSystem>();
 
+	public List<StockExchangeSystem> CurrentListOfExchanges = new List<StockExchangeSystem>();
+
 	public Vector2 scrollpos = Vector2.zero;
 	public int scrollsize;
 
@@ -46,10 +48,13 @@ public class StockExchange : MonoBehaviour
 
 	void AddExchanges()
 	{
-		ListOfExchanges.Add (new StockExchangeSystem ("Memes Exchange", "www.stockexchange.com/memeexchange"));
-		ListOfExchanges.Add (new StockExchangeSystem ("Proper Exchange", "www.stockexchange.com/properexchange"));
-		ListOfExchanges.Add (new StockExchangeSystem ("Portfolio", "www.stockexchange.com/portfolio"));
-        ListOfExchanges.Add(new StockExchangeSystem("Trade History", "www.stockexchange.com/history"));
+		ListOfExchanges.Add(new StockExchangeSystem("Create Account","www.stockexchange.com", "www.stockexchange.com/createaccount",false));
+		ListOfExchanges.Add(new StockExchangeSystem("Sign In", "www.stockexchange.com", "www.stockexchange.com/signin", false));
+		ListOfExchanges.Add (new StockExchangeSystem ("Memes", "www.stockexchange.com/exchanges", "www.stockexchange.com/exchanges/meme", false));
+		ListOfExchanges.Add (new StockExchangeSystem ("Proper", "www.stockexchange.com/exchanges", "www.stockexchange.com/exchanges/proper", false));
+		ListOfExchanges.Add(new StockExchangeSystem("Exchanges", "www.stockexchange.com", "www.stockexchange.com/exchanges",false));
+		ListOfExchanges.Add (new StockExchangeSystem ("Portfolio", "www.stockexchange.com/account", "www.stockexchange.com/account/portfolio",true));
+        ListOfExchanges.Add(new StockExchangeSystem("Trade History", "www.stockexchange.com/account", "www.stockexchange.com/account/history",true));
     }
 
 	void LoadPresetColors()
@@ -70,6 +75,13 @@ public class StockExchange : MonoBehaviour
 		FontColor.a = 255;
 	}
 
+	public void UpdateCurrentList(int i)
+	{
+		if (seb.Inputted == ListOfExchanges[i].CurrentURL)
+		{
+			CurrentListOfExchanges.Add(ListOfExchanges[i]);
+		}
+	}
 
 	public void RenderSite()
 	{
@@ -87,20 +99,31 @@ public class StockExchange : MonoBehaviour
 			float x = 0;
 			float y = 0;
 
+			CurrentListOfExchanges.RemoveRange(0, CurrentListOfExchanges.Count);
+
 			for (int i = 0; i < ListOfExchanges.Count; i++)
 			{
-				if (GUI.Button (new Rect (x + 2, y + 48, 150, 22), ListOfExchanges[i].Exchange))
-				{
-					seb.Inputted = ListOfExchanges [i].URL;
-				}
+				UpdateCurrentList(i);
+			}
 
-				rows++;
-				x += 150 + 1;
-				if (rows == 3)
+			if (CurrentListOfExchanges.Count > 0)
+			{
+				for (int j = 0; j < CurrentListOfExchanges.Count; j++)
 				{
-					rows = 0;
-					x = 0;
-					y += 22 + 1;
+					if (GUI.Button(new Rect(x + 2, y + 48, 150, 22), CurrentListOfExchanges[j].Exchange))
+					{
+						seb.Inputted = CurrentListOfExchanges[j].URL;
+					}
+
+
+					rows++;
+					x += 150 + 1;
+					if (rows == 3)
+					{
+						rows = 0;
+						x = 0;
+						y += 22 + 1;
+					}
 				}
 			}
 		}	
