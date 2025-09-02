@@ -2,7 +2,6 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
-using System.Linq;
 
 public class DiskManV2 : MonoBehaviour
 {
@@ -62,6 +61,8 @@ public class DiskManV2 : MonoBehaviour
 
 	public List<Rect> ItemsToRender = new List<Rect>();
 
+	public int TestNumber;
+
 	void Start()
 	{
 		SysSoftware = GameObject.Find("System");
@@ -79,7 +80,7 @@ public class DiskManV2 : MonoBehaviour
 		CloseButton = new Rect(windowRect.width-23, 2, 21, 21);
 		MiniButton = new Rect(CloseButton.x-22, 2, 21, 21);
 
-		DefaltSetting.width = 450;
+		DefaltSetting.width = 550;
 		DefaltSetting.height = 200;
 	}
 
@@ -119,27 +120,16 @@ public class DiskManV2 : MonoBehaviour
     {
 		if(PersonController.control.People[PersonID].Gateway.PartitionList.Count > 0)
         {
-			for (int i = 0; i < PersonController.control.People[PersonID].Gateway.StorageDevices.Count; i++)
+			for (int j = 0; j < PersonController.control.People[PersonID].Gateway.StorageDevices[SelectedDevice].OS.Count; j++)
 			{
-				for (int j = 0; j < PersonController.control.People[PersonID].Gateway.StorageDevices[i].OS.Count; j++)
+				if (PersonController.control.People[PersonID].Gateway.StorageDevices[SelectedDevice].OS[j].Name == PersonController.control.People[PersonID].Gateway.CurrentOS.Name)
 				{
-					if (PersonController.control.People[PersonID].Gateway.StorageDevices[i].OS[j].Name == PersonController.control.People[PersonID].Gateway.CurrentOS.Name)
+					if (!PersonController.control.People[PersonID].Gateway.PartitionList.Contains(DriveLetter))
 					{
-						for (int k = 0; k < PersonController.control.People[PersonID].Gateway.StorageDevices[i].OS[j].Partitions.Count; k++)
-						{
-							if (!PersonController.control.People[PersonID].Gateway.PartitionList.Contains(DriveLetter))
-							{
-								PartitionCompleteV2(PersonID, j-1, new DiskPartSystem(DriveLabel, DriveLetter, AllocatedSpace, 0, AllocatedSpace, Selected),k);
-								PartitionScan(PersonID);
-							}
-						}
+						AddDiskVolume(PersonID, j, new DiskPartSystem(DriveLabel, DriveLetter, AllocatedSpace, 0, AllocatedSpace, Selected));
 					}
 				}
 			}
-		}
-		else
-        {
-			PartitionScan(PersonID);
 		}
 		//for (int l = 0; l < PersonController.control.People[PersonID].Gateway.StorageDevices[SelectedDevice].OS.Count; l++)
 		//{
@@ -167,14 +157,27 @@ public class DiskManV2 : MonoBehaviour
 		}
 	}
 
-	void PartitionCompleteV2(int PersonID,int SelectedOS,DiskPartSystem DiskInfo, int k)
+	void AddDiskVolume(int PersonID,int SelectedOS,DiskPartSystem DiskInfo)
     {
 		PersonController.control.People[PersonID].Gateway.StorageDevices[SelectedDevice].OS[SelectedOS].Partitions.Add(DiskInfo);
 
+        for (int i = 0; i < PersonController.control.People[PersonID].Gateway.StorageDevices[SelectedDevice].OS[SelectedOS].Partitions.Count; i++)
+        {
+
+            if (PersonController.control.People[PersonID].Gateway.StorageDevices[SelectedDevice].OS[SelectedOS].Partitions[i] == DiskInfo)
+            {
+                CompleteDiskPartition(PersonID, SelectedOS, i);
+            }
+        }
+
+    }
+
+	void CompleteDiskPartition(int PersonID, int SelectedOS, int k)
+    {
 
 		if (PersonController.control.People[PersonID].Gateway.StorageDevices[SelectedDevice].OS[SelectedOS].Partitions[k].Files.Count == 0)
 		{
-			PersonController.control.People[PersonID].Gateway.StorageDevices[SelectedDevice].OS[SelectedOS].Partitions[k].Files.Add(new ProgramSystemv2(DriveLetter+":/", "System", "", "", "", DriveLabel, "Gateway", DriveLetter+":/", "", "", ProgramSystemv2.FileExtension.Dir, ProgramSystemv2.FileExtension.Null, 0, 0, 60, 0, 0, 0, 0, 100, 0, 0, 0, 0, 0, 0, 0, 0, false, false, false, false, false, false, false));
+			PersonController.control.People[PersonID].Gateway.StorageDevices[SelectedDevice].OS[SelectedOS].Partitions[k].Files.Add(new ProgramSystemv2(DriveLetter + ":/", "System", "", "", "", DriveLabel, "Gateway", DriveLetter + ":/", "", "", ProgramSystemv2.FileExtension.dir, ProgramSystemv2.FileExtension.Null, 0, 0, 60, 0, 100, 0, 0, 0, 0, 0, 0, 0, 0, false, false, false, false, false, false, false, new ResourceManagerSystem()));
 		}
 
 		DriveLetter = "";
@@ -184,18 +187,24 @@ public class DiskManV2 : MonoBehaviour
 
 	public void NewParition(int personID)
 	{
-		if (DriveLetter != "")
+		if (DriveLetter != "" || DriveLetter != "add new os")
 		{
-			if (glyphs.Contains(DriveLetter))
-			{
-				if (DriveLetter.Length == 1)
-				{
-					if(!PersonController.control.People[personID].Gateway.StorageDevices[SelectedDevice].InstalledOS.Contains(PersonController.control.People[personID].Gateway.CurrentOS.Title))
-                    {
-						PersonController.control.People[personID].Gateway.StorageDevices[SelectedDevice].OS.Add(new OperatingSystems(PersonController.control.People[personID].Gateway.CurrentOS.Title, PersonController.control.People[personID].Gateway.CurrentOS.Name, new OSOptionsSystem(true)));
-						PersonController.control.People[personID].Gateway.StorageDevices[SelectedDevice].InstalledOS.Add(PersonController.control.People[personID].Gateway.CurrentOS.Title);
+			if(DriveLabel != "")
+            {
+				if(AllocatedSpaceString != "")
+                {
+					if (glyphs.Contains(DriveLetter))
+					{
+						if (DriveLetter.Length == 1)
+						{
+							if (!PersonController.control.People[personID].Gateway.StorageDevices[SelectedDevice].InstalledOS.Contains(PersonController.control.People[personID].Gateway.CurrentOS.Title))
+							{
+								PersonController.control.People[personID].Gateway.StorageDevices[SelectedDevice].OS.Add(new OperatingSystems(PersonController.control.People[personID].Gateway.CurrentOS.Title, PersonController.control.People[personID].Gateway.CurrentOS.Name, new OSOptionsSystem(true)));
+								PersonController.control.People[personID].Gateway.StorageDevices[SelectedDevice].InstalledOS.Add(PersonController.control.People[personID].Gateway.CurrentOS.Title);
+							}
+							PartitionCheck(personID);
+						}
 					}
-					PartitionCheck(personID);
 				}
 			}
 		}
@@ -206,7 +215,8 @@ public class DiskManV2 : MonoBehaviour
 				PersonController.control.People[personID].Gateway.StorageDevices[SelectedDevice].OS.Add(new OperatingSystems(PersonController.control.People[personID].Gateway.CurrentOS.Title, PersonController.control.People[personID].Gateway.CurrentOS.Name, new OSOptionsSystem(true)));
 				PersonController.control.People[personID].Gateway.StorageDevices[SelectedDevice].InstalledOS.Add(PersonController.control.People[personID].Gateway.CurrentOS.Title);
 			}
-			PartitionCheck(personID);
+			//PartitionCheck(personID);
+			//NewParition(personID);
 			DriveLetter = "";
 		}
 	}
@@ -222,11 +232,11 @@ public class DiskManV2 : MonoBehaviour
 	{
 		Customize.cust.windowx[windowID] = windowRect.x;
 		Customize.cust.windowy[windowID] = windowRect.y;
-		GUI.skin = com.Skin[GameControl.control.GUIID];
+		GUI.skin = GameControl.control.Skins[Registry.GetIntData("Player", "System", "Skin")];
 
 		if (show == true)
 		{
-			GUI.color = com.colors[Customize.cust.WindowColorInt];
+			GUI.color = Registry.Get32ColorData("Player", "System", "WindowColor");
 			windowRect = WindowClamp.ClampToScreen(GUI.Window(windowID, windowRect, DoMyWindow, ""));
 		}
 	}
@@ -248,21 +258,21 @@ public class DiskManV2 : MonoBehaviour
 	{
 		if (CloseButton.Contains(Event.current.mousePosition))
 		{
-			if (GUI.Button(new Rect(CloseButton), "X", com.Skin[GameControl.control.GUIID].customStyles[0]))
+			if (GUI.Button(new Rect(CloseButton), "X", GameControl.control.Skins[Registry.GetIntData("Player", "System", "Skin")].customStyles[0]))
 			{
 				appman.SelectedApp = "Disk Manager";
 			}
 		}
 		else
 		{
-			GUI.backgroundColor = com.colors[Customize.cust.ButtonColorInt];
-			GUI.contentColor = com.colors[Customize.cust.FontColorInt];
-			GUI.Button(new Rect(CloseButton), "X", com.Skin[GameControl.control.GUIID].customStyles[1]);
+			GUI.backgroundColor = Registry.Get32ColorData("Player", "System", "ButtonColor");
+			GUI.contentColor = Registry.Get32ColorData("Player", "System", "FontColor");
+			GUI.Button(new Rect(CloseButton), "X", GameControl.control.Skins[Registry.GetIntData("Player", "System", "Skin")].customStyles[1]);
 		}
 
 		if (MiniButton.Contains(Event.current.mousePosition))
 		{
-			if (GUI.Button(new Rect(MiniButton), "-", com.Skin[GameControl.control.GUIID].customStyles[2]))
+			if (GUI.Button(new Rect(MiniButton), "-", GameControl.control.Skins[Registry.GetIntData("Player", "System", "Skin")].customStyles[2]))
 			{
 				minimize = !minimize;
 				Minimize();
@@ -270,17 +280,17 @@ public class DiskManV2 : MonoBehaviour
 		}
 		else
 		{
-			GUI.backgroundColor = com.colors[Customize.cust.ButtonColorInt];
-			GUI.contentColor = com.colors[Customize.cust.FontColorInt];
-			if (GUI.Button(new Rect(MiniButton), "-", com.Skin[GameControl.control.GUIID].customStyles[2]))
+			GUI.backgroundColor = Registry.Get32ColorData("Player", "System", "ButtonColor");
+			GUI.contentColor = Registry.Get32ColorData("Player", "System", "FontColor");
+			if (GUI.Button(new Rect(MiniButton), "-", GameControl.control.Skins[Registry.GetIntData("Player", "System", "Skin")].customStyles[2]))
 			{
 				minimize = !minimize;
 				Minimize();
 			}
 		}
 
-		GUI.backgroundColor = com.colors[Customize.cust.ButtonColorInt];
-		GUI.contentColor = com.colors[Customize.cust.FontColorInt];
+		GUI.backgroundColor = Registry.Get32ColorData("Player", "System", "ButtonColor");
+		GUI.contentColor = Registry.Get32ColorData("Player", "System", "FontColor");
 
 		GUI.DragWindow(new Rect(2, 2, windowRect.width-48, 21));
 		GUI.Box(new Rect(2, 2, windowRect.width-48, 21), "Disk Management");
@@ -332,131 +342,136 @@ public class DiskManV2 : MonoBehaviour
 		GUI.Button(new Rect(256, 45, 50, 20), "Free");
 		GUI.Button(new Rect(307, 45, 52, 20), "Free %");
 
-		var person = PersonController.control.People.FirstOrDefault(x => x.Name == "Player");
-
-		for (int l = 0; l < person.Gateway.StorageDevices[SelectedDevice].OS.Count; l++)
+        for (int i = 0; i < PersonController.control.People.Count; i++)
 		{
-			if (ShowAllPart == false)
+			if (PersonController.control.People[i].Name == "Player")
 			{
-				if(person.Gateway.StorageDevices[SelectedDevice].OS[l].Name == person.Gateway.CurrentOS.Name)
-				{
-					if (person.Gateway.StorageDevices[SelectedDevice].OS[l].Partitions.Count > 0)
-					{
-						scrollpos = GUI.BeginScrollView(new Rect(0, 66, 360, 100), scrollpos, new Rect(0, 0, 0, scrollsize * 21));
-						for (scrollsize = 0; scrollsize < person.Gateway.StorageDevices[SelectedDevice].OS[l].Partitions.Count; scrollsize++)
-						{
-							var DisplayedDisk = person.Gateway.StorageDevices[SelectedDevice].OS[l].Partitions;
+                var person = PersonController.control.People[i];
+                for (int l = 0; l < person.Gateway.StorageDevices[SelectedDevice].OS.Count; l++)
+                {
+                    if (ShowAllPart == false)
+                    {
+                        if (person.Gateway.StorageDevices[SelectedDevice].OS[l].Name == person.Gateway.CurrentOS.Name)
+                        {
+                            if (person.Gateway.StorageDevices[SelectedDevice].OS[l].Partitions.Count > 0)
+                            {
+                                scrollpos = GUI.BeginScrollView(new Rect(0, 66, 360, 100), scrollpos, new Rect(0, 0, 0, scrollsize * 21));
+                                for (scrollsize = 0; scrollsize < person.Gateway.StorageDevices[SelectedDevice].OS[l].Partitions.Count; scrollsize++)
+                                {
+                                    var DisplayedDisk = person.Gateway.StorageDevices[SelectedDevice].OS[l].Partitions;
 
-							if (GUI.Button(new Rect(2, 21 * scrollsize, 25, 20), "" + DisplayedDisk[scrollsize].DriveLetter))
-							{
-								Select = scrollsize;
-							}
+                                    if (GUI.Button(new Rect(2, 21 * scrollsize, 25, 20), "" + DisplayedDisk[scrollsize].DriveLetter))
+                                    {
+                                        Select = scrollsize;
+                                    }
 
-							if (GUI.Button(new Rect(28, 21 * scrollsize, 125, 20), "" + DisplayedDisk[scrollsize].Label))
-							{
-								Select = scrollsize;
-							}
+                                    if (GUI.Button(new Rect(28, 21 * scrollsize, 125, 20), "" + DisplayedDisk[scrollsize].Label))
+                                    {
+                                        Select = scrollsize;
+                                    }
 
-							if (GUI.Button(new Rect(205, 21 * scrollsize, 50, 20), "" + NumberFormat.Data(DisplayedDisk[scrollsize].Used)))
-							{
+                                    if (GUI.Button(new Rect(205, 21 * scrollsize, 50, 20), "" + NumberFormat.Data(DisplayedDisk[scrollsize].Used)))
+                                    {
 
-							}
+                                    }
 
-							if (GUI.Button(new Rect(154, 21 * scrollsize, 50, 20), "" + NumberFormat.Data(DisplayedDisk[scrollsize].Size)))
-							{
+                                    if (GUI.Button(new Rect(154, 21 * scrollsize, 50, 20), "" + NumberFormat.Data(DisplayedDisk[scrollsize].Size)))
+                                    {
 
-							}
+                                    }
 
-							if (DisplayedDisk[scrollsize].Size == 0)
-							{
-								if (GUI.Button(new Rect(256, 21 * scrollsize, 50, 20), "" + NumberFormat.Data(DisplayedDisk[scrollsize].Size)))
-								{
+                                    if (DisplayedDisk[scrollsize].Size == 0)
+                                    {
+                                        if (GUI.Button(new Rect(256, 21 * scrollsize, 50, 20), "" + NumberFormat.Data(DisplayedDisk[scrollsize].Size)))
+                                        {
 
-								}
+                                        }
 
-								if (GUI.Button(new Rect(307, 21 * scrollsize, 50, 20), "%100"))
-								{
+                                        if (GUI.Button(new Rect(307, 21 * scrollsize, 50, 20), "%100"))
+                                        {
 
-								}
-							}
-							else
-							{
-								if (GUI.Button(new Rect(256, 21 * scrollsize, 50, 20), "" + NumberFormat.Data(DisplayedDisk[scrollsize].Free)))
-								{
+                                        }
+                                    }
+                                    else
+                                    {
+                                        if (GUI.Button(new Rect(256, 21 * scrollsize, 50, 20), "" + NumberFormat.Data(DisplayedDisk[scrollsize].Free)))
+                                        {
 
-								}
+                                        }
 
-								float Percentage = DisplayedDisk[scrollsize].Free / DisplayedDisk[scrollsize].Size * 100;
+                                        float Percentage = DisplayedDisk[scrollsize].Free / DisplayedDisk[scrollsize].Size * 100;
 
-								if (GUI.Button(new Rect(307, 21 * scrollsize, 52, 20), "%" + Percentage.ToString("F2")))
-								{
+                                        if (GUI.Button(new Rect(307, 21 * scrollsize, 52, 20), "%" + Percentage.ToString("F2")))
+                                        {
 
-								}
-							}
-						}
-						GUI.EndScrollView();
-					}
-				}
-			}
-			else
-			{
-				if (person.Gateway.StorageDevices[SelectedDevice].OS[l].Partitions.Count > 0)
-				{
-					scrollpos = GUI.BeginScrollView(new Rect(0, 66, 360, 100), scrollpos, new Rect(0, 0, 0, scrollsize * 21));
-					for (scrollsize = 0; scrollsize < person.Gateway.StorageDevices[SelectedDevice].OS[l].Partitions.Count; scrollsize++)
-					{
-						var DisplayedDisk = person.Gateway.StorageDevices[SelectedDevice].OS[l].Partitions;
+                                        }
+                                    }
+                                }
+                                GUI.EndScrollView();
+                            }
+                        }
+                    }
+                    else
+                    {
+                        if (person.Gateway.StorageDevices[SelectedDevice].OS[l].Partitions.Count > 0)
+                        {
+                            scrollpos = GUI.BeginScrollView(new Rect(0, 66, 360, 100), scrollpos, new Rect(0, 0, 0, scrollsize * 21));
+                            for (scrollsize = 0; scrollsize < person.Gateway.StorageDevices[SelectedDevice].OS[l].Partitions.Count; scrollsize++)
+                            {
+                                var DisplayedDisk = person.Gateway.StorageDevices[SelectedDevice].OS[l].Partitions;
 
-						if (GUI.Button(new Rect(2, 21 * scrollsize, 25, 20), "" + DisplayedDisk[scrollsize].DriveLetter))
-						{
-							Select = scrollsize;
-						}
+                                if (GUI.Button(new Rect(2, 21 * scrollsize, 25, 20), "" + DisplayedDisk[scrollsize].DriveLetter))
+                                {
+                                    Select = scrollsize;
+                                }
 
-						if (GUI.Button(new Rect(28, 21 * scrollsize, 125, 20), "" + DisplayedDisk[scrollsize].Label))
-						{
-							Select = scrollsize;
-						}
+                                if (GUI.Button(new Rect(28, 21 * scrollsize, 125, 20), "" + DisplayedDisk[scrollsize].Label))
+                                {
+                                    Select = scrollsize;
+                                }
 
-						if (GUI.Button(new Rect(205, 21 * scrollsize, 50, 20), " " + NumberFormat.Data(DisplayedDisk[scrollsize].Used)))
-						{
-									
-						}
+                                if (GUI.Button(new Rect(205, 21 * scrollsize, 50, 20), " " + NumberFormat.Data(DisplayedDisk[scrollsize].Used)))
+                                {
 
-						if (GUI.Button(new Rect(154, 21 * scrollsize, 50, 20), "" + NumberFormat.Data(DisplayedDisk[scrollsize].Size)))
-						{
+                                }
 
-						}
+                                if (GUI.Button(new Rect(154, 21 * scrollsize, 50, 20), "" + NumberFormat.Data(DisplayedDisk[scrollsize].Size)))
+                                {
 
-						if (DisplayedDisk[scrollsize].Size == 0)
-						{
-							if (GUI.Button(new Rect(256, 21 * scrollsize, 50, 20), "" + NumberFormat.Data(DisplayedDisk[scrollsize].Size)))
-							{
+                                }
 
-							}
+                                if (DisplayedDisk[scrollsize].Size == 0)
+                                {
+                                    if (GUI.Button(new Rect(256, 21 * scrollsize, 50, 20), "" + NumberFormat.Data(DisplayedDisk[scrollsize].Size)))
+                                    {
 
-							if (GUI.Button(new Rect(307, 21 * scrollsize, 50, 20), "%100"))
-							{
+                                    }
 
-							}
-						}
-						else
-						{
-							if (GUI.Button(new Rect(256, 21 * scrollsize, 50, 20), "" + NumberFormat.Data(DisplayedDisk[scrollsize].Free)))
-							{
+                                    if (GUI.Button(new Rect(307, 21 * scrollsize, 50, 20), "%100"))
+                                    {
 
-							}
+                                    }
+                                }
+                                else
+                                {
+                                    if (GUI.Button(new Rect(256, 21 * scrollsize, 50, 20), "" + NumberFormat.Data(DisplayedDisk[scrollsize].Free)))
+                                    {
 
-							float Percentage = DisplayedDisk[scrollsize].Free / DisplayedDisk[scrollsize].Size * 100;
+                                    }
 
-							if (GUI.Button(new Rect(307, 21 * scrollsize, 52, 20), "%" + Percentage.ToString("F2")))
-							{
+                                    float Percentage = DisplayedDisk[scrollsize].Free / DisplayedDisk[scrollsize].Size * 100;
 
-							}
-						}
-					}
-					GUI.EndScrollView();
-				}
-			}
+                                    if (GUI.Button(new Rect(307, 21 * scrollsize, 52, 20), "%" + Percentage.ToString("F2")))
+                                    {
+
+                                    }
+                                }
+                            }
+                            GUI.EndScrollView();
+                        }
+                    }
+                }
+            }
 		}
 	}
 
@@ -483,69 +498,75 @@ public class DiskManV2 : MonoBehaviour
 		GUI.Button(ItemsToRender[1], "Free");
 		GUI.Button(ItemsToRender[0], "Free %");
 
-		var person = PersonController.control.People.FirstOrDefault(x => x.Name == "Player");
-
-		if(person.Gateway.StorageDevices.Count > 0)
+		for (int i = 0; i < PersonController.control.People.Count; i++)
 		{
-			scrollpos = GUI.BeginScrollView(new Rect(0, ItemsToRender[0].y+ ItemsToRender[0].height+ 1, windowRect.width, windowRect.height), scrollpos, new Rect(0, 0, 0, scrollsize * 21));
-			for (scrollsize = 0; scrollsize < person.Gateway.StorageDevices.Count; scrollsize++)
+			if (PersonController.control.People[i].Name == "Player")
 			{
-
-				if (GUI.Button(new Rect(ItemsToRender[5].x, 21 * scrollsize, ItemsToRender[5].width, 20), "" + scrollsize))
+				PartitionScan(i);
+				var person = PersonController.control.People[i];
+				if (person.Gateway.StorageDevices.Count > 0)
 				{
-					Select = -1;
-					SelectedDevice = scrollsize;
-					SelectedMenu = 1;
-				}
-
-				if (GUI.Button(new Rect(ItemsToRender[6].x, 21 * scrollsize, ItemsToRender[6].width, 20), "" + person.Gateway.StorageDevices[scrollsize].Name))
-				{
-					Select = -1;
-					SelectedDevice = scrollsize;
-					SelectedMenu = 1;
-				}
-
-				if (GUI.Button(new Rect(ItemsToRender[2].x, 21 * scrollsize, ItemsToRender[1].width, 20), "" + NumberFormat.Data(person.Gateway.StorageDevices[scrollsize].UsedSpace)))
-				{
-
-				}
-
-                if (GUI.Button(new Rect(ItemsToRender[3].x, 21 * scrollsize, ItemsToRender[3].width, 20), "" + NumberFormat.Data(person.Gateway.StorageDevices[scrollsize].Capacity)))
-                {
-
-                }
-
-                if (person.Gateway.StorageDevices[scrollsize].UsedSpace == 0)
-				{
-					if (GUI.Button(new Rect(ItemsToRender[1].x, 21 * scrollsize, ItemsToRender[2].width, 20), "" + NumberFormat.Data(person.Gateway.StorageDevices[scrollsize].Capacity)))
+					scrollpos = GUI.BeginScrollView(new Rect(0, ItemsToRender[0].y + ItemsToRender[0].height + 1, windowRect.width, windowRect.height), scrollpos, new Rect(0, 0, 0, scrollsize * 21));
+					for (scrollsize = 0; scrollsize < person.Gateway.StorageDevices.Count; scrollsize++)
 					{
 
+						if (GUI.Button(new Rect(ItemsToRender[5].x, 21 * scrollsize, ItemsToRender[5].width, 20), "" + scrollsize))
+						{
+							Select = -1;
+							SelectedDevice = scrollsize;
+							SelectedMenu = 1;
+						}
+
+						if (GUI.Button(new Rect(ItemsToRender[6].x, 21 * scrollsize, ItemsToRender[6].width, 20), "" + person.Gateway.StorageDevices[scrollsize].Name))
+						{
+							Select = -1;
+							SelectedDevice = scrollsize;
+							SelectedMenu = 1;
+						}
+
+						if (GUI.Button(new Rect(ItemsToRender[2].x, 21 * scrollsize, ItemsToRender[1].width, 20), "" + NumberFormat.Data(person.Gateway.StorageDevices[scrollsize].UsedSpace)))
+						{
+
+						}
+
+						if (GUI.Button(new Rect(ItemsToRender[3].x, 21 * scrollsize, ItemsToRender[3].width, 20), "" + NumberFormat.Data(person.Gateway.StorageDevices[scrollsize].Capacity)))
+						{
+
+						}
+
+						if (person.Gateway.StorageDevices[scrollsize].UsedSpace == 0)
+						{
+							if (GUI.Button(new Rect(ItemsToRender[1].x, 21 * scrollsize, ItemsToRender[2].width, 20), "" + NumberFormat.Data(person.Gateway.StorageDevices[scrollsize].Capacity)))
+							{
+
+							}
+
+							if (GUI.Button(new Rect(ItemsToRender[0].x, 21 * scrollsize, ItemsToRender[0].width, 20), "%100"))
+							{
+
+							}
+						}
+						else
+						{
+							if (GUI.Button(new Rect(ItemsToRender[1].x, 21 * scrollsize, ItemsToRender[2].width, 20), "" + NumberFormat.Data(person.Gateway.StorageDevices[scrollsize].FreeSpace)))
+							{
+
+							}
+
+							if (GUI.Button(new Rect(ItemsToRender[0].x, 21 * scrollsize, ItemsToRender[0].width, 20), "%" + person.Gateway.StorageDevices[scrollsize].FreeSpacePercentage.ToString("F2")))
+							{
+
+							}
+						}
+
+						if (GUI.Button(new Rect(ItemsToRender[4].x, 21 * scrollsize, ItemsToRender[4].width, 20), "%" + person.Gateway.StorageDevices[scrollsize].HealthPercentage.ToString("F2")))
+						{
+
+						}
 					}
-
-					if (GUI.Button(new Rect(ItemsToRender[0].x, 21 * scrollsize, ItemsToRender[0].width, 20), "%100"))
-					{
-
-					}
-				}
-				else
-				{
-					if (GUI.Button(new Rect(ItemsToRender[1].x, 21 * scrollsize, ItemsToRender[2].width, 20), "" + NumberFormat.Data(person.Gateway.StorageDevices[scrollsize].FreeSpace)))
-					{
-
-					}
-
-					if (GUI.Button(new Rect(ItemsToRender[0].x, 21 * scrollsize, ItemsToRender[0].width, 20), "%" + person.Gateway.StorageDevices[scrollsize].FreeSpacePercentage.ToString("F2")))
-					{
-
-					}
-				}
-
-				if (GUI.Button(new Rect(ItemsToRender[4].x, 21 * scrollsize, ItemsToRender[4].width, 20), "%" + person.Gateway.StorageDevices[scrollsize].HealthPercentage.ToString("F2")))
-				{
-
+					GUI.EndScrollView();
 				}
 			}
-			GUI.EndScrollView();
 		}
 	}
 
@@ -578,68 +599,69 @@ public class DiskManV2 : MonoBehaviour
 			AllocatedSpace = 0;
 			//AllocatedSpaceString = "0";
 		}
-		var person = PersonController.control.People.FirstOrDefault(x => x.Name == "Player");
-		FreeSpace = person.Gateway.StorageDevices[SelectedDevice].FreeSpace;
 
-		double Math = FreeSpace - AllocatedSpace;
+        double Math = AllocatedSpace - FreeSpace;
+
+        for (int i = 0; i < PersonController.control.People.Count; i++)
+		{
+			if (PersonController.control.People[i].Name == "Player")
+			{
+				var person = PersonController.control.People[i];
+				FreeSpace = person.Gateway.StorageDevices[SelectedDevice].FreeSpace;
+
+                if (person.Gateway.StorageDevices[SelectedDevice].InstalledOS.Count > 0)
+                {
+                    if (person.Gateway.StorageDevices[SelectedDevice].InstalledOS.Contains(person.Gateway.CurrentOS.Title))
+                    {
+                        if (GUI.Button(new Rect(43, 24, 70, 20), "Add Partition"))
+                        {
+                            if (Math >= 0)
+                            {
+                                PartitionScan(i);
+                                NewParition(i);
+                            }
+                        }
+
+                        if (Selected != -1)
+                        {
+                            //GUI.Label(new Rect(102, 125, 21, 21), "" + Selected);
+
+                            if (Math >= 0)
+                            {
+                                GUI.Box(new Rect(250, 25, 100, 21), "" + AllocatedSpace + " / " + NumberFormat.Data(FreeSpace));
+                            }
+                            else
+                            {
+                                GUI.Box(new Rect(250, 25, 100, 21), "" + AllocatedSpace + "! / " + NumberFormat.Data(FreeSpace));
+                            }
+
+                            GUI.Box(new Rect(2, 50, 100, 21), "Drive Letter: ");
+                            DriveLetter = GUI.TextField(new Rect(103, 50, 50, 21), "" + DriveLetter.ToUpper(), 1);
+
+                            GUI.Box(new Rect(2, 100, 100, 21), "Drive Label: ");
+                            DriveLabel = GUI.TextField(new Rect(103, 100, 100, 21), "" + DriveLabel);
+
+                            GUI.Box(new Rect(2, 150, 100, 21), "Drive Size: ");
+                            AllocatedSpaceString = GUI.TextField(new Rect(103, 150, 50, 21), "" + AllocatedSpaceString);
+                            AllocatedSpaceString = Regex.Replace(AllocatedSpaceString, @"[^0-9]", "");
+                        }
+                    }
+                    else
+                    {
+                        AddVolume();
+                    }
+                }
+                else
+                {
+                    AddVolume();
+                }
+            }
+		}
 
 		if (GUI.Button(new Rect(2, 24, 40, 20), "Back"))
 		{
 			Select = -1;
 			SelectedMenu = 1;
-		}
-
-		if(person.Gateway.StorageDevices[SelectedDevice].InstalledOS.Count > 0)
-        {
-			if(person.Gateway.StorageDevices[SelectedDevice].InstalledOS.Contains(person.Gateway.CurrentOS.Title))
-            {
-				if (GUI.Button(new Rect(43, 24, 70, 20), "Add Partition"))
-				{
-					if (Math >= 0)
-					{
-						for (int i = 0; i < PersonController.control.People.Count; i++)
-						{
-							if (PersonController.control.People[i].Name == "Player")
-							{
-								NewParition(i);
-								//print(i);
-							}
-						}
-					}
-				}
-
-				if (Selected != -1)
-				{
-					//GUI.Label(new Rect(102, 125, 21, 21), "" + Selected);
-
-					if (Math >= 0)
-					{
-						GUI.Box(new Rect(250, 25, 100, 21), "" + AllocatedSpace + " / " + NumberFormat.Data(FreeSpace));
-					}
-					else
-					{
-						GUI.Box(new Rect(250, 25, 100, 21), "" + AllocatedSpace + "! / " + NumberFormat.Data(FreeSpace));
-					}
-
-					GUI.Box(new Rect(2, 50, 100, 21), "Drive Letter: ");
-					DriveLetter = GUI.TextField(new Rect(103, 50, 50, 21), "" + DriveLetter.ToUpper(), 1);
-
-					GUI.Box(new Rect(2, 100, 100, 21), "Drive Label: ");
-					DriveLabel = GUI.TextField(new Rect(103, 100, 100, 21), "" + DriveLabel);
-
-					GUI.Box(new Rect(2, 150, 100, 21), "Drive Size: ");
-					AllocatedSpaceString = GUI.TextField(new Rect(103, 150, 50, 21), "" + AllocatedSpaceString);
-					AllocatedSpaceString = Regex.Replace(AllocatedSpaceString, @"[^0-9]", "");
-				}
-			}
-			else
-            {
-				AddVolume();
-			}
-        }
-		else
-		{
-			AddVolume();
 		}
 	}
 

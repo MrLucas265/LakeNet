@@ -103,7 +103,7 @@
 //	{
 //		if (terminal == false)
 //		{
-//			GUI.skin = com.Skin[GameControl.control.GUIID];
+//			GUI.skin = GameControl.control.Skins[Registry.GetIntData("Player", "System", "Skin")];
 //		}
 
 //		Customize.cust.windowx[windowID] = windowRect.x;
@@ -111,7 +111,7 @@
 
 //		if(show == true)
 //		{
-//			GUI.color = com.colors[Customize.cust.WindowColorInt];
+//			GUI.color = Registry.Get32ColorData("Player", "System", "WindowColor");
 //			windowRect = WindowClamp.ClampToScreen(GUI.Window(windowID,windowRect,DoMyWindow,""));
 //		}
 //	}
@@ -120,21 +120,21 @@
 //	{
 //		if (CloseButton.Contains (Event.current.mousePosition)) 
 //		{
-//			if (GUI.Button (new Rect (CloseButton), "X", com.Skin [GameControl.control.GUIID].customStyles [0])) 
+//			if (GUI.Button (new Rect (CloseButton), "X", GameControl.control.Skins[Registry.GetIntData("Player", "System", "Skin")].customStyles [0])) 
 //			{
 //				appman.SelectedApp = "Command Line";
 //			}
 //		} 
 //		else
 //		{
-//			GUI.backgroundColor = com.colors[Customize.cust.ButtonColorInt];
-//			GUI.contentColor = com.colors[Customize.cust.FontColorInt];
-//			GUI.Button (new Rect (CloseButton), "X", com.Skin [GameControl.control.GUIID].customStyles [1]);
+//			GUI.backgroundColor = Registry.Get32ColorData("Player", "System", "ButtonColor");
+//			GUI.contentColor = Registry.Get32ColorData("Player", "System", "FontColor");
+//			GUI.Button (new Rect (CloseButton), "X", GameControl.control.Skins[Registry.GetIntData("Player", "System", "Skin")].customStyles [1]);
 //		}
 
 //		if (MiniButton.Contains (Event.current.mousePosition)) 
 //		{
-//			if (GUI.Button (new Rect (MiniButton), "-",com.Skin [GameControl.control.GUIID].customStyles [2])) 
+//			if (GUI.Button (new Rect (MiniButton), "-",GameControl.control.Skins[Registry.GetIntData("Player", "System", "Skin")].customStyles [2])) 
 //			{
 //				minimize = !minimize;
 //				Minimize();
@@ -142,9 +142,9 @@
 //		} 
 //		else
 //		{
-//			GUI.backgroundColor = com.colors[Customize.cust.ButtonColorInt];
-//			GUI.contentColor = com.colors[Customize.cust.FontColorInt];
-//			if (GUI.Button (new Rect (MiniButton), "-",com.Skin [GameControl.control.GUIID].customStyles [2])) 
+//			GUI.backgroundColor = Registry.Get32ColorData("Player", "System", "ButtonColor");
+//			GUI.contentColor = Registry.Get32ColorData("Player", "System", "FontColor");
+//			if (GUI.Button (new Rect (MiniButton), "-",GameControl.control.Skins[Registry.GetIntData("Player", "System", "Skin")].customStyles [2])) 
 //			{
 //				minimize = !minimize;
 //				Minimize();

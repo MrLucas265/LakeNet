@@ -1,7 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using System.Linq;
 
 class DistinctItemComparer : IEqualityComparer<RegistrySystem>
 {
@@ -21,16 +20,21 @@ class DistinctItemComparer : IEqualityComparer<RegistrySystem>
 
 public class RegistryLoader : MonoBehaviour
 {
+	public static RegistryLoader RegLoad;
+
 	// Use this for initialization
 	public bool RunRegLoad;
+	public bool RunRegCheck;
 
 	public List<RegistrySystem> DefaultRegistryKeys = new List<RegistrySystem>();
 
 	public List<RegistrySystem> list1 = new List<RegistrySystem>();
 
-	void Awake()
+    void Awake()
     {
 		DefaultKeys();
+
+		RegLoad = this;
 	}
 
 
@@ -42,105 +46,241 @@ public class RegistryLoader : MonoBehaviour
 		{
 			CheckRegKeys();
 		}
+		//if(RunRegCheck == true)
+  //      {
+		//	CheckNullRegInfo();
+  //      }
+	}
+
+
+	void Check2()
+	{
+		
 	}
 
 	void DefaultKeys()
 	{
+		DefaultRegistryKeys.Add(new RegistrySystem("Core"));
 		DefaultRegistryKeys.Add(new RegistrySystem("CLI"));
 		DefaultRegistryKeys.Add(new RegistrySystem("FileManager"));
 		DefaultRegistryKeys.Add(new RegistrySystem("OS"));
 		DefaultRegistryKeys.Add(new RegistrySystem("MediaPlayer"));
 		DefaultRegistryKeys.Add(new RegistrySystem("System"));
-		DefaultRegistryKeys.Add(new RegistrySystem("Control Panel"));
+		DefaultRegistryKeys.Add(new RegistrySystem("ControlPanel"));
+		DefaultRegistryKeys.Add(new RegistrySystem("Network"));
+		DefaultRegistryKeys.Add(new RegistrySystem("Calculator"));
+        DefaultRegistryKeys.Add(new RegistrySystem("Notepad"));
+        DefaultRegistryKeys.Add(new RegistrySystem("FileUtility"));
+        DefaultRegistryKeys.Add(new RegistrySystem("WindowManager"));
+        DefaultRegistryKeys.Add(new RegistrySystem("PlayerData"));
 
-		for (int i = 0; i < DefaultRegistryKeys.Count; i++)
+        Parallel.For(0, DefaultRegistryKeys.Count, i =>
 		{
 			switch (DefaultRegistryKeys[i].KeyName)
 			{
-				case "FileManager":
-					DefaultRegistryKeys[i].Values.Add(new RegistryDataSystem("TypedDirectory", "", 0, false, 0, new SRect(new Rect()), new SVector3(new Vector3()), new SVector2(new Vector2())));
-					DefaultRegistryKeys[i].Values.Add(new RegistryDataSystem("CurrentDirectory", "", 0,false,0,new SRect(new Rect()),new SVector3(new Vector3()),new SVector2(new Vector2())));
-					DefaultRegistryKeys[i].Values.Add(new RegistryDataSystem("MainScrollPos", "", 0, false, 0, new SRect(new Rect()), new SVector3(new Vector3()), new SVector2(new Vector2())));
-					DefaultRegistryKeys[i].Values.Add(new RegistryDataSystem("MainScrollSize", "", 0, false, 0, new SRect(new Rect()), new SVector3(new Vector3()), new SVector2(new Vector2())));
-					DefaultRegistryKeys[i].Values.Add(new RegistryDataSystem("UserName", "", 0, false, 0, new SRect(new Rect()), new SVector3(new Vector3()), new SVector2(new Vector2())));
-					DefaultRegistryKeys[i].Values.Add(new RegistryDataSystem("SelectedMenu", "", 0, false, 0, new SRect(new Rect()), new SVector3(new Vector3()), new SVector2(new Vector2())));
-					DefaultRegistryKeys[i].Values.Add(new RegistryDataSystem("LastClick", "", 0, false, 0, new SRect(new Rect()), new SVector3(new Vector3()), new SVector2(new Vector2())));
-					DefaultRegistryKeys[i].Values.Add(new RegistryDataSystem("LastClickThreshold", "", 0, false, 0.5f, new SRect(new Rect()), new SVector3(new Vector3()), new SVector2(new Vector2())));
-					DefaultRegistryKeys[i].Values.Add(new RegistryDataSystem("SelectedFile", "", 0, false, 0.5f, new SRect(new Rect()), new SVector3(new Vector3()), new SVector2(new Vector2())));
-					DefaultRegistryKeys[i].Values.Add(new RegistryDataSystem("FontColor", "", 0, false, 0, new SRect(new Rect()), new SVector3(new Vector3()), new SVector2(new Vector2())));
-					DefaultRegistryKeys[i].Values.Add(new RegistryDataSystem("WindowColor", "", 0, false, 0, new SRect(new Rect()), new SVector3(new Vector3()), new SVector2(new Vector2())));
-					DefaultRegistryKeys[i].Values.Add(new RegistryDataSystem("ButtonColor", "", 0, false, 0, new SRect(new Rect()), new SVector3(new Vector3()), new SVector2(new Vector2())));
-					DefaultRegistryKeys[i].Values.Add(new RegistryDataSystem("Test 1", "", 0, false, 0, new SRect(new Rect()), new SVector3(new Vector3()), new SVector2(new Vector2())));
-					DefaultRegistryKeys[i].Values.Add(new RegistryDataSystem("PageHistory", "", 0, false, 0, new SRect(new Rect()), new SVector3(new Vector3()), new SVector2(new Vector2())));
+                case "Core":
+                    DefaultRegistryKeys[i].Values.Add(new RegistryDataSystem("InitalRun"));
+                    DefaultRegistryKeys[i].Values.Add(new RegistryDataSystem("RunProgram"));
+                    DefaultRegistryKeys[i].Values.Add(new RegistryDataSystem("Clipboard"));
+                    DefaultRegistryKeys[i].Values.Add(new RegistryDataSystem("InstalledPrograms"));
+                    DefaultRegistryKeys[i].Values.Add(new RegistryDataSystem("Action"));
+                    break;
+                case "FileManager":
+					DefaultRegistryKeys[i].Values.Add(new RegistryDataSystem("InitalRun"));
+					DefaultRegistryKeys[i].Values.Add(new RegistryDataSystem("TypedDirectory"));
+					DefaultRegistryKeys[i].Values.Add(new RegistryDataSystem("CurrentDirectory"));
+					DefaultRegistryKeys[i].Values.Add(new RegistryDataSystem("MainScrollPos"));
+					DefaultRegistryKeys[i].Values.Add(new RegistryDataSystem("MainScrollSize"));
+					DefaultRegistryKeys[i].Values.Add(new RegistryDataSystem("UserName"));
+					DefaultRegistryKeys[i].Values.Add(new RegistryDataSystem("SelectedMenu"));
+					DefaultRegistryKeys[i].Values.Add(new RegistryDataSystem("LastClick"));
+					DefaultRegistryKeys[i].Values.Add(new RegistryDataSystem("SelectedFile"));
+					DefaultRegistryKeys[i].Values.Add(new RegistryDataSystem("FontColor"));
+					DefaultRegistryKeys[i].Values.Add(new RegistryDataSystem("WindowColor"));
+					DefaultRegistryKeys[i].Values.Add(new RegistryDataSystem("ButtonColor"));
+					DefaultRegistryKeys[i].Values.Add(new RegistryDataSystem("Test 1"));
+					DefaultRegistryKeys[i].Values.Add(new RegistryDataSystem("PageHistory"));
+					DefaultRegistryKeys[i].Values.Add(new RegistryDataSystem("WindowRect"));
+					DefaultRegistryKeys[i].Values.Add(new RegistryDataSystem("Ribbon"));
+					DefaultRegistryKeys[i].Values.Add(new RegistryDataSystem("RenderedRibbon"));
+                    DefaultRegistryKeys[i].Values.Add(new RegistryDataSystem("SelectedButton"));
+                    break;
+				case "Calculator":
+					DefaultRegistryKeys[i].Values.Add(new RegistryDataSystem("InitalRun"));
+					DefaultRegistryKeys[i].Values.Add(new RegistryDataSystem("Result"));
+					DefaultRegistryKeys[i].Values.Add(new RegistryDataSystem("Value"));
+					DefaultRegistryKeys[i].Values.Add(new RegistryDataSystem("Value1"));
+					DefaultRegistryKeys[i].Values.Add(new RegistryDataSystem("Pastop"));
+					DefaultRegistryKeys[i].Values.Add(new RegistryDataSystem("Operator"));
+					DefaultRegistryKeys[i].Values.Add(new RegistryDataSystem("OperatorPressed"));
+					DefaultRegistryKeys[i].Values.Add(new RegistryDataSystem("FirstNumber"));
+					DefaultRegistryKeys[i].Values.Add(new RegistryDataSystem("SecondNumber"));
+					DefaultRegistryKeys[i].Values.Add(new RegistryDataSystem("ResultNumber"));
 					break;
 				case "CLI":
-					DefaultRegistryKeys[i].Values.Add(new RegistryDataSystem("WorkingPath", "", 0,false,0, new SRect(new Rect()), new SVector3(new Vector3()), new SVector2(new Vector2())));
-					DefaultRegistryKeys[i].Values.Add(new RegistryDataSystem("CommandLine", "", 0, false, 0, new SRect(new Rect()), new SVector3(new Vector3()), new SVector2(new Vector2())));
-					DefaultRegistryKeys[i].Values.Add(new RegistryDataSystem("Pinned", "", 0, false, 0, new SRect(new Rect()), new SVector3(new Vector3()), new SVector2(new Vector2())));
-					DefaultRegistryKeys[i].Values.Add(new RegistryDataSystem("CustomPos", "", 0, false, 0, new SRect(new Rect()), new SVector3(new Vector3()), new SVector2(new Vector2())));
-					DefaultRegistryKeys[i].Values.Add(new RegistryDataSystem("SelectedPastCommand", "", 0, false, 0, new SRect(new Rect()), new SVector3(new Vector3()), new SVector2(new Vector2())));
-					DefaultRegistryKeys[i].Values.Add(new RegistryDataSystem("Scrollsize", "", 0, false, 0, new SRect(new Rect()), new SVector3(new Vector3()), new SVector2(new Vector2())));
-					DefaultRegistryKeys[i].Values.Add(new RegistryDataSystem("ScrollPos", "", 0, false, 0, new SRect(new Rect()), new SVector3(new Vector3()), new SVector2(new Vector2())));
-					DefaultRegistryKeys[i].Values.Add(new RegistryDataSystem("CommandHistory", "", 0, false, 0, new SRect(new Rect()), new SVector3(new Vector3()), new SVector2(new Vector2())));
-					DefaultRegistryKeys[i].Values.Add(new RegistryDataSystem("TextFieldPos", "", 0, false, 0, new SRect(new Rect()), new SVector3(new Vector3()), new SVector2(new Vector2())));
-					DefaultRegistryKeys[i].Values.Add(new RegistryDataSystem("Input", "", 0, false, 0, new SRect(new Rect()), new SVector3(new Vector3()), new SVector2(new Vector2())));
-					DefaultRegistryKeys[i].Values.Add(new RegistryDataSystem("Output", "", 0, false, 0, new SRect(new Rect()), new SVector3(new Vector3()), new SVector2(new Vector2())));
-					DefaultRegistryKeys[i].Values.Add(new RegistryDataSystem("Skin", "", 0, false, 0, new SRect(new Rect()), new SVector3(new Vector3()), new SVector2(new Vector2())));
-					DefaultRegistryKeys[i].Values.Add(new RegistryDataSystem("FontColor", "", 0, false, 0, new SRect(new Rect()), new SVector3(new Vector3()), new SVector2(new Vector2())));
-					DefaultRegistryKeys[i].Values.Add(new RegistryDataSystem("WindowColor", "", 0, false, 0, new SRect(new Rect()), new SVector3(new Vector3()), new SVector2(new Vector2())));
-					DefaultRegistryKeys[i].Values.Add(new RegistryDataSystem("ButtonColor", "", 0, false, 0, new SRect(new Rect()), new SVector3(new Vector3()), new SVector2(new Vector2())));
+					DefaultRegistryKeys[i].Values.Add(new RegistryDataSystem("InitalRun"));
+					DefaultRegistryKeys[i].Values.Add(new RegistryDataSystem("WorkingPath"));
+					DefaultRegistryKeys[i].Values.Add(new RegistryDataSystem("CommandLine"));
+					DefaultRegistryKeys[i].Values.Add(new RegistryDataSystem("Pinned"));
+					DefaultRegistryKeys[i].Values.Add(new RegistryDataSystem("CustomPos"));
+					DefaultRegistryKeys[i].Values.Add(new RegistryDataSystem("SelectedPastCommand"));
+					DefaultRegistryKeys[i].Values.Add(new RegistryDataSystem("Scrollsize"));
+					DefaultRegistryKeys[i].Values.Add(new RegistryDataSystem("ScrollPos"));
+					DefaultRegistryKeys[i].Values.Add(new RegistryDataSystem("CommandHistory"));
+					DefaultRegistryKeys[i].Values.Add(new RegistryDataSystem("TextFieldPos"));
+					DefaultRegistryKeys[i].Values.Add(new RegistryDataSystem("Input"));
+					DefaultRegistryKeys[i].Values.Add(new RegistryDataSystem("Output"));
+					DefaultRegistryKeys[i].Values.Add(new RegistryDataSystem("Skin"));
+					DefaultRegistryKeys[i].Values.Add(new RegistryDataSystem("FontColor"));
+					DefaultRegistryKeys[i].Values.Add(new RegistryDataSystem("WindowColor"));
+					DefaultRegistryKeys[i].Values.Add(new RegistryDataSystem("ButtonColor"));
 					break;
 				case "System":
-					DefaultRegistryKeys[i].Values.Add(new RegistryDataSystem("FontColor", "", 0, false, 0, new SRect(new Rect()), new SVector3(new Vector3()), new SVector2(new Vector2())));
-					DefaultRegistryKeys[i].Values.Add(new RegistryDataSystem("WindowColor", "", 0, false, 0, new SRect(new Rect()), new SVector3(new Vector3()), new SVector2(new Vector2())));
-					DefaultRegistryKeys[i].Values.Add(new RegistryDataSystem("ButtonColor", "", 0, false, 0, new SRect(new Rect()), new SVector3(new Vector3()), new SVector2(new Vector2())));
-					DefaultRegistryKeys[i].Values.Add(new RegistryDataSystem("SecondaryFontColor", "", 0, false, 0, new SRect(new Rect()), new SVector3(new Vector3()), new SVector2(new Vector2())));
-					DefaultRegistryKeys[i].Values.Add(new RegistryDataSystem("SecondaryWindowColor", "", 0, false, 0, new SRect(new Rect()), new SVector3(new Vector3()), new SVector2(new Vector2())));
-					DefaultRegistryKeys[i].Values.Add(new RegistryDataSystem("SecondaryButtonColor", "", 0, false, 0, new SRect(new Rect()), new SVector3(new Vector3()), new SVector2(new Vector2())));
-					DefaultRegistryKeys[i].Values.Add(new RegistryDataSystem("SelectedBackground", "", 0, false, 0, new SRect(new Rect()), new SVector3(new Vector3()), new SVector2(new Vector2())));
-					DefaultRegistryKeys[i].Values.Add(new RegistryDataSystem("SelectedGUIID", "", 0, false, 0, new SRect(new Rect()), new SVector3(new Vector3()), new SVector2(new Vector2())));
-					DefaultRegistryKeys[i].Values.Add(new RegistryDataSystem("RunProgram", "", 0, false, 0, new SRect(new Rect()), new SVector3(new Vector3()), new SVector2(new Vector2())));
-					break;
-				case "Control Panel":
+                    DefaultRegistryKeys[i].Values.Add(new RegistryDataSystem("InitalRun"));
+                    DefaultRegistryKeys[i].Values.Add(new RegistryDataSystem("Skin"));
+                    DefaultRegistryKeys[i].Values.Add(new RegistryDataSystem("FontColor"));
+					DefaultRegistryKeys[i].Values.Add(new RegistryDataSystem("WindowColor"));
+					DefaultRegistryKeys[i].Values.Add(new RegistryDataSystem("ButtonColor"));
+					DefaultRegistryKeys[i].Values.Add(new RegistryDataSystem("SecondaryFontColor"));
+					DefaultRegistryKeys[i].Values.Add(new RegistryDataSystem("SecondaryWindowColor"));
+					DefaultRegistryKeys[i].Values.Add(new RegistryDataSystem("SecondaryButtonColor"));
+					DefaultRegistryKeys[i].Values.Add(new RegistryDataSystem("SelectedBackground"));
+					DefaultRegistryKeys[i].Values.Add(new RegistryDataSystem("ShowDesktopIcons"));
+					DefaultRegistryKeys[i].Values.Add(new RegistryDataSystem("ShowDesktopBackground"));
+					DefaultRegistryKeys[i].Values.Add(new RegistryDataSystem("DesktopBackgroundColor"));
+					DefaultRegistryKeys[i].Values.Add(new RegistryDataSystem("DoubleClickSpeed"));
+					DefaultRegistryKeys[i].Values.Add(new RegistryDataSystem("ForcedBackground"));
+					DefaultRegistryKeys[i].Values.Add(new RegistryDataSystem("UpdatePinLists"));
+                    DefaultRegistryKeys[i].Values.Add(new RegistryDataSystem("Test"));
+                    DefaultRegistryKeys[i].Values.Add(new RegistryDataSystem("Aspect"));
+                    break;
+				case "ControlPanel":
+                    DefaultRegistryKeys[i].Values.Add(new RegistryDataSystem("ShowResize"));
+                    DefaultRegistryKeys[i].Values.Add(new RegistryDataSystem("InitalRun"));
 					DefaultRegistryKeys[i].Values.Add(new RegistryDataSystem("BackgroundField"));
 					DefaultRegistryKeys[i].Values.Add(new RegistryDataSystem("BackgroundAddress"));
 					DefaultRegistryKeys[i].Values.Add(new RegistryDataSystem("Window"));
-					break;
+                    DefaultRegistryKeys[i].Values.Add(new RegistryDataSystem("Resize"));
+                    DefaultRegistryKeys[i].Values.Add(new RegistryDataSystem("TypedAddress"));
+                    DefaultRegistryKeys[i].Values.Add(new RegistryDataSystem("MaxPerRowGrid"));
+                    DefaultRegistryKeys[i].Values.Add(new RegistryDataSystem("RowCount"));
+                    DefaultRegistryKeys[i].Values.Add(new RegistryDataSystem("ScrollRect"));
+                    break;
 				case "OS":
-					DefaultRegistryKeys[i].Values.Add(new RegistryDataSystem("BackgroundPath", "", 0, false, 0, new SRect(new Rect()), new SVector3(new Vector3()), new SVector2(new Vector2())));
-					DefaultRegistryKeys[i].Values.Add(new RegistryDataSystem("CursorPath", "", 0, false, 0, new SRect(new Rect()), new SVector3(new Vector3()), new SVector2(new Vector2())));
-					DefaultRegistryKeys[i].Values.Add(new RegistryDataSystem("Secondary", "", 0, false, 0, new SRect(new Rect()), new SVector3(new Vector3()), new SVector2(new Vector2())));
-					DefaultRegistryKeys[i].Values.Add(new RegistryDataSystem("ColorOption", "", 0, false, 0, new SRect(new Rect()), new SVector3(new Vector3()), new SVector2(new Vector2())));
+					DefaultRegistryKeys[i].Values.Add(new RegistryDataSystem("InitalRun"));
+					DefaultRegistryKeys[i].Values.Add(new RegistryDataSystem("BackgroundPath"));
+					DefaultRegistryKeys[i].Values.Add(new RegistryDataSystem("CursorPath"));
+					DefaultRegistryKeys[i].Values.Add(new RegistryDataSystem("Secondary"));
+					DefaultRegistryKeys[i].Values.Add(new RegistryDataSystem("ColorOption"));
+					DefaultRegistryKeys[i].Values.Add(new RegistryDataSystem("SerialKey"));
+					DefaultRegistryKeys[i].Values.Add(new RegistryDataSystem("DefaultVolumeAddress"));
 					break;
 				case "MediaPlayer":
-					DefaultRegistryKeys[i].Values.Add(new RegistryDataSystem("Path", "", 0, false, 0, new SRect(new Rect()), new SVector3(new Vector3()), new SVector2(new Vector2())));
-					DefaultRegistryKeys[i].Values.Add(new RegistryDataSystem("Looping", "", 0,false,0, new SRect(new Rect()), new SVector3(new Vector3()), new SVector2(new Vector2())));
-					DefaultRegistryKeys[i].Values.Add(new RegistryDataSystem("Loop", "", 0, false, 0, new SRect(new Rect()), new SVector3(new Vector3()), new SVector2(new Vector2())));
-					DefaultRegistryKeys[i].Values.Add(new RegistryDataSystem("SelectedFile", "", 0, false, 0, new SRect(new Rect()), new SVector3(new Vector3()), new SVector2(new Vector2())));
-					DefaultRegistryKeys[i].Values.Add(new RegistryDataSystem("CurrentFilePath", "", 0, false, 0, new SRect(new Rect()), new SVector3(new Vector3()), new SVector2(new Vector2())));
-					DefaultRegistryKeys[i].Values.Add(new RegistryDataSystem("LoadVideo", "", 0, false, 0, new SRect(new Rect()), new SVector3(new Vector3()), new SVector2(new Vector2())));
-					DefaultRegistryKeys[i].Values.Add(new RegistryDataSystem("HideUI", "", 0, false, 0, new SRect(new Rect()), new SVector3(new Vector3()), new SVector2(new Vector2())));
-					DefaultRegistryKeys[i].Values.Add(new RegistryDataSystem("Menu", "", 0, false, 0, new SRect(new Rect()), new SVector3(new Vector3()), new SVector2(new Vector2())));
-					DefaultRegistryKeys[i].Values.Add(new RegistryDataSystem("LoadPlaylist", "", 0, false, 0, new SRect(new Rect()), new SVector3(new Vector3()), new SVector2(new Vector2())));
-					DefaultRegistryKeys[i].Values.Add(new RegistryDataSystem("CloseButton", "", 0, false, 0, new SRect(new Rect()), new SVector3(new Vector3()), new SVector2(new Vector2())));
-					DefaultRegistryKeys[i].Values.Add(new RegistryDataSystem("MiniButton", "", 0, false, 0, new SRect(new Rect()), new SVector3(new Vector3()), new SVector2(new Vector2())));
-					DefaultRegistryKeys[i].Values.Add(new RegistryDataSystem("SettingsButton", "", 0, false, 0, new SRect(new Rect()), new SVector3(new Vector3()), new SVector2(new Vector2())));
-					DefaultRegistryKeys[i].Values.Add(new RegistryDataSystem("ListButton", "", 0, false, 0, new SRect(new Rect()), new SVector3(new Vector3()), new SVector2(new Vector2())));
-					DefaultRegistryKeys[i].Values.Add(new RegistryDataSystem("HomeButton", "", 0, false, 0, new SRect(new Rect()), new SVector3(new Vector3()), new SVector2(new Vector2())));
-					DefaultRegistryKeys[i].Values.Add(new RegistryDataSystem("DefaltBoxSetting", "", 0, false, 0, new SRect(new Rect()), new SVector3(new Vector3()), new SVector2(new Vector2())));
-					DefaultRegistryKeys[i].Values.Add(new RegistryDataSystem("VideoRect", "", 0, false, 0, new SRect(new Rect()), new SVector3(new Vector3()), new SVector2(new Vector2())));
-					DefaultRegistryKeys[i].Values.Add(new RegistryDataSystem("Volume", "", 0, false, 0, new SRect(new Rect()), new SVector3(new Vector3()), new SVector2(new Vector2())));
+					DefaultRegistryKeys[i].Values.Add(new RegistryDataSystem("InitalRun"));
+					DefaultRegistryKeys[i].Values.Add(new RegistryDataSystem("Path"));
+					DefaultRegistryKeys[i].Values.Add(new RegistryDataSystem("Looping"));
+					DefaultRegistryKeys[i].Values.Add(new RegistryDataSystem("Loop"));
+					DefaultRegistryKeys[i].Values.Add(new RegistryDataSystem("SelectedFile"));
+					DefaultRegistryKeys[i].Values.Add(new RegistryDataSystem("CurrentFilePath"));
+					DefaultRegistryKeys[i].Values.Add(new RegistryDataSystem("LoadVideo"));
+					DefaultRegistryKeys[i].Values.Add(new RegistryDataSystem("HideUI"));
+					DefaultRegistryKeys[i].Values.Add(new RegistryDataSystem("Menu"));
+					DefaultRegistryKeys[i].Values.Add(new RegistryDataSystem("LoadPlaylist"));
+					DefaultRegistryKeys[i].Values.Add(new RegistryDataSystem("CloseButton"));
+					DefaultRegistryKeys[i].Values.Add(new RegistryDataSystem("MiniButton"));
+					DefaultRegistryKeys[i].Values.Add(new RegistryDataSystem("SettingsButton"));
+					DefaultRegistryKeys[i].Values.Add(new RegistryDataSystem("ListButton"));
+					DefaultRegistryKeys[i].Values.Add(new RegistryDataSystem("HomeButton"));
+					DefaultRegistryKeys[i].Values.Add(new RegistryDataSystem("DefaltBoxSetting"));
+					DefaultRegistryKeys[i].Values.Add(new RegistryDataSystem("VideoRect"));
+					DefaultRegistryKeys[i].Values.Add(new RegistryDataSystem("Volume"));
+					DefaultRegistryKeys[i].Values.Add(new RegistryDataSystem("Fullscreen"));
+					DefaultRegistryKeys[i].Values.Add(new RegistryDataSystem("Exists"));
+					DefaultRegistryKeys[i].Values.Add(new RegistryDataSystem("Seek"));
+                    DefaultRegistryKeys[i].Values.Add(new RegistryDataSystem("Startup"));
+					//Scroll
+                    DefaultRegistryKeys[i].Values.Add(new RegistryDataSystem("ScrollRect"));
+                    DefaultRegistryKeys[i].Values.Add(new RegistryDataSystem("ScrollPos"));
+                    DefaultRegistryKeys[i].Values.Add(new RegistryDataSystem("ScrollView"));
+                    DefaultRegistryKeys[i].Values.Add(new RegistryDataSystem("ScrollSize"));
+					//UIControlsPositions
+					DefaultRegistryKeys[i].Values.Add(new RegistryDataSystem("PlayUI"));
+                    DefaultRegistryKeys[i].Values.Add(new RegistryDataSystem("BackUI"));
+                    DefaultRegistryKeys[i].Values.Add(new RegistryDataSystem("FowardUI"));
+                    DefaultRegistryKeys[i].Values.Add(new RegistryDataSystem("StopUI"));
+                    DefaultRegistryKeys[i].Values.Add(new RegistryDataSystem("LoopUI"));
+                    DefaultRegistryKeys[i].Values.Add(new RegistryDataSystem("MuteUI"));
+                    DefaultRegistryKeys[i].Values.Add(new RegistryDataSystem("SeekTextUI"));
+                    DefaultRegistryKeys[i].Values.Add(new RegistryDataSystem("VolumeTextUI"));
+                    DefaultRegistryKeys[i].Values.Add(new RegistryDataSystem("CurrentTrackUI"));
+                    DefaultRegistryKeys[i].Values.Add(new RegistryDataSystem("FullscreenUI"));
+                    break;
+				case "Network":
+					DefaultRegistryKeys[i].Values.Add(new RegistryDataSystem("InitalRun"));
+					DefaultRegistryKeys[i].Values.Add(new RegistryDataSystem("Remote"));
+					DefaultRegistryKeys[i].Values.Add(new RegistryDataSystem("Local"));
 					break;
-			}
-		}
-
+                case "Notepad":
+                    DefaultRegistryKeys[i].Values.Add(new RegistryDataSystem("InitalRun"));
+                    DefaultRegistryKeys[i].Values.Add(new RegistryDataSystem("Window"));
+                    DefaultRegistryKeys[i].Values.Add(new RegistryDataSystem("TypedText"));
+                    DefaultRegistryKeys[i].Values.Add(new RegistryDataSystem("TypedTitle"));
+                    DefaultRegistryKeys[i].Values.Add(new RegistryDataSystem("SaveLocation"));
+                    DefaultRegistryKeys[i].Values.Add(new RegistryDataSystem("MenuBar"));
+                    DefaultRegistryKeys[i].Values.Add(new RegistryDataSystem("SelectedMenu"));
+                    DefaultRegistryKeys[i].Values.Add(new RegistryDataSystem("OpenedFile"));
+                    break;
+                case "FileUtility":
+                    DefaultRegistryKeys[i].Values.Add(new RegistryDataSystem("InitalRun"));
+                    DefaultRegistryKeys[i].Values.Add(new RegistryDataSystem("Window"));
+                    DefaultRegistryKeys[i].Values.Add(new RegistryDataSystem("CurrentFile"));
+                    break;
+                case "WindowManager":
+                    DefaultRegistryKeys[i].Values.Add(new RegistryDataSystem("InitalRun"));
+                    DefaultRegistryKeys[i].Values.Add(new RegistryDataSystem("SelectedWindow"));
+                    break;
+                case "PlayerData":
+                    DefaultRegistryKeys[i].Values.Add(new RegistryDataSystem("Stats"));
+                    break;
+            }
+		});
 		RunRegLoad = true;
 	}
+
+	//void CheckNullRegInfo()
+	//{
+	//	for (int i = 0; i < PersonController.control.People.Count; i++)
+	//	{
+ //           var Gateway = PersonController.control.People[i].Gateway.Registry;
+
+	//		for(int j = 0;j < Gateway.Count;j++)
+ //           {
+	//			for (int k = 0; k < Gateway[j].Values.Count; k++)
+	//			{
+	//				Gateway[j].Values[k].DataString = StringIsNullCheck.NotNull(Gateway[j].Values[k].DataString);
+	//				Gateway[j].Values[k].Request.PersonName = StringIsNullCheck.NotNull(Gateway[j].Values[k].Request.PersonName);
+	//				Gateway[j].Values[k].Request.ProgramName = StringIsNullCheck.NotNull(Gateway[j].Values[k].Request.ProgramName);
+	//				Gateway[j].Values[k].Request.ProgramTarget = StringIsNullCheck.NotNull(Gateway[j].Values[k].Request.ProgramTarget);
+	//				Gateway[j].Values[k].ValueName = StringIsNullCheck.NotNull(Gateway[j].Values[k].ValueName);
+
+	//				Gateway[j].Values[k].NetworkData.Command = StringIsNullCheck.NotNull(Gateway[j].Values[k].NetworkData.Command);
+	//				Gateway[j].Values[k].NetworkData.DisplayName = StringIsNullCheck.NotNull(Gateway[j].Values[k].NetworkData.DisplayName);
+	//				Gateway[j].Values[k].NetworkData.Domain = StringIsNullCheck.NotNull(Gateway[j].Values[k].NetworkData.Domain);
+	//				Gateway[j].Values[k].NetworkData.InputAddress = StringIsNullCheck.NotNull(Gateway[j].Values[k].NetworkData.InputAddress);
+	//				Gateway[j].Values[k].NetworkData.InternalIPAddress = StringIsNullCheck.NotNull(Gateway[j].Values[k].NetworkData.InternalIPAddress);
+	//				Gateway[j].Values[k].NetworkData.IPAddress = StringIsNullCheck.NotNull(Gateway[j].Values[k].NetworkData.IPAddress);
+	//				Gateway[j].Values[k].NetworkData.Port = StringIsNullCheck.NotNull(Gateway[j].Values[k].NetworkData.Port);
+	//				Gateway[j].Values[k].NetworkData.Status = StringIsNullCheck.NotNull(Gateway[j].Values[k].NetworkData.Status);
+	//			}
+	//		}
+	//	}
+	//	RunRegCheck = false;
+	//}
 
 	void CheckRegKeys()
 	{
 		for (int i = 0; i < PersonController.control.People.Count; i++)
-        {
+		{
 			var personPC = PersonController.control.People[i].Gateway;
 
 			if (personPC.Registry.Count == 0)
@@ -152,7 +292,7 @@ public class RegistryLoader : MonoBehaviour
 					for (int k = 0; k < DefaultRegistryKeys[j].Values.Count; k++)
 					{
 						var RegValue = DefaultRegistryKeys[j].Values[k];
-						personPC.Registry[j].Values.Add(new RegistryDataSystem(RegValue.ValueName, RegValue.DataString, RegValue.DataInt, RegValue.DataBool, RegValue.DataFloat,RegValue.DataRect,RegValue.DataVector3,RegValue.DataVector2));
+						personPC.Registry[j].Values.Add(new RegistryDataSystem(RegValue.ValueName));
 					}
 				}
 			}
@@ -189,14 +329,14 @@ public class RegistryLoader : MonoBehaviour
 							if (k >= personPC.Registry[j].Values.Count)
 							{
 								var RegValue = DefaultRegistryKeys[j].Values[k];
-								personPC.Registry[j].Values.Insert(k, new RegistryDataSystem(RegValue.ValueName, RegValue.DataString, RegValue.DataInt, RegValue.DataBool, RegValue.DataFloat, RegValue.DataRect, RegValue.DataVector3, RegValue.DataVector2));
+								personPC.Registry[j].Values.Insert(k, new RegistryDataSystem(RegValue.ValueName));
 							}
 							else
                             {
 								if (personPC.Registry[j].Values[k].ValueName != DefaultRegistryKeys[j].Values[k].ValueName)
 								{
 									var RegValue = DefaultRegistryKeys[j].Values[k];
-									personPC.Registry[j].Values.Insert(k, new RegistryDataSystem(RegValue.ValueName, RegValue.DataString, RegValue.DataInt, RegValue.DataBool, RegValue.DataFloat, RegValue.DataRect, RegValue.DataVector3, RegValue.DataVector2));
+									personPC.Registry[j].Values.Insert(k, new RegistryDataSystem(RegValue.ValueName));
 								}
 							}
 						}
@@ -206,7 +346,7 @@ public class RegistryLoader : MonoBehaviour
 						for (int k = 0; k < DefaultRegistryKeys[j].Values.Count; k++)
 						{
 							var RegValue = DefaultRegistryKeys[j].Values[k];
-							personPC.Registry[j].Values.Add(new RegistryDataSystem(RegValue.ValueName, RegValue.DataString, RegValue.DataInt, RegValue.DataBool, RegValue.DataFloat, RegValue.DataRect, RegValue.DataVector3, RegValue.DataVector2));
+							personPC.Registry[j].Values.Add(new RegistryDataSystem(RegValue.ValueName));
 						}
 					}
 				}
@@ -214,5 +354,6 @@ public class RegistryLoader : MonoBehaviour
 		}
 
 		RunRegLoad = false;
+		//RunRegCheck = true;
 	}
 }

@@ -3,6 +3,9 @@ using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using UnityEngine.Networking;
+using System.Net;
+using System;
 
 public class MusicPlayer : MonoBehaviour
 {
@@ -14,7 +17,7 @@ public class MusicPlayer : MonoBehaviour
 	[SerializeField] [HideInInspector] private int currentIndex = 0;
 
 	private FileInfo[] soundFiles;
-	private List<string> validExtensions = new List<string> {".ogg", ".wav" }; // Don't forget the "." i.e. "ogg" won't work - cause Path.GetExtension(filePath) will return .ext, not just ext.
+	private List<string> validExtensions = new List<string> {".ogg", ".wav", ".mp3"}; // Don't forget the "." i.e. "ogg" won't work - cause Path.GetExtension(filePath) will return .ext, not just ext.
 	private string absolutePath = "./"; // relative path to where the app is running - change this to "./music" in your case
 
 	public Rect windowRect;
@@ -85,7 +88,10 @@ public class MusicPlayer : MonoBehaviour
 		Volume = Customize.cust.MusicVolume;
 		source.volume = Volume;
 
-		windowRect.x = Customize.cust.windowx[windowID];
+        windowRect.width = 200;
+        windowRect.height = 200;
+
+        windowRect.x = Customize.cust.windowx[windowID];
 		windowRect.y = Customize.cust.windowy[windowID];
 
 		if (Customize.cust.SaveSelectedTrack)
@@ -171,14 +177,38 @@ public class MusicPlayer : MonoBehaviour
 	IEnumerator LoadFile(string path)
 	{
 		WWW www = new WWW("file://" + path);
+		//UnityWebRequest WWW = new UnityWebRequest(path);
 
 		AudioClip clip = www.GetAudioClip(false);
-		while(!clip.isReadyToPlay)
+		while (!clip.isReadyToPlay)
 			yield return www;
 
 		clip.name = Path.GetFileName(path);
 		clips.Add(clip);
 	}
+
+	//public IEnumerator LoadFile(string path)
+	//{
+	//    // Create a new WebRequest for the specified file
+	//    using (var request = UnityWebRequest.Get("file://" + path))
+	//    {
+	//        try
+	//        {
+	//            if (clip != null)
+	//            {
+	//                // Set the name of the clip and add it to the list
+	//                clip.name = Path.GetFileName(path);
+	//                clips.Add(clip);
+	//            }
+	//        }
+	//        catch (Exception e)
+	//        {
+	//            Debug.LogError("Failed to load audio clip: " + path + "\n" + e.Message);
+	//        }
+	//    }
+	//}
+
+
 
 	void MenuSwitcher()
 	{
@@ -256,11 +286,11 @@ public class MusicPlayer : MonoBehaviour
 		Customize.cust.windowx[windowID] = windowRect.x;
 		Customize.cust.windowy[windowID] = windowRect.y;
 
-		GUI.skin = com.Skin[GameControl.control.GUIID];
+		GUI.skin = GameControl.control.Skins[Registry.GetIntData("Player", "System", "Skin")];
 
 		if(show == true)
 		{
-			GUI.color = com.colors[Customize.cust.WindowColorInt];
+			GUI.color = Registry.Get32ColorData("Player", "System", "WindowColor");
 			windowRect = WindowClamp.ClampToScreen(GUI.Window(windowID,windowRect,DoMyWindow,""));
 		}
 	}
@@ -269,16 +299,16 @@ public class MusicPlayer : MonoBehaviour
 	{
 		if (CloseButton.Contains (Event.current.mousePosition)) 
 		{
-			if (GUI.Button (new Rect (CloseButton), "X", com.Skin [GameControl.control.GUIID].customStyles [0])) 
+			if (GUI.Button (new Rect (CloseButton), "X", GameControl.control.Skins[Registry.GetIntData("Player", "System", "Skin")].customStyles [0])) 
 			{
 				appman.SelectedApp = "Music Player";
 			}
 		} 
 		else
 		{
-			GUI.backgroundColor = com.colors[Customize.cust.ButtonColorInt];
-			GUI.contentColor = com.colors[Customize.cust.FontColorInt];
-			GUI.Button (new Rect (CloseButton), "X", com.Skin [GameControl.control.GUIID].customStyles [1]);
+			GUI.backgroundColor = Registry.Get32ColorData("Player", "System", "ButtonColor");
+			GUI.contentColor = Registry.Get32ColorData("Player", "System", "FontColor");
+			GUI.Button (new Rect (CloseButton), "X", GameControl.control.Skins[Registry.GetIntData("Player", "System", "Skin")].customStyles [1]);
 		}
 	}
 
@@ -286,8 +316,8 @@ public class MusicPlayer : MonoBehaviour
 	{
 		TitleBar();
 
-		GUI.backgroundColor = com.colors[Customize.cust.ButtonColorInt];
-		GUI.contentColor = com.colors[Customize.cust.FontColorInt];
+		GUI.backgroundColor = Registry.Get32ColorData("Player", "System", "ButtonColor");
+		GUI.contentColor = Registry.Get32ColorData("Player", "System", "FontColor");
 
 		GUI.DragWindow(new Rect(2,2,130,21));
 		GUI.Box(new Rect(2,2,130,21), "Music Player " + Cat);

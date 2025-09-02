@@ -21,9 +21,6 @@ public class ProgramSystemv2
 	public long Free;
 	public long Used;
 	public long Capacity;
-	public float GPUUsage;
-	public float CPUUsage;
-	public float RAMUsage;
 	public float Health;
 	public float Version;
 	public float Price;
@@ -44,30 +41,32 @@ public class ProgramSystemv2
 	public bool PinToBar;
 	public List<InfectionSystem> Infections = new List<InfectionSystem>();
 	public List<FileType> Type = new List<FileType>();
+	public ResourceManagerSystem FileUsage = new ResourceManagerSystem();
 
 	public enum FileExtension
 	{
 		Null,
-		Exe,
-		Ins,
-		Rar,
-		Zip,
-		Txt,
-		Fdl,
-		File,
-		Dir,
-		OS,
-		Cfg,
-		Bat,
-		Bin,
-		Init,
-		Web,
-		RealWeb,
-		Real,
-		Voice,
-		Database,
-		Black,
-		White
+		exe,
+		ins,
+		rar,
+		zip,
+		txt,
+		fdl,
+		file,
+		dir,
+		os,
+		cfg,
+		bat,
+		bin,
+		init,
+		web,
+		realweb,
+		real,
+		voice,
+		database,
+		black,
+		white,
+		scl
 	}
 
 	public enum FileType
@@ -85,10 +84,21 @@ public class ProgramSystemv2
 		DocumentReaders,
 	}
 
-	public ProgramSystemv2(string name, string sender, string creator, string date, string content, string description, string location, string target, string iconlocation, string picturelocation,
-	FileExtension extension, FileExtension fileinstallextension, float encryption, long free, long used, long capacity, float gpuusage, float cpuusage, float ramusage, float health,
+    public ProgramSystemv2()
+	{
+
+	}
+
+    public ProgramSystemv2(string name,string location,string target,FileExtension extension)
+    {
+
+    }
+
+
+    public ProgramSystemv2(string name, string sender, string creator, string date, string content, string description, string location, string target, string iconlocation, string picturelocation,
+	FileExtension extension, FileExtension fileinstallextension, float encryption, long free, long used, long capacity, float health,
 	float version, float price, float value, int permissionlevel, int int1, int int2, int int3, int intstate, bool infected, bool bool1, bool bool2, bool bool3,
-	bool pintodesktop, bool pintomenu, bool pintobar) //,Texture2D icon)
+	bool pintodesktop, bool pintomenu, bool pintobar,ResourceManagerSystem fileusage) //,Texture2D icon)
 	{
 		Name = name;
 		Sender = sender;
@@ -106,9 +116,6 @@ public class ProgramSystemv2
 		Free = free;
 		Used = used;
 		Capacity = capacity;
-		GPUUsage = gpuusage;
-		CPUUsage = cpuusage;
-		RAMUsage = ramusage;
 		Health = health;
 		Version = version;
 		Price = price;
@@ -125,5 +132,6 @@ public class ProgramSystemv2
 		PinToDesktop = pintodesktop;
 		PinToMenu = pintomenu;
 		PinToBar = pintobar;
+		FileUsage = fileusage;
 	}
 }

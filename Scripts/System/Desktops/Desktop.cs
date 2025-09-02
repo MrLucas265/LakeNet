@@ -47,7 +47,7 @@ public class Desktop : MonoBehaviour
 
 		boot = GetComponent<Boot>();
 
-		if (GameControl.control.Gateway.Status.Terminal == true)
+		if (GameControl.control.GatewayStatus.Terminal == true)
 		{
 			this.enabled = false;
 		}

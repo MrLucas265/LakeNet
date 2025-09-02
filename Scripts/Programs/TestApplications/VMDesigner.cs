@@ -109,7 +109,7 @@ public class VMDesigner : MonoBehaviour
 		{
 			if (GUI.Button (new Rect (CloseButton), "X"))
 			{
-				show [ID.IndexOf (windowID)] = false;;
+				show [ID.IndexOf (windowID)] = false;
 			}
 		} 
 		else 

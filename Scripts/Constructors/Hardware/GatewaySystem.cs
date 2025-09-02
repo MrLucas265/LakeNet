@@ -23,4 +23,6 @@ public class GatewaySystem
     public List<GPUSystem> GPU = new List<GPUSystem>();
     public List<ModemSystem> Modem = new List<ModemSystem>();
     public List<CPUSystem> CPU = new List<CPUSystem>();
+
+    public ResourceManagerSystem TotalUsedSystemResources;
 }

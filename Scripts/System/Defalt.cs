@@ -17,7 +17,6 @@ public class Defalt : MonoBehaviour
 
 	private Computer com;
     private Notepad note;
-    private Notepadv2 notev2;
     private Tracer trace;
     //private MissionBrow mb;
 	private EmailClient cc;
@@ -51,7 +50,6 @@ public class Defalt : MonoBehaviour
 	private MusicPlayer mp;
 	private DiskManV2 dmv2;
 	private Mouse mouse;
-	private FileExplorer fp;
     private DeviceManager dem;
     private BugReport qa;
     private NotificationViewer nv;
@@ -142,7 +140,6 @@ public class Defalt : MonoBehaviour
 		os = SysSoftware.GetComponent<DesktopEnviroment>();
 		dmv2 = SysSoftware.GetComponent<DiskManV2>();
 		mouse = SysSoftware.GetComponent<Mouse>();
-		fp = SysSoftware.GetComponent<FileExplorer>();
         dem = SysSoftware.GetComponent<DeviceManager>();
         vc = SysSoftware.GetComponent<VolumeController>();
 		version = SysSoftware.GetComponent<VersionViewer>();
@@ -154,7 +151,6 @@ public class Defalt : MonoBehaviour
 		sm = AppSoftware.GetComponent<SystemMap>();
 		al = AppSoftware.GetComponent<AccLog>();
 		note = AppSoftware.GetComponent<Notepad>();
-		notev2 = AppSoftware.GetComponent<Notepadv2>();
 		cc = AppSoftware.GetComponent<EmailClient>();
 		tv = AppSoftware.GetComponent<TreeView>();
         nv = AppSoftware.GetComponent<NotificationViewer>();
@@ -217,7 +213,7 @@ public class Defalt : MonoBehaviour
 			ct.enabled = true;
 			ct.Once = false;
 			ct.UpdatePics ();
-			os.pic [2] = ct.tex1 [4];
+			//os.pic [2] = ct.tex1 [4];
 			ct.enabled = false;
 		} 
 		else
@@ -243,7 +239,6 @@ public class Defalt : MonoBehaviour
 	{
 		//icon.windowID = 1;
 		com.windowID = 2;
-		note.windowID = 3;
 //		pro.windowID = 4;
 		trace.windowID = 5;
 		//mb.windowID = 6;
@@ -289,11 +284,7 @@ public class Defalt : MonoBehaviour
 		passcrk.windowID = 46;
 		mp.windowID = 47;
 //		dm.windowID = 48;
-		fp.windowID = 49;
-		fp.ContextMenuID = 50;
 		tasks.ContextMenuID = 51;
-		notev2.windowID = 52;
-		notev2.ContextMenuID = 53;
 		com.ContextMenuID = 54;
 		cmd2.windowID = 55;
         dem.windowID = 56;
@@ -309,7 +300,7 @@ public class Defalt : MonoBehaviour
         pv.windowID = 65;
         vc.windowID = 66;
 		dmv2.windowID = 67;
-		media.windowID = 68;
+		//media.windowID = 68;
 		version.windowID = 69;
 
 

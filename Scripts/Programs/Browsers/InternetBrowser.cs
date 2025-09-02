@@ -404,6 +404,24 @@ public class InternetBrowser : MonoBehaviour
 				connected = true;
 				clic.storedConnection = "www.jaildew.com";
 				break;
+			case "www.uplink.com":
+				SiteName = "Uplink";
+				ws.UpdateSecCheck = true;
+				//Uplink.RenderSite();
+				for (int i = 0; i < GameControl.control.CompanyServerData.Count; i++)
+				{
+					for (int j = 0; j < GameControl.control.CompanyServerData.Count; j++)
+					{
+						if (GameControl.control.CompanyServerData[i].Name == "Jaildew")
+						{
+							CurrentAccounts = GameControl.control.CompanyServerData[i].Accounts;
+						}
+					}
+				}
+				sm.Connect();
+				connected = true;
+				clic.storedConnection = "www.jaildew.com";
+				break;
 			//case "www.aki.com":
 			//	SiteName = "Aki";
 			//	ws.UpdateSecCheck = true;

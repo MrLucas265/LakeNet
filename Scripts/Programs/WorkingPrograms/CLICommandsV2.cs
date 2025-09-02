@@ -2,8 +2,9 @@
 using System.Collections.Generic;
 using UnityEngine;
 using System;
-using System.Linq;
 using System.Text.RegularExpressions;
+using UnityEngine.SceneManagement;
+
 #if UNITY_EDITOR
 using UnityEditor;
 #endif
@@ -228,7 +229,6 @@ public class CLICommandsV2 : MonoBehaviour
 
 		ram = hardware.GetComponent<RAM>();
 		psu = hardware.GetComponent<PSU>();
-		hdd = hardware.GetComponent<HardDrives>();
 		mb = hardware.GetComponent<Motherboard>();
 		net = hardware.GetComponent<Networks>();
 
@@ -261,7 +261,7 @@ public class CLICommandsV2 : MonoBehaviour
 				{
 					if (SystemCommands [i].Func == "-help") 
 					{
-						if(GameControl.control.Gateway.Status.Terminal == true)
+						if(GameControl.control.GatewayStatus.Terminal == true)
 						{
 							PastCommands.Add("Command-Line Interface Version 3.0");
 						}
@@ -522,32 +522,32 @@ public class CLICommandsV2 : MonoBehaviour
 
 	public void SetFontColor()
 	{
-		Color32 Fontcolor;
-		Fontcolor.r = (byte)GameControl.control.SelectedOS.Colour.Font.Red;
-		Fontcolor.g = (byte)GameControl.control.SelectedOS.Colour.Font.Green;
-		Fontcolor.b = (byte)GameControl.control.SelectedOS.Colour.Font.Blue;
-		Fontcolor.a = (byte)GameControl.control.SelectedOS.Colour.Font.Alpha;
-		com.colors[1] = Fontcolor;
+  //      var Fontcolor = new Color32();
+  //      Fontcolor.r = (byte)GameControl.control.SelectedOS.Colour.Font.Red;
+		//Fontcolor.g = (byte)GameControl.control.SelectedOS.Colour.Font.Green;
+		//Fontcolor.b = (byte)GameControl.control.SelectedOS.Colour.Font.Blue;
+		//Fontcolor.a = (byte)GameControl.control.SelectedOS.Colour.Font.Alpha;
+		//com.colors[1] = Fontcolor;
 	}
 
 	public void SetButtonColor()
 	{
-		Color32 ButtonColor;
-		ButtonColor.r = (byte)GameControl.control.SelectedOS.Colour.Button.Red;
-		ButtonColor.g = (byte)GameControl.control.SelectedOS.Colour.Button.Green;
-		ButtonColor.b = (byte)GameControl.control.SelectedOS.Colour.Button.Blue;
-		ButtonColor.a = (byte)GameControl.control.SelectedOS.Colour.Button.Alpha;
-		com.colors[2] = ButtonColor;
+  //      var ButtonColor = new Color32();
+  //      ButtonColor.r = (byte)GameControl.control.SelectedOS.Colour.Button.Red;
+		//ButtonColor.g = (byte)GameControl.control.SelectedOS.Colour.Button.Green;
+		//ButtonColor.b = (byte)GameControl.control.SelectedOS.Colour.Button.Blue;
+		//ButtonColor.a = (byte)GameControl.control.SelectedOS.Colour.Button.Alpha;
+		//com.colors[2] = ButtonColor;
 	}
 
 	public void SetWindowColor()
 	{
-		Color32 WindowColor;
-		WindowColor.r = (byte)GameControl.control.SelectedOS.Colour.Window.Red;
-		WindowColor.g = (byte)GameControl.control.SelectedOS.Colour.Window.Green;
-		WindowColor.b = (byte)GameControl.control.SelectedOS.Colour.Window.Blue;
-		WindowColor.a = (byte)GameControl.control.SelectedOS.Colour.Window.Alpha;
-		com.colors[3] = WindowColor;
+  //      var WindowColor = new Color32();
+  //      WindowColor.r = (byte)GameControl.control.SelectedOS.Colour.Window.Red;
+		//WindowColor.g = (byte)GameControl.control.SelectedOS.Colour.Window.Green;
+		//WindowColor.b = (byte)GameControl.control.SelectedOS.Colour.Window.Blue;
+		//WindowColor.a = (byte)GameControl.control.SelectedOS.Colour.Window.Alpha;
+		//com.colors[3] = WindowColor;
 	}
 
 	void ThemeChange()
@@ -588,36 +588,36 @@ public class CLICommandsV2 : MonoBehaviour
 		}
 	}
 
-	void OpenFile()
-	{
-		for (int i = 0; i < GameControl.control.ProgramFiles.Count; i++) 
-		{
-			if (GameControl.control.ProgramFiles[i].Name == ParseArray[1]) 
-			{
-				if (twd == GameControl.control.ProgramFiles [i].Location) 
-				{
-					note.SelectedDocument = i;
-					if (note.show == true && note.enabled == true) 
-					{
-						note.CurrentWorkingTitle = GameControl.control.ProgramFiles[i].Name;
-						note.TypedTitle = GameControl.control.ProgramFiles[i].Name;
-						note.TypedText = GameControl.control.ProgramFiles[i].Content;
-						note.SaveLocation = GameControl.control.ProgramFiles [i].Location;
-						note.ShowFileContent = true;
-					}
-					if (note.show == false || note.enabled == false) 
-					{
-						appman.SelectedApp = "Notepad";
-						note.CurrentWorkingTitle = GameControl.control.ProgramFiles[i].Name;
-						note.TypedTitle = GameControl.control.ProgramFiles[i].Name;
-						note.TypedText = GameControl.control.ProgramFiles[i].Content;
-						note.SaveLocation = GameControl.control.ProgramFiles [i].Location;
-						note.ShowFileContent = true;
-					}	
-				}
-			}
-		}
-	}
+	//void OpenFile()
+	//{
+	//	for (int i = 0; i < GameControl.control.ProgramFiles.Count; i++) 
+	//	{
+	//		if (GameControl.control.ProgramFiles[i].Name == ParseArray[1]) 
+	//		{
+	//			if (twd == GameControl.control.ProgramFiles [i].Location) 
+	//			{
+	//				note.SelectedDocument = i;
+	//				if (note.show == true && note.enabled == true) 
+	//				{
+	//					note.CurrentWorkingTitle = GameControl.control.ProgramFiles[i].Name;
+	//					note.TypedTitle = GameControl.control.ProgramFiles[i].Name;
+	//					note.TypedText = GameControl.control.ProgramFiles[i].Content;
+	//					note.SaveLocation = GameControl.control.ProgramFiles [i].Location;
+	//					note.ShowFileContent = true;
+	//				}
+	//				if (note.show == false || note.enabled == false) 
+	//				{
+	//					appman.SelectedApp = "Notepad";
+	//					note.CurrentWorkingTitle = GameControl.control.ProgramFiles[i].Name;
+	//					note.TypedTitle = GameControl.control.ProgramFiles[i].Name;
+	//					note.TypedText = GameControl.control.ProgramFiles[i].Content;
+	//					note.SaveLocation = GameControl.control.ProgramFiles [i].Location;
+	//					note.ShowFileContent = true;
+	//				}	
+	//			}
+	//		}
+	//	}
+	//}
 
 	void MakeFile()
 	{
@@ -746,7 +746,7 @@ public class CLICommandsV2 : MonoBehaviour
 		{
 			if (GameControl.control.ProgramFiles[i].Name == ParseArray[1]) 
 			{
-				GameControl.control.QuickProgramList.Add (GameControl.control.ProgramFiles[i]);
+				//GameControl.control.QuickProgramList.Add (GameControl.control.ProgramFiles[i]);
 			}
 		}
 	}
@@ -1560,7 +1560,7 @@ public class CLICommandsV2 : MonoBehaviour
 			break;
 
 		case "accountinfo":
-			PastCommands.Add ("Serial Key: " + GameControl.control.SerialKey);
+			//PastCommands.Add ("Serial Key: " + GameControl.control.SerialKey);
 			PastCommands.Add ("Current User Name: " + GameControl.control.ProfileName);
 			break;
 
@@ -1636,7 +1636,7 @@ public class CLICommandsV2 : MonoBehaviour
 			}
 			else
 			{
-				OpenFile();
+				//OpenFile();
 			}
 			break;
 
@@ -2100,10 +2100,10 @@ public class CLICommandsV2 : MonoBehaviour
 
 		case "safemode":
 			GameControl.control.SelectedOS.Name = OperatingSystems.OSName.SafeMode;
-			GameControl.control.Gateway.Status.Terminal = true;
-			GameControl.control.Gateway.Status.Booted = false;
-			GameControl.control.Gateway.Status.SafeMode = true;
-			Application.LoadLevel(1);
+			GameControl.control.GatewayStatus.Terminal = true;
+			GameControl.control.GatewayStatus.Booted = false;
+			GameControl.control.GatewayStatus.SafeMode = true;
+			SceneManager.LoadScene("Game");
 			break;
 
 		case "shutdown":
@@ -2111,7 +2111,7 @@ public class CLICommandsV2 : MonoBehaviour
 			break;
 
 		case "logout":
-			if(GameControl.control.Gateway.Status.Terminal == true)
+			if(GameControl.control.GatewayStatus.Terminal == true)
 			{
 				PastCommands.Add("Signing Out..");
 				ShutDownWindow.SignOut();

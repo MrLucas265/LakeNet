@@ -130,6 +130,7 @@ public class Boot : MonoBehaviour
 	public bool PlaySoundOnce;
 
     public bool TestMode;
+	public bool UpdateUI;
 
     public GUISkin Skin;
 
@@ -183,6 +184,8 @@ public class Boot : MonoBehaviour
 		Kernal ();
 
 		SetColor = true;
+
+		TestMode = false;
 
 		missions = GameObject.Find ("Missions");
 		Prompt = GameObject.Find("Prompts");
@@ -263,6 +266,8 @@ public class Boot : MonoBehaviour
 		LoadPresetColors();
 
 		cd = GameControl.control.BootTime;
+
+		TestMode = false;
 	}
 
 	void LoadPresetColors()
@@ -435,7 +440,7 @@ public class Boot : MonoBehaviour
 			BootInfo.Remove ("Preparing systems check.");
 			BootInfo.Add ("Preparing systems check..");
 			os.SetOSUsage = true;
-			GameControl.control.Gateway.Status.Booting = true;
+			GameControl.control.GatewayStatus.Booting = true;
 			break;
 		case 2:
 			BootInfo.Remove ("Preparing systems check..");
@@ -512,15 +517,19 @@ public class Boot : MonoBehaviour
 			pause = true;
 			break;
 		case 13:
-			if (BackgroundFade == true)
-			{
-				BGTakingAlpha = true;
-			}
-			def.enabled = true;
-			if (GameControl.control.NewAccount == true)
-			{
-				GameControl.control.NewAccount = false;
-			}
+
+				if(TestMode == false)
+                {
+					if (BackgroundFade == true)
+					{
+						BGTakingAlpha = true;
+					}
+					def.enabled = true;
+					if (GameControl.control.NewAccount == true)
+					{
+						GameControl.control.NewAccount = false;
+					}
+				}
 			break;
 		}
 
@@ -597,6 +606,7 @@ public class Boot : MonoBehaviour
 			case 15:
 				BootInfo.Remove ("[Initializing] Software..");
 				BootInfo.Add ("[Done] Software");
+				Resources.UnloadUnusedAssets();
 				break;
 			case 16:
 				notip.enabled = true;
@@ -621,17 +631,25 @@ public class Boot : MonoBehaviour
 				ss.enabled = true;
 			}
 
-			if (Registry.GetColorData("Player", "System", "WindowColor") == null)
+			if (Registry.GetBoolData("Player", "System", "WindowColor") == false)
             {
 				Registry.SetColorData("Player", "System", "WindowColor",new SColor(new Color(255,255,255,255)));
 				Registry.SetColorData("Player", "System", "FontColor", new SColor(new Color(0, 0, 0, 255)));
 				Registry.SetColorData("Player", "System", "ButtonColor", new SColor(new Color(255, 255, 255, 255)));
-            }
+                Registry.SetBoolData("Player", "System", "WindowColor", true);
+                Registry.SetBoolData("Player", "System", "FontColor", true);
+                Registry.SetBoolData("Player", "System", "ButtonColor", true);
+                Registry.SetBoolData("Player", "System", "ShowDesktopBackground", true);
 
-			Registry.SetBoolData("Player", "System", "WindowColor",true);
-			Registry.SetBoolData("Player", "System", "FontColor", true);
-			Registry.SetBoolData("Player", "System", "ButtonColor", true);
-			GameControl.control.Gateway.Status.Booting = false;
+                for (int i = 0; i < GameControl.control.Skins.Count(); i++)
+				{
+					if (GameControl.control.Skins[i].name == "Modern")
+					{
+                       Registry.SetIntData("Player", "System", "Skin", i);
+                    }
+				}
+            }
+			GameControl.control.GatewayStatus.Booting = false;
 			os.enabled = true;
             desk.enabled = true;
 			noti.enabled = true;
@@ -642,7 +660,7 @@ public class Boot : MonoBehaviour
             show = false;
 			person.Gateway.Status.Booting = false;
 			person.Gateway.Status.Booted = true;
-			GameControl.control.Gateway.Status.Booted = true;
+			GameControl.control.GatewayStatus.Booted = true;
         }
 	}
 		
@@ -669,7 +687,7 @@ public class Boot : MonoBehaviour
 	{
 		GUI.backgroundColor = buttonColor;
 		GUI.contentColor = fontColor;
-		if (GameControl.control.Gateway.Status.Terminal == false)
+		if (GameControl.control.GatewayStatus.Terminal == false)
 		{
 			var person = PersonController.control.People.FirstOrDefault(x => x.Name == "Player");
 
@@ -685,8 +703,8 @@ public class Boot : MonoBehaviour
 					}
 				}
 			}
-			OSCheck();
-		}
+            OSCheck();
+        }
 		else
 		{
 			TerminalMode();
@@ -1177,11 +1195,11 @@ public class Boot : MonoBehaviour
 
 		GUI.DrawTexture (new Rect (Pos.width - 100, Pos.height - 100, 256, 256), os.Icon[os.SelectedIcon]);
 
-		if (Color1.a <= 3) 
-		{
-			enabled = false;
-			booting = false;
-			show = false;
-		}
+		//if (Color1.a <= 3) 
+		//{
+		//	enabled = false;
+		//	booting = false;
+		//	show = false;
+		//}
 	}
 }

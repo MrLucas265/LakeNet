@@ -65,11 +65,11 @@ public class RealExeCreator : MonoBehaviour
     {
         Customize.cust.windowx[windowID] = windowRect.x;
         Customize.cust.windowy[windowID] = windowRect.y;
-        GUI.skin = com.Skin[GameControl.control.GUIID];
+        GUI.skin = GameControl.control.Skins[Registry.GetIntData("Player", "System", "Skin")];
 
         if (show == true)
         {
-            GUI.color = com.colors[Customize.cust.WindowColorInt];
+            GUI.color = Registry.Get32ColorData("Player", "System", "WindowColor");
             windowRect = WindowClamp.ClampToScreen(GUI.Window(windowID, windowRect, DoMyWindow, ""));
         }
     }
@@ -78,20 +78,20 @@ public class RealExeCreator : MonoBehaviour
     {
         if (CloseButton.Contains(Event.current.mousePosition))
         {
-            if (GUI.Button(new Rect(CloseButton), "X", com.Skin[GameControl.control.GUIID].customStyles[0]))
+            if (GUI.Button(new Rect(CloseButton), "X", GameControl.control.Skins[Registry.GetIntData("Player", "System", "Skin")].customStyles[0]))
             {
                 appman.SelectedApp = "Real Exe Creator";
             }
 
-            GUI.backgroundColor = com.colors[Customize.cust.ButtonColorInt];
-            GUI.contentColor = com.colors[Customize.cust.FontColorInt];
+            GUI.backgroundColor = Registry.Get32ColorData("Player", "System", "ButtonColor");
+            GUI.contentColor = Registry.Get32ColorData("Player", "System", "FontColor");
         }
         else
         {
-            GUI.backgroundColor = com.colors[Customize.cust.ButtonColorInt];
-            GUI.contentColor = com.colors[Customize.cust.FontColorInt];
+            GUI.backgroundColor = Registry.Get32ColorData("Player", "System", "ButtonColor");
+            GUI.contentColor = Registry.Get32ColorData("Player", "System", "FontColor");
 
-            GUI.Button(new Rect(CloseButton), "X", com.Skin[GameControl.control.GUIID].customStyles[1]);
+            GUI.Button(new Rect(CloseButton), "X", GameControl.control.Skins[Registry.GetIntData("Player", "System", "Skin")].customStyles[1]);
         }
 
         GUI.DragWindow(new Rect(2, 2, CloseButton.x-3, 21));
@@ -110,9 +110,19 @@ public class RealExeCreator : MonoBehaviour
 
         GUI.Toggle(new Rect(2, 180, 236, 21), AddQL, "Add to quick launch");
 
-        if (GUI.Button(new Rect(2, 220, 120, 21), "Create", com.Skin[GameControl.control.GUIID].customStyles[0]))
+        if (GUI.Button(new Rect(2, 220, 120, 21), "Create", GameControl.control.Skins[Registry.GetIntData("Player", "System", "Skin")].customStyles[0]))
         {
-            GameControl.control.DesktopIconList.Add(new ProgramSystem(Name, "", "", "", "", "", GameLocation, RealLocation, "", "", ProgramSystem.FileExtension.Real, ProgramSystem.FileExtension.Null, 0, 0, 0, 0, 0, 0, 0, 100, 1.0f, 0, 0, 0, 0, 0, 0, 0, false, false, false, false, BlankInfections, BlankFileType));
+            //for(int i = 0; i < PersonController.control.People.Count;i++)
+            //{
+            //    for (int j = 0; j < PersonController.control.People[i].Gateway.StorageDevices.Count; j++)
+            //    {
+            //        for (int j = 0; j < PersonController.control.People[i].Gateway.StorageDevices.Count; j++)
+            //        {
+
+            //        }
+            //    }
+            //}
+            //GameControl.control.DesktopIconList.Add(new ProgramSystem(Name, "", "", "", "", "", GameLocation, RealLocation, "", "", ProgramSystem.FileExtension.Real, ProgramSystem.FileExtension.Null, 0, 0, 0, 0, 0, 0, 0, 100, 1.0f, 0, 0, 0, 0, 0, 0, 0, false, false, false, false, BlankInfections, BlankFileType));
         }
     }
 }

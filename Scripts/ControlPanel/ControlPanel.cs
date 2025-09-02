@@ -13,7 +13,7 @@ public class ControlPanel : MonoBehaviour
 
 	private Computer com;
 	private SoundControl sc;
-	private FileExplorer fp;
+	//private FileExplorer fp;
 	private AppMan appman;
 
 	public float native_width = 1920;
@@ -32,21 +32,21 @@ public class ControlPanel : MonoBehaviour
 
 	public float IconWidth;
 	public float IconHeight;
-	public int MaxIconsPerRow;
 
 	public List<ControlPanelSystem> AllDirectoryFilePaths = new List<ControlPanelSystem>();
 	public List<ControlPanelSystem> CurDirectoryFilePaths = new List<ControlPanelSystem>();
 	public string CurrentPath;
 
-	public Vector2 scrollpos;
-	public int scrollsize;
-
 	public string SelectedMenu;
 
+	public int PosModX;
+
+	public string ProgramName;
 	// Use this for initialization
 	void Start()
 	{
-		ProgramNameForWinMan = "Control Panel";
+		ProgramNameForWinMan = "ControlPanel";
+		//ProgramName = "FileManager";
 
 		Puter = GameObject.Find("System");
 		WindowHandel = GameObject.Find("WindowHandel");
@@ -55,7 +55,7 @@ public class ControlPanel : MonoBehaviour
 		native_height = Customize.cust.native_height;
 		native_width = Customize.cust.native_width;
 
-		fp = Puter.GetComponent<FileExplorer>();
+		//fp = Puter.GetComponent<FileExplorer>();
 		appman = Puter.GetComponent<AppMan>();
 
 		winman = WindowHandel.GetComponent<WindowManager>();
@@ -96,12 +96,17 @@ public class ControlPanel : MonoBehaviour
 
 		AllDirectoryFilePaths.Add(new ControlPanelSystem("Documents", "default_programs", "default_programs/docs", ControlPanelSystem.Menu.DefaultDocuments));
 
-		AllDirectoryFilePaths.Add(new ControlPanelSystem("Themes", "dev", "dev/themes", ControlPanelSystem.Menu.Themes));
-	}
+        AllDirectoryFilePaths.Add(new ControlPanelSystem("Themes", "dev", "dev/themes", ControlPanelSystem.Menu.Themes));
+    }
 
 	// Update is called once per frame
 	void Update()
 	{
+	}
+
+	void StringNullCheck(int WPN)
+    {
+		LocalRegistry.SetStringData(PersonName, WPN, "ControlPanel", "Window", LocalRegistry.GetStringData(PersonName, WPN, "ControlPanel", "Window"));
 	}
 
 	void SelectWindowID(int WindowID)
@@ -109,7 +114,7 @@ public class ControlPanel : MonoBehaviour
 		if (Input.GetMouseButtonDown(0))
 		{
 			SelectedWindowID = WindowID;
-			winman.SelectedWID = WindowID;
+			Registry.SetIntData("Player", "WindowManager", "SelectedWindow", WindowID);
 		}
 	}
 
@@ -121,36 +126,9 @@ public class ControlPanel : MonoBehaviour
 
 	}
 
-	void Close(int ID)
-	{
-		for (int PersonCount = 0; PersonCount < PersonController.control.People.Count; PersonCount++)
-		{
-			var pwinman = PersonController.control.People[PersonCount].Gateway;
-
-			if (pwinman.RunningPrograms.Count > 0)
-			{
-				for (int i = 0; i < pwinman.RunningPrograms.Count; i++)
-				{
-					if (pwinman.RunningPrograms[i].ProgramName == ProgramNameForWinMan)
-					{
-						if (pwinman.RunningPrograms[i].WID == ID)
-						{
-
-							quit = true;
-							appman.SelectedApp = ProgramNameForWinMan;
-							pwinman.RunningPrograms.RemoveAt(i);
-							SetID();
-						}
-					}
-				}
-			}
-
-		}
-	}
-
 	void OnGUI()
 	{
-		GUI.skin = com.Skin[GameControl.control.GUIID];
+		GUI.skin = GameControl.control.Skins[Registry.GetIntData("Player", "System", "Skin")];
 
 		for (int PersonCount = 0; PersonCount < PersonController.control.People.Count; PersonCount++)
 		{
@@ -160,10 +138,13 @@ public class ControlPanel : MonoBehaviour
 			{
 				for (int i = 0; i < pwinman.RunningPrograms.Count; i++)
 				{
-					if (pwinman.RunningPrograms[i].ProgramName == ProgramNameForWinMan)
+					if (pwinman.RunningPrograms[i].ProcessName == ProgramNameForWinMan)
 					{
-						GUI.color = com.colors[Customize.cust.WindowColorInt];
+						GUI.color = Registry.Get32ColorData("Player", "System", "WindowColor");
 						pwinman.RunningPrograms[i].windowRect = WindowClamp.ClampToScreen(GUI.Window(pwinman.RunningPrograms[i].WID, pwinman.RunningPrograms[i].windowRect, DoMyWindow, ""));
+
+
+						StringNullCheck(pwinman.RunningPrograms[i].WPN);
 
 						if (!pwinman.RunningPrograms[i].windowRect.Contains(Event.current.mousePosition))
 						{
@@ -176,11 +157,6 @@ public class ControlPanel : MonoBehaviour
 				}
 			}
 		}
-
-		if(CurrentPath == "")
-        {
-			CurrentPath = "home";
-        }
 	}
 
 	void SetID()
@@ -192,7 +168,7 @@ public class ControlPanel : MonoBehaviour
 
 			for (int j = 0; j < pwinman.RunningPrograms.Count; j++)
 			{
-				if (pwinman.RunningPrograms[j].ProgramName == ProgramNameForWinMan)
+				if (pwinman.RunningPrograms[j].ProcessName == ProgramNameForWinMan)
 				{
 					count++;
 					pwinman.RunningPrograms[j].PID = count - 1;
@@ -212,21 +188,28 @@ public class ControlPanel : MonoBehaviour
 
 			if (pwinman.RunningPrograms.Count > 0)
 			{
-				winman.WindowResize(PersonName, SelectedWindowID);
+				if (WindowID == SelectedWindowID)
+				{
+					winman.RegistryWindowResize(PersonName, SelectedWindowID);
+				}
 
 				for (int i = 0; i < pwinman.RunningPrograms.Count; i++)
 				{
-					if (pwinman.RunningPrograms[i].ProgramName == ProgramNameForWinMan)
+					if (pwinman.RunningPrograms[i].ProcessName == ProgramNameForWinMan)
 					{
 						if (pwinman.RunningPrograms[i].WID == SelectedWindowID)
 						{
-							SelectedProgram = pwinman.RunningPrograms[i].PID;
+							SelectedProgram = i;
 						}
 
 						if (WindowID == pwinman.RunningPrograms[i].WID)
 						{
-							LocalRegistry.SetRectData(PersonName, pwinman.RunningPrograms[i].WPN, "Control Panel", "Window", new SRect(pwinman.RunningPrograms[i].windowRect));
-							RenderTitle(pwinman.RunningPrograms[i].WPN);
+							if(Registry.GetBoolData("Player", pwinman.RunningPrograms[i].ProcessName, "ShowResize") == true)
+							{
+                                GUI.Box(LocalRegistry.GetRectData("Player", pwinman.RunningPrograms[i].WPN, pwinman.RunningPrograms[i].ProcessName, "Resize"), "");
+                            }
+                            LocalRegistry.SetRectData(PersonName, pwinman.RunningPrograms[i].WPN, pwinman.RunningPrograms[i].ProcessName, "Window", new SRect(pwinman.RunningPrograms[i].windowRect));
+							RenderTitle(pwinman.RunningPrograms[i].ProgramName, pwinman.RunningPrograms[i].WPN, pwinman.RunningPrograms[i].WID);
 							RenderGrid(pwinman.RunningPrograms[i].WPN);
 						}
 					}
@@ -235,110 +218,114 @@ public class ControlPanel : MonoBehaviour
 		}
 	}
 
-	void RenderTitle(int WPN)
+	void RenderTitle(string Name,int WPN,int WID)
     {
-		Rect closebuttonpos = new Rect(LocalRegistry.GetRectData(PersonName, WPN, "Control Panel", "Window").width - 23, 2, 21, 21);
-		Rect addressbarbox = new Rect(153, 2, LocalRegistry.GetRectData(PersonName, WPN, "Control Panel", "Window").width-177, 21);
-		GUI.DragWindow(new Rect(2, 2, 150, 21));
-		//winman.WindowDragging(SelectedWindowID, new Rect(40, 2, CloseButton.x - 41, 21));
-
-		GUI.Box(new Rect(2, 2, 150, 21), ProgramNameForWinMan);
-
-		CurrentPath = GUI.TextField(addressbarbox, CurrentPath);
-
-		if (CloseButton.Contains(Event.current.mousePosition))
+        if(LocalRegistry.GetBoolData(PersonName, WPN, "ControlPanel", "InitalRun") == false)
 		{
-			if (GUI.Button(closebuttonpos, "X", com.Skin[GameControl.control.GUIID].customStyles[0]))
+			LocalRegistry.SetStringData(PersonName, WPN, "ControlPanel", "TypedAddress", "home");
+            LocalRegistry.SetStringData(PersonName, WPN, "ControlPanel", "Window", LocalRegistry.GetStringData(PersonName, WPN, "ControlPanel", "TypedAddress"));
+			LocalRegistry.SetBoolData(PersonName, WPN, "ControlPanel", "InitalRun", true);
+        }
+
+        Rect WindowRectInfo = LocalRegistry.GetRectData(PersonName, WPN, "ControlPanel", "Window");
+		float Math = WindowRectInfo.width / 3f;
+		Rect titlebar = new Rect(2, 2, Math, 21);
+		Rect closebuttonpos = new Rect(WindowRectInfo.width - 23, 2, 21, 21);
+		Rect AddressBarEnterBox = new Rect(closebuttonpos.x - 22, 2, 21, 21);
+        Rect AddressBarHomeBox = new Rect(AddressBarEnterBox.x - 22, 2, 21, 21);
+        float StartPos = 2 + titlebar.width + 1;
+		Rect addressbarbox = new Rect(StartPos, 2, AddressBarEnterBox.x-StartPos-24, 21);
+		GUI.DragWindow(titlebar);
+		//winman.WindowDragging(SelectedWindowID, new Rect(40, 2, CloseButton.x - 41, 21));
+		if (Math < 200)
+        {
+			GUI.Box(new Rect(titlebar),LocalRegistry.GetStringData(PersonName, WPN, "ControlPanel", "Window"));
+		}
+		else
+        {
+			GUI.Box(new Rect(titlebar), Name + "-" + LocalRegistry.GetStringData(PersonName, WPN, "ControlPanel", "Window"));
+		}
+
+		LocalRegistry.SetStringData(PersonName, WPN, "ControlPanel", "TypedAddress",GUI.TextField(addressbarbox, LocalRegistry.GetStringData(PersonName, WPN, "ControlPanel", "TypedAddress")));
+
+        if (GUI.Button(AddressBarEnterBox, "E"))
+        {
+            LocalRegistry.SetStringData(PersonName, WPN, "ControlPanel", "Window", LocalRegistry.GetStringData(PersonName, WPN, "ControlPanel", "TypedAddress"));
+        }
+
+        if (GUI.Button(AddressBarHomeBox, "H"))
+		{
+            LocalRegistry.SetStringData(PersonName, WPN, "ControlPanel", "Window", "home");
+            LocalRegistry.SetStringData(PersonName, WPN, "ControlPanel", "TypedAddress", "home");
+		}
+
+		if (closebuttonpos.Contains(Event.current.mousePosition))
+		{
+			if (GUI.Button(closebuttonpos, "X", GameControl.control.Skins[Registry.GetIntData("Player", "System", "Skin")].customStyles[0]))
 			{
-				Close(SelectedWindowID);
+				WindowManager.QuitProgram(PersonName, ProgramNameForWinMan, WPN);
 			}
 
-			GUI.backgroundColor = com.colors[Customize.cust.ButtonColorInt];
-			GUI.contentColor = com.colors[Customize.cust.FontColorInt];
+			GUI.backgroundColor = Registry.Get32ColorData("Player", "System", "ButtonColor");
+			GUI.contentColor = Registry.Get32ColorData("Player", "System", "FontColor");
 		}
 		else
 		{
-			GUI.backgroundColor = com.colors[Customize.cust.ButtonColorInt];
-			GUI.contentColor = com.colors[Customize.cust.FontColorInt];
+			GUI.backgroundColor = Registry.Get32ColorData("Player", "System", "ButtonColor");
+			GUI.contentColor = Registry.Get32ColorData("Player", "System", "FontColor");
 
-			if (GUI.Button(closebuttonpos, "X", com.Skin[GameControl.control.GUIID].customStyles[1]))
-			{
-				Close(SelectedWindowID);
-			}
+			GUI.Box(closebuttonpos, "X", GameControl.control.Skins[Registry.GetIntData("Player", "System", "Skin")].customStyles[1]);
 		}
 	}
 
 	void RenderGrid(int WPN)
 	{
-		int rows = 0;
-		float x = 0;
-		float y = 0;
+		LocalRegistry.SetIntData(PersonName, WPN, "ControlPanel", "RowCount", 0);
+		LocalRegistry.SetVector2Data(PersonName, WPN, "ControlPanel", "RowCount", new SVector2(new Vector2(0, 0)));
+		LocalRegistry.SetFloatData(PersonName, WPN, "ControlPanel", "RowCount", 0);
 
-		for (int i = 0; i < AllDirectoryFilePaths.Count; i++)
+        for (int i = 0; i < AllDirectoryFilePaths.Count; i++)
 		{
-			if (AllDirectoryFilePaths[i].Location == CurrentPath)
+			if (AllDirectoryFilePaths[i].Location == LocalRegistry.GetStringData(PersonName, WPN, "ControlPanel", "Window"))
 			{
 				CurDirectoryFilePaths.Add(AllDirectoryFilePaths[i]);
 			}
 		}
 
-        scrollpos = GUI.BeginScrollView(new Rect(1, 25, LocalRegistry.GetRectData(PersonName, WPN, "Control Panel", "Window").width - 3, LocalRegistry.GetRectData(PersonName, WPN, "Control Panel", "Window").height - 32), scrollpos, new Rect(0, 0, 0, scrollsize * 24));
-        for (scrollsize = 0; scrollsize < CurDirectoryFilePaths.Count; scrollsize++)
+        LocalRegistry.SetVector2Data(PersonName, WPN, "ControlPanel", "Window", GUI.BeginScrollView(new Rect(1, 25, LocalRegistry.GetRectData(PersonName, WPN, "ControlPanel", "Window").width - 3, LocalRegistry.GetRectData(PersonName, WPN, "ControlPanel", "Window").height - 32 - LocalRegistry.GetRectData(PersonName, WPN, "ControlPanel", "Resize").height), LocalRegistry.GetVector2Data(PersonName, WPN, "ControlPanel", "Window"), new Rect(0, 0, 0, LocalRegistry.GetIntData(PersonName, WPN, "ControlPanel", "Window") * 24)));
+
+        //LocalRegistry.SetVector2Data(PersonName, WPN, "ControlPanel", "Window",GUI.BeginScrollView(new Rect(1, 25, LocalRegistry.GetRectData(PersonName, WPN, "ControlPanel", "Window").width - 3, LocalRegistry.GetRectData(PersonName, WPN, "ControlPanel", "Window").height - 32 - LocalRegistry.GetRectData(PersonName, WPN, "ControlPanel", "Resize").height), LocalRegistry.GetVector2Data(PersonName, WPN, "ControlPanel", "Window"), new Rect(0, 0, 0, LocalRegistry.GetFloatData(PersonName, WPN, "ControlPanel", "ScrollRect"))));
+		for (LocalRegistry.SetIntData(PersonName, WPN, "ControlPanel", "Window", 0); LocalRegistry.GetIntData(PersonName, WPN, "ControlPanel", "Window") < CurDirectoryFilePaths.Count; LocalRegistry.SetIntData(PersonName, WPN, "ControlPanel", "Window", LocalRegistry.GetIntData(PersonName, WPN, "ControlPanel", "Window")+1))
         {
-            MaxIconsPerRow = ((int)LocalRegistry.GetRectData(PersonName, WPN, "Control Panel", "Window").width) / (120 + 1);
-            if (MaxIconsPerRow <= 1)
+			LocalRegistry.SetIntData(PersonName, WPN, "ControlPanel", "MaxPerRowGrid", ((int)LocalRegistry.GetRectData(PersonName, WPN, "ControlPanel", "Window").width) / (120 + 1));
+            if (LocalRegistry.GetIntData(PersonName, WPN, "ControlPanel", "MaxPerRowGrid") <= 1)
             {
-                MaxIconsPerRow = 1;
-                if (GUI.Button(new Rect(1 + x, y, LocalRegistry.GetRectData(PersonName, WPN, "Control Panel", "Window").width - 15, 23), CurDirectoryFilePaths[scrollsize].Name))
+				LocalRegistry.SetIntData(PersonName, WPN, "ControlPanel", "MaxPerRowGrid", 1);
+                if (GUI.Button(new Rect(1 + LocalRegistry.GetVector2Data(PersonName, WPN, "ControlPanel", "RowCount").x, LocalRegistry.GetVector2Data(PersonName, WPN, "ControlPanel", "RowCount").y, LocalRegistry.GetRectData(PersonName, WPN, "ControlPanel", "Window").width - 15, 23), CurDirectoryFilePaths[LocalRegistry.GetIntData(PersonName, WPN, "ControlPanel", "Window")].Name))
                 {
-					CurrentPath = CurDirectoryFilePaths[scrollsize].Target;
+					LocalRegistry.SetStringData(PersonName, WPN, "ControlPanel", "Window",CurDirectoryFilePaths[LocalRegistry.GetIntData(PersonName, WPN, "ControlPanel", "Window")].Target);
+					LocalRegistry.SetStringData(PersonName, WPN, "ControlPanel", "TypedAddress", CurDirectoryFilePaths[LocalRegistry.GetIntData(PersonName, WPN, "ControlPanel", "TypedAddress")].Target);
 				}
             }
             else
             {
-                if (GUI.Button(new Rect(1 + x,y, 120, 23), CurDirectoryFilePaths[scrollsize].Name))
+                if (GUI.Button(new Rect(1 + LocalRegistry.GetVector2Data(PersonName, WPN, "ControlPanel", "RowCount").x, LocalRegistry.GetVector2Data(PersonName, WPN, "ControlPanel", "RowCount").y, 120, 23), CurDirectoryFilePaths[LocalRegistry.GetIntData(PersonName, WPN, "ControlPanel", "Window")].Name))
                 {
-                    CurrentPath = CurDirectoryFilePaths[scrollsize].Target;
-                }
+					LocalRegistry.SetStringData(PersonName, WPN, "ControlPanel", "Window", CurDirectoryFilePaths[LocalRegistry.GetIntData(PersonName, WPN, "ControlPanel", "Window")].Target);
+					LocalRegistry.SetStringData(PersonName, WPN, "ControlPanel", "TypedAddress", CurDirectoryFilePaths[LocalRegistry.GetIntData(PersonName, WPN, "ControlPanel", "TypedAddress")].Target);
+				}
             }
-            rows++;
-            x += 120 + 1;
-            if (rows == MaxIconsPerRow)
+            LocalRegistry.SetIntData(PersonName, WPN, "ControlPanel", "RowCount", LocalRegistry.GetIntData(PersonName, WPN, "ControlPanel", "RowCount") + 1);
+            LocalRegistry.SetVector2XData(PersonName, WPN, "ControlPanel", "RowCount", LocalRegistry.GetVector2Data(PersonName, WPN, "ControlPanel", "RowCount").x += 120 + 1);
+            if (LocalRegistry.GetIntData(PersonName, WPN, "ControlPanel", "RowCount") == LocalRegistry.GetIntData(PersonName, WPN, "ControlPanel", "MaxPerRowGrid"))
             {
-                rows = 0;
-                x = 0;
-                y += 1 + 23;
+                LocalRegistry.SetIntData(PersonName, WPN, "ControlPanel", "RowCount", 0);
+                LocalRegistry.SetVector2XData(PersonName, WPN, "ControlPanel", "RowCount", 0);
+                LocalRegistry.SetVector2YData(PersonName, WPN, "ControlPanel", "RowCount", LocalRegistry.GetVector2Data(PersonName, WPN, "ControlPanel", "RowCount").y += 1 + 23);
             }
         }
-        GUI.EndScrollView();
 
-        //for (int i = 0; i < CurDirectoryFilePaths.Count; i++)
-        //{
-        //    MaxIconsPerRow = ((int)LocalRegistry.GetRectData(PersonName, WPN, "Control Panel", "Window").width) / (120 + 1);
-        //    if (MaxIconsPerRow <= 1)
-        //    {
-        //        MaxIconsPerRow = 1;
-        //        if (GUI.Button(new Rect(2 + x, y + 30, LocalRegistry.GetRectData(PersonName, WPN, "Control Panel", "Window").width - 15, 24), CurDirectoryFilePaths[i].Name))
-        //        {
-        //            CurrentPath = CurDirectoryFilePaths[i].Target;
-        //        }
-        //    }
-        //    else
-        //    {
-        //        if (GUI.Button(new Rect(2 + x, y + 30, 120, 24), CurDirectoryFilePaths[i].Name))
-        //        {
-        //            CurrentPath = CurDirectoryFilePaths[i].Target;
-        //        }
-        //    }
-        //    rows++;
-        //    x += 120 + 1;
-        //    if (rows == MaxIconsPerRow)
-        //    {
-        //        rows = 0;
-        //        x = 0;
-        //        y += 1 + 24;
-        //    }
-        //}
+        GUI.EndScrollView();
 
         CurDirectoryFilePaths.RemoveRange(0, CurDirectoryFilePaths.Count);
 	}

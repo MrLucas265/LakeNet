@@ -41,7 +41,7 @@ public class Clock : MonoBehaviour
             autosave += 1 * Time.deltaTime;
         }
 
-        CurrentTime();
+        QThread.MakeThread(CurrentTime);
 
         if (GameControl.control.Time.Miniutes >= 59)
         {
@@ -53,7 +53,8 @@ public class Clock : MonoBehaviour
             Screen.fullScreen = Customize.cust.FullScreen;
             QualitySettings.antiAliasing = Customize.cust.AA;
             QualitySettings.vSyncCount = Customize.cust.VSync;
-            SaveFunction();
+            QThread.MakeThread(SaveFunction);
+            //SaveFunction();
             autosave = 0;
             //GameControl.control.Balance [GameControl.control.SelectedBank] += 1;
         }
@@ -69,6 +70,22 @@ public class Clock : MonoBehaviour
                 {
                     if (PersonController.control.People[i].Gateway.Timer.TimeRemain <= 0)
                     {
+                        QThread.MakeThread(SystemResourceManager.CalculateProgramUsage);
+                        //QThread.MakeThread(HardDrives.CheckAllDrives);
+                        HardDrives.CheckAllDrives();
+                        FileUtilityFunc.CheckList();
+                        for (int j = 0; j < PersonController.control.People[i].Gateway.RunningPrograms.Count; j++)
+                        {
+                            PersonController.control.People[i].Gateway.RunningPrograms[j].WPN = j;
+                            //for (int j = 0; j < pwinman.RunningPrograms.Count; j++)
+                            //{
+                            //    if (pwinman.RunningPrograms[j].ProgramName == ProgramName)
+                            //    {
+                            //        pwinman.RunningPrograms[j].PID++;
+                            //        pwinman.RunningPrograms[j].PID = pwinman.RunningPrograms[j].PID - 1;
+                            //    }
+                            //}
+                        }
                         PersonController.control.People[i].Gateway.Timer.TimeRemain = PersonController.control.People[i].Gateway.Timer.InitalTimer;
                     }
                     else
@@ -81,12 +98,20 @@ public class Clock : MonoBehaviour
     }
 
     void SaveFunction()
-	{
-		GameControl.control.Save();
-		ProfileController.procon.Save();
-		Customize.cust.Save();
+    {
+        GameControl.control.Save();
+        ProfileController.procon.Save();
+        Customize.cust.Save();
         PersonController.control.Save();
-	}
+    }
+
+    //void SaveFunction()
+    //{
+    //    QThread.MakeThread(GameControl.control.Save);
+    //    QThread.MakeThread(ProfileController.procon.Save);
+    //    QThread.MakeThread(PersonController.control.Save);
+    //    QThread.MakeThread(Customize.cust.Save);
+    //}
 
     void MonthlyStuff()
     {

@@ -375,14 +375,14 @@ public class EthelOSDesktop : MonoBehaviour
 	void OnGUI()
 	{
 		GUI.depth = -30;
-		GUI.skin = com.Skin[GameControl.control.GUIID];
+		GUI.skin = GameControl.control.Skins[Registry.GetIntData("Player", "System", "Skin")];
 
 		Customize.cust.windowx[windowID] = windowRect.x;
 		Customize.cust.windowy[windowID] = windowRect.y;
 
-		GUI.backgroundColor = com.colors[Customize.cust.ButtonColorInt];
+		GUI.backgroundColor = Registry.Get32ColorData("Player", "System", "ButtonColor");
 
-		GUI.contentColor = com.colors[Customize.cust.FontColorInt];
+		GUI.contentColor = Registry.Get32ColorData("Player", "System", "FontColor");
 
 		if (!SearchBoxBG.Contains(Event.current.mousePosition) && Input.GetMouseButtonDown(0))
 		{
@@ -525,7 +525,7 @@ public class EthelOSDesktop : MonoBehaviour
 
 	void ClockUI()
 	{
-		if (GUI.Button(new Rect(ClockDisplay), GameControl.control.Time.TodaysDate + "\n" + GameControl.control.Time.CurrentTime, com.Skin[GameControl.control.GUIID].customStyles[4]))
+		if (GUI.Button(new Rect(ClockDisplay), GameControl.control.Time.TodaysDate + "\n" + GameControl.control.Time.CurrentTime, GameControl.control.Skins[Registry.GetIntData("Player", "System", "Skin")].customStyles[4]))
 		{
 			sc.SoundSelect = 3;
 			sc.PlaySound();
@@ -542,7 +542,7 @@ public class EthelOSDesktop : MonoBehaviour
 			GUI.Label (new Rect(VolumeText),"%" + TempVol.ToString("F0"));
 		}
 
-		if (GUI.Button (new Rect (SpeakerButton),desk.SpeakerIcon,com.Skin[GameControl.control.GUIID].customStyles[DesktopStyle])) 
+		if (GUI.Button (new Rect (SpeakerButton),desk.SpeakerIcon,GameControl.control.Skins[Registry.GetIntData("Player", "System", "Skin")].customStyles[DesktopStyle])) 
 		{
 			ShowVolume = !ShowVolume;
 		}
@@ -557,8 +557,8 @@ public class EthelOSDesktop : MonoBehaviour
 
 	public void DesktopEnv()
 	{
-		//GUI.backgroundColor = com.colors[Customize.cust.ButtonColorInt];
-		//GUI.contentColor = com.colors[Customize.cust.FontColorInt];
+		//GUI.backgroundColor = Registry.Get32ColorData("Player", "System", "ButtonColor");
+		//GUI.contentColor = Registry.Get32ColorData("Player", "System", "FontColor");
 		//GUI.color = Color.blue;
 		//SpeakerUI();
 
@@ -572,7 +572,7 @@ public class EthelOSDesktop : MonoBehaviour
 
 		if (appmenu.show == true)
 		{
-			if (GUI.Button(new Rect(AppButton), "Appatures", com.Skin[GameControl.control.GUIID].customStyles[4]))
+			if (GUI.Button(new Rect(AppButton), "Appatures", GameControl.control.Skins[Registry.GetIntData("Player", "System", "Skin")].customStyles[4]))
 			{
 				sc.SoundSelect = 3;
 				sc.PlaySound();
@@ -581,7 +581,7 @@ public class EthelOSDesktop : MonoBehaviour
 		}
 		else
 		{
-			if (GUI.Button(new Rect(AppButton), "Appatures", com.Skin[GameControl.control.GUIID].customStyles[DesktopStyle]))
+			if (GUI.Button(new Rect(AppButton), "Appatures", GameControl.control.Skins[Registry.GetIntData("Player", "System", "Skin")].customStyles[DesktopStyle]))
 			{
 				sc.SoundSelect = 3;
 				sc.PlaySound();

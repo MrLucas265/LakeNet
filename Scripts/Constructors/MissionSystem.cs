@@ -67,4 +67,15 @@ public class MissionSystem
 		Patience = patience;
 		LevelRequirement = levelrequirement;
 	}
+
+	public void AcceptMission(string PersonName, MissionSystem AcceptedMission)
+    {
+		for(int i = 0; i < PersonController.control.People.Count;i++)
+        {
+            if (PersonController.control.People[i].Name == PersonName)
+            {
+                PersonController.control.People[i].Contracts.Add(AcceptedMission);
+			}
+        }
+    }
 }

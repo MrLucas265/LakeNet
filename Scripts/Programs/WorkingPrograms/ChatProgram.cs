@@ -87,7 +87,7 @@
 //		if (Input.GetMouseButtonDown(0))
 //		{
 //			SelectedWindowID = WindowID;
-//			winman.SelectedWID = WindowID;
+//			Registry.SetIntData("Player", "WindowManager", "SelectedWindow", WindowID);
 //		}
 //	}
 
@@ -130,7 +130,7 @@
 
 //	void OnGUI()
 //	{
-//		GUI.skin = com.Skin[GameControl.control.GUIID];
+//		GUI.skin = GameControl.control.Skins[Registry.GetIntData("Player", "System", "Skin")];
 
 //		if (winman.RunningPrograms.Count > 0)
 //		{
@@ -138,7 +138,7 @@
 //			{
 //				if (winman.RunningPrograms[i].ProgramName == ProgramNameForWinMan)
 //				{
-//					GUI.color = com.colors[Customize.cust.WindowColorInt];
+//					GUI.color = Registry.Get32ColorData("Player", "System", "WindowColor");
 //					winman.RunningPrograms[i].windowRect = WindowClamp.ClampToScreen(GUI.Window(winman.RunningPrograms[i].WID, winman.RunningPrograms[i].windowRect, DoMyWindow, ""));
 //				}
 //				if (winman.RunningPrograms[i].ProgramName == ContextMenuName)
@@ -185,20 +185,20 @@
 //						CloseButton = new Rect(winman.RunningPrograms[i].windowRect.width - 23, 2, 21, 21);
 //						if (CloseButton.Contains(Event.current.mousePosition))
 //						{
-//							if (GUI.Button(new Rect(CloseButton), "X", com.Skin[GameControl.control.GUIID].customStyles[0]))
+//							if (GUI.Button(new Rect(CloseButton), "X", GameControl.control.Skins[Registry.GetIntData("Player", "System", "Skin")].customStyles[0]))
 //							{
 //								Close(SelectedWindowID);
 //							}
 
-//							GUI.backgroundColor = com.colors[Customize.cust.ButtonColorInt];
-//							GUI.contentColor = com.colors[Customize.cust.FontColorInt];
+//							GUI.backgroundColor = Registry.Get32ColorData("Player", "System", "ButtonColor");
+//							GUI.contentColor = Registry.Get32ColorData("Player", "System", "FontColor");
 //						}
 //						else
 //						{
-//							GUI.backgroundColor = com.colors[Customize.cust.ButtonColorInt];
-//							GUI.contentColor = com.colors[Customize.cust.FontColorInt];
+//							GUI.backgroundColor = Registry.Get32ColorData("Player", "System", "ButtonColor");
+//							GUI.contentColor = Registry.Get32ColorData("Player", "System", "FontColor");
 
-//							if (GUI.Button(new Rect(CloseButton), "X", com.Skin[GameControl.control.GUIID].customStyles[1]))
+//							if (GUI.Button(new Rect(CloseButton), "X", GameControl.control.Skins[Registry.GetIntData("Player", "System", "Skin")].customStyles[1]))
 //							{
 //								Close(SelectedWindowID);
 //							}
@@ -340,8 +340,8 @@
 //	{
 //		SelectWindowID(WindowID);
 //		//GUI.Box (new Rect (Input.mousePosition.x, Input.mousePosition.y, 100, 200), "");
-//		GUI.backgroundColor = com.colors[Customize.cust.ButtonColorInt];
-//		GUI.contentColor = com.colors[Customize.cust.FontColorInt];
+//		GUI.backgroundColor = Registry.Get32ColorData("Player", "System", "ButtonColor");
+//		GUI.contentColor = Registry.Get32ColorData("Player", "System", "FontColor");
 
 //		if (ContextMenuOptions.Count <= 0)
 //		{

@@ -17,7 +17,7 @@
 //    // Update is called once per frame
 //    void Update()
 //    {
-//        if(SelectOption)
+//        if (SelectOption)
 //        {
 //            SetOption()
 //        }

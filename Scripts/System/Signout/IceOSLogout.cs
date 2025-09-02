@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class IceOSLogout : MonoBehaviour 
 {
@@ -54,8 +55,8 @@ public class IceOSLogout : MonoBehaviour
         }
         if (Timer <= 0)
 		{
-            GameControl.control.Gateway.Status.Booted = false;
-            Application.LoadLevel(0);
+            GameControl.control.GatewayStatus.Booted = false;
+            SceneManager.LoadScene("Login");
         }
 	}
 

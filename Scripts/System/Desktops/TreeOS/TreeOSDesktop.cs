@@ -280,7 +280,7 @@ public class TreeOSDesktop : MonoBehaviour
 	void OnGUI()
 	{
 		GUI.depth = -30;
-		GUI.skin = com.Skin[GameControl.control.GUIID];
+		GUI.skin = GameControl.control.Skins[Registry.GetIntData("Player", "System", "Skin")];
 
 		Customize.cust.windowx[windowID] = windowRect.x;
 		Customize.cust.windowy[windowID] = windowRect.y;
@@ -405,7 +405,7 @@ public class TreeOSDesktop : MonoBehaviour
 			GUI.Label (new Rect(VolumeText),"%" + TempVol.ToString("F0"));
 		}
 
-		if (GUI.Button (new Rect (SpeakerButton),desk.SpeakerIcon,com.Skin[GameControl.control.GUIID].customStyles[DesktopStyle])) 
+		if (GUI.Button (new Rect (SpeakerButton),desk.SpeakerIcon,GameControl.control.Skins[Registry.GetIntData("Player", "System", "Skin")].customStyles[DesktopStyle])) 
 		{
 			ShowVolume = !ShowVolume;
 		}
@@ -420,8 +420,8 @@ public class TreeOSDesktop : MonoBehaviour
 
 	public void DesktopEnv()
 	{
-		GUI.backgroundColor = com.colors[Customize.cust.ButtonColorInt];
-		//GUI.contentColor = com.colors[Customize.cust.FontColorInt];
+		GUI.backgroundColor = Registry.Get32ColorData("Player", "System", "ButtonColor");
+		//GUI.contentColor = Registry.Get32ColorData("Player", "System", "FontColor");
 		//GUI.color = Color.blue;
 
 		ClockUI();
@@ -429,7 +429,7 @@ public class TreeOSDesktop : MonoBehaviour
 
 		//GUI.TextArea(new Rect (Hint), com.Hint);
 
-		if (GUI.Button (new Rect (AppButton), desk.ApplicationsIcon,com.Skin [GameControl.control.GUIID].customStyles [DesktopStyle]))
+		if (GUI.Button (new Rect (AppButton), desk.ApplicationsIcon,GameControl.control.Skins[Registry.GetIntData("Player", "System", "Skin")].customStyles [DesktopStyle]))
 		{
 			sc.SoundSelect = 3;
 			sc.PlaySound();
@@ -441,7 +441,7 @@ public class TreeOSDesktop : MonoBehaviour
 			com.Hint = "Application Launcher";
 		}
 
-		if(GUI.Button(new Rect(GatewayButton),desk.GatewayIcon,com.Skin [GameControl.control.GUIID].customStyles [DesktopStyle]))
+		if(GUI.Button(new Rect(GatewayButton),desk.GatewayIcon,GameControl.control.Skins[Registry.GetIntData("Player", "System", "Skin")].customStyles [DesktopStyle]))
 		{
 			PlayClickSound();
             for (int i = 0; i < GameControl.control.ProgramFiles.Count; i++)
@@ -459,7 +459,7 @@ public class TreeOSDesktop : MonoBehaviour
 			com.Hint = "this is your gateway";
 		}
 
-		if(GUI.Button(new Rect(NetButton),desk.InternetIcon,com.Skin [GameControl.control.GUIID].customStyles [DesktopStyle]))
+		if(GUI.Button(new Rect(NetButton),desk.InternetIcon,GameControl.control.Skins[Registry.GetIntData("Player", "System", "Skin")].customStyles [DesktopStyle]))
 		{
 			PlayClickSound();
             for (int i = 0; i < GameControl.control.ProgramFiles.Count; i++)
@@ -473,7 +473,7 @@ public class TreeOSDesktop : MonoBehaviour
             show = false;
 		}
 
-		if(GUI.Button(new Rect(EmailButton),desk.EmailIcon,com.Skin [GameControl.control.GUIID].customStyles [DesktopStyle]))
+		if(GUI.Button(new Rect(EmailButton),desk.EmailIcon,GameControl.control.Skins[Registry.GetIntData("Player", "System", "Skin")].customStyles [DesktopStyle]))
 		{
 			PlayClickSound();
             for (int i = 0; i < GameControl.control.ProgramFiles.Count; i++)
@@ -487,13 +487,13 @@ public class TreeOSDesktop : MonoBehaviour
             show = false;
 		}
 
-		if(GUI.Button(new Rect(InfoButton),desk.InfoIcon,com.Skin [GameControl.control.GUIID].customStyles [DesktopStyle]))
+		if(GUI.Button(new Rect(InfoButton),desk.InfoIcon,GameControl.control.Skins[Registry.GetIntData("Player", "System", "Skin")].customStyles [DesktopStyle]))
 		{
 			PlayClickSound();
 			show = false;
 		}
 
-		if(GUI.Button(new Rect(PlayerButton),GameControl.control.UserPic[GameControl.control.ProfilePicID],com.Skin [GameControl.control.GUIID].customStyles [DesktopStyle]))
+		if(GUI.Button(new Rect(PlayerButton),GameControl.control.UserPic[GameControl.control.ProfilePicID],GameControl.control.Skins[Registry.GetIntData("Player", "System", "Skin")].customStyles [DesktopStyle]))
 		{
 			PlayClickSound();
 			show = false;

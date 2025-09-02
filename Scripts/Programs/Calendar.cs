@@ -13,7 +13,7 @@ public class Calendar : MonoBehaviour {
     public float native_height = 1080;
     public bool Drag;
 
-    private FileExplorer fp;
+    //private FileExplorer fp;
 
     private AppMan appman;
 
@@ -88,7 +88,7 @@ public class Calendar : MonoBehaviour {
         SysSoftware = GameObject.Find("System");
         com = SysSoftware.GetComponent<Computer>();
         defalt = SysSoftware.GetComponent<Defalt>();
-        fp = SysSoftware.GetComponent<FileExplorer>();
+        //fp = SysSoftware.GetComponent<FileExplorer>();
         appman = SysSoftware.GetComponent<AppMan>();
 
         PosCheck();
@@ -166,7 +166,7 @@ public class Calendar : MonoBehaviour {
     {
         Customize.cust.windowx[windowID] = windowRect.x;
         Customize.cust.windowy[windowID] = windowRect.y;
-        GUI.skin = com.Skin[GameControl.control.GUIID];
+        GUI.skin = GameControl.control.Skins[Registry.GetIntData("Player", "System", "Skin")];
 
         //if (Input.GetMouseButtonDown(0) || Input.GetMouseButtonDown(1) || Input.GetMouseButtonDown(2))
         //{
@@ -178,7 +178,7 @@ public class Calendar : MonoBehaviour {
 
         if (show == true)
         {
-            GUI.color = com.colors[Customize.cust.WindowColorInt];
+            GUI.color = Registry.Get32ColorData("Player", "System", "WindowColor");
             windowRect = WindowClamp.ClampToScreen(GUI.Window(windowID, windowRect, DoMyWindow, ""));
             // windowRect = GUI.Window(windowID,windowRect,DoMyWindow,""); 
         }
@@ -186,8 +186,8 @@ public class Calendar : MonoBehaviour {
         //if (ShowContext == true)
         //{
         //    ContextwindowRect.height = 21 * ContextMenuOptions.Count + 2;
-        //    GUI.skin = com.Skin[GameControl.control.GUIID];
-        //    GUI.color = com.colors[Customize.cust.WindowColorInt];
+        //    GUI.skin = GameControl.control.Skins[Registry.GetIntData("Player", "System", "Skin")];
+        //    GUI.color = Registry.Get32ColorData("Player", "System", "WindowColor");
         //    ContextwindowRect = WindowClamp.ClampToScreen(GUI.Window(ContextMenuID, ContextwindowRect, DoMyContextWindow, ""));
         //}
     }
@@ -269,20 +269,20 @@ public class Calendar : MonoBehaviour {
     {
         if (CloseButton.Contains(Event.current.mousePosition))
         {
-            if (GUI.Button(new Rect(CloseButton), "X", com.Skin[GameControl.control.GUIID].customStyles[0]))
+            if (GUI.Button(new Rect(CloseButton), "X", GameControl.control.Skins[Registry.GetIntData("Player", "System", "Skin")].customStyles[0]))
             {
                 appman.SelectedApp = "Calendar";
             }
 
-            GUI.backgroundColor = com.colors[Customize.cust.ButtonColorInt];
-            GUI.contentColor = com.colors[Customize.cust.FontColorInt];
+            GUI.backgroundColor = Registry.Get32ColorData("Player", "System", "ButtonColor");
+            GUI.contentColor = Registry.Get32ColorData("Player", "System", "FontColor");
         }
         else
         {
-            GUI.backgroundColor = com.colors[Customize.cust.ButtonColorInt];
-            GUI.contentColor = com.colors[Customize.cust.FontColorInt];
+            GUI.backgroundColor = Registry.Get32ColorData("Player", "System", "ButtonColor");
+            GUI.contentColor = Registry.Get32ColorData("Player", "System", "FontColor");
 
-            GUI.Button(new Rect(CloseButton), "X", com.Skin[GameControl.control.GUIID].customStyles[1]);
+            GUI.Button(new Rect(CloseButton), "X", GameControl.control.Skins[Registry.GetIntData("Player", "System", "Skin")].customStyles[1]);
         }
 
         GUI.DragWindow(new Rect(2, 2, CloseButton.x-4, 21));

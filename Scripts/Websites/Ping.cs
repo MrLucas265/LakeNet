@@ -180,7 +180,7 @@ public class Ping : MonoBehaviour
 				}
 			}
 
-			if (Event.current.type == EventType.keyDown && Event.current.keyCode == KeyCode.Return) 
+			if (Event.current.type == EventType.KeyDown && Event.current.keyCode == KeyCode.Return) 
 			{
 				if(SearchSites != "")
 				{

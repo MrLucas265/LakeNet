@@ -100,6 +100,8 @@ public class Customize : MonoBehaviour
 	public bool EnableAutoSave;
 	public float AutoSaveTime;
 
+	public string ActualFilePath;
+
 	void Awake()
 	{
 		if (!Directory.Exists (ProfilePath)) 
@@ -123,24 +125,24 @@ public class Customize : MonoBehaviour
 	// Use this for initialization
 	void Start () 
 	{
-
+		//ActualFilePath = Application.dataPath + "/saves/" + ProfileController.procon.VersionNumber + "/custom/" + ProfileName + ".dat";
 	}
 
 	// Update is called once per frame
 	void Update ()
 	{
-
+		ActualFilePath = Application.dataPath + "/saves/" + ProfileController.procon.VersionNumber + "/custom/" + ProfileName + ".dat";
 	}
 
 	public void DeleteFile ()
 	{
-		File.Delete(Application.dataPath + "/saves/" + ProfileController.procon.VersionNumber + "/custom/" + ProfileName + ".dat");
+		File.Delete(Application.dataPath + "/saves/" + ProfileController.procon.VersionNumber + "/custom/" + ProfileName);
 	}
 
 	public void Save()
 	{
 		BinaryFormatter bf = new BinaryFormatter ();
-		FileStream file = File.Create (Application.dataPath + "/saves/" + ProfileController.procon.VersionNumber + "/custom/" + ProfileName + ".dat");
+		FileStream file = File.Create (ActualFilePath + ".dat");
 		CustomData data = new CustomData ();
 
 		data.windowx = windowx;
@@ -210,10 +212,10 @@ public class Customize : MonoBehaviour
 
 	public void Load()
 	{
-		if (File.Exists (Application.dataPath + "/saves/" + ProfileController.procon.VersionNumber + "/custom/" + ProfileName + ".dat"))
+		if (File.Exists (ActualFilePath + ".dat"))
 		{
 			BinaryFormatter bf = new BinaryFormatter ();
-			FileStream file = File.Open (Application.dataPath + "/saves/" + ProfileController.procon.VersionNumber + "/custom/" + ProfileName + ".dat",FileMode.Open);
+			FileStream file = File.Open (ActualFilePath + ".dat",FileMode.Open);
 			CustomData data = (CustomData)bf.Deserialize (file);
 			file.Close ();
 

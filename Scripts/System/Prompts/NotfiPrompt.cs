@@ -110,7 +110,7 @@ public class NotfiPrompt : MonoBehaviour
 		Customize.cust.windowx[windowID] = windowRect.x;
 		Customize.cust.windowy[windowID] = windowRect.y;
 
-		GUI.skin = com.Skin[GameControl.control.GUIID];
+		GUI.skin = GameControl.control.Skins[Registry.GetIntData("Player", "System", "Skin")];
 
         if (GameControl.control.LCDPage > 0 && GameControl.control.LCDPage  < 50)
         {

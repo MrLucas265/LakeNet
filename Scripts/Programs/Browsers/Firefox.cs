@@ -212,11 +212,11 @@ public class Firefox : MonoBehaviour
 		Customize.cust.windowx[windowID] = windowRect.x;
 		Customize.cust.windowy[windowID] = windowRect.y;
 
-		GUI.skin = com.Skin[GameControl.control.GUIID];
+		GUI.skin = GameControl.control.Skins[Registry.GetIntData("Player", "System", "Skin")];
 
 		if(show == true)
 		{
-			GUI.color = com.colors[Customize.cust.WindowColorInt];
+			GUI.color = Registry.Get32ColorData("Player", "System", "WindowColor");
 			windowRect = WindowClamp.ClampToScreen(GUI.Window(windowID,windowRect,DoMyWindow,""));
 		}
 
@@ -234,22 +234,22 @@ public class Firefox : MonoBehaviour
 
 		if (CloseButton.Contains (Event.current.mousePosition)) 
 		{
-			if (GUI.Button (new Rect (CloseButton), "X", com.Skin [GameControl.control.GUIID].customStyles [0])) 
+			if (GUI.Button (new Rect (CloseButton), "X", GameControl.control.Skins[Registry.GetIntData("Player", "System", "Skin")].customStyles [0])) 
 			{
 			}
 		} 
 		else
 		{
-			GUI.backgroundColor = com.colors[Customize.cust.ButtonColorInt];
-			GUI.contentColor = com.colors[Customize.cust.FontColorInt];
-			if (GUI.Button (new Rect (CloseButton), "X", com.Skin [GameControl.control.GUIID].customStyles [1])) 
+			GUI.backgroundColor = Registry.Get32ColorData("Player", "System", "ButtonColor");
+			GUI.contentColor = Registry.Get32ColorData("Player", "System", "FontColor");
+			if (GUI.Button (new Rect (CloseButton), "X", GameControl.control.Skins[Registry.GetIntData("Player", "System", "Skin")].customStyles [1])) 
 			{
 			}
 		}
 
 		if (MiniButton.Contains (Event.current.mousePosition)) 
 		{
-			if (GUI.Button (new Rect (MiniButton), "-",com.Skin [GameControl.control.GUIID].customStyles [2])) 
+			if (GUI.Button (new Rect (MiniButton), "-",GameControl.control.Skins[Registry.GetIntData("Player", "System", "Skin")].customStyles [2])) 
 			{
 				minimize = !minimize;
 				Minimize();
@@ -257,17 +257,17 @@ public class Firefox : MonoBehaviour
 		} 
 		else
 		{
-			GUI.backgroundColor = com.colors[Customize.cust.ButtonColorInt];
-			GUI.contentColor = com.colors[Customize.cust.FontColorInt];
-			if (GUI.Button (new Rect (MiniButton), "-",com.Skin [GameControl.control.GUIID].customStyles [2])) 
+			GUI.backgroundColor = Registry.Get32ColorData("Player", "System", "ButtonColor");
+			GUI.contentColor = Registry.Get32ColorData("Player", "System", "FontColor");
+			if (GUI.Button (new Rect (MiniButton), "-",GameControl.control.Skins[Registry.GetIntData("Player", "System", "Skin")].customStyles [2])) 
 			{
 				minimize = !minimize;
 				Minimize();
 			}
 		}
 
-		GUI.backgroundColor = com.colors[Customize.cust.ButtonColorInt];
-		GUI.contentColor = com.colors[Customize.cust.FontColorInt];
+		GUI.backgroundColor = Registry.Get32ColorData("Player", "System", "ButtonColor");
+		GUI.contentColor = Registry.Get32ColorData("Player", "System", "FontColor");
 
 		GUI.DragWindow (new Rect (DefaltBoxSetting));
 		GUI.Box(new Rect(DefaltBoxSetting),"Firefox");
@@ -300,7 +300,7 @@ public class Firefox : MonoBehaviour
 		{
 			DefaltBoxSetting = new Rect (2,2,454,21);
 
-			if (GUI.Button (new Rect (ForwardButtonLocation), ForwardIcon, com.Skin [GameControl.control.GUIID].customStyles [2])) {
+			if (GUI.Button (new Rect (ForwardButtonLocation), ForwardIcon, GameControl.control.Skins[Registry.GetIntData("Player", "System", "Skin")].customStyles [2])) {
 				if (SelectedPage >= GameControl.control.Sites.Count - 1)
 				{
 					SelectedPage = GameControl.control.Sites.Count - 1;
@@ -313,7 +313,7 @@ public class Firefox : MonoBehaviour
 				ib.AddressBar = GameControl.control.Sites [SelectedPage];
 			}
 
-			if (GUI.Button (new Rect (BackButtonLocation), BackIcon, com.Skin [GameControl.control.GUIID].customStyles [2])) {
+			if (GUI.Button (new Rect (BackButtonLocation), BackIcon, GameControl.control.Skins[Registry.GetIntData("Player", "System", "Skin")].customStyles [2])) {
 				if (SelectedPage <= 0)
 				{
 					SelectedPage = 0;
@@ -326,13 +326,13 @@ public class Firefox : MonoBehaviour
 				ib.AddressBar = GameControl.control.Sites [SelectedPage];
 			}
 
-			if (Event.current.type == EventType.keyDown && Event.current.keyCode == KeyCode.Return)
+			if (Event.current.type == EventType.KeyDown && Event.current.keyCode == KeyCode.Return)
 			{
 				ib.Inputted = ib.AddressBar;
 				GameControl.control.Sites.Add (ib.Inputted);
 			}
 
-			if (GUI.Button (new Rect (URLSearchLocation), SearchIcon, com.Skin [GameControl.control.GUIID].customStyles [2])) 
+			if (GUI.Button (new Rect (URLSearchLocation), SearchIcon, GameControl.control.Skins[Registry.GetIntData("Player", "System", "Skin")].customStyles [2])) 
 			{
 				ib.Inputted = ib.AddressBar;
 				GameControl.control.Sites.Add (ib.Inputted);
@@ -340,7 +340,7 @@ public class Firefox : MonoBehaviour
 
 			if (AddbookmarkButton.Contains (Event.current.mousePosition)) 
 			{
-				if (GUI.Button (new Rect (AddbookmarkButton), AddBookmarkIcon,com.Skin [GameControl.control.GUIID].customStyles [2])) 
+				if (GUI.Button (new Rect (AddbookmarkButton), AddBookmarkIcon,GameControl.control.Skins[Registry.GetIntData("Player", "System", "Skin")].customStyles [2])) 
 				{
 					if (!GameControl.control.FavSites.Contains (ib.Inputted)) 
 					{
@@ -350,9 +350,9 @@ public class Firefox : MonoBehaviour
 			} 
 			else
 			{
-				GUI.backgroundColor = com.colors[Customize.cust.ButtonColorInt];
-				GUI.contentColor = com.colors[Customize.cust.FontColorInt];
-				if (GUI.Button (new Rect (AddbookmarkButton), AddBookmarkIcon,com.Skin [GameControl.control.GUIID].customStyles [2])) 
+				GUI.backgroundColor = Registry.Get32ColorData("Player", "System", "ButtonColor");
+				GUI.contentColor = Registry.Get32ColorData("Player", "System", "FontColor");
+				if (GUI.Button (new Rect (AddbookmarkButton), AddBookmarkIcon,GameControl.control.Skins[Registry.GetIntData("Player", "System", "Skin")].customStyles [2])) 
 				{
 					if (!GameControl.control.FavSites.Contains (ib.Inputted)) 
 					{
@@ -363,7 +363,7 @@ public class Firefox : MonoBehaviour
 
 			if (ExtraButton.Contains (Event.current.mousePosition)) 
 			{
-				if (GUI.Button (new Rect (ExtraButton), "|||",com.Skin [GameControl.control.GUIID].customStyles [2])) 
+				if (GUI.Button (new Rect (ExtraButton), "|||",GameControl.control.Skins[Registry.GetIntData("Player", "System", "Skin")].customStyles [2])) 
 				{
 					//showTabMenu = !showTabMenu;
 					if (Page == 0)
@@ -378,9 +378,9 @@ public class Firefox : MonoBehaviour
 			} 
 			else
 			{
-				GUI.backgroundColor = com.colors[Customize.cust.ButtonColorInt];
-				GUI.contentColor = com.colors[Customize.cust.FontColorInt];
-				if (GUI.Button (new Rect (ExtraButton), "|||",com.Skin [GameControl.control.GUIID].customStyles [2])) 
+				GUI.backgroundColor = Registry.Get32ColorData("Player", "System", "ButtonColor");
+				GUI.contentColor = Registry.Get32ColorData("Player", "System", "FontColor");
+				if (GUI.Button (new Rect (ExtraButton), "|||",GameControl.control.Skins[Registry.GetIntData("Player", "System", "Skin")].customStyles [2])) 
 				{
 					//showTabMenu = !showTabMenu;
 					if (Page == 0)

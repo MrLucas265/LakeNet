@@ -96,11 +96,11 @@ public class RemoteView : MonoBehaviour
 		Customize.cust.windowx[windowID] = windowRect.x;
 		Customize.cust.windowy[windowID] = windowRect.y;
 
-		GUI.skin = com.Skin[GameControl.control.GUIID];
+		GUI.skin = GameControl.control.Skins[Registry.GetIntData("Player", "System", "Skin")];
 
 		if(show == true)
 		{
-			GUI.color = com.colors[Customize.cust.WindowColorInt];
+			GUI.color = Registry.Get32ColorData("Player", "System", "WindowColor");
 			windowRect = WindowClamp.ClampToScreen(GUI.Window(windowID,windowRect,DoMyWindow,""));
 		}
 
@@ -116,7 +116,7 @@ public class RemoteView : MonoBehaviour
 
 		if (CloseButton.Contains (Event.current.mousePosition)) 
 		{
-			if (GUI.Button (new Rect (CloseButton), "X", com.Skin [GameControl.control.GUIID].customStyles [0])) 
+			if (GUI.Button (new Rect (CloseButton), "X", GameControl.control.Skins[Registry.GetIntData("Player", "System", "Skin")].customStyles [0])) 
 			{
 				this.enabled = false;
 				this.show = false;
@@ -124,14 +124,14 @@ public class RemoteView : MonoBehaviour
 		} 
 		else
 		{
-			GUI.backgroundColor = com.colors[Customize.cust.ButtonColorInt];
-			GUI.contentColor = com.colors[Customize.cust.FontColorInt];
-			GUI.Button (new Rect (CloseButton), "X", com.Skin [GameControl.control.GUIID].customStyles [1]);
+			GUI.backgroundColor = Registry.Get32ColorData("Player", "System", "ButtonColor");
+			GUI.contentColor = Registry.Get32ColorData("Player", "System", "FontColor");
+			GUI.Button (new Rect (CloseButton), "X", GameControl.control.Skins[Registry.GetIntData("Player", "System", "Skin")].customStyles [1]);
 		}
 
 		if (MiniButton.Contains (Event.current.mousePosition)) 
 		{
-			if (GUI.Button (new Rect (MiniButton), "-",com.Skin [GameControl.control.GUIID].customStyles [2])) 
+			if (GUI.Button (new Rect (MiniButton), "-",GameControl.control.Skins[Registry.GetIntData("Player", "System", "Skin")].customStyles [2])) 
 			{
 				minimize = !minimize;
 				Minimize();
@@ -139,17 +139,17 @@ public class RemoteView : MonoBehaviour
 		} 
 		else
 		{
-			GUI.backgroundColor = com.colors[Customize.cust.ButtonColorInt];
-			GUI.contentColor = com.colors[Customize.cust.FontColorInt];
-			if (GUI.Button (new Rect (MiniButton), "-",com.Skin [GameControl.control.GUIID].customStyles [2])) 
+			GUI.backgroundColor = Registry.Get32ColorData("Player", "System", "ButtonColor");
+			GUI.contentColor = Registry.Get32ColorData("Player", "System", "FontColor");
+			if (GUI.Button (new Rect (MiniButton), "-",GameControl.control.Skins[Registry.GetIntData("Player", "System", "Skin")].customStyles [2])) 
 			{
 				minimize = !minimize;
 				Minimize();
 			}
 		}
 
-		GUI.backgroundColor = com.colors[Customize.cust.ButtonColorInt];
-		GUI.contentColor = com.colors[Customize.cust.FontColorInt];
+		GUI.backgroundColor = Registry.Get32ColorData("Player", "System", "ButtonColor");
+		GUI.contentColor = Registry.Get32ColorData("Player", "System", "FontColor");
 
 		GUI.DragWindow (new Rect (DefaltBoxSetting));
 
@@ -164,14 +164,14 @@ public class RemoteView : MonoBehaviour
 			URLSearchLocation = new Rect (2,50,54,21);
 			GUI.Box (new Rect (DefaltBoxSetting), "Remote Viewer");
 
-			if (GUI.Button (new Rect (URLSearchLocation), "Connect", com.Skin [GameControl.control.GUIID].customStyles [2])) 
+			if (GUI.Button (new Rect (URLSearchLocation), "Connect", GameControl.control.Skins[Registry.GetIntData("Player", "System", "Skin")].customStyles [2])) 
 			{
 				//ib.AddressBar = TypedIP;
 				Inputted = TypedIP;
 				//GameControl.control.Sites.Add (ib.Inputted);
 			}
 
-			if (Event.current.type == EventType.keyDown && Event.current.keyCode == KeyCode.Return)
+			if (Event.current.type == EventType.KeyDown && Event.current.keyCode == KeyCode.Return)
 			{
 				//ib.AddressBar = TypedIP;
 				Inputted = TypedIP;
@@ -189,7 +189,7 @@ public class RemoteView : MonoBehaviour
 			DefaltBoxSetting = new Rect (2,2,380,21);
 			GUI.Box(new Rect(DefaltBoxSetting),"Remote Viewer: " + SiteName);
 
-			if (GUI.Button (new Rect (new Rect (382,2,74,21)), "Disconnect", com.Skin [GameControl.control.GUIID].customStyles [2])) 
+			if (GUI.Button (new Rect (new Rect (382,2,74,21)), "Disconnect", GameControl.control.Skins[Registry.GetIntData("Player", "System", "Skin")].customStyles [2])) 
 			{
 				Connected = false;
 				Inputted = "";

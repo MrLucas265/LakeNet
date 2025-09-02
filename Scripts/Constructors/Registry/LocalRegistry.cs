@@ -1,423 +1,1993 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using System.Linq;
 
 public class LocalRegistry
 {
-
-
 	public static void AddNewKey(string PersonsName, int PID, string KeyName)
     {
-		var person = PersonController.control.People.FirstOrDefault(x => x.Name == PersonsName);
+        var people = PersonController.control.People;
 
-		person.Gateway.RunningPrograms[PID].LocalRegister.Add(new RegistrySystem(KeyName));
+        for (int i = 0; i < people.Count;i++)
+		{
+			if (people[i].Name == PersonsName)
+			{
+                people[i].Gateway.RunningPrograms[PID].LocalRegister.Add(new RegistrySystem(KeyName));
+            }
+		}
 	}
 
-	public static void AddNewValue(string PersonsName, int PID, string KeyName,string ValueName)
+	public static void AddNewValue(string PersonsName, int PID, string KeyName, string ValueName)
 	{
-		var person = PersonController.control.People.FirstOrDefault(x => x.Name == PersonsName);
-		var reg = person.Gateway.RunningPrograms[PID].LocalRegister.FirstOrDefault(x => x.KeyName == KeyName);
+        var people = PersonController.control.People;
 
-		reg.Values.Add(new RegistryDataSystem(ValueName));
+        for (int i = 0; i < people.Count; i++)
+		{
+			if (people[i].Name == PersonsName)
+			{
+				for (int j = 0; j < people[i].Gateway.RunningPrograms[PID].LocalRegister.Count; j++)
+				{
+					if(people[i].Gateway.RunningPrograms[PID].LocalRegister[j].KeyName == KeyName)
+					{
+						people[i].Gateway.RunningPrograms[PID].LocalRegister[j].Values.Add(new RegistryDataSystem(ValueName));
+                    }
+				}
+            }
+        }
 	}
 
-	public static void SetColorData(string PersonsName, int PID, string KeyName, string ValueName, SColor color)
+    public static void SetFMSData(string PersonsName, int PID, string KeyName, string ValueName, FileUtilitySystem FMS)
+    {
+        var people = PersonController.control.People;
+        for (int i = 0; i < people.Count; i++)
+        {
+            if (people[i].Name == PersonsName)
+            {
+                for (int j = 0; j < people[i].Gateway.RunningPrograms[PID].LocalRegister.Count; j++)
+                {
+                    if (people[i].Gateway.RunningPrograms[PID].LocalRegister[j].KeyName == KeyName)
+                    {
+                        for (int k = 0; k < people[i].Gateway.RunningPrograms[PID].LocalRegister[j].Values.Count; k++)
+                        {
+                            if (people[i].Gateway.RunningPrograms[PID].LocalRegister[j].Values[k].ValueName == ValueName)
+                            {
+                                var regdata = people[i].Gateway.RunningPrograms[PID].LocalRegister[j].Values[k];
+
+                                regdata.FMS = FMS;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    public static FileUtilitySystem GetFMSData(string PersonsName, int PID, string KeyName, string ValueName)
+    {
+        var people = PersonController.control.People;
+
+        FileUtilitySystem Test = null;
+
+        for (int i = 0; i < people.Count; i++)
+        {
+            if (people[i].Name == PersonsName)
+            {
+                for (int j = 0; j < people[i].Gateway.RunningPrograms[PID].LocalRegister.Count; j++)
+                {
+                    if (people[i].Gateway.RunningPrograms[PID].LocalRegister[j].KeyName == KeyName)
+                    {
+                        for (int k = 0; k < people[i].Gateway.RunningPrograms[PID].LocalRegister[j].Values.Count; k++)
+                        {
+                            if (people[i].Gateway.RunningPrograms[PID].LocalRegister[j].Values[k].ValueName == ValueName)
+                            {
+                                var regdata = people[i].Gateway.RunningPrograms[PID].LocalRegister[j].Values[k];
+                                var DataType = regdata.FMS;
+                                if (DataType != null)
+                                    Test = DataType;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        return Test;
+    }
+
+    public static int GetFMSListDataCount(string PersonsName, int PID, string KeyName, string ValueName)
+    {
+        var people = PersonController.control.People;
+
+        int Test = 0;
+
+        for (int i = 0; i < people.Count; i++)
+        {
+            if (people[i].Name == PersonsName)
+            {
+                for (int j = 0; j < people[i].Gateway.RunningPrograms[PID].LocalRegister.Count; j++)
+                {
+                    if (people[i].Gateway.RunningPrograms[PID].LocalRegister[j].KeyName == KeyName)
+                    {
+                        for (int k = 0; k < people[i].Gateway.RunningPrograms[PID].LocalRegister[j].Values.Count; k++)
+                        {
+                            if (people[i].Gateway.RunningPrograms[PID].LocalRegister[j].Values[k].ValueName == ValueName)
+                            {
+                                var regdata = people[i].Gateway.RunningPrograms[PID].LocalRegister[j].Values[k];
+                                var DataType = regdata.FMSList;
+
+                                Test = DataType.Count;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        return Test;
+    }
+
+
+    public static void SetDoubleData(string PersonsName, int PID, string KeyName, string ValueName, double DoubleData)
 	{
-		var person = PersonController.control.People.FirstOrDefault(x => x.Name == PersonsName);
-		var reg = person.Gateway.RunningPrograms[PID].LocalRegister.FirstOrDefault(x => x.KeyName == KeyName);
-		var RegValue = reg.Values.FirstOrDefault(x => x.ValueName == ValueName);
+		var people = PersonController.control.People;
+        for (int i = 0; i < people.Count; i++)
+        {
+            if (people[i].Name == PersonsName)
+            {
+                for (int j = 0; j < people[i].Gateway.RunningPrograms[PID].LocalRegister.Count; j++)
+                {
+                    if (people[i].Gateway.RunningPrograms[PID].LocalRegister[j].KeyName == KeyName)
+                    {
+                        for (int k = 0; k < people[i].Gateway.RunningPrograms[PID].LocalRegister[j].Values.Count; k++)
+                        {
+                            if (people[i].Gateway.RunningPrograms[PID].LocalRegister[j].Values[k].ValueName == ValueName)
+                            {
+                                var regdata = people[i].Gateway.RunningPrograms[PID].LocalRegister[j].Values[k];
 
-		RegValue.ColorData = color;
+                                regdata.DataDouble = DoubleData;
+                            }
+                        }
+                    }
+                }
+            }
+        }
 	}
-	public static void SetRedColorData(string PersonsName,int PID, string KeyName, string ValueName, byte FloatData)
+
+	public static double GetDoubleData(string PersonsName, int PID, string KeyName, string ValueName)
 	{
-		var person = PersonController.control.People.FirstOrDefault(x => x.Name == PersonsName);
-		var reg = person.Gateway.RunningPrograms[PID].LocalRegister.FirstOrDefault(x => x.KeyName == KeyName);
-		var RegValue = reg.Values.FirstOrDefault(x => x.ValueName == ValueName);
-
-		RegValue.ColorData.r = FloatData;
-	}
-	public static void SetGreenColorData(string PersonsName, int PID, string KeyName, string ValueName, byte FloatData)
-	{
-		var person = PersonController.control.People.FirstOrDefault(x => x.Name == PersonsName);
-		var reg = person.Gateway.RunningPrograms[PID].LocalRegister.FirstOrDefault(x => x.KeyName == KeyName);
-		var RegValue = reg.Values.FirstOrDefault(x => x.ValueName == ValueName);
-
-		RegValue.ColorData.g = FloatData;
-	}
-	public static void SetBlueColorData(string PersonsName, int PID, string KeyName, string ValueName, byte FloatData)
-	{
-		var person = PersonController.control.People.FirstOrDefault(x => x.Name == PersonsName);
-		var reg = person.Gateway.RunningPrograms[PID].LocalRegister.FirstOrDefault(x => x.KeyName == KeyName);
-		var RegValue = reg.Values.FirstOrDefault(x => x.ValueName == ValueName);
-
-		RegValue.ColorData.b = FloatData;
-	}
-	public static void SetAlphaColorData(string PersonsName, int PID, string KeyName, string ValueName, byte FloatData)
-	{
-		var person = PersonController.control.People.FirstOrDefault(x => x.Name == PersonsName);
-		var reg = person.Gateway.RunningPrograms[PID].LocalRegister.FirstOrDefault(x => x.KeyName == KeyName);
-		var RegValue = reg.Values.FirstOrDefault(x => x.ValueName == ValueName);
-
-		RegValue.ColorData.a = FloatData;
-	}
-	public static byte GetAlphaColorData(string PersonsName, int PID, string KeyName, string ValueName)
-	{
-		var person = PersonController.control.People.FirstOrDefault(x => x.Name == PersonsName);
-		var reg = person.Gateway.RunningPrograms[PID].LocalRegister.FirstOrDefault(x => x.KeyName == KeyName);
-		var RegValue = reg.Values.FirstOrDefault(x => x.ValueName == ValueName);
-
-		return RegValue.ColorData.a;
-	}
-	public static byte GetRedColorData(string PersonsName, int PID, string KeyName, string ValueName)
-	{
-		var person = PersonController.control.People.FirstOrDefault(x => x.Name == PersonsName);
-		var reg = person.Gateway.RunningPrograms[PID].LocalRegister.FirstOrDefault(x => x.KeyName == KeyName);
-		var RegValue = reg.Values.FirstOrDefault(x => x.ValueName == ValueName);
-
-		return RegValue.ColorData.r;
-	}
-	public static byte GetGreenColorData(string PersonsName, int PID, string KeyName, string ValueName)
-	{
-		var person = PersonController.control.People.FirstOrDefault(x => x.Name == PersonsName);
-		var reg = person.Gateway.RunningPrograms[PID].LocalRegister.FirstOrDefault(x => x.KeyName == KeyName);
-		var RegValue = reg.Values.FirstOrDefault(x => x.ValueName == ValueName);
-
-		return RegValue.ColorData.g;
-	}
-	public static byte GetBlueColorData(string PersonsName, int PID, string KeyName, string ValueName)
-	{
-		var person = PersonController.control.People.FirstOrDefault(x => x.Name == PersonsName);
-		var reg = person.Gateway.RunningPrograms[PID].LocalRegister.FirstOrDefault(x => x.KeyName == KeyName);
-		var RegValue = reg.Values.FirstOrDefault(x => x.ValueName == ValueName);
-
-		return RegValue.ColorData.b;
-	}
-
-	public static SColor GetColorData(string PersonsName, int PID, string KeyName, string ValueName)
-	{
-		var person = PersonController.control.People.FirstOrDefault(x => x.Name == PersonsName);
-		var reg = person.Gateway.RunningPrograms[PID].LocalRegister.FirstOrDefault(x => x.KeyName == KeyName);
-		var RegValue = reg.Values.FirstOrDefault(x => x.ValueName == ValueName);
-
-		return RegValue.ColorData;
-	}
-
-	public static void SetAlphaFloatColorData(string PersonsName, int PID, string KeyName, string ValueName, float FloatData)
-	{
-		var person = PersonController.control.People.FirstOrDefault(x => x.Name == PersonsName);
-		var reg = person.Gateway.RunningPrograms[PID].LocalRegister.FirstOrDefault(x => x.KeyName == KeyName);
-		var RegValue = reg.Values.FirstOrDefault(x => x.ValueName == ValueName);
-
-		RegValue.ColorFloatData.Alpha = FloatData;
-	}
-	public static void SetFloatColorData(string PersonsName, int PID, string KeyName, string ValueName, ColorSystem FloatData)
-	{
-		var person = PersonController.control.People.FirstOrDefault(x => x.Name == PersonsName);
-		var reg = person.Gateway.RunningPrograms[PID].LocalRegister.FirstOrDefault(x => x.KeyName == KeyName);
-		var RegValue = reg.Values.FirstOrDefault(x => x.ValueName == ValueName);
-
-		RegValue.ColorFloatData = FloatData;
-	}
-	public static void SetRedFloatColorData(string PersonsName, int PID, string KeyName, string ValueName, float FloatData)
-	{
-		var person = PersonController.control.People.FirstOrDefault(x => x.Name == PersonsName);
-		var reg = person.Gateway.RunningPrograms[PID].LocalRegister.FirstOrDefault(x => x.KeyName == KeyName);
-		var RegValue = reg.Values.FirstOrDefault(x => x.ValueName == ValueName);
-
-		RegValue.ColorFloatData.Red = FloatData;
-	}
-	public static void SetGreenFloatColorData(string PersonsName, int PID, string KeyName, string ValueName, float FloatData)
-	{
-		var person = PersonController.control.People.FirstOrDefault(x => x.Name == PersonsName);
-		var reg = person.Gateway.RunningPrograms[PID].LocalRegister.FirstOrDefault(x => x.KeyName == KeyName);
-		var RegValue = reg.Values.FirstOrDefault(x => x.ValueName == ValueName);
-
-		RegValue.ColorFloatData.Green = FloatData;
-	}
-	public static void SetBlueFloatColorData(string PersonsName, int PID, string KeyName, string ValueName, float FloatData)
-	{
-		var person = PersonController.control.People.FirstOrDefault(x => x.Name == PersonsName);
-		var reg = person.Gateway.RunningPrograms[PID].LocalRegister.FirstOrDefault(x => x.KeyName == KeyName);
-		var RegValue = reg.Values.FirstOrDefault(x => x.ValueName == ValueName);
-
-		RegValue.ColorFloatData.Blue = FloatData;
-	}
-
-	public static float GetAlphaFloatColorData(string PersonsName, int PID, string KeyName, string ValueName)
-	{
-		var person = PersonController.control.People.FirstOrDefault(x => x.Name == PersonsName);
-		var reg = person.Gateway.RunningPrograms[PID].LocalRegister.FirstOrDefault(x => x.KeyName == KeyName);
-		var RegValue = reg.Values.FirstOrDefault(x => x.ValueName == ValueName);
-
-		return RegValue.ColorFloatData.Alpha;
-	}
-	public static float GetRedFloatColorData(string PersonsName, int PID, string KeyName, string ValueName)
-	{
-		var person = PersonController.control.People.FirstOrDefault(x => x.Name == PersonsName);
-		var reg = person.Gateway.RunningPrograms[PID].LocalRegister.FirstOrDefault(x => x.KeyName == KeyName);
-		var RegValue = reg.Values.FirstOrDefault(x => x.ValueName == ValueName);
-
-		return RegValue.ColorFloatData.Red;
-	}
-	public static float GetGreenFloatColorData(string PersonsName, int PID, string KeyName, string ValueName)
-	{
-		var person = PersonController.control.People.FirstOrDefault(x => x.Name == PersonsName);
-		var reg = person.Gateway.RunningPrograms[PID].LocalRegister.FirstOrDefault(x => x.KeyName == KeyName);
-		var RegValue = reg.Values.FirstOrDefault(x => x.ValueName == ValueName);
-
-		return RegValue.ColorFloatData.Green;
-	}
-	public static float GetBlueFloatColorData(string PersonsName, int PID, string KeyName, string ValueName)
-	{
-		var person = PersonController.control.People.FirstOrDefault(x => x.Name == PersonsName);
-		var reg = person.Gateway.RunningPrograms[PID].LocalRegister.FirstOrDefault(x => x.KeyName == KeyName);
-		var RegValue = reg.Values.FirstOrDefault(x => x.ValueName == ValueName);
-
-		return RegValue.ColorFloatData.Blue;
-	}
-
-	public static ColorSystem GetFloatColorData(string PersonsName, int PID, string KeyName, string ValueName)
-	{
-		var person = PersonController.control.People.FirstOrDefault(x => x.Name == PersonsName);
-		var reg = person.Gateway.RunningPrograms[PID].LocalRegister.FirstOrDefault(x => x.KeyName == KeyName);
-		var RegValue = reg.Values.FirstOrDefault(x => x.ValueName == ValueName);
-
-		return RegValue.ColorFloatData;
-	}
-
-	public static void AddStringData(string PersonsName, int PID, string KeyName, string ValueName, string StringData)
-	{
-		var person = PersonController.control.People.FirstOrDefault(x => x.Name == PersonsName);
-		var reg = person.Gateway.RunningPrograms[PID].LocalRegister.FirstOrDefault(x => x.KeyName == KeyName);
-		var RegValue = reg.Values.FirstOrDefault(x => x.ValueName == ValueName);
-
-		RegValue.StringListData.Add(StringData);
-	}
-
-	public static string GetStringListData(string PersonsName, int PID, string KeyName, string ValueName, int array)
-	{
-		var person = PersonController.control.People.FirstOrDefault(x => x.Name == PersonsName);
-		var reg = person.Gateway.RunningPrograms[PID].LocalRegister.FirstOrDefault(x => x.KeyName == KeyName);
-		var RegValue = reg.Values.FirstOrDefault(x => x.ValueName == ValueName);
-
-		return RegValue.StringListData[array];
-	}
-
-	public static void RemoveAtStringListData(string PersonsName, int PID, string KeyName, string ValueName, int array)
-	{
-		var person = PersonController.control.People.FirstOrDefault(x => x.Name == PersonsName);
-		var reg = person.Gateway.RunningPrograms[PID].LocalRegister.FirstOrDefault(x => x.KeyName == KeyName);
-		var RegValue = reg.Values.FirstOrDefault(x => x.ValueName == ValueName);
-
-		RegValue.StringListData.RemoveAt(array);
-	}
-
-	public static bool StringDataContains(string PersonsName, int PID, string KeyName, string ValueName, string StringData)
-	{
-		var person = PersonController.control.People.FirstOrDefault(x => x.Name == PersonsName);
-		var reg = person.Gateway.RunningPrograms[PID].LocalRegister.FirstOrDefault(x => x.KeyName == KeyName);
-		var RegValue = reg.Values.FirstOrDefault(x => x.ValueName == ValueName);
-
-		return RegValue.StringListData.Contains(StringData);
-	}
-
-	public static void RemoveAllStringData(string PersonsName, int PID, string KeyName, string ValueName)
-	{
-		var person = PersonController.control.People.FirstOrDefault(x => x.Name == PersonsName);
-		var reg = person.Gateway.RunningPrograms[PID].LocalRegister.FirstOrDefault(x => x.KeyName == KeyName);
-		var RegValue = reg.Values.FirstOrDefault(x => x.ValueName == ValueName);
-
-		RegValue.StringListData.RemoveRange(0, GetStringDataCount(PersonsName, PID, KeyName, ValueName));
-	}
-
-	public static int GetStringDataCount(string PersonsName, int PID, string KeyName, string ValueName)
-	{
-		var person = PersonController.control.People.FirstOrDefault(x => x.Name == PersonsName);
-		var reg = person.Gateway.RunningPrograms[PID].LocalRegister.FirstOrDefault(x => x.KeyName == KeyName);
-		var RegValue = reg.Values.FirstOrDefault(x => x.ValueName == ValueName);
-
-		return RegValue.StringListData.Count();
-	}
-
-	public static void AddProgramData(string PersonsName, int PID, string KeyName, string ValueName, ProgramSystemv2 ProgramData)
-	{
-		var person = PersonController.control.People.FirstOrDefault(x => x.Name == PersonsName);
-		var reg = person.Gateway.RunningPrograms[PID].LocalRegister.FirstOrDefault(x => x.KeyName == KeyName);
-		var RegValue = reg.Values.FirstOrDefault(x => x.ValueName == ValueName);
-
-		RegValue.ProgramData.Add(ProgramData);
-	}
-
-	public static void RemoveAtProgramData(string PersonsName, int PID, string KeyName, string ValueName, int array)
-	{
-		var person = PersonController.control.People.FirstOrDefault(x => x.Name == PersonsName);
-		var reg = person.Gateway.RunningPrograms[PID].LocalRegister.FirstOrDefault(x => x.KeyName == KeyName);
-		var RegValue = reg.Values.FirstOrDefault(x => x.ValueName == ValueName);
-
-		RegValue.ProgramData.RemoveAt(array);
-	}
-
-	public static ProgramSystemv2 GetProgramData(string PersonsName, int PID, string KeyName, string ValueName,int array)
-	{
-		var person = PersonController.control.People.FirstOrDefault(x => x.Name == PersonsName);
-		var reg = person.Gateway.RunningPrograms[PID].LocalRegister.FirstOrDefault(x => x.KeyName == KeyName);
-		var RegValue = reg.Values.FirstOrDefault(x => x.ValueName == ValueName);
-
-		return RegValue.ProgramData[array];
-	}
-
-	public static bool ProgramDataContains(string PersonsName, int PID, string KeyName, string ValueName, ProgramSystemv2 ProgramData)
-	{
-		var person = PersonController.control.People.FirstOrDefault(x => x.Name == PersonsName);
-		var reg = person.Gateway.RunningPrograms[PID].LocalRegister.FirstOrDefault(x => x.KeyName == KeyName);
-		var RegValue = reg.Values.FirstOrDefault(x => x.ValueName == ValueName);
-
-		return RegValue.ProgramData.Contains(ProgramData);
-	}
-
-	public static void RemoveAllProgramData(string PersonsName, int PID, string KeyName, string ValueName)
-	{
-		var person = PersonController.control.People.FirstOrDefault(x => x.Name == PersonsName);
-		var reg = person.Gateway.RunningPrograms[PID].LocalRegister.FirstOrDefault(x => x.KeyName == KeyName);
-		var RegValue = reg.Values.FirstOrDefault(x => x.ValueName == ValueName);
-
-		RegValue.ProgramData.RemoveRange(0, GetProgramDataCount(PersonsName, PID, KeyName, ValueName));
-	}
-
-	public static int GetProgramDataCount(string PersonsName, int PID, string KeyName, string ValueName)
-	{
-		var person = PersonController.control.People.FirstOrDefault(x => x.Name == PersonsName);
-		var reg = person.Gateway.RunningPrograms[PID].LocalRegister.FirstOrDefault(x => x.KeyName == KeyName);
-		var RegValue = reg.Values.FirstOrDefault(x => x.ValueName == ValueName);
-
-		return RegValue.ProgramData.Count();
-	}
-
-	public static string GetStringData(string PersonsName,int PID, string KeyName, string ValueName)
-	{
-		var person = PersonController.control.People.FirstOrDefault(x => x.Name == PersonsName);
-		var reg = person.Gateway.RunningPrograms[PID].LocalRegister.FirstOrDefault(x => x.KeyName == KeyName);
-		var RegValue = reg.Values.FirstOrDefault(x => x.ValueName == ValueName);
-
-		return RegValue.DataString;
-	}
-
-	public static void SetStringData(string PersonsName,int PID, string KeyName, string ValueName, string StringData)
-	{
-		var person = PersonController.control.People.FirstOrDefault(x => x.Name == PersonsName);
-		var reg = person.Gateway.RunningPrograms[PID].LocalRegister.FirstOrDefault(x => x.KeyName == KeyName);
-		var RegValue = reg.Values.FirstOrDefault(x => x.ValueName == ValueName);
-
-		RegValue.DataString = StringData;
-	}
-
-	public static int GetIntData(string PersonsName,int PID, string KeyName, string ValueName)
-	{
-		var person = PersonController.control.People.FirstOrDefault(x => x.Name == PersonsName);
-		var reg = person.Gateway.RunningPrograms[PID].LocalRegister.FirstOrDefault(x => x.KeyName == KeyName);
-		var RegValue = reg.Values.FirstOrDefault(x => x.ValueName == ValueName);
-
-		return RegValue.DataInt;
-	}
-
-	public static void SetIntData(string PersonsName,int PID, string KeyName, string ValueName, int IntData)
-	{
-		var person = PersonController.control.People.FirstOrDefault(x => x.Name == PersonsName);
-		var reg = person.Gateway.RunningPrograms[PID].LocalRegister.FirstOrDefault(x => x.KeyName == KeyName);
-		var RegValue = reg.Values.FirstOrDefault(x => x.ValueName == ValueName);
-
-		RegValue.DataInt = IntData;
-	}
-
-	public static void SetBoolData(string PersonsName, int PID, string KeyName, string ValueName, bool BoolData)
-	{
-		var person = PersonController.control.People.FirstOrDefault(x => x.Name == PersonsName);
-		var reg = person.Gateway.RunningPrograms[PID].LocalRegister.FirstOrDefault(x => x.KeyName == KeyName);
-		var RegValue = reg.Values.FirstOrDefault(x => x.ValueName == ValueName);
-
-		RegValue.DataBool = BoolData;
-	}
-
-	public static bool GetBoolData(string PersonsName, int PID, string KeyName, string ValueName)
-	{
-		var person = PersonController.control.People.FirstOrDefault(x => x.Name == PersonsName);
-		var reg = person.Gateway.RunningPrograms[PID].LocalRegister.FirstOrDefault(x => x.KeyName == KeyName);
-		var RegValue = reg.Values.FirstOrDefault(x => x.ValueName == ValueName);
-
-		return RegValue.DataBool;
-	}
-
-	public static void SetRectData(string PersonsName, int PID, string KeyName, string ValueName, SRect RectData)
-	{
-		var person = PersonController.control.People.FirstOrDefault(x => x.Name == PersonsName);
-		var reg = person.Gateway.RunningPrograms[PID].LocalRegister.FirstOrDefault(x => x.KeyName == KeyName);
-		var RegValue = reg.Values.FirstOrDefault(x => x.ValueName == ValueName);
-
-		RegValue.DataRect = RectData;
-	}
-
-	public static SRect GetRectData(string PersonsName, int PID, string KeyName, string ValueName)
-	{
-		var person = PersonController.control.People.FirstOrDefault(x => x.Name == PersonsName);
-		var reg = person.Gateway.RunningPrograms[PID].LocalRegister.FirstOrDefault(x => x.KeyName == KeyName);
-		var RegValue = reg.Values.FirstOrDefault(x => x.ValueName == ValueName);
-
-		return RegValue.DataRect;
-	}
-
-	public static void SetFloatData(string PersonsName, int PID, string KeyName, string ValueName, float FloatData)
-	{
-		var person = PersonController.control.People.FirstOrDefault(x => x.Name == PersonsName);
-		var reg = person.Gateway.RunningPrograms[PID].LocalRegister.FirstOrDefault(x => x.KeyName == KeyName);
-		var RegValue = reg.Values.FirstOrDefault(x => x.ValueName == ValueName);
-
-		RegValue.DataFloat = FloatData;
-	}
-
-	public static float GetFloatData(string PersonsName, int PID, string KeyName, string ValueName)
-	{
-		var person = PersonController.control.People.FirstOrDefault(x => x.Name == PersonsName);
-		var reg = person.Gateway.RunningPrograms[PID].LocalRegister.FirstOrDefault(x => x.KeyName == KeyName);
-		var RegValue = reg.Values.FirstOrDefault(x => x.ValueName == ValueName);
-
-		return RegValue.DataFloat;
-	}
-
-	public static void SetVector3Data(string PersonsName, int PID, string KeyName, string ValueName, SVector3 Vector3Data)
-	{
-		var person = PersonController.control.People.FirstOrDefault(x => x.Name == PersonsName);
-		var reg = person.Gateway.RunningPrograms[PID].LocalRegister.FirstOrDefault(x => x.KeyName == KeyName);
-		var RegValue = reg.Values.FirstOrDefault(x => x.ValueName == ValueName);
-
-		RegValue.DataVector3 = Vector3Data;
-	}
-
-	public static SVector3 GetVector3Data(string PersonsName, int PID, string KeyName, string ValueName)
-	{
-		var person = PersonController.control.People.FirstOrDefault(x => x.Name == PersonsName);
-		var reg = person.Gateway.RunningPrograms[PID].LocalRegister.FirstOrDefault(x => x.KeyName == KeyName);
-		var RegValue = reg.Values.FirstOrDefault(x => x.ValueName == ValueName);
-
-		return RegValue.DataVector3;
-	}
-
-	public static void SetVector2Data(string PersonsName, int PID, string KeyName, string ValueName, SVector2 Vector2Data)
-	{
-		var person = PersonController.control.People.FirstOrDefault(x => x.Name == PersonsName);
-		var reg = person.Gateway.RunningPrograms[PID].LocalRegister.FirstOrDefault(x => x.KeyName == KeyName);
-		var RegValue = reg.Values.FirstOrDefault(x => x.ValueName == ValueName);
-
-		RegValue.DataVector2 = Vector2Data;
-	}
-
-	public static SVector2 GetVector2Data(string PersonsName, int PID, string KeyName, string ValueName)
-	{
-		var person = PersonController.control.People.FirstOrDefault(x => x.Name == PersonsName);
-		var reg = person.Gateway.RunningPrograms[PID].LocalRegister.FirstOrDefault(x => x.KeyName == KeyName);
-		var RegValue = reg.Values.FirstOrDefault(x => x.ValueName == ValueName);
-
-		return RegValue.DataVector2;
-	}
+        var people = PersonController.control.People;
+
+        double Test = 0;
+
+        for (int i = 0; i < people.Count; i++)
+        {
+            if (people[i].Name == PersonsName)
+            {
+                for (int j = 0; j < people[i].Gateway.RunningPrograms[PID].LocalRegister.Count; j++)
+                {
+                    if (people[i].Gateway.RunningPrograms[PID].LocalRegister[j].KeyName == KeyName)
+                    {
+                        for (int k = 0; k < people[i].Gateway.RunningPrograms[PID].LocalRegister[j].Values.Count; k++)
+                        {
+                            if (people[i].Gateway.RunningPrograms[PID].LocalRegister[j].Values[k].ValueName == ValueName)
+                            {
+                                var regdata = people[i].Gateway.RunningPrograms[PID].LocalRegister[j].Values[k];
+                                var DataType = regdata.DataDouble;
+                                if (!DataType.Equals(null))
+                                    Test = DataType;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        return Test;
+    }
+
+    public static void SetColorData(string PersonsName, int PID, string KeyName, string ValueName, SColor color)
+    {
+        var people = PersonController.control.People;
+
+        for (int i = 0; i < people.Count; i++)
+        {
+            if (people[i].Name == PersonsName)
+            {
+                for (int j = 0; j < people[i].Gateway.RunningPrograms[PID].LocalRegister.Count; j++)
+                {
+                    if (people[i].Gateway.RunningPrograms[PID].LocalRegister[j].KeyName == KeyName)
+                    {
+                        for (int k = 0; k < people[i].Gateway.RunningPrograms[PID].LocalRegister[j].Values.Count; k++)
+                        {
+                            if (people[i].Gateway.RunningPrograms[PID].LocalRegister[j].Values[k].ValueName == ValueName)
+                            {
+                                var regdata = people[i].Gateway.RunningPrograms[PID].LocalRegister[j].Values[k];
+								regdata.ColorData = color;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    public static SColor GetColorData(string PersonsName, int PID, string KeyName, string ValueName)
+    {
+        var people = PersonController.control.People;
+
+        SColor Test = null;
+
+        for (int i = 0; i < people.Count; i++)
+        {
+            if (people[i].Name == PersonsName)
+            {
+                for (int j = 0; j < people[i].Gateway.RunningPrograms[PID].LocalRegister.Count; j++)
+                {
+                    if (people[i].Gateway.RunningPrograms[PID].LocalRegister[j].KeyName == KeyName)
+                    {
+                        for (int k = 0; k < people[i].Gateway.RunningPrograms[PID].LocalRegister[j].Values.Count; k++)
+                        {
+                            if (people[i].Gateway.RunningPrograms[PID].LocalRegister[j].Values[k].ValueName == ValueName)
+                            {
+                                var regdata = people[i].Gateway.RunningPrograms[PID].LocalRegister[j].Values[k];
+                                var DataType = regdata.ColorData;
+                                if (!DataType.Equals(null))
+                                    Test = DataType;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        return Test;
+    }
+
+    public static Color32 Get32ColorData(string PersonsName, string KeyName, string ValueName)
+    {
+        var people = PersonController.control.People;
+
+        Color32 Test = new Color32();
+
+        for (int i = 0; i < people.Count; i++)
+        {
+            if (people[i].Name == PersonsName)
+            {
+                for (int j = 0; j < people[i].Gateway.Registry.Count; j++)
+                {
+                    if (people[i].Gateway.Registry[j].KeyName == KeyName)
+                    {
+                        for (int k = 0; k < people[i].Gateway.Registry[j].Values.Count; k++)
+                        {
+                            if (people[i].Gateway.Registry[j].Values[k].ValueName == ValueName)
+                            {
+                                var regdata = people[i].Gateway.Registry[j].Values[k];
+                                var DataType = regdata.ColorData;
+                                if (!DataType.Equals(null))
+                                    Test = DataType;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        return Test;
+    }
+
+    public static void SetRedColorData(string PersonsName, int PID, string KeyName, string ValueName, byte FloatData)
+    {
+        var people = PersonController.control.People;
+
+        for (int i = 0; i < people.Count; i++)
+        {
+            if (people[i].Name == PersonsName)
+            {
+                for (int j = 0; j < people[i].Gateway.RunningPrograms[PID].LocalRegister.Count; j++)
+                {
+                    if (people[i].Gateway.RunningPrograms[PID].LocalRegister[j].KeyName == KeyName)
+                    {
+                        for (int k = 0; k < people[i].Gateway.RunningPrograms[PID].LocalRegister[j].Values.Count; k++)
+                        {
+                            if (people[i].Gateway.RunningPrograms[PID].LocalRegister[j].Values[k].ValueName == ValueName)
+                            {
+                                var regdata = people[i].Gateway.RunningPrograms[PID].LocalRegister[j].Values[k];
+                                regdata.ColorData.r = FloatData;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    public static void SetGreenColorData(string PersonsName, int PID, string KeyName, string ValueName, byte FloatData)
+    {
+        var people = PersonController.control.People;
+
+        for (int i = 0; i < people.Count; i++)
+        {
+            if (people[i].Name == PersonsName)
+            {
+                for (int j = 0; j < people[i].Gateway.RunningPrograms[PID].LocalRegister.Count; j++)
+                {
+                    if (people[i].Gateway.RunningPrograms[PID].LocalRegister[j].KeyName == KeyName)
+                    {
+                        for (int k = 0; k < people[i].Gateway.RunningPrograms[PID].LocalRegister[j].Values.Count; k++)
+                        {
+                            if (people[i].Gateway.RunningPrograms[PID].LocalRegister[j].Values[k].ValueName == ValueName)
+                            {
+                                var regdata = people[i].Gateway.RunningPrograms[PID].LocalRegister[j].Values[k];
+                                regdata.ColorData.g = FloatData;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    public static void SetBlueColorData(string PersonsName, int PID, string KeyName, string ValueName, byte FloatData)
+    {
+        var people = PersonController.control.People;
+
+        for (int i = 0; i < people.Count; i++)
+        {
+            if (people[i].Name == PersonsName)
+            {
+                for (int j = 0; j < people[i].Gateway.RunningPrograms[PID].LocalRegister.Count; j++)
+                {
+                    if (people[i].Gateway.RunningPrograms[PID].LocalRegister[j].KeyName == KeyName)
+                    {
+                        for (int k = 0; k < people[i].Gateway.RunningPrograms[PID].LocalRegister[j].Values.Count; k++)
+                        {
+                            if (people[i].Gateway.RunningPrograms[PID].LocalRegister[j].Values[k].ValueName == ValueName)
+                            {
+                                var regdata = people[i].Gateway.RunningPrograms[PID].LocalRegister[j].Values[k];
+                                regdata.ColorData.b = FloatData;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    public static void SetAlphaColorData(string PersonsName, int PID, string KeyName, string ValueName, byte FloatData)
+    {
+        var people = PersonController.control.People;
+
+        for (int i = 0; i < people.Count; i++)
+        {
+            if (people[i].Name == PersonsName)
+            {
+                for (int j = 0; j < people[i].Gateway.RunningPrograms[PID].LocalRegister.Count; j++)
+                {
+                    if (people[i].Gateway.RunningPrograms[PID].LocalRegister[j].KeyName == KeyName)
+                    {
+                        for (int k = 0; k < people[i].Gateway.RunningPrograms[PID].LocalRegister[j].Values.Count; k++)
+                        {
+                            if (people[i].Gateway.RunningPrograms[PID].LocalRegister[j].Values[k].ValueName == ValueName)
+                            {
+                                var regdata = people[i].Gateway.RunningPrograms[PID].LocalRegister[j].Values[k];
+                                regdata.ColorData.a = FloatData;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    public static byte GetRedColorData(string PersonsName, int PID, string KeyName, string ValueName)
+    {
+        var people = PersonController.control.People;
+
+        byte Test = 0;
+
+        for (int i = 0; i < people.Count; i++)
+        {
+            if (people[i].Name == PersonsName)
+            {
+                for (int j = 0; j < people[i].Gateway.RunningPrograms[PID].LocalRegister.Count; j++)
+                {
+                    if (people[i].Gateway.RunningPrograms[PID].LocalRegister[j].KeyName == KeyName)
+                    {
+                        for (int k = 0; k < people[i].Gateway.RunningPrograms[PID].LocalRegister[j].Values.Count; k++)
+                        {
+                            if (people[i].Gateway.RunningPrograms[PID].LocalRegister[j].Values[k].ValueName == ValueName)
+                            {
+                                var regdata = people[i].Gateway.RunningPrograms[PID].LocalRegister[j].Values[k];
+                                var DataType = regdata.ColorData.r;
+                                if (!DataType.Equals(null))
+                                    Test = DataType;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        return Test;
+    }
+
+    public static byte GetGreenColorData(string PersonsName, int PID, string KeyName, string ValueName)
+    {
+        var people = PersonController.control.People;
+
+        byte Test = 0;
+
+        for (int i = 0; i < people.Count; i++)
+        {
+            if (people[i].Name == PersonsName)
+            {
+                for (int j = 0; j < people[i].Gateway.RunningPrograms[PID].LocalRegister.Count; j++)
+                {
+                    if (people[i].Gateway.RunningPrograms[PID].LocalRegister[j].KeyName == KeyName)
+                    {
+                        for (int k = 0; k < people[i].Gateway.RunningPrograms[PID].LocalRegister[j].Values.Count; k++)
+                        {
+                            if (people[i].Gateway.RunningPrograms[PID].LocalRegister[j].Values[k].ValueName == ValueName)
+                            {
+                                var regdata = people[i].Gateway.RunningPrograms[PID].LocalRegister[j].Values[k];
+                                var DataType = regdata.ColorData.g;
+                                if (!DataType.Equals(null))
+                                    Test = DataType;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        return Test;
+    }
+
+    public static byte GetBlueColorData(string PersonsName, int PID, string KeyName, string ValueName)
+    {
+        var people = PersonController.control.People;
+
+        byte Test = 0;
+
+        for (int i = 0; i < people.Count; i++)
+        {
+            if (people[i].Name == PersonsName)
+            {
+                for (int j = 0; j < people[i].Gateway.RunningPrograms[PID].LocalRegister.Count; j++)
+                {
+                    if (people[i].Gateway.RunningPrograms[PID].LocalRegister[j].KeyName == KeyName)
+                    {
+                        for (int k = 0; k < people[i].Gateway.RunningPrograms[PID].LocalRegister[j].Values.Count; k++)
+                        {
+                            if (people[i].Gateway.RunningPrograms[PID].LocalRegister[j].Values[k].ValueName == ValueName)
+                            {
+                                var regdata = people[i].Gateway.RunningPrograms[PID].LocalRegister[j].Values[k];
+                                var DataType = regdata.ColorData.b;
+                                if (!DataType.Equals(null))
+                                    Test = DataType;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        return Test;
+    }
+
+    public static byte GetAlphaColorData(string PersonsName, int PID, string KeyName, string ValueName)
+    {
+        var people = PersonController.control.People;
+
+        byte Test = 0;
+
+        for (int i = 0; i < people.Count; i++)
+        {
+            if (people[i].Name == PersonsName)
+            {
+                for (int j = 0; j < people[i].Gateway.RunningPrograms[PID].LocalRegister.Count; j++)
+                {
+                    if (people[i].Gateway.RunningPrograms[PID].LocalRegister[j].KeyName == KeyName)
+                    {
+                        for (int k = 0; k < people[i].Gateway.RunningPrograms[PID].LocalRegister[j].Values.Count; k++)
+                        {
+                            if (people[i].Gateway.RunningPrograms[PID].LocalRegister[j].Values[k].ValueName == ValueName)
+                            {
+                                var regdata = people[i].Gateway.RunningPrograms[PID].LocalRegister[j].Values[k];
+                                var DataType = regdata.ColorData.a;
+                                if (!DataType.Equals(null))
+                                    Test = DataType;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        return Test;
+    }
+
+    public static void SetAlphaFloatColorData(string PersonsName, int PID, string KeyName, string ValueName, float FloatData)
+    {
+        var people = PersonController.control.People;
+
+        for (int i = 0; i < people.Count; i++)
+        {
+            if (people[i].Name == PersonsName)
+            {
+                for (int j = 0; j < people[i].Gateway.RunningPrograms[PID].LocalRegister.Count; j++)
+                {
+                    if (people[i].Gateway.RunningPrograms[PID].LocalRegister[j].KeyName == KeyName)
+                    {
+                        for (int k = 0; k < people[i].Gateway.RunningPrograms[PID].LocalRegister[j].Values.Count; k++)
+                        {
+                            if (people[i].Gateway.RunningPrograms[PID].LocalRegister[j].Values[k].ValueName == ValueName)
+                            {
+                                var regdata = people[i].Gateway.RunningPrograms[PID].LocalRegister[j].Values[k];
+                                regdata.ColorFloatData.Alpha = FloatData;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    public static void SetFloatColorData(string PersonsName, int PID, string KeyName, string ValueName, ColorSystem FloatData)
+    {
+        var people = PersonController.control.People;
+
+        for (int i = 0; i < people.Count; i++)
+        {
+            if (people[i].Name == PersonsName)
+            {
+                for (int j = 0; j < people[i].Gateway.RunningPrograms[PID].LocalRegister.Count; j++)
+                {
+                    if (people[i].Gateway.RunningPrograms[PID].LocalRegister[j].KeyName == KeyName)
+                    {
+                        for (int k = 0; k < people[i].Gateway.RunningPrograms[PID].LocalRegister[j].Values.Count; k++)
+                        {
+                            if (people[i].Gateway.RunningPrograms[PID].LocalRegister[j].Values[k].ValueName == ValueName)
+                            {
+                                var regdata = people[i].Gateway.RunningPrograms[PID].LocalRegister[j].Values[k];
+                                regdata.ColorFloatData = FloatData;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    public static void SetRedFloatColorData(string PersonsName, int PID, string KeyName, string ValueName, float FloatData)
+    {
+        var people = PersonController.control.People;
+
+        for (int i = 0; i < people.Count; i++)
+        {
+            if (people[i].Name == PersonsName)
+            {
+                for (int j = 0; j < people[i].Gateway.RunningPrograms[PID].LocalRegister.Count; j++)
+                {
+                    if (people[i].Gateway.RunningPrograms[PID].LocalRegister[j].KeyName == KeyName)
+                    {
+                        for (int k = 0; k < people[i].Gateway.RunningPrograms[PID].LocalRegister[j].Values.Count; k++)
+                        {
+                            if (people[i].Gateway.RunningPrograms[PID].LocalRegister[j].Values[k].ValueName == ValueName)
+                            {
+                                var regdata = people[i].Gateway.RunningPrograms[PID].LocalRegister[j].Values[k];
+                                regdata.ColorFloatData.Red = FloatData;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    public static void SetGreenFloatColorData(string PersonsName, int PID, string KeyName, string ValueName, float FloatData)
+    {
+        var people = PersonController.control.People;
+
+        for (int i = 0; i < people.Count; i++)
+        {
+            if (people[i].Name == PersonsName)
+            {
+                for (int j = 0; j < people[i].Gateway.RunningPrograms[PID].LocalRegister.Count; j++)
+                {
+                    if (people[i].Gateway.RunningPrograms[PID].LocalRegister[j].KeyName == KeyName)
+                    {
+                        for (int k = 0; k < people[i].Gateway.RunningPrograms[PID].LocalRegister[j].Values.Count; k++)
+                        {
+                            if (people[i].Gateway.RunningPrograms[PID].LocalRegister[j].Values[k].ValueName == ValueName)
+                            {
+                                var regdata = people[i].Gateway.RunningPrograms[PID].LocalRegister[j].Values[k];
+                                regdata.ColorFloatData.Green = FloatData;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+    public static void SetBlueFloatColorData(string PersonsName, int PID, string KeyName, string ValueName, float FloatData)
+    {
+        var people = PersonController.control.People;
+
+        for (int i = 0; i < people.Count; i++)
+        {
+            if (people[i].Name == PersonsName)
+            {
+                for (int j = 0; j < people[i].Gateway.RunningPrograms[PID].LocalRegister.Count; j++)
+                {
+                    if (people[i].Gateway.RunningPrograms[PID].LocalRegister[j].KeyName == KeyName)
+                    {
+                        for (int k = 0; k < people[i].Gateway.RunningPrograms[PID].LocalRegister[j].Values.Count; k++)
+                        {
+                            if (people[i].Gateway.RunningPrograms[PID].LocalRegister[j].Values[k].ValueName == ValueName)
+                            {
+                                var regdata = people[i].Gateway.RunningPrograms[PID].LocalRegister[j].Values[k];
+                                regdata.ColorFloatData.Blue = FloatData;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    public static float GetAlphaFloatColorData(string PersonsName, int PID, string KeyName, string ValueName)
+    {
+        var people = PersonController.control.People;
+
+        float Test = 0;
+
+        for (int i = 0; i < people.Count; i++)
+        {
+            if (people[i].Name == PersonsName)
+            {
+                for (int j = 0; j < people[i].Gateway.RunningPrograms[PID].LocalRegister.Count; j++)
+                {
+                    if (people[i].Gateway.RunningPrograms[PID].LocalRegister[j].KeyName == KeyName)
+                    {
+                        for (int k = 0; k < people[i].Gateway.RunningPrograms[PID].LocalRegister[j].Values.Count; k++)
+                        {
+                            if (people[i].Gateway.RunningPrograms[PID].LocalRegister[j].Values[k].ValueName == ValueName)
+                            {
+                                var regdata = people[i].Gateway.RunningPrograms[PID].LocalRegister[j].Values[k];
+                                var DataType = regdata.ColorFloatData.Alpha;
+                                if (!DataType.Equals(null))
+                                    Test = DataType;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        return Test;
+    }
+
+    public static float GetRedFloatColorData(string PersonsName, int PID, string KeyName, string ValueName)
+    {
+        var people = PersonController.control.People;
+
+        float Test = 0;
+
+        for (int i = 0; i < people.Count; i++)
+        {
+            if (people[i].Name == PersonsName)
+            {
+                for (int j = 0; j < people[i].Gateway.RunningPrograms[PID].LocalRegister.Count; j++)
+                {
+                    if (people[i].Gateway.RunningPrograms[PID].LocalRegister[j].KeyName == KeyName)
+                    {
+                        for (int k = 0; k < people[i].Gateway.RunningPrograms[PID].LocalRegister[j].Values.Count; k++)
+                        {
+                            if (people[i].Gateway.RunningPrograms[PID].LocalRegister[j].Values[k].ValueName == ValueName)
+                            {
+                                var regdata = people[i].Gateway.RunningPrograms[PID].LocalRegister[j].Values[k];
+                                var DataType = regdata.ColorFloatData.Red;
+
+                                if (!DataType.Equals(null))
+                                    Test = DataType;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        return Test;
+    }
+
+    public static float GetGreenFloatColorData(string PersonsName, int PID, string KeyName, string ValueName)
+    {
+        var people = PersonController.control.People;
+
+        float Test = 0;
+
+        for (int i = 0; i < people.Count; i++)
+        {
+            if (people[i].Name == PersonsName)
+            {
+                for (int j = 0; j < people[i].Gateway.RunningPrograms[PID].LocalRegister.Count; j++)
+                {
+                    if (people[i].Gateway.RunningPrograms[PID].LocalRegister[j].KeyName == KeyName)
+                    {
+                        for (int k = 0; k < people[i].Gateway.RunningPrograms[PID].LocalRegister[j].Values.Count; k++)
+                        {
+                            if (people[i].Gateway.RunningPrograms[PID].LocalRegister[j].Values[k].ValueName == ValueName)
+                            {
+                                var regdata = people[i].Gateway.RunningPrograms[PID].LocalRegister[j].Values[k];
+                                var DataType = regdata.ColorFloatData.Green;
+
+                                if (!DataType.Equals(null))
+                                    Test = DataType;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        return Test;
+    }
+    public static float GetBlueFloatColorData(string PersonsName, int PID, string KeyName, string ValueName)
+    {
+        var people = PersonController.control.People;
+
+        float Test = 0;
+
+        for (int i = 0; i < people.Count; i++)
+        {
+            if (people[i].Name == PersonsName)
+            {
+                for (int j = 0; j < people[i].Gateway.RunningPrograms[PID].LocalRegister.Count; j++)
+                {
+                    if (people[i].Gateway.RunningPrograms[PID].LocalRegister[j].KeyName == KeyName)
+                    {
+                        for (int k = 0; k < people[i].Gateway.RunningPrograms[PID].LocalRegister[j].Values.Count; k++)
+                        {
+                            if (people[i].Gateway.RunningPrograms[PID].LocalRegister[j].Values[k].ValueName == ValueName)
+                            {
+                                var regdata = people[i].Gateway.RunningPrograms[PID].LocalRegister[j].Values[k];
+                                var DataType = regdata.ColorFloatData.Blue;
+
+                                if (!DataType.Equals(null))
+                                    Test = DataType;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        return Test;
+    }
+
+    public static ColorSystem GetFloatColorData(string PersonsName, int PID, string KeyName, string ValueName)
+    {
+        var people = PersonController.control.People;
+
+        ColorSystem Test = new ColorSystem();
+
+        for (int i = 0; i < people.Count; i++)
+        {
+            if (people[i].Name == PersonsName)
+            {
+                for (int j = 0; j < people[i].Gateway.RunningPrograms[PID].LocalRegister.Count; j++)
+                {
+                    if (people[i].Gateway.RunningPrograms[PID].LocalRegister[j].KeyName == KeyName)
+                    {
+                        for (int k = 0; k < people[i].Gateway.RunningPrograms[PID].LocalRegister[j].Values.Count; k++)
+                        {
+                            if (people[i].Gateway.RunningPrograms[PID].LocalRegister[j].Values[k].ValueName == ValueName)
+                            {
+                                var regdata = people[i].Gateway.RunningPrograms[PID].LocalRegister[j].Values[k];
+                                var DataType = regdata.ColorFloatData;
+
+                                if (DataType != null)
+                                    Test = DataType;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        return Test;
+    }
+
+    public static void AddStringListData(string PersonsName, int PID, string KeyName, string ValueName, string StringData)
+    {
+        var people = PersonController.control.People;
+
+        for (int i = 0; i < people.Count; i++)
+        {
+            if (people[i].Name == PersonsName)
+            {
+                for (int j = 0; j < people[i].Gateway.RunningPrograms[PID].LocalRegister.Count; j++)
+                {
+                    if (people[i].Gateway.RunningPrograms[PID].LocalRegister[j].KeyName == KeyName)
+                    {
+                        for (int k = 0; k < people[i].Gateway.RunningPrograms[PID].LocalRegister[j].Values.Count; k++)
+                        {
+                            if (people[i].Gateway.RunningPrograms[PID].LocalRegister[j].Values[k].ValueName == ValueName)
+                            {
+                                var regdata = people[i].Gateway.RunningPrograms[PID].LocalRegister[j].Values[k];
+                                var DataType = regdata.StringListData;
+
+                                DataType.Add(StringData);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    public static string GetStringListData(string PersonsName, int PID, string KeyName, string ValueName, int Array)
+    {
+        var people = PersonController.control.People;
+
+        string Test = "";
+
+        for (int i = 0; i < people.Count; i++)
+        {
+            if (people[i].Name == PersonsName)
+            {
+                for (int j = 0; j < people[i].Gateway.RunningPrograms[PID].LocalRegister.Count; j++)
+                {
+                    if (people[i].Gateway.RunningPrograms[PID].LocalRegister[j].KeyName == KeyName)
+                    {
+                        for (int k = 0; k < people[i].Gateway.RunningPrograms[PID].LocalRegister[j].Values.Count; k++)
+                        {
+                            if (people[i].Gateway.RunningPrograms[PID].LocalRegister[j].Values[k].ValueName == ValueName)
+                            {
+                                var regdata = people[i].Gateway.RunningPrograms[PID].LocalRegister[j].Values[k];
+                                var DataType = regdata.StringListData;
+
+                                if (DataType != null)
+                                    Test = DataType[Array];
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        return Test;
+    }
+
+    public static void RemoveAtStringListData(string PersonsName, int PID, string KeyName, string ValueName, int Array)
+    {
+        var people = PersonController.control.People;
+
+        //string Test = "";
+
+        for (int i = 0; i < people.Count; i++)
+        {
+            if (people[i].Name == PersonsName)
+            {
+                for (int j = 0; j < people[i].Gateway.RunningPrograms[PID].LocalRegister.Count; j++)
+                {
+                    if (people[i].Gateway.RunningPrograms[PID].LocalRegister[j].KeyName == KeyName)
+                    {
+                        for (int k = 0; k < people[i].Gateway.RunningPrograms[PID].LocalRegister[j].Values.Count; k++)
+                        {
+                            if (people[i].Gateway.RunningPrograms[PID].LocalRegister[j].Values[k].ValueName == ValueName)
+                            {
+                                var regdata = people[i].Gateway.RunningPrograms[PID].LocalRegister[j].Values[k];
+                                var DataType = regdata.StringListData;
+
+                                DataType.RemoveAt(Array);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        //return Test;
+    }
+
+    public static bool StringDataListContains(string PersonsName, int PID, string KeyName, string ValueName, string StringData)
+    {
+        var people = PersonController.control.People;
+
+        bool Test = false;
+
+        for (int i = 0; i < people.Count; i++)
+        {
+            if (people[i].Name == PersonsName)
+            {
+                for (int j = 0; j < people[i].Gateway.RunningPrograms[PID].LocalRegister.Count; j++)
+                {
+                    if (people[i].Gateway.RunningPrograms[PID].LocalRegister[j].KeyName == KeyName)
+                    {
+                        for (int k = 0; k < people[i].Gateway.RunningPrograms[PID].LocalRegister[j].Values.Count; k++)
+                        {
+                            if (people[i].Gateway.RunningPrograms[PID].LocalRegister[j].Values[k].ValueName == ValueName)
+                            {
+                                var regdata = people[i].Gateway.RunningPrograms[PID].LocalRegister[j].Values[k];
+                                var DataType = regdata.StringListData;
+
+                                Test = DataType.Contains(StringData);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        return Test;
+    }
+
+    public static void RemoveAllStringListData(string PersonsName, int PID, string KeyName, string ValueName)
+    {
+        var people = PersonController.control.People;
+
+        //bool Test = false;
+
+        for (int i = 0; i < people.Count; i++)
+        {
+            if (people[i].Name == PersonsName)
+            {
+                for (int j = 0; j < people[i].Gateway.RunningPrograms[PID].LocalRegister.Count; j++)
+                {
+                    if (people[i].Gateway.RunningPrograms[PID].LocalRegister[j].KeyName == KeyName)
+                    {
+                        for (int k = 0; k < people[i].Gateway.RunningPrograms[PID].LocalRegister[j].Values.Count; k++)
+                        {
+                            if (people[i].Gateway.RunningPrograms[PID].LocalRegister[j].Values[k].ValueName == ValueName)
+                            {
+                                var regdata = people[i].Gateway.RunningPrograms[PID].LocalRegister[j].Values[k];
+                                var DataType = regdata.StringListData;
+
+                                DataType.Clear();
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        //return Test;
+    }
+
+    public static int GetStringListDataCount(string PersonsName, int PID, string KeyName, string ValueName)
+    {
+        var people = PersonController.control.People;
+
+        int Test = 0;
+
+        for (int i = 0; i < people.Count; i++)
+        {
+            if (people[i].Name == PersonsName)
+            {
+                for (int j = 0; j < people[i].Gateway.RunningPrograms[PID].LocalRegister.Count; j++)
+                {
+                    if (people[i].Gateway.RunningPrograms[PID].LocalRegister[j].KeyName == KeyName)
+                    {
+                        for (int k = 0; k < people[i].Gateway.RunningPrograms[PID].LocalRegister[j].Values.Count; k++)
+                        {
+                            if (people[i].Gateway.RunningPrograms[PID].LocalRegister[j].Values[k].ValueName == ValueName)
+                            {
+                                var regdata = people[i].Gateway.RunningPrograms[PID].LocalRegister[j].Values[k];
+                                var DataType = regdata.StringListData;
+
+                                Test = DataType.Count;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        return Test;
+    }
+
+    public static int GetLastStringListData(string PersonsName, int PID, string KeyName, string ValueName)
+    {
+        var people = PersonController.control.People;
+
+        int Test = 0;
+
+        for (int i = 0; i < people.Count; i++)
+        {
+            if (people[i].Name == PersonsName)
+            {
+                for (int j = 0; j < people[i].Gateway.RunningPrograms[PID].LocalRegister.Count; j++)
+                {
+                    if (people[i].Gateway.RunningPrograms[PID].LocalRegister[j].KeyName == KeyName)
+                    {
+                        for (int k = 0; k < people[i].Gateway.RunningPrograms[PID].LocalRegister[j].Values.Count; k++)
+                        {
+                            if (people[i].Gateway.RunningPrograms[PID].LocalRegister[j].Values[k].ValueName == ValueName)
+                            {
+                                var regdata = people[i].Gateway.RunningPrograms[PID].LocalRegister[j].Values[k];
+                                var DataType = regdata.StringListData;
+
+                                Test = DataType.Count-1;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        return Test;
+    }
+
+    public static void AddMenuButtonData(string PersonsName, int PID, string KeyName, string ValueName, MenuButtonSystem MenuButttonData)
+    {
+        var people = PersonController.control.People;
+
+        for (int i = 0; i < people.Count; i++)
+        {
+            if (people[i].Name == PersonsName)
+            {
+                for (int j = 0; j < people[i].Gateway.RunningPrograms[PID].LocalRegister.Count; j++)
+                {
+                    if (people[i].Gateway.RunningPrograms[PID].LocalRegister[j].KeyName == KeyName)
+                    {
+                        for (int k = 0; k < people[i].Gateway.RunningPrograms[PID].LocalRegister[j].Values.Count; k++)
+                        {
+                            if (people[i].Gateway.RunningPrograms[PID].LocalRegister[j].Values[k].ValueName == ValueName)
+                            {
+                                var regdata = people[i].Gateway.RunningPrograms[PID].LocalRegister[j].Values[k];
+                                var DataType = regdata.MenuButtonData;
+
+                                DataType.Add(MenuButttonData);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    public static void RemoveMenuButtonData(string PersonsName, int PID, string KeyName, string ValueName, string MenuData)
+    {
+        var people = PersonController.control.People;
+
+        for (int i = 0; i < people.Count; i++)
+        {
+            if (people[i].Name == PersonsName)
+            {
+                for (int j = 0; j < people[i].Gateway.RunningPrograms[PID].LocalRegister.Count; j++)
+                {
+                    if (people[i].Gateway.RunningPrograms[PID].LocalRegister[j].KeyName == KeyName)
+                    {
+                        for (int k = 0; k < people[i].Gateway.RunningPrograms[PID].LocalRegister[j].Values.Count; k++)
+                        {
+                            if (people[i].Gateway.RunningPrograms[PID].LocalRegister[j].Values[k].ValueName == ValueName)
+                            {
+                                var regdata = people[i].Gateway.RunningPrograms[PID].LocalRegister[j].Values[k];
+                                for (int l = 0; l < regdata.MenuButtonData.Count; l++)
+                                {
+                                    if (regdata.MenuButtonData[l].Name == MenuData)
+                                    {
+                                        regdata.MenuButtonData.RemoveAt(l);
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    public static bool MenuDataListContains(string PersonsName, int PID, string KeyName, string ValueName, string MenuData)
+    {
+        var people = PersonController.control.People;
+
+        bool Test = false;
+
+        for (int i = 0; i < people.Count; i++)
+        {
+            if (people[i].Name == PersonsName)
+            {
+                for (int j = 0; j < people[i].Gateway.RunningPrograms[PID].LocalRegister.Count; j++)
+                {
+                    if (people[i].Gateway.RunningPrograms[PID].LocalRegister[j].KeyName == KeyName)
+                    {
+                        for (int k = 0; k < people[i].Gateway.RunningPrograms[PID].LocalRegister[j].Values.Count; k++)
+                        {
+                            if (people[i].Gateway.RunningPrograms[PID].LocalRegister[j].Values[k].ValueName == ValueName)
+                            {
+                                var regdata = people[i].Gateway.RunningPrograms[PID].LocalRegister[j].Values[k];
+                                for(int l = 0; l < regdata.MenuButtonData.Count;l++)
+                                {
+                                    if (regdata.MenuButtonData[l].Name == MenuData)
+                                    {
+                                        Test = true;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        return Test;
+    }
+
+    public static MenuButtonSystem GetMenuButtonData(string PersonsName, int PID, string KeyName, string ValueName, int Array)
+    {
+        var people = PersonController.control.People;
+
+        MenuButtonSystem Test = new MenuButtonSystem();
+
+        for (int i = 0; i < people.Count; i++)
+        {
+            if (people[i].Name == PersonsName)
+            {
+                for (int j = 0; j < people[i].Gateway.RunningPrograms[PID].LocalRegister.Count; j++)
+                {
+                    if (people[i].Gateway.RunningPrograms[PID].LocalRegister[j].KeyName == KeyName)
+                    {
+                        for (int k = 0; k < people[i].Gateway.RunningPrograms[PID].LocalRegister[j].Values.Count; k++)
+                        {
+                            if (people[i].Gateway.RunningPrograms[PID].LocalRegister[j].Values[k].ValueName == ValueName)
+                            {
+                                var regdata = people[i].Gateway.RunningPrograms[PID].LocalRegister[j].Values[k];
+                                var DataType = regdata.MenuButtonData;
+
+                                if (DataType != null)
+                                    Test = DataType[Array];
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        return Test;
+    }
+
+    public static int GetMenuButtonCountData(string PersonsName, int PID, string KeyName, string ValueName)
+    {
+        var people = PersonController.control.People;
+
+        int Test = 0;
+
+        for (int i = 0; i < people.Count; i++)
+        {
+            if (people[i].Name == PersonsName)
+            {
+                for (int j = 0; j < people[i].Gateway.RunningPrograms[PID].LocalRegister.Count; j++)
+                {
+                    if (people[i].Gateway.RunningPrograms[PID].LocalRegister[j].KeyName == KeyName)
+                    {
+                        for (int k = 0; k < people[i].Gateway.RunningPrograms[PID].LocalRegister[j].Values.Count; k++)
+                        {
+                            if (people[i].Gateway.RunningPrograms[PID].LocalRegister[j].Values[k].ValueName == ValueName)
+                            {
+                                var regdata = people[i].Gateway.RunningPrograms[PID].LocalRegister[j].Values[k];
+                                var DataType = regdata.MenuButtonData;
+
+                                Test = DataType.Count;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        return Test;
+    }
+
+
+    public static void SetMenuButtonPosXData(string PersonsName, int PID, string KeyName, string ValueName, int array, float PosX)
+    {
+        var people = PersonController.control.People;
+
+        for (int i = 0; i < people.Count; i++)
+        {
+            if (people[i].Name == PersonsName)
+            {
+                for (int j = 0; j < people[i].Gateway.RunningPrograms[PID].LocalRegister.Count; j++)
+                {
+                    if (people[i].Gateway.RunningPrograms[PID].LocalRegister[j].KeyName == KeyName)
+                    {
+                        for (int k = 0; k < people[i].Gateway.RunningPrograms[PID].LocalRegister[j].Values.Count; k++)
+                        {
+                            if (people[i].Gateway.RunningPrograms[PID].LocalRegister[j].Values[k].ValueName == ValueName)
+                            {
+                                var regdata = people[i].Gateway.RunningPrograms[PID].LocalRegister[j].Values[k];
+                                var DataType = regdata.MenuButtonData;
+
+                                DataType[array].PosX = PosX;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    public static void RemoveAllMenuButtonData(string PersonsName, int PID, string KeyName, string ValueName)
+    {
+        var people = PersonController.control.People;
+
+        for (int i = 0; i < people.Count; i++)
+        {
+            if (people[i].Name == PersonsName)
+            {
+                for (int j = 0; j < people[i].Gateway.RunningPrograms[PID].LocalRegister.Count; j++)
+                {
+                    if (people[i].Gateway.RunningPrograms[PID].LocalRegister[j].KeyName == KeyName)
+                    {
+                        for (int k = 0; k < people[i].Gateway.RunningPrograms[PID].LocalRegister[j].Values.Count; k++)
+                        {
+                            if (people[i].Gateway.RunningPrograms[PID].LocalRegister[j].Values[k].ValueName == ValueName)
+                            {
+                                var regdata = people[i].Gateway.RunningPrograms[PID].LocalRegister[j].Values[k];
+                                var DataType = regdata.MenuButtonData;
+
+                                DataType.Clear();
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    public static ProgramSystemv2 GetProgramData(string PersonsName, int PID, string KeyName, string ValueName, int Array)
+    {
+        var people = PersonController.control.People;
+
+        ProgramSystemv2 Test = new ProgramSystemv2();
+
+        for (int i = 0; i < people.Count; i++)
+        {
+            if (people[i].Name == PersonsName)
+            {
+                for (int j = 0; j < people[i].Gateway.RunningPrograms[PID].LocalRegister.Count; j++)
+                {
+                    if (people[i].Gateway.RunningPrograms[PID].LocalRegister[j].KeyName == KeyName)
+                    {
+                        for (int k = 0; k < people[i].Gateway.RunningPrograms[PID].LocalRegister[j].Values.Count; k++)
+                        {
+                            if (people[i].Gateway.RunningPrograms[PID].LocalRegister[j].Values[k].ValueName == ValueName)
+                            {
+                                var regdata = people[i].Gateway.RunningPrograms[PID].LocalRegister[j].Values[k];
+                                var DataType = regdata.ProgramData;
+
+                                if (DataType != null)
+                                    Test = DataType[Array];
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        return Test;
+    }
+
+    public static int GetProgramDataCount(string PersonsName, int PID, string KeyName, string ValueName)
+    {
+        var people = PersonController.control.People;
+
+        int Test = 0;
+
+        for (int i = 0; i < people.Count; i++)
+        {
+            if (people[i].Name == PersonsName)
+            {
+                for (int j = 0; j < people[i].Gateway.RunningPrograms[PID].LocalRegister.Count; j++)
+                {
+                    if (people[i].Gateway.RunningPrograms[PID].LocalRegister[j].KeyName == KeyName)
+                    {
+                        for (int k = 0; k < people[i].Gateway.RunningPrograms[PID].LocalRegister[j].Values.Count; k++)
+                        {
+                            if (people[i].Gateway.RunningPrograms[PID].LocalRegister[j].Values[k].ValueName == ValueName)
+                            {
+                                var regdata = people[i].Gateway.RunningPrograms[PID].LocalRegister[j].Values[k];
+                                var DataType = regdata.ProgramData;
+
+                                Test = DataType.Count;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        return Test;
+    }
+
+
+    public static void AddProgramData(string PersonsName, int PID, string KeyName, string ValueName,ProgramSystemv2 ProgramData)
+    {
+        var people = PersonController.control.People;
+
+        for (int i = 0; i < people.Count; i++)
+        {
+            if (people[i].Name == PersonsName)
+            {
+                for (int j = 0; j < people[i].Gateway.RunningPrograms[PID].LocalRegister.Count; j++)
+                {
+                    if (people[i].Gateway.RunningPrograms[PID].LocalRegister[j].KeyName == KeyName)
+                    {
+                        for (int k = 0; k < people[i].Gateway.RunningPrograms[PID].LocalRegister[j].Values.Count; k++)
+                        {
+                            if (people[i].Gateway.RunningPrograms[PID].LocalRegister[j].Values[k].ValueName == ValueName)
+                            {
+                                var regdata = people[i].Gateway.RunningPrograms[PID].LocalRegister[j].Values[k];
+                                var DataType = regdata.ProgramData;
+
+                                DataType.Add(ProgramData);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    public static void RemoveAllProgramData(string PersonsName, int PID, string KeyName, string ValueName)
+    {
+        var people = PersonController.control.People;
+
+        for (int i = 0; i < people.Count; i++)
+        {
+            if (people[i].Name == PersonsName)
+            {
+                for (int j = 0; j < people[i].Gateway.RunningPrograms[PID].LocalRegister.Count; j++)
+                {
+                    if (people[i].Gateway.RunningPrograms[PID].LocalRegister[j].KeyName == KeyName)
+                    {
+                        for (int k = 0; k < people[i].Gateway.RunningPrograms[PID].LocalRegister[j].Values.Count; k++)
+                        {
+                            if (people[i].Gateway.RunningPrograms[PID].LocalRegister[j].Values[k].ValueName == ValueName)
+                            {
+                                var regdata = people[i].Gateway.RunningPrograms[PID].LocalRegister[j].Values[k];
+                                var DataType = regdata.ProgramData;
+
+                                DataType.Clear();
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    public static void RemoveAtProgramData(string PersonsName, int PID, string KeyName, string ValueName, int Array)
+    {
+        var people = PersonController.control.People;
+
+        //string Test = "";
+
+        for (int i = 0; i < people.Count; i++)
+        {
+            if (people[i].Name == PersonsName)
+            {
+                for (int j = 0; j < people[i].Gateway.RunningPrograms[PID].LocalRegister.Count; j++)
+                {
+                    if (people[i].Gateway.RunningPrograms[PID].LocalRegister[j].KeyName == KeyName)
+                    {
+                        for (int k = 0; k < people[i].Gateway.RunningPrograms[PID].LocalRegister[j].Values.Count; k++)
+                        {
+                            if (people[i].Gateway.RunningPrograms[PID].LocalRegister[j].Values[k].ValueName == ValueName)
+                            {
+                                var regdata = people[i].Gateway.RunningPrograms[PID].LocalRegister[j].Values[k];
+                                var DataType = regdata.ProgramData;
+
+                                DataType.RemoveAt(Array);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        //return Test;
+    }
+
+    public static bool ProgramDataContains(string PersonsName, int PID, string KeyName, string ValueName, ProgramSystemv2 ProgramData)
+    {
+        var people = PersonController.control.People;
+
+        bool Test = false;
+
+        for (int i = 0; i < people.Count; i++)
+        {
+            if (people[i].Name == PersonsName)
+            {
+                for (int j = 0; j < people[i].Gateway.RunningPrograms[PID].LocalRegister.Count; j++)
+                {
+                    if (people[i].Gateway.RunningPrograms[PID].LocalRegister[j].KeyName == KeyName)
+                    {
+                        for (int k = 0; k < people[i].Gateway.RunningPrograms[PID].LocalRegister[j].Values.Count; k++)
+                        {
+                            if (people[i].Gateway.RunningPrograms[PID].LocalRegister[j].Values[k].ValueName == ValueName)
+                            {
+                                var regdata = people[i].Gateway.RunningPrograms[PID].LocalRegister[j].Values[k];
+                                var DataType = regdata.ProgramData;
+
+                                Test = DataType.Contains(ProgramData);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        return Test;
+    }
+
+    public static int GetLastProgramDataCount(string PersonsName, int PID, string KeyName, string ValueName)
+    {
+        var people = PersonController.control.People;
+
+        int Test = 0;
+
+        for (int i = 0; i < people.Count; i++)
+        {
+            if (people[i].Name == PersonsName)
+            {
+                for (int j = 0; j < people[i].Gateway.RunningPrograms[PID].LocalRegister.Count; j++)
+                {
+                    if (people[i].Gateway.RunningPrograms[PID].LocalRegister[j].KeyName == KeyName)
+                    {
+                        for (int k = 0; k < people[i].Gateway.RunningPrograms[PID].LocalRegister[j].Values.Count; k++)
+                        {
+                            if (people[i].Gateway.RunningPrograms[PID].LocalRegister[j].Values[k].ValueName == ValueName)
+                            {
+                                var regdata = people[i].Gateway.RunningPrograms[PID].LocalRegister[j].Values[k];
+                                var DataType = regdata.ProgramData;
+
+                                Test = DataType.Count - 1;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        return Test;
+    }
+
+    public static string GetStringData(string PersonsName, int PID, string KeyName, string ValueName)
+    {
+        var people = PersonController.control.People;
+
+        string Test = "";
+
+        for (int i = 0; i < people.Count; i++)
+        {
+            if (people[i].Name == PersonsName)
+            {
+                for (int j = 0; j < people[i].Gateway.RunningPrograms[PID].LocalRegister.Count; j++)
+                {
+                    if (people[i].Gateway.RunningPrograms[PID].LocalRegister[j].KeyName == KeyName)
+                    {
+                        for (int k = 0; k < people[i].Gateway.RunningPrograms[PID].LocalRegister[j].Values.Count; k++)
+                        {
+                            if (people[i].Gateway.RunningPrograms[PID].LocalRegister[j].Values[k].ValueName == ValueName)
+                            {
+                                var regdata = people[i].Gateway.RunningPrograms[PID].LocalRegister[j].Values[k];
+                                var DataType = regdata.DataString;
+
+                                if (DataType != null)
+                                    Test = DataType;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        return Test;
+    }
+
+    public static void SetStringData(string PersonsName, int PID, string KeyName, string ValueName, string StringData)
+    {
+        var people = PersonController.control.People;
+
+        for (int i = 0; i < people.Count; i++)
+        {
+            if (people[i].Name == PersonsName)
+            {
+                for (int j = 0; j < people[i].Gateway.RunningPrograms[PID].LocalRegister.Count; j++)
+                {
+                    if (people[i].Gateway.RunningPrograms[PID].LocalRegister[j].KeyName == KeyName)
+                    {
+                        for (int k = 0; k < people[i].Gateway.RunningPrograms[PID].LocalRegister[j].Values.Count; k++)
+                        {
+                            if (people[i].Gateway.RunningPrograms[PID].LocalRegister[j].Values[k].ValueName == ValueName)
+                            {
+                                var regdata = people[i].Gateway.RunningPrograms[PID].LocalRegister[j].Values[k];
+                                regdata.DataString = StringData;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+    public static int GetIntData(string PersonsName, int PID, string KeyName, string ValueName)
+    {
+        var people = PersonController.control.People;
+
+        int Test = 0;
+
+        for (int i = 0; i < people.Count; i++)
+        {
+            if (people[i].Name == PersonsName)
+            {
+                for (int j = 0; j < people[i].Gateway.RunningPrograms[PID].LocalRegister.Count; j++)
+                {
+                    if (people[i].Gateway.RunningPrograms[PID].LocalRegister[j].KeyName == KeyName)
+                    {
+                        for (int k = 0; k < people[i].Gateway.RunningPrograms[PID].LocalRegister[j].Values.Count; k++)
+                        {
+                            if (people[i].Gateway.RunningPrograms[PID].LocalRegister[j].Values[k].ValueName == ValueName)
+                            {
+                                var regdata = people[i].Gateway.RunningPrograms[PID].LocalRegister[j].Values[k];
+                                var DataType = regdata.DataInt;
+
+                                if (!DataType.Equals(null))
+                                    Test = DataType;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        return Test;
+    }
+
+    public static void SetIntData(string PersonsName, int PID, string KeyName, string ValueName, int IntData)
+    {
+        var people = PersonController.control.People;
+
+        for (int i = 0; i < people.Count; i++)
+        {
+            if (people[i].Name == PersonsName)
+            {
+                for (int j = 0; j < people[i].Gateway.RunningPrograms[PID].LocalRegister.Count; j++)
+                {
+                    if (people[i].Gateway.RunningPrograms[PID].LocalRegister[j].KeyName == KeyName)
+                    {
+                        for (int k = 0; k < people[i].Gateway.RunningPrograms[PID].LocalRegister[j].Values.Count; k++)
+                        {
+                            if (people[i].Gateway.RunningPrograms[PID].LocalRegister[j].Values[k].ValueName == ValueName)
+                            {
+                                var regdata = people[i].Gateway.RunningPrograms[PID].LocalRegister[j].Values[k];
+                                regdata.DataInt = IntData;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+
+    public static bool GetBoolData(string PersonsName, int PID, string KeyName, string ValueName)
+    {
+        var people = PersonController.control.People;
+
+        bool Test = false;
+
+        for (int i = 0; i < people.Count; i++)
+        {
+            if (people[i].Name == PersonsName)
+            {
+                for (int j = 0; j < people[i].Gateway.RunningPrograms[PID].LocalRegister.Count; j++)
+                {
+                    if (people[i].Gateway.RunningPrograms[PID].LocalRegister[j].KeyName == KeyName)
+                    {
+                        for (int k = 0; k < people[i].Gateway.RunningPrograms[PID].LocalRegister[j].Values.Count; k++)
+                        {
+                            if (people[i].Gateway.RunningPrograms[PID].LocalRegister[j].Values[k].ValueName == ValueName)
+                            {
+                                var regdata = people[i].Gateway.RunningPrograms[PID].LocalRegister[j].Values[k];
+                                var DataType = regdata.DataBool;
+
+                                if (!DataType.Equals(null))
+                                    Test = DataType;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        return Test;
+    }
+
+    public static void SetBoolData(string PersonsName, int PID, string KeyName, string ValueName, bool BoolData)
+    {
+        var people = PersonController.control.People;
+
+        for (int i = 0; i < people.Count; i++)
+        {
+            if (people[i].Name == PersonsName)
+            {
+                for (int j = 0; j < people[i].Gateway.RunningPrograms[PID].LocalRegister.Count; j++)
+                {
+                    if (people[i].Gateway.RunningPrograms[PID].LocalRegister[j].KeyName == KeyName)
+                    {
+                        for (int k = 0; k < people[i].Gateway.RunningPrograms[PID].LocalRegister[j].Values.Count; k++)
+                        {
+                            if (people[i].Gateway.RunningPrograms[PID].LocalRegister[j].Values[k].ValueName == ValueName)
+                            {
+                                var regdata = people[i].Gateway.RunningPrograms[PID].LocalRegister[j].Values[k];
+                                regdata.DataBool = BoolData;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    public static SRect GetRectData(string PersonsName, int PID, string KeyName, string ValueName)
+    {
+        var people = PersonController.control.People;
+
+        SRect Test = new SRect(new Rect());
+
+        for (int i = 0; i < people.Count; i++)
+        {
+            if (people[i].Name == PersonsName)
+            {
+                for (int j = 0; j < people[i].Gateway.RunningPrograms[PID].LocalRegister.Count; j++)
+                {
+                    if (people[i].Gateway.RunningPrograms[PID].LocalRegister[j].KeyName == KeyName)
+                    {
+                        for (int k = 0; k < people[i].Gateway.RunningPrograms[PID].LocalRegister[j].Values.Count; k++)
+                        {
+                            if (people[i].Gateway.RunningPrograms[PID].LocalRegister[j].Values[k].ValueName == ValueName)
+                            {
+                                var regdata = people[i].Gateway.RunningPrograms[PID].LocalRegister[j].Values[k];
+                                var DataType = regdata.DataRect;
+
+                                if (DataType != null)
+                                    Test = DataType;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        return Test;
+    }
+
+    public static void SetRectData(string PersonsName, int PID, string KeyName, string ValueName, SRect RectData)
+    {
+        var people = PersonController.control.People;
+
+        for (int i = 0; i < people.Count; i++)
+        {
+            if (people[i].Name == PersonsName)
+            {
+                for (int j = 0; j < people[i].Gateway.RunningPrograms[PID].LocalRegister.Count; j++)
+                {
+                    if (people[i].Gateway.RunningPrograms[PID].LocalRegister[j].KeyName == KeyName)
+                    {
+                        for (int k = 0; k < people[i].Gateway.RunningPrograms[PID].LocalRegister[j].Values.Count; k++)
+                        {
+                            if (people[i].Gateway.RunningPrograms[PID].LocalRegister[j].Values[k].ValueName == ValueName)
+                            {
+                                var regdata = people[i].Gateway.RunningPrograms[PID].LocalRegister[j].Values[k];
+                                regdata.DataRect = RectData;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    public static void SetXRectData(string PersonsName, int PID, string KeyName, string ValueName, float x)
+    {
+        var people = PersonController.control.People;
+
+        for (int i = 0; i < people.Count; i++)
+        {
+            if (people[i].Name == PersonsName)
+            {
+                for (int j = 0; j < people[i].Gateway.RunningPrograms[PID].LocalRegister.Count; j++)
+                {
+                    if (people[i].Gateway.RunningPrograms[PID].LocalRegister[j].KeyName == KeyName)
+                    {
+                        for (int k = 0; k < people[i].Gateway.RunningPrograms[PID].LocalRegister[j].Values.Count; k++)
+                        {
+                            if (people[i].Gateway.RunningPrograms[PID].LocalRegister[j].Values[k].ValueName == ValueName)
+                            {
+                                var regdata = people[i].Gateway.RunningPrograms[PID].LocalRegister[j].Values[k];
+                                regdata.DataRect.x = x;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    public static void SetYRectData(string PersonsName, int PID, string KeyName, string ValueName, float y)
+    {
+        var people = PersonController.control.People;
+
+        for (int i = 0; i < people.Count; i++)
+        {
+            if (people[i].Name == PersonsName)
+            {
+                for (int j = 0; j < people[i].Gateway.RunningPrograms[PID].LocalRegister.Count; j++)
+                {
+                    if (people[i].Gateway.RunningPrograms[PID].LocalRegister[j].KeyName == KeyName)
+                    {
+                        for (int k = 0; k < people[i].Gateway.RunningPrograms[PID].LocalRegister[j].Values.Count; k++)
+                        {
+                            if (people[i].Gateway.RunningPrograms[PID].LocalRegister[j].Values[k].ValueName == ValueName)
+                            {
+                                var regdata = people[i].Gateway.RunningPrograms[PID].LocalRegister[j].Values[k];
+                                regdata.DataRect.y = y;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    public static void SetWidthRectData(string PersonsName, int PID, string KeyName, string ValueName, float Width)
+    {
+        var people = PersonController.control.People;
+
+        for (int i = 0; i < people.Count; i++)
+        {
+            if (people[i].Name == PersonsName)
+            {
+                for (int j = 0; j < people[i].Gateway.RunningPrograms[PID].LocalRegister.Count; j++)
+                {
+                    if (people[i].Gateway.RunningPrograms[PID].LocalRegister[j].KeyName == KeyName)
+                    {
+                        for (int k = 0; k < people[i].Gateway.RunningPrograms[PID].LocalRegister[j].Values.Count; k++)
+                        {
+                            if (people[i].Gateway.RunningPrograms[PID].LocalRegister[j].Values[k].ValueName == ValueName)
+                            {
+                                var regdata = people[i].Gateway.RunningPrograms[PID].LocalRegister[j].Values[k];
+                                regdata.DataRect.width = Width;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    public static void SetHeightRectData(string PersonsName, int PID, string KeyName, string ValueName, float Height)
+    {
+        var people = PersonController.control.People;
+
+        for (int i = 0; i < people.Count; i++)
+        {
+            if (people[i].Name == PersonsName)
+            {
+                for (int j = 0; j < people[i].Gateway.RunningPrograms[PID].LocalRegister.Count; j++)
+                {
+                    if (people[i].Gateway.RunningPrograms[PID].LocalRegister[j].KeyName == KeyName)
+                    {
+                        for (int k = 0; k < people[i].Gateway.RunningPrograms[PID].LocalRegister[j].Values.Count; k++)
+                        {
+                            if (people[i].Gateway.RunningPrograms[PID].LocalRegister[j].Values[k].ValueName == ValueName)
+                            {
+                                var regdata = people[i].Gateway.RunningPrograms[PID].LocalRegister[j].Values[k];
+                                regdata.DataRect.height = Height;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    public static SVector3 GetVector3Data(string PersonsName, int PID, string KeyName, string ValueName)
+    {
+        var people = PersonController.control.People;
+
+        SVector3 Test = new SVector3(new Vector3());
+
+        for (int i = 0; i < people.Count; i++)
+        {
+            if (people[i].Name == PersonsName)
+            {
+                for (int j = 0; j < people[i].Gateway.RunningPrograms[PID].LocalRegister.Count; j++)
+                {
+                    if (people[i].Gateway.RunningPrograms[PID].LocalRegister[j].KeyName == KeyName)
+                    {
+                        for (int k = 0; k < people[i].Gateway.RunningPrograms[PID].LocalRegister[j].Values.Count; k++)
+                        {
+                            if (people[i].Gateway.RunningPrograms[PID].LocalRegister[j].Values[k].ValueName == ValueName)
+                            {
+                                var regdata = people[i].Gateway.RunningPrograms[PID].LocalRegister[j].Values[k];
+                                var DataType = regdata.DataVector3;
+
+                                if (DataType != null)
+                                    Test = DataType;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        return Test;
+    }
+
+    public static void SetVector3Data(string PersonsName, int PID, string KeyName, string ValueName, SVector3 Vector3Data)
+    {
+        var people = PersonController.control.People;
+
+        for (int i = 0; i < people.Count; i++)
+        {
+            if (people[i].Name == PersonsName)
+            {
+                for (int j = 0; j < people[i].Gateway.RunningPrograms[PID].LocalRegister.Count; j++)
+                {
+                    if (people[i].Gateway.RunningPrograms[PID].LocalRegister[j].KeyName == KeyName)
+                    {
+                        for (int k = 0; k < people[i].Gateway.RunningPrograms[PID].LocalRegister[j].Values.Count; k++)
+                        {
+                            if (people[i].Gateway.RunningPrograms[PID].LocalRegister[j].Values[k].ValueName == ValueName)
+                            {
+                                var regdata = people[i].Gateway.RunningPrograms[PID].LocalRegister[j].Values[k];
+                                regdata.DataVector3 = Vector3Data;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    public static SVector2 GetVector2Data(string PersonsName, int PID, string KeyName, string ValueName)
+    {
+        var people = PersonController.control.People;
+
+        SVector2 Test = new SVector2(new Vector2());
+
+        for (int i = 0; i < people.Count; i++)
+        {
+            if (people[i].Name == PersonsName)
+            {
+                for (int j = 0; j < people[i].Gateway.RunningPrograms[PID].LocalRegister.Count; j++)
+                {
+                    if (people[i].Gateway.RunningPrograms[PID].LocalRegister[j].KeyName == KeyName)
+                    {
+                        for (int k = 0; k < people[i].Gateway.RunningPrograms[PID].LocalRegister[j].Values.Count; k++)
+                        {
+                            if (people[i].Gateway.RunningPrograms[PID].LocalRegister[j].Values[k].ValueName == ValueName)
+                            {
+                                var regdata = people[i].Gateway.RunningPrograms[PID].LocalRegister[j].Values[k];
+                                var DataType = regdata.DataVector2;
+
+                                if (DataType != null)
+                                    Test = DataType;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        return Test;
+    }
+
+    public static void SetVector2Data(string PersonsName, int PID, string KeyName, string ValueName, SVector2 Vector2Data)
+    {
+        var people = PersonController.control.People;
+
+        for (int i = 0; i < people.Count; i++)
+        {
+            if (people[i].Name == PersonsName)
+            {
+                for (int j = 0; j < people[i].Gateway.RunningPrograms[PID].LocalRegister.Count; j++)
+                {
+                    if (people[i].Gateway.RunningPrograms[PID].LocalRegister[j].KeyName == KeyName)
+                    {
+                        for (int k = 0; k < people[i].Gateway.RunningPrograms[PID].LocalRegister[j].Values.Count; k++)
+                        {
+                            if (people[i].Gateway.RunningPrograms[PID].LocalRegister[j].Values[k].ValueName == ValueName)
+                            {
+                                var regdata = people[i].Gateway.RunningPrograms[PID].LocalRegister[j].Values[k];
+                                regdata.DataVector2 = Vector2Data;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    public static void SetVector2XData(string PersonsName, int PID, string KeyName, string ValueName, float x)
+    {
+        var people = PersonController.control.People;
+
+        for (int i = 0; i < people.Count; i++)
+        {
+            if (people[i].Name == PersonsName)
+            {
+                for (int j = 0; j < people[i].Gateway.RunningPrograms[PID].LocalRegister.Count; j++)
+                {
+                    if (people[i].Gateway.RunningPrograms[PID].LocalRegister[j].KeyName == KeyName)
+                    {
+                        for (int k = 0; k < people[i].Gateway.RunningPrograms[PID].LocalRegister[j].Values.Count; k++)
+                        {
+                            if (people[i].Gateway.RunningPrograms[PID].LocalRegister[j].Values[k].ValueName == ValueName)
+                            {
+                                var regdata = people[i].Gateway.RunningPrograms[PID].LocalRegister[j].Values[k];
+                                regdata.DataVector2.x = x;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    public static void SetVector2YData(string PersonsName, int PID, string KeyName, string ValueName, float y)
+    {
+        var people = PersonController.control.People;
+
+        for (int i = 0; i < people.Count; i++)
+        {
+            if (people[i].Name == PersonsName)
+            {
+                for (int j = 0; j < people[i].Gateway.RunningPrograms[PID].LocalRegister.Count; j++)
+                {
+                    if (people[i].Gateway.RunningPrograms[PID].LocalRegister[j].KeyName == KeyName)
+                    {
+                        for (int k = 0; k < people[i].Gateway.RunningPrograms[PID].LocalRegister[j].Values.Count; k++)
+                        {
+                            if (people[i].Gateway.RunningPrograms[PID].LocalRegister[j].Values[k].ValueName == ValueName)
+                            {
+                                var regdata = people[i].Gateway.RunningPrograms[PID].LocalRegister[j].Values[k];
+                                regdata.DataVector2.y = y;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    public static void SetFloatData(string PersonsName, int PID, string KeyName, string ValueName, float FloatData)
+    {
+        var people = PersonController.control.People;
+
+        for (int i = 0; i < people.Count; i++)
+        {
+            if (people[i].Name == PersonsName)
+            {
+                for (int j = 0; j < people[i].Gateway.RunningPrograms[PID].LocalRegister.Count; j++)
+                {
+                    if (people[i].Gateway.RunningPrograms[PID].LocalRegister[j].KeyName == KeyName)
+                    {
+                        for (int k = 0; k < people[i].Gateway.RunningPrograms[PID].LocalRegister[j].Values.Count; k++)
+                        {
+                            if (people[i].Gateway.RunningPrograms[PID].LocalRegister[j].Values[k].ValueName == ValueName)
+                            {
+                                var regdata = people[i].Gateway.RunningPrograms[PID].LocalRegister[j].Values[k];
+                                regdata.DataFloat = FloatData;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    public static float GetFloatData(string PersonsName, int PID, string KeyName, string ValueName)
+    {
+        var people = PersonController.control.People;
+
+        float Test = 0;
+
+        for (int i = 0; i < people.Count; i++)
+        {
+            if (people[i].Name == PersonsName)
+            {
+                for (int j = 0; j < people[i].Gateway.RunningPrograms[PID].LocalRegister.Count; j++)
+                {
+                    if (people[i].Gateway.RunningPrograms[PID].LocalRegister[j].KeyName == KeyName)
+                    {
+                        for (int k = 0; k < people[i].Gateway.RunningPrograms[PID].LocalRegister[j].Values.Count; k++)
+                        {
+                            if (people[i].Gateway.RunningPrograms[PID].LocalRegister[j].Values[k].ValueName == ValueName)
+                            {
+                                var regdata = people[i].Gateway.RunningPrograms[PID].LocalRegister[j].Values[k];
+                                var DataType = regdata.DataFloat;
+
+                                if (!DataType.Equals(null))
+                                    Test = DataType;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        return Test;
+    }
 }

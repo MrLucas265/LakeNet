@@ -76,14 +76,14 @@ public class Tracer : MonoBehaviour
 
 	void TraceColor()
 	{
+        var windowColor = new Color32();
 
-		if (startTrace != true) 
+        if (startTrace != true) 
 		{
-			GUI.color = com.colors[Customize.cust.WindowColorInt];
+			GUI.color = Registry.Get32ColorData("Player", "System", "WindowColor");
 		}
 		else 
 		{
-			Color32 windowColor;
 			windowColor.r = (byte)255;
 			windowColor.g = (byte)ColorPercentage;
 			windowColor.b = (byte)ColorPercentage;
@@ -193,7 +193,7 @@ public class Tracer : MonoBehaviour
     {
 		Customize.cust.windowx[windowID] = windowRect.x;
 		Customize.cust.windowy[windowID] = windowRect.y;
-        GUI.skin = com.Skin[GameControl.control.GUIID];
+        GUI.skin = GameControl.control.Skins[Registry.GetIntData("Player", "System", "Skin")];
 
         //float rx = Screen.width / native_width;
         //float ry = Screen.height / native_height;
@@ -209,14 +209,14 @@ public class Tracer : MonoBehaviour
 
     void DoMyWindow(int WindowID)
     {
-		if(GUI.Button(new Rect(162,2,21,21),"X",com.Skin [GameControl.control.GUIID].customStyles [0]))
+		if(GUI.Button(new Rect(162,2,21,21),"X",GameControl.control.Skins[Registry.GetIntData("Player", "System", "Skin")].customStyles [0]))
 		{
 			closing = true;
 			show = false;
 		}
 
-		GUI.backgroundColor = com.colors[Customize.cust.ButtonColorInt];
-		GUI.contentColor = com.colors[Customize.cust.FontColorInt];
+		GUI.backgroundColor = Registry.Get32ColorData("Player", "System", "ButtonColor");
+		GUI.contentColor = Registry.Get32ColorData("Player", "System", "FontColor");
 
         GUI.DragWindow(new Rect(2,2,150,21));
         GUI.Box(new Rect(2,2,159,21), "Trace Tracker");

@@ -497,7 +497,7 @@ public class ShutdownWindow : MonoBehaviour
 	void OnGUI()
 	{
 		GUI.depth = -20;
-		GUI.skin = com.Skin[GameControl.control.GUIID];
+		GUI.skin = GameControl.control.Skins[Registry.GetIntData("Player", "System", "Skin")];
 		Customize.cust.windowx[windowID] = windowRect.x;
 		Customize.cust.windowy[windowID] = windowRect.y;
 

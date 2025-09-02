@@ -294,7 +294,7 @@
 //    {
 //        //Customize.cust.windowx[windowID] = windowRect.x;
 //        //Customize.cust.windowy[windowID] = windowRect.y;
-//        GUI.skin = com.Skin[GameControl.control.GUIID];
+//        GUI.skin = GameControl.control.Skins[Registry.GetIntData("Player", "System", "Skin")];
 
 //        ProgramCount = 0;
 
@@ -320,7 +320,7 @@
 //                        MiniButton = new Rect(CloseButton.x - 22, 2, 21, 21);
 //                        TitleBox = new Rect(2, 2, MiniButton.x - 3, 21);
 
-//                        GUI.color = com.colors[Customize.cust.WindowColorInt];
+//                        GUI.color = Registry.Get32ColorData("Player", "System", "WindowColor");
 //                        pwinman.RunningPrograms[i].windowRect = WindowClamp.ClampToScreen(GUI.Window(pwinman.RunningPrograms[i].WID, pwinman.RunningPrograms[i].windowRect, DoMyWindow, ""));
 //                    }
 //                }
@@ -363,8 +363,8 @@
 //    {
 //        SelectedWindowID = WindowID;
 
-//        GUI.backgroundColor = com.colors[Customize.cust.ButtonColorInt];
-//        GUI.contentColor = com.colors[Customize.cust.FontColorInt];
+//        GUI.backgroundColor = Registry.Get32ColorData("Player", "System", "ButtonColor");
+//        GUI.contentColor = Registry.Get32ColorData("Player", "System", "FontColor");
 
 //        for (int i = 0; i < winman.RunningPrograms.Count; i++)
 //        {
@@ -386,7 +386,7 @@
 //                //Rect CloseLocal = new Rect(winman.RunningPrograms[FoundWindowID].windowRect.width - 22, 1, 21, 21);
 //                if (new Rect(CloseButton).Contains(Event.current.mousePosition))
 //                {
-//                    if (GUI.Button(new Rect(CloseButton), "X", com.Skin[GameControl.control.GUIID].customStyles[0]))
+//                    if (GUI.Button(new Rect(CloseButton), "X", GameControl.control.Skins[Registry.GetIntData("Player", "System", "Skin")].customStyles[0]))
 //                    {
 //                        Close();
 //                    }
@@ -399,7 +399,7 @@
 //        GUI.DragWindow(new Rect(TitleBox));
 //        GUI.Box(new Rect(TitleBox), "Calculator");
 
-//        if (GUI.Button(new Rect(MiniButton), "-", com.Skin[GameControl.control.GUIID].customStyles[2]))
+//        if (GUI.Button(new Rect(MiniButton), "-", GameControl.control.Skins[Registry.GetIntData("Player", "System", "Skin")].customStyles[2]))
 //        {
 //            Close();
 //        }
@@ -441,59 +441,59 @@
 //        //			}
 //        //		}
 
-//        if (GUI.Button(new Rect(35, 170, 25, 25), "0", com.Skin[GameControl.control.GUIID].customStyles[2]))
+//        if (GUI.Button(new Rect(35, 170, 25, 25), "0", GameControl.control.Skins[Registry.GetIntData("Player", "System", "Skin")].customStyles[2]))
 //        {
 //            Reset();
 //            Result[SelectedProgram] += 0;
 //        }
 
-//        if (GUI.Button(new Rect(5, 140, 25, 25), "1", com.Skin[GameControl.control.GUIID].customStyles[2]))
+//        if (GUI.Button(new Rect(5, 140, 25, 25), "1", GameControl.control.Skins[Registry.GetIntData("Player", "System", "Skin")].customStyles[2]))
 //        {
 //            Reset();
 //            Result[SelectedProgram] += 1;
 //        }
-//        if (GUI.Button(new Rect(35, 140, 25, 25), "2", com.Skin[GameControl.control.GUIID].customStyles[2]))
+//        if (GUI.Button(new Rect(35, 140, 25, 25), "2", GameControl.control.Skins[Registry.GetIntData("Player", "System", "Skin")].customStyles[2]))
 //        {
 //            Reset();
 //            Result[SelectedProgram] += 2;
 //        }
-//        if (GUI.Button(new Rect(65, 140, 25, 25), "3", com.Skin[GameControl.control.GUIID].customStyles[2]))
+//        if (GUI.Button(new Rect(65, 140, 25, 25), "3", GameControl.control.Skins[Registry.GetIntData("Player", "System", "Skin")].customStyles[2]))
 //        {
 //            Reset();
 //            Result[SelectedProgram] += 3;
 //        }
-//        if (GUI.Button(new Rect(5, 110, 25, 25), "4", com.Skin[GameControl.control.GUIID].customStyles[2]))
+//        if (GUI.Button(new Rect(5, 110, 25, 25), "4", GameControl.control.Skins[Registry.GetIntData("Player", "System", "Skin")].customStyles[2]))
 //        {
 //            Reset();
 //            Result[SelectedProgram] += 4;
 //        }
-//        if (GUI.Button(new Rect(35, 110, 25, 25), "5", com.Skin[GameControl.control.GUIID].customStyles[2]))
+//        if (GUI.Button(new Rect(35, 110, 25, 25), "5", GameControl.control.Skins[Registry.GetIntData("Player", "System", "Skin")].customStyles[2]))
 //        {
 //            Reset();
 //            Result[SelectedProgram] += 5;
 //        }
-//        if (GUI.Button(new Rect(65, 110, 25, 25), "6", com.Skin[GameControl.control.GUIID].customStyles[2]))
+//        if (GUI.Button(new Rect(65, 110, 25, 25), "6", GameControl.control.Skins[Registry.GetIntData("Player", "System", "Skin")].customStyles[2]))
 //        {
 //            Reset();
 //            Result[SelectedProgram] += 6;
 //        }
-//        if (GUI.Button(new Rect(5, 80, 25, 25), "7", com.Skin[GameControl.control.GUIID].customStyles[2]))
+//        if (GUI.Button(new Rect(5, 80, 25, 25), "7", GameControl.control.Skins[Registry.GetIntData("Player", "System", "Skin")].customStyles[2]))
 //        {
 //            Reset();
 //            Result[SelectedProgram] += 7;
 //        }
-//        if (GUI.Button(new Rect(35, 80, 25, 25), "8", com.Skin[GameControl.control.GUIID].customStyles[2]))
+//        if (GUI.Button(new Rect(35, 80, 25, 25), "8", GameControl.control.Skins[Registry.GetIntData("Player", "System", "Skin")].customStyles[2]))
 //        {
 //            Reset();
 //            Result[SelectedProgram] += 8;
 //        }
-//        if (GUI.Button(new Rect(65, 80, 25, 25), "9", com.Skin[GameControl.control.GUIID].customStyles[2]))
+//        if (GUI.Button(new Rect(65, 80, 25, 25), "9", GameControl.control.Skins[Registry.GetIntData("Player", "System", "Skin")].customStyles[2]))
 //        {
 //            Reset();
 //            Result[SelectedProgram] += 9;
 //        }
 
-//        if (GUI.Button(new Rect(65, 170, 25, 25), ".", com.Skin[GameControl.control.GUIID].customStyles[2]))
+//        if (GUI.Button(new Rect(65, 170, 25, 25), ".", GameControl.control.Skins[Registry.GetIntData("Player", "System", "Skin")].customStyles[2]))
 //        {
 //            if (!Result.Contains("."))
 //            {
@@ -501,7 +501,7 @@
 //            }
 //        }
 
-//        if (GUI.Button(new Rect(35, 50, 25, 25), "C", com.Skin[GameControl.control.GUIID].customStyles[2]))
+//        if (GUI.Button(new Rect(35, 50, 25, 25), "C", GameControl.control.Skins[Registry.GetIntData("Player", "System", "Skin")].customStyles[2]))
 //        {
 //            Result[SelectedProgram] = "0";
 //            Operator[SelectedProgram] = "";
@@ -510,14 +510,14 @@
 //            Value1[SelectedProgram] = 0;
 //        }
 
-//        if (GUI.Button(new Rect(5, 50, 25, 25), "CE", com.Skin[GameControl.control.GUIID].customStyles[2]))
+//        if (GUI.Button(new Rect(5, 50, 25, 25), "CE", GameControl.control.Skins[Registry.GetIntData("Player", "System", "Skin")].customStyles[2]))
 //        {
 //            Result[SelectedProgram] = "";
 //            Operator[SelectedProgram] = "";
 //            Result[SelectedProgram] += Value[SelectedProgram];
 //            Value[SelectedProgram] = 0;
 //        }
-//        if (GUI.Button(new Rect(65, 50, 25, 25), "<-", com.Skin[GameControl.control.GUIID].customStyles[2]))
+//        if (GUI.Button(new Rect(65, 50, 25, 25), "<-", GameControl.control.Skins[Registry.GetIntData("Player", "System", "Skin")].customStyles[2]))
 //        {
 //            if (Result[SelectedProgram] != "0")
 //            {
@@ -529,40 +529,40 @@
 //            }
 //        }
 
-//        if (GUI.Button(new Rect(5, 170, 25, 25), "+/-", com.Skin[GameControl.control.GUIID].customStyles[2]))
+//        if (GUI.Button(new Rect(5, 170, 25, 25), "+/-", GameControl.control.Skins[Registry.GetIntData("Player", "System", "Skin")].customStyles[2]))
 //        {
 //            Result[SelectedProgram] = (double.Parse(Result[SelectedProgram]) - double.Parse(Result[SelectedProgram]) * 2).ToString();
 //        }
 
-//        if (GUI.Button(new Rect(95, 50, 25, 25), "/", com.Skin[GameControl.control.GUIID].customStyles[2]))
+//        if (GUI.Button(new Rect(95, 50, 25, 25), "/", GameControl.control.Skins[Registry.GetIntData("Player", "System", "Skin")].customStyles[2]))
 //        {
 //            Operator[SelectedProgram] = "/";
 //            Value[SelectedProgram] += double.Parse(Result[SelectedProgram]);
 //            Result[SelectedProgram] = "0";
 //            OperatorPressed[SelectedProgram] = true;
 //        }
-//        if (GUI.Button(new Rect(95, 80, 25, 25), "*", com.Skin[GameControl.control.GUIID].customStyles[2]))
+//        if (GUI.Button(new Rect(95, 80, 25, 25), "*", GameControl.control.Skins[Registry.GetIntData("Player", "System", "Skin")].customStyles[2]))
 //        {
 //            Operator[SelectedProgram] = "*";
 //            Value[SelectedProgram] += double.Parse(Result[SelectedProgram]);
 //            Result[SelectedProgram] = "0";
 //            OperatorPressed[SelectedProgram] = true;
 //        }
-//        if (GUI.Button(new Rect(95, 110, 25, 25), "-", com.Skin[GameControl.control.GUIID].customStyles[2]))
+//        if (GUI.Button(new Rect(95, 110, 25, 25), "-", GameControl.control.Skins[Registry.GetIntData("Player", "System", "Skin")].customStyles[2]))
 //        {
 //            Operator[SelectedProgram] = "-";
 //            Value[SelectedProgram] += double.Parse(Result[SelectedProgram]);
 //            Result[SelectedProgram] = "0";
 //            OperatorPressed[SelectedProgram] = true;
 //        }
-//        if (GUI.Button(new Rect(95, 140, 25, 25), "+", com.Skin[GameControl.control.GUIID].customStyles[2]))
+//        if (GUI.Button(new Rect(95, 140, 25, 25), "+", GameControl.control.Skins[Registry.GetIntData("Player", "System", "Skin")].customStyles[2]))
 //        {
 //            Operator[SelectedProgram] = "+";
 //            Value[SelectedProgram] += double.Parse(Result[SelectedProgram]);
 //            Result[SelectedProgram] = "0";
 //            OperatorPressed[SelectedProgram] = true;
 //        }
-//        if (GUI.Button(new Rect(95, 170, 25, 25), "=", com.Skin[GameControl.control.GUIID].customStyles[2]))
+//        if (GUI.Button(new Rect(95, 170, 25, 25), "=", GameControl.control.Skins[Registry.GetIntData("Player", "System", "Skin")].customStyles[2]))
 //        {
 //            if (Result[SelectedProgram] != "")
 //            {
@@ -628,9 +628,9 @@
 
 //        if (!CloseButton.Contains(Event.current.mousePosition))
 //        {
-//            GUI.backgroundColor = com.colors[Customize.cust.ButtonColorInt];
-//            GUI.contentColor = com.colors[Customize.cust.FontColorInt];
-//            GUI.Button(new Rect(CloseButton), "X", com.Skin[GameControl.control.GUIID].customStyles[1]);
+//            GUI.backgroundColor = Registry.Get32ColorData("Player", "System", "ButtonColor");
+//            GUI.contentColor = Registry.Get32ColorData("Player", "System", "FontColor");
+//            GUI.Button(new Rect(CloseButton), "X", GameControl.control.Skins[Registry.GetIntData("Player", "System", "Skin")].customStyles[1]);
 //        }
 //    }
 //}

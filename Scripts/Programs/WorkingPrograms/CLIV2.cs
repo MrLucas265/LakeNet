@@ -63,7 +63,7 @@ public class CLIV2 : MonoBehaviour
 	public List<string> ContextMenuOptions = new List<string>();
 	public string SelectedOption;
 	public int SelectedProgramID;
-	public int SelectedWindowID;
+
 	public bool quit;
 
 	// Use this for initialization
@@ -186,8 +186,7 @@ public class CLIV2 : MonoBehaviour
 	{
 		if (Input.GetMouseButtonDown(0))
 		{
-			SelectedWindowID = WindowID;
-			winman.SelectedWID = WindowID;
+			Registry.SetIntData("Player", "WindowManager", "SelectedWindow", WindowID);
 		}
 	}
 
@@ -195,19 +194,24 @@ public class CLIV2 : MonoBehaviour
 	{
 		SelectWindowID(WindowID);
 
+		GUIControlShortCut(WindowID);
+
 		for (int PersonCount = 0; PersonCount < PersonController.control.People.Count; PersonCount++)
 		{
 			var pwinman = PersonController.control.People[PersonCount].Gateway;
 
 			if (pwinman.RunningPrograms.Count > 0)
 			{
-				winman.WindowResize(PersonName, SelectedWindowID);
+				if (WindowID == Registry.GetIntData(PersonName,"WindowManager","SelectedWindow"))
+				{
+					winman.WindowResize(PersonName, Registry.GetIntData(PersonName,"WindowManager","SelectedWindow"));
+				}
 
 				for (int i = 0; i < pwinman.RunningPrograms.Count; i++)
 				{
 					if (pwinman.RunningPrograms[i].ProgramName == ProgramNameForWinMan)
 					{
-						if (pwinman.RunningPrograms[i].WID == SelectedWindowID)
+						if (pwinman.RunningPrograms[i].WID == Registry.GetIntData(PersonName,"WindowManager","SelectedWindow"))
 						{
 							SelectedProgramID = pwinman.RunningPrograms[i].PID;
 						}
@@ -225,13 +229,13 @@ public class CLIV2 : MonoBehaviour
 									WindowManager.QuitProgram(PersonName,ProgramName, pwinman.RunningPrograms[i].WPN);
 								}
 
-								GUI.backgroundColor = com.colors[Customize.cust.ButtonColorInt];
-								GUI.contentColor = com.colors[Customize.cust.FontColorInt];
+								GUI.backgroundColor = Registry.Get32ColorData("Player", "System", "ButtonColor");
+								GUI.contentColor = Registry.Get32ColorData("Player", "System", "FontColor");
 							}
 							else
 							{
-								GUI.backgroundColor = com.colors[Customize.cust.ButtonColorInt];
-								GUI.contentColor = com.colors[Customize.cust.FontColorInt];
+								GUI.backgroundColor = Registry.Get32ColorData("Player", "System", "ButtonColor");
+								GUI.contentColor = Registry.Get32ColorData("Player", "System", "FontColor");
 
 								if (GUI.Button(new Rect(CloseButton), "X", com.Skin[Registry.GetIntData(PersonName, ProgramName, "Skin")].customStyles[1]))
 								{
@@ -261,19 +265,33 @@ public class CLIV2 : MonoBehaviour
 	void ColorUI(int WPN)
 	{
 		LocalRegistry.SetColorData(PersonName, WPN, ProgramName, "FontColor", new SColor(new Color32(0, 255, 0, 255)));
-		LocalRegistry.SetFloatColorData(PersonName, WPN, ProgramName, "FontColor", new ColorSystem(0, 255, 0, 255));
 
 		LocalRegistry.SetColorData(PersonName, WPN, ProgramName, "WindowColor", new SColor(new Color32(0, 0, 0, 255)));
-		LocalRegistry.SetFloatColorData(PersonName, WPN, ProgramName, "WindowColor",new ColorSystem(0, 0, 0, 255));
+	}
+
+	void GUIControlShortCut(int WindowID)
+	{
+		//if (Input.GetKey(KeyCode.C))
+		//{
+		//	if (Input.GetKeyDown(KeyCode.Delete))
+		//	{
+		//		LocalRegistry.SetStringData(PersonName, WindowID, ProgramName, "Input", "");
+		//	}
+		//}
 	}
 
 	void RenderUI(int WindowID)
 	{
 		//GUI.contentColor = new Color32(Registry.GetRedColorData(PersonName, ProgramName, "FontColor"), Registry.GetGreenColorData(PersonName, ProgramName, "FontColor"), Registry.GetBlueColorData(PersonName, ProgramName, "FontColor"), Registry.GetAlphaColorData(PersonName, ProgramName, "FontColor"));
 
-		if (LocalRegistry.GetStringDataCount(PersonName, WindowID, ProgramName, "Input") > Customize.cust.DeletionAmt)
+		if (LocalRegistry.GetStringListDataCount(PersonName, WindowID, ProgramName, "Input") > Customize.cust.DeletionAmt)
 		{
 			LocalRegistry.RemoveAtStringListData(PersonName, WindowID, ProgramName, "CommandHistory",0);
+		}
+
+		if(LocalRegistry.GetStringData(PersonName, WindowID, ProgramName, "Input") == null)
+        {
+			LocalRegistry.SetStringData(PersonName, WindowID, ProgramName, "Input", "");
 		}
 
 		if (cli.AutoScroll == true)
@@ -297,7 +315,7 @@ public class CLIV2 : MonoBehaviour
 		//	//AudioSoucres.pitch = 1;
 		//}
 
-		if (Event.current.type == EventType.keyDown && Event.current.keyCode == KeyCode.Return)
+		if (Event.current.type == EventType.KeyDown && Event.current.keyCode == KeyCode.Return)
 		{
 			//cli.PastCommands.Add (cli.Parse);
 			//cli.CommandCheck();
@@ -305,25 +323,25 @@ public class CLIV2 : MonoBehaviour
 			//pastcommands.Add();
 			if (LocalRegistry.GetStringData(PersonName, WindowID, ProgramName, "Input") != "")
 			{
-				LocalRegistry.AddStringData(PersonName, WindowID, ProgramName, "CommandHistory", LocalRegistry.GetStringData(PersonName, WindowID, ProgramName, "Input"));
+				LocalRegistry.AddStringListData(PersonName, WindowID, ProgramName, "CommandHistory", LocalRegistry.GetStringData(PersonName, WindowID, ProgramName, "Input"));
 				GlobalStuff.RunCommand(PersonName, WindowID, ProgramName, "Input", LocalRegistry.GetStringData(PersonName, WindowID, ProgramName, "Input"));
 			}
 			if(LocalRegistry.GetStringData(PersonName, WindowID, ProgramName, "Output") != "")
             {
-				LocalRegistry.AddStringData(PersonName, WindowID, ProgramName, "CommandHistory", LocalRegistry.GetStringData(PersonName, WindowID, ProgramName, "Output"));
+				LocalRegistry.AddStringListData(PersonName, WindowID, ProgramName, "CommandHistory", LocalRegistry.GetStringData(PersonName, WindowID, ProgramName, "Output"));
 			}
 			LocalRegistry.SetStringData(PersonName, WindowID, ProgramName, "Input", "");
 			LocalRegistry.SetStringData(PersonName, WindowID, ProgramName, "Output", "");
 
-			for (int i = 0; i < 8; i++)
-			{
-				LogitechGSDK.LogiLcdColorSetText(i, "", 0, 0, 0);
-			}
+			//for (int i = 0; i < 8; i++)
+			//{
+			//	LogitechGSDK.LogiLcdColorSetText(i, "", 0, 0, 0);
+			//}
 
-			LogitechGSDK.LogiLcdUpdate();
+			//LogitechGSDK.LogiLcdUpdate();
 		}
 
-		if (Event.current.type == EventType.keyDown && Event.current.keyCode == KeyCode.DownArrow)
+		if (Event.current.type == EventType.KeyDown && Event.current.keyCode == KeyCode.DownArrow)
 		{
 			if (LocalRegistry.GetIntData(PersonName, WindowID, ProgramName, "SelectedPastCommand") < LocalRegistry.GetIntData(PersonName, WindowID, ProgramName, "Scrollsize") - 1)
 			{
@@ -332,7 +350,7 @@ public class CLIV2 : MonoBehaviour
 			}
 		}
 
-        if (Event.current.type == EventType.keyDown && Event.current.keyCode == KeyCode.UpArrow)
+        if (Event.current.type == EventType.KeyDown && Event.current.keyCode == KeyCode.UpArrow)
         {
             if (LocalRegistry.GetIntData(PersonName, WindowID, ProgramName, "SelectedPastCommand") >= 1)
             {
@@ -344,7 +362,7 @@ public class CLIV2 : MonoBehaviour
         //Customize.cust.TerminalTextPosMod = SMod * User.Length;
 
 
-		if(LocalRegistry.GetStringDataCount(PersonName, WindowID, ProgramName, "CommandHistory") > 0)
+		if(LocalRegistry.GetStringListDataCount(PersonName, WindowID, ProgramName, "CommandHistory") > 0)
         {
 			LocalRegistry.SetVector2Data(PersonName, WindowID, ProgramName, "ScrollPos", GUI.BeginScrollView(new Rect(2, 25, winman.GetWindowInfo(PersonName, WindowID).width - 20, winman.GetWindowInfo(PersonName, WindowID).height - (Customize.cust.FontSize + 10) * 2), LocalRegistry.GetVector2Data(PersonName, WindowID, ProgramName, "ScrollPos"), new Rect(0, 0, 0, LocalRegistry.GetIntData(PersonName, WindowID, ProgramName, "Scrollsize") * 24)));
 
@@ -353,7 +371,7 @@ public class CLIV2 : MonoBehaviour
 			//cli.Parse = GUI.TextField(new Rect(User.Length + Customize.cust.TerminalTextPosMod * Customize.cust.TerminalFontSize, scrollsize*20-1*SMod, windowRect.width-84, 23), cli.Parse, 500,Style);
 			//cli.Parse = GUI.TextField(new Rect(User.Length + Customize.cust.TerminalTextPosMod * Customize.cust.TerminalFontSize, windowRect.height - 50, windowRect.width-84, Customize.cust.FontSize+2), cli.Parse, 500,Style);
 
-			for (LocalRegistry.SetIntData(PersonName, WindowID, ProgramName, "Scrollsize", 0); LocalRegistry.GetIntData(PersonName, WindowID, ProgramName, "Scrollsize") < LocalRegistry.GetStringDataCount(PersonName, WindowID, ProgramName, "CommandHistory"); LocalRegistry.SetIntData(PersonName, WindowID, ProgramName, "Scrollsize", LocalRegistry.GetIntData(PersonName, WindowID, ProgramName, "Scrollsize") + 1))
+			for (LocalRegistry.SetIntData(PersonName, WindowID, ProgramName, "Scrollsize", 0); LocalRegistry.GetIntData(PersonName, WindowID, ProgramName, "Scrollsize") < LocalRegistry.GetStringListDataCount(PersonName, WindowID, ProgramName, "CommandHistory"); LocalRegistry.SetIntData(PersonName, WindowID, ProgramName, "Scrollsize", LocalRegistry.GetIntData(PersonName, WindowID, ProgramName, "Scrollsize") + 1))
 			{
 				GUI.Label(new Rect(2, LocalRegistry.GetIntData(PersonName, WindowID, ProgramName, "Scrollsize") * 24, windowRect.width - 2, 20), "" + LocalRegistry.GetStringListData(PersonName, WindowID, ProgramName, "CommandHistory", LocalRegistry.GetIntData(PersonName, WindowID, ProgramName, "Scrollsize")), Style);
 			}
@@ -393,7 +411,7 @@ public class CLIV2 : MonoBehaviour
 
 	//void OnGUI()
 	//{
-	//	Skin = com.Skin[GameControl.control.GUIID];
+	//	Skin = GameControl.control.Skins[Registry.GetIntData("Player", "System", "Skin")];
 	//	GUI.skin = Skin;
 
 	//	Customize.cust.windowx[windowID] = windowRect.x;

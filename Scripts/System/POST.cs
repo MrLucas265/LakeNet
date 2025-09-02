@@ -2,6 +2,8 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System;
+using System.IO;
 
 public class POST : MonoBehaviour
 {
@@ -62,10 +64,12 @@ public class POST : MonoBehaviour
 
 	public float MemoryCheckSpeed;
 
-	// Use this for initialization
-	void Start ()
+    // Use this for initialization
+    void Start ()
 	{
-		bios = GameObject.Find("BIOS");
+        LoadSkins();
+
+        bios = GameObject.Find("BIOS");
 		hardware = GameObject.Find("Hardware");
 
 		windowRect = new Rect(0, 0, Customize.cust.RezX, Customize.cust.RezY);
@@ -76,7 +80,6 @@ public class POST : MonoBehaviour
 		boot = GetComponent<Boot>();
 		bootloader = GetComponent<BootLoader>();
 		ram = hardware.GetComponent<RAM>();
-		harddrives = hardware.GetComponent<HardDrives>();
 		//cpu = hardware.GetComponent<CPU>();
 		Crash = GameObject.Find("Crash");
 		SCM = Crash.GetComponent<SysCrashMan>();
@@ -112,7 +115,7 @@ public class POST : MonoBehaviour
 		//	harddrives.enabled = true;
 		//}
 
-		if (GameControl.control.Gateway.Status.Booting == true) 
+		if (GameControl.control.GatewayStatus.Booting == true) 
 		{
 			cooldown = 0.16f;
 			cooldown1 = 0.16f;
@@ -125,7 +128,7 @@ public class POST : MonoBehaviour
 		if (Input.GetKeyDown (KeyCode.Delete)) 
 		{
 			BIOS();
-			GameControl.control.Gateway.Status.BIOS = true;
+			GameControl.control.GatewayStatus.BIOS = true;
 		}
 
 		if (Input.GetKeyDown (KeyCode.Alpha8)) 
@@ -133,7 +136,7 @@ public class POST : MonoBehaviour
 			bootloader.ChangeOS = true;
 		}
 
-		if(GameControl.control.SelectedOS.Name == OperatingSystems.OSName.SafeMode && GameControl.control.Gateway.Status.Terminal == false)
+		if(GameControl.control.SelectedOS.Name == OperatingSystems.OSName.SafeMode && GameControl.control.GatewayStatus.Terminal == false)
 		{
 			bootloader.ChangeOS = true;
 		}
@@ -251,6 +254,11 @@ public class POST : MonoBehaviour
 		person.Gateway.Status.Restart = false;
 	}
 
+	void LoadSkins()
+	{
+        GameControl.control.Skins = Resources.LoadAll<GUISkin>("Skins");
+    }
+
 	void Kernal()
 	{
 		var person = PersonController.control.People.FirstOrDefault(x => x.Name == "Player");
@@ -258,7 +266,6 @@ public class POST : MonoBehaviour
 		switch (Index[0]) 
 		{
 		case 0:
-
 				break;
 		case 1:
 				if (person.Gateway.Status.BIOS == true)
@@ -271,10 +278,11 @@ public class POST : MonoBehaviour
 				person.Gateway.Status.On = true;
 				person.Gateway.Status.POST = true;
 				BootInfo.Add ("IMABIOS(C)2017 REVA. LTD.");
-			//ProfileController.procon.Load ();
-			//GameControl.control.Load ();
-			//Customize.cust.Load();
-			ProfileController.procon.ShowTOS = false;
+				RegistryLoader.RegLoad.RunRegLoad = true;
+				//ProfileController.procon.Load ();
+				//GameControl.control.Load ();
+				//Customize.cust.Load();
+				ProfileController.procon.ShowTOS = false;
 			break;
 		case 3:
 			//BootInfo.Add (HardwareController.hdcon.Motherboard [0] + " BIOS Version 0.1");
@@ -288,7 +296,7 @@ public class POST : MonoBehaviour
 				break;
 		case 4:
 				BootInfo.Add("CPU: " + person.Gateway.CPU[0].Name + "CPU @ " + person.Gateway.CPU[0].MaxSpeed.ToString("F2"));
-				break;
+                break;
 		case 5:
             //for (int i = 0; i < GameControl.control.Gateway.InstalledCPU.Count; i++)
             //{
@@ -383,7 +391,7 @@ public class POST : MonoBehaviour
 				this.enabled = false;
 				bootloader.enabled = true;
 
-				GameControl.control.Gateway.Status.POST = false;
+				GameControl.control.GatewayStatus.POST = false;
 
 //				if (ProfileController.procon.Profiles.Count <= 1)
 //				{

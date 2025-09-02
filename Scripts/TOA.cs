@@ -1,6 +1,7 @@
-﻿using UnityEngine;
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
+using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class TOA : MonoBehaviour
 {
@@ -36,7 +37,7 @@ public class TOA : MonoBehaviour
 	{
 //		GameControl.control.windowx[windowID] = windowRect.x;
 //		GameControl.control.windowy[windowID] = windowRect.y;
-		//GUI.skin = com.Skin[GameControl.control.GUIID];
+		//GUI.skin = GameControl.control.Skins[Registry.GetIntData("Player", "System", "Skin")];
 		//set up scaling
 		float rx = Screen.width / native_width;
 		float ry = Screen.height / native_height;
@@ -49,7 +50,7 @@ public class TOA : MonoBehaviour
 		}
 		else 
 		{
-			Application.LoadLevel(1);
+            SceneManager.LoadScene("Game");
 		}
 	}
 
@@ -67,7 +68,7 @@ public class TOA : MonoBehaviour
 
 		if (GUI.Button (new Rect (5, 350, 100, 20),"Accept")) 
 		{
-			Application.LoadLevel(1);
+			SceneManager.LoadScene("Game");
 		}
 
 		if (GUI.Button (new Rect (115, 350, 100, 20),"Decline")) 

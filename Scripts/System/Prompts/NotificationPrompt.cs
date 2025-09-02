@@ -58,7 +58,7 @@ public class NotificationPrompt : MonoBehaviour
 	{
 		if(show == true)
 		{
-			GUI.skin = com.Skin[GameControl.control.GUIID];
+			GUI.skin = GameControl.control.Skins[Registry.GetIntData("Player", "System", "Skin")];
 
 			ProgramCount = 0;
 
@@ -81,7 +81,7 @@ public class NotificationPrompt : MonoBehaviour
 								ProgramCount++;
 							}
 
-							GUI.color = com.colors[Customize.cust.WindowColorInt];
+							GUI.color = Registry.Get32ColorData("Player", "System", "WindowColor");
 							pwinman.RunningPrograms[i].windowRect = WindowClamp.ClampToScreen(GUI.Window(pwinman.RunningPrograms[i].WID, pwinman.RunningPrograms[i].windowRect, DoMyWindow, ""));
 						}
 					}

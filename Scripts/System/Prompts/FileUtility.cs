@@ -117,7 +117,7 @@ public class FileUtility : MonoBehaviour
 
 	void OnGUI()
 	{
-		GUI.skin = com.Skin[GameControl.control.GUIID];
+		GUI.skin = GameControl.control.Skins[Registry.GetIntData("Player", "System", "Skin")];
 
 		if (windowRect.Count > 0)
 		{
@@ -135,7 +135,7 @@ public class FileUtility : MonoBehaviour
 				{
 					if (ProgramHandle[i].Show == true)
 					{
-						GUI.color = com.colors[Customize.cust.WindowColorInt];
+						GUI.color = Registry.Get32ColorData("Player", "System", "WindowColor");
 						windowRect[i] = WindowClamp.ClampToScreen(GUI.Window(ID[i], windowRect[i], DoMyWindow, ""));
 					}
 				}
@@ -274,21 +274,21 @@ public class FileUtility : MonoBehaviour
 
 		if (CloseButton.Contains(Event.current.mousePosition))
 		{
-			if (GUI.Button(new Rect(CloseButton), "X", com.Skin[GameControl.control.GUIID].customStyles[0]))
+			if (GUI.Button(new Rect(CloseButton), "X", GameControl.control.Skins[Registry.GetIntData("Player", "System", "Skin")].customStyles[0]))
 			{
 				Cancel();
 			}
 		}
 		else
 		{
-			GUI.backgroundColor = com.colors[Customize.cust.ButtonColorInt];
-			GUI.contentColor = com.colors[Customize.cust.FontColorInt];
-			GUI.Button(new Rect(CloseButton), "X", com.Skin[GameControl.control.GUIID].customStyles[1]);
+			GUI.backgroundColor = Registry.Get32ColorData("Player", "System", "ButtonColor");
+			GUI.contentColor = Registry.Get32ColorData("Player", "System", "FontColor");
+			GUI.Button(new Rect(CloseButton), "X", GameControl.control.Skins[Registry.GetIntData("Player", "System", "Skin")].customStyles[1]);
 		}
 
 		if (MiniButton.Contains(Event.current.mousePosition))
 		{
-			if (GUI.Button(new Rect(MiniButton), "-", com.Skin[GameControl.control.GUIID].customStyles[2]))
+			if (GUI.Button(new Rect(MiniButton), "-", GameControl.control.Skins[Registry.GetIntData("Player", "System", "Skin")].customStyles[2]))
 			{
 				ProgramHandle[selectedID].Minimize = !ProgramHandle[selectedID].Minimize;
 				Minimize();
@@ -296,17 +296,17 @@ public class FileUtility : MonoBehaviour
 		}
 		else
 		{
-			GUI.backgroundColor = com.colors[Customize.cust.ButtonColorInt];
-			GUI.contentColor = com.colors[Customize.cust.FontColorInt];
-			if (GUI.Button(new Rect(MiniButton), "-", com.Skin[GameControl.control.GUIID].customStyles[2]))
+			GUI.backgroundColor = Registry.Get32ColorData("Player", "System", "ButtonColor");
+			GUI.contentColor = Registry.Get32ColorData("Player", "System", "FontColor");
+			if (GUI.Button(new Rect(MiniButton), "-", GameControl.control.Skins[Registry.GetIntData("Player", "System", "Skin")].customStyles[2]))
 			{
 				ProgramHandle[selectedID].Minimize = !ProgramHandle[selectedID].Minimize;
 				Minimize();
 			}
 		}
 
-		GUI.backgroundColor = com.colors[Customize.cust.ButtonColorInt];
-		GUI.contentColor = com.colors[Customize.cust.FontColorInt];
+		GUI.backgroundColor = Registry.Get32ColorData("Player", "System", "ButtonColor");
+		GUI.contentColor = Registry.Get32ColorData("Player", "System", "FontColor");
 
 		GUI.DragWindow(new Rect(DefaltBoxSetting));
 		GUI.Box(new Rect(DefaltBoxSetting), "System Action " + ProgramHandle[selectedID].Type.ToString() + " " + ProgramHandle[selectedID].ProgramFile.Used);
@@ -445,11 +445,11 @@ public class FileUtility : MonoBehaviour
 				break;
 			case FileUtilitySystem.ProgramType.Installer:
 
-				if (ProgramHandle[selectedID].ProgramFile.Extension == ProgramSystemv2.FileExtension.Exe)
+				if (ProgramHandle[selectedID].ProgramFile.Extension == ProgramSystemv2.FileExtension.exe)
 				{
 					//GameControl.control.ProgramFiles.Add(new ProgramSystem(ProgramHandle[selectedID].FileName, "", "", CurrentDateTime, "", "", ProgramHandle[selectedID].Location, ProgramHandle[selectedID].FileTarget, "", "", ProgramSystem.FileExtension.Exe, ProgramSystem.FileExtension.Null, 0, 0, ProgramHandle[selectedID].FileSize, 0, 0, 0, 0, 100, ProgramHandle[selectedID].FileVersion, 0, 0, 0, 0, 0, 0, 0, false, false, false, false, BlankInfections, BlankFileType));
 				}
-				if (ProgramHandle[selectedID].ProgramFile.Extension == ProgramSystemv2.FileExtension.OS)
+				if (ProgramHandle[selectedID].ProgramFile.Extension == ProgramSystemv2.FileExtension.os)
 				{
 					//GameControl.control.ProgramFiles.Add(new ProgramSystem(ProgramHandle[selectedID].FileName, "", "", CurrentDateTime, "", "", ProgramHandle[selectedID].Location, ProgramHandle[selectedID].FileTarget, "", "", ProgramSystem.FileExtension.OS, ProgramSystem.FileExtension.Null, 0, 0, ProgramHandle[selectedID].FileSize, 0, 0, 0, 0, 100, ProgramHandle[selectedID].FileVersion, 0, 0, 0, 0, 0, 0, 0, false, false, false, false, BlankInfections, BlankFileType));
 				}
@@ -469,31 +469,31 @@ public class FileUtility : MonoBehaviour
 				Local = false;
 				switch (ProgramHandle[selectedID].ProgramFile.Extension)
 				{
-					case ProgramSystemv2.FileExtension.File:
+					case ProgramSystemv2.FileExtension.file:
 						//GameControl.control.ProgramFiles.Add(new ProgramSystem(ProgramHandle[selectedID].FileName, "", "", CurrentDateTime, ProgramHandle[selectedID].FileContent, "", ProgramHandle[selectedID].Location, ProgramHandle[selectedID].FileTarget, "", "", ProgramSystem.FileExtension.File, ProgramSystem.FileExtension.Null, 0, 0, ProgramHandle[selectedID].FileSize, 0, 0, 0, 0, 100, ProgramHandle[selectedID].FileVersion, 0, 0, 0, 0, 0, 0, 0, false, false, false, false, BlankInfections, BlankFileType));
 						FileIndex = -1;
 						clic.FileIndex = -1;
 						Close();
 						break;
-					case ProgramSystemv2.FileExtension.Ins:
+					case ProgramSystemv2.FileExtension.ins:
 						//GameControl.control.ProgramFiles.Add(new ProgramSystem(ProgramHandle[selectedID].FileName, "", "", CurrentDateTime, ProgramHandle[selectedID].FileContent, "", ProgramHandle[selectedID].Location, ProgramHandle[selectedID].FileTarget, "", "", ProgramSystem.FileExtension.Ins, ProgramSystem.FileExtension.Null, 0, 0, ProgramHandle[selectedID].FileSize, 0, 0, 0, 0, 100, ProgramHandle[selectedID].FileVersion, 0, 0, 0, 0, 0, 0, 0, false, false, false, false, BlankInfections, BlankFileType));
 						FileIndex = -1;
 						clic.FileIndex = -1;
 						Close();
 						break;
-					case ProgramSystemv2.FileExtension.Exe:
+					case ProgramSystemv2.FileExtension.exe:
 						//GameControl.control.ProgramFiles.Add(new ProgramSystem(ProgramHandle[selectedID].FileName, "", "", CurrentDateTime, ProgramHandle[selectedID].FileContent, "", ProgramHandle[selectedID].Location, ProgramHandle[selectedID].FileTarget, "", "", ProgramSystem.FileExtension.Exe, ProgramSystem.FileExtension.Null, 0, 0, ProgramHandle[selectedID].FileSize, 0, 0, 0, 0, 100, ProgramHandle[selectedID].FileVersion, 0, 0, 0, 0, 0, 0, 0, false, false, false, false, BlankInfections, BlankFileType));
 						FileIndex = -1;
 						clic.FileIndex = -1;
 						Close();
 						break;
-					case ProgramSystemv2.FileExtension.Real:
+					case ProgramSystemv2.FileExtension.real:
 						//GameControl.control.ProgramFiles.Add(new ProgramSystem(ProgramHandle[selectedID].FileName, "", "", CurrentDateTime, ProgramHandle[selectedID].FileContent, "", ProgramHandle[selectedID].Location, ProgramHandle[selectedID].FileTarget, "", "", ProgramSystem.FileExtension.Real, ProgramSystem.FileExtension.Null, 0, 0, ProgramHandle[selectedID].FileSize, 0, 0, 0, 0, 100, ProgramHandle[selectedID].FileVersion, 0, 0, 0, 0, 0, 0, 0, false, false, false, false, BlankInfections, BlankFileType));
 						FileIndex = -1;
 						clic.FileIndex = -1;
 						Close();
 						break;
-					case ProgramSystemv2.FileExtension.Txt:
+					case ProgramSystemv2.FileExtension.txt:
 						//GameControl.control.ProgramFiles.Add(new ProgramSystem(ProgramHandle[selectedID].FileName, "", "", CurrentDateTime, ProgramHandle[selectedID].FileContent, "", ProgramHandle[selectedID].Location, ProgramHandle[selectedID].FileTarget, "", "", ProgramSystem.FileExtension.Txt, ProgramSystem.FileExtension.Null, 0, 0, ProgramHandle[selectedID].FileSize, 0, 0, 0, 0, 100, ProgramHandle[selectedID].FileVersion, 0, 0, 0, 0, 0, 0, 0, false, false, false, false, BlankInfections, BlankFileType));
 						FileIndex = -1;
 						clic.FileIndex = -1;
@@ -628,8 +628,8 @@ public class FileUtility : MonoBehaviour
 		GUI.backgroundColor = Color.black;
 		GUI.contentColor = Color.black;
 		GUI.Box(new Rect(2, 170, 10 + 100 * 2.25f, 27), "");
-		GUI.backgroundColor = com.colors[Customize.cust.ButtonColorInt];
-		GUI.contentColor = com.colors[Customize.cust.FontColorInt];
+		GUI.backgroundColor = Registry.Get32ColorData("Player", "System", "ButtonColor");
+		GUI.contentColor = Registry.Get32ColorData("Player", "System", "FontColor");
 		GUI.Box(new Rect(3, 171, 10 + ProgramHandle[selectedID].Percentage * 2.25f, 25), "");
 	}
 }

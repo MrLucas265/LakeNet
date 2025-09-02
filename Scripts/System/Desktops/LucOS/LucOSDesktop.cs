@@ -384,13 +384,13 @@ public class LucOSDesktop : MonoBehaviour
 	void OnGUI()
 	{
 		GUI.depth = -30;
-		GUI.skin = com.Skin[GameControl.control.GUIID];
+		GUI.skin = GameControl.control.Skins[Registry.GetIntData("Player", "System", "Skin")];
 
 		Customize.cust.windowx[windowID] = windowRect.x;
 		Customize.cust.windowy[windowID] = windowRect.y;
 
-		GUI.backgroundColor = com.colors[Customize.cust.ButtonColorInt];
-		GUI.contentColor = com.colors[Customize.cust.FontColorInt];
+		GUI.backgroundColor = Registry.Get32ColorData("Player", "System", "ButtonColor");
+		GUI.contentColor = Registry.Get32ColorData("Player", "System", "FontColor");
 
 		//if (!SearchBoxBG.Contains(Event.current.mousePosition) && Input.GetMouseButtonDown(0))
 		//{
@@ -439,8 +439,8 @@ public class LucOSDesktop : MonoBehaviour
 			DesktopEnv();
 			GUI.EndGroup();
 
-			GUI.backgroundColor = com.colors[Customize.cust.ButtonColorInt];
-			GUI.contentColor = com.colors[Customize.cust.FontColorInt];
+			GUI.backgroundColor = Registry.Get32ColorData("Player", "System", "ButtonColor");
+			GUI.contentColor = Registry.Get32ColorData("Player", "System", "FontColor");
 
 			if (DesktopY != DesktopPos && Snap == false)
 			{
@@ -529,7 +529,7 @@ public class LucOSDesktop : MonoBehaviour
 
 	//void ClockUI()
 	//{
-	//	if (GUI.Button(new Rect(ClockDisplay), GameControl.control.Time.TodaysDate + "" + GameControl.control.Time.CurrentTime, com.Skin[GameControl.control.GUIID].customStyles[DesktopStyle]))
+	//	if (GUI.Button(new Rect(ClockDisplay), GameControl.control.Time.TodaysDate + "" + GameControl.control.Time.CurrentTime, GameControl.control.Skins[Registry.GetIntData("Player", "System", "Skin")].customStyles[DesktopStyle]))
 	//	{
 	//		sc.SoundSelect = 3;
 	//		sc.PlaySound();
@@ -546,7 +546,7 @@ public class LucOSDesktop : MonoBehaviour
 			GUI.Label (new Rect(VolumeText),"%" + TempVol.ToString("F0"));
 		}
 
-		if (GUI.Button (new Rect (SpeakerButton),desk.SpeakerIcon,com.Skin[GameControl.control.GUIID].customStyles[DesktopStyle])) 
+		if (GUI.Button (new Rect (SpeakerButton),desk.SpeakerIcon,GameControl.control.Skins[Registry.GetIntData("Player", "System", "Skin")].customStyles[DesktopStyle])) 
 		{
 			ShowVolume = !ShowVolume;
 		}
@@ -561,8 +561,8 @@ public class LucOSDesktop : MonoBehaviour
 
 	public void DesktopEnv()
 	{
-		//GUI.backgroundColor = com.colors[Customize.cust.ButtonColorInt];
-		//GUI.contentColor = com.colors[Customize.cust.FontColorInt];
+		//GUI.backgroundColor = Registry.Get32ColorData("Player", "System", "ButtonColor");
+		//GUI.contentColor = Registry.Get32ColorData("Player", "System", "FontColor");
 		//GUI.color = Color.blue;
 		//SpeakerUI();
 
@@ -576,7 +576,7 @@ public class LucOSDesktop : MonoBehaviour
 
 		if (appmenu.show == true)
 		{
-			if (GUI.Button(new Rect(AppButton), ChannelLogo, com.Skin[GameControl.control.GUIID].customStyles[4]))
+			if (GUI.Button(new Rect(AppButton), ChannelLogo, GameControl.control.Skins[Registry.GetIntData("Player", "System", "Skin")].customStyles[4]))
 			{
 				sc.SoundSelect = 3;
 				sc.PlaySound();
@@ -585,7 +585,7 @@ public class LucOSDesktop : MonoBehaviour
 		}
 		else
 		{
-			if (GUI.Button(new Rect(AppButton), ChannelLogo, com.Skin[GameControl.control.GUIID].customStyles[DesktopStyle]))
+			if (GUI.Button(new Rect(AppButton), ChannelLogo, GameControl.control.Skins[Registry.GetIntData("Player", "System", "Skin")].customStyles[DesktopStyle]))
 			{
 				sc.SoundSelect = 3;
 				sc.PlaySound();
@@ -593,8 +593,8 @@ public class LucOSDesktop : MonoBehaviour
 			}
 		}
 
-		GUI.backgroundColor = com.colors[Customize.cust.ButtonColorInt];
-		GUI.contentColor = com.colors[Customize.cust.FontColorInt];
+		GUI.backgroundColor = Registry.Get32ColorData("Player", "System", "ButtonColor");
+		GUI.contentColor = Registry.Get32ColorData("Player", "System", "FontColor");
 
 		TaskBarUI();
 

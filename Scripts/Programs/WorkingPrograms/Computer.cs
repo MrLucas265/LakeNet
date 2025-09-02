@@ -238,57 +238,6 @@ public class Computer : MonoBehaviour
         DetailsCloseButton = new Rect(DetailswindowRect.width-23, 1, 22, 22);
     }
 
-	public void SetColors()
-	{
-		if (Registry.GetBoolData("Player", "System", "WindowColor"))
-		{
-			SetWindowColor(Registry.GetColorData("Player", "System", "WindowColor"));
-			Registry.SetBoolData("Player", "System", "WindowColor", false);
-		}
-
-		if (Registry.GetBoolData("Player", "System", "FontColor"))
-		{
-			SetFontColor(Registry.GetColorData("Player", "System", "FontColor"));
-			Registry.SetBoolData("Player", "System", "FontColor", false);
-		}
-
-		if (Registry.GetBoolData("Player", "System", "ButtonColor"))
-		{
-			SetButtonColor(Registry.GetColorData("Player", "System", "ButtonColor"));
-			Registry.SetBoolData("Player", "System", "ButtonColor", false);
-		}
-	}
-
-	public void SetFontColor(SColor Color)
-	{
-		Color32 Fontcolor;
-		Fontcolor.r = Color.r;
-		Fontcolor.g = Color.g;
-		Fontcolor.b = Color.b;
-		Fontcolor.a = Color.a;
-		colors[1] = Fontcolor;
-	}
-
-	public void SetButtonColor(SColor Color)
-	{
-		Color32 ButtonColor;
-		ButtonColor.r = Color.r;
-		ButtonColor.g = Color.g;
-		ButtonColor.b = Color.b;
-		ButtonColor.a = Color.a;
-		colors[2] = ButtonColor;
-	}
-
-	public void SetWindowColor(SColor Color)
-	{
-		Color32 WindowColor;
-		WindowColor.r = Color.r;
-		WindowColor.g = Color.g;
-		WindowColor.b = Color.b;
-		WindowColor.a = Color.a;
-		colors[3] = WindowColor;
-	}
-
 	void Update()
     {
 		w = GameControl.control.wh;
@@ -300,7 +249,6 @@ public class Computer : MonoBehaviour
 		}
 
 		SetIconSet();
-		SetColors();
 	}
 
 	void PlayClickSound()
@@ -674,32 +622,32 @@ public class Computer : MonoBehaviour
 		MenuSelected = 0;
 	}
 
-	void CreateIcon()
-	{
-		GameControl.control.DesktopIconList.Add (PageFile [SelectedProgram]);
-	}
+	//void CreateIcon()
+	//{
+	//	GameControl.control.DesktopIconList.Add (PageFile [SelectedProgram]);
+	//}
 
-	void CreateQLI()
-	{
-		if (GameControl.control.QuickProgramList.Count > 0)
-		{
-			if (!GameControl.control.QuickLaunchNames.Contains (PageFile[SelectedProgram].Name))
-			{
-				GameControl.control.QuickProgramList.Add (PageFile[SelectedProgram]);
-				GameControl.control.QuickLaunchNames.Add(PageFile[SelectedProgram].Name);
-			} 
-			else 
-			{
-				GameControl.control.QuickProgramList.Remove (PageFile[SelectedProgram]);
-				GameControl.control.QuickLaunchNames.Remove(PageFile[SelectedProgram].Name);
-			}
-		} 
-		else 
-		{
-			GameControl.control.QuickProgramList.Add (PageFile[SelectedProgram]);
-			GameControl.control.QuickLaunchNames.Add(PageFile[SelectedProgram].Name);
-		}
-	}
+	//void CreateQLI()
+	//{
+	//	if (GameControl.control.QuickProgramList.Count > 0)
+	//	{
+	//		if (!GameControl.control.QuickLaunchNames.Contains (PageFile[SelectedProgram].Name))
+	//		{
+	//			GameControl.control.QuickProgramList.Add (PageFile[SelectedProgram]);
+	//			GameControl.control.QuickLaunchNames.Add(PageFile[SelectedProgram].Name);
+	//		} 
+	//		else 
+	//		{
+	//			GameControl.control.QuickProgramList.Remove (PageFile[SelectedProgram]);
+	//			GameControl.control.QuickLaunchNames.Remove(PageFile[SelectedProgram].Name);
+	//		}
+	//	} 
+	//	else 
+	//	{
+	//		GameControl.control.QuickProgramList.Add (PageFile[SelectedProgram]);
+	//		GameControl.control.QuickLaunchNames.Add(PageFile[SelectedProgram].Name);
+	//	}
+	//}
 
 	void AddContextOptions()
 	{
@@ -995,21 +943,21 @@ public class Computer : MonoBehaviour
 			PlayClickSound();
 			CloseContextMenu();
 			break;
-		case "Create Icon":
-			CreateIcon();
-			PlayClickSound();
-			CloseContextMenu();
-			break;
-		case "Pin to QL":
-			CreateQLI();
-			PlayClickSound();
-			CloseContextMenu();
-			break;
-		case "Unpin from QL":
-			CreateQLI();
-			PlayClickSound();
-			CloseContextMenu();
-			break;
+		//case "Create Icon":
+		//	CreateIcon();
+		//	PlayClickSound();
+		//	CloseContextMenu();
+		//	break;
+		//case "Pin to QL":
+		//	CreateQLI();
+		//	PlayClickSound();
+		//	CloseContextMenu();
+		//	break;
+		//case "Unpin from QL":
+		//	CreateQLI();
+		//	PlayClickSound();
+		//	CloseContextMenu();
+		//	break;
 		case "Details":
             Details();
 			PlayClickSound();
@@ -1076,7 +1024,7 @@ public class Computer : MonoBehaviour
 					//	dm.FreeSpace [scrollsize] = dm.DriveCapacity[scrollsize];
 					//}
 
-                    if (GUI.Button (new Rect (21, 21 * scrollsize, 250, 20), "" + PageFile [scrollsize].Name + " " + "(" + PageFile [scrollsize].Sender + ")" + " " + PageFile[scrollsize].Free.ToString("F2") + " free of " + PageFile[scrollsize].Capacity) || Event.current.type == EventType.keyDown && Event.current.keyCode == KeyCode.Return) 
+                    if (GUI.Button (new Rect (21, 21 * scrollsize, 250, 20), "" + PageFile [scrollsize].Name + " " + "(" + PageFile [scrollsize].Sender + ")" + " " + PageFile[scrollsize].Free.ToString("F2") + " free of " + PageFile[scrollsize].Capacity) || Event.current.type == EventType.KeyDown && Event.current.keyCode == KeyCode.Return) 
 					{
 						if (Input.GetMouseButtonUp (0)) 
 						{
@@ -1110,7 +1058,7 @@ public class Computer : MonoBehaviour
 					{
 						if (Input.GetMouseButtonUp (0)) 
 						{
-							if (Time.time - LastClick < Customize.cust.DoubleClickDelayMenu) 
+							if (Time.time - LastClick < Registry.GetFloatData("Player", "System", "DoubleClickSpeed")) 
 							{
 								PlayClickSound ();
 								SelectedProgram = scrollsize;
@@ -1514,19 +1462,19 @@ public class Computer : MonoBehaviour
 
 		if (GUI.GetNameOfFocusedControl().Equals("Address"))
 		{
-			if (Event.current.type == EventType.keyDown && Event.current.keyCode == KeyCode.DownArrow)
+			if (Event.current.type == EventType.KeyDown && Event.current.keyCode == KeyCode.DownArrow)
 			{
 				//DisplayedItems = PageFile.Count / 21;
 			}
 
-			if (Event.current.type == EventType.keyDown && Event.current.keyCode == KeyCode.UpArrow)
+			if (Event.current.type == EventType.KeyDown && Event.current.keyCode == KeyCode.UpArrow)
 			{
 
 			}
 		}
 		else
 		{
-			if (Event.current.type == EventType.keyDown && Event.current.keyCode == KeyCode.DownArrow)
+			if (Event.current.type == EventType.KeyDown && Event.current.keyCode == KeyCode.DownArrow)
 			{
 				if (PageFile.Count > 0)
 				{
@@ -1546,7 +1494,7 @@ public class Computer : MonoBehaviour
 				//DisplayedItems = PageFile.Count / 21;
 			}
 
-			if (Event.current.type == EventType.keyDown && Event.current.keyCode == KeyCode.UpArrow)
+			if (Event.current.type == EventType.KeyDown && Event.current.keyCode == KeyCode.UpArrow)
 			{
 				if (PageFile.Count > 0)
 				{
@@ -1563,7 +1511,7 @@ public class Computer : MonoBehaviour
 				}
 			}
 
-			if (Event.current.type == EventType.keyDown && Event.current.keyCode == KeyCode.Tab)
+			if (Event.current.type == EventType.KeyDown && Event.current.keyCode == KeyCode.Tab)
 			{
 				if (MenuSelected <= 1)
 				{
@@ -1579,7 +1527,7 @@ public class Computer : MonoBehaviour
 				}
 			}
 
-			if (Event.current.type == EventType.keyDown && Event.current.keyCode == KeyCode.Delete)
+			if (Event.current.type == EventType.KeyDown && Event.current.keyCode == KeyCode.Delete)
 			{
 				if (SelectedProgram >= 0)
 				{
@@ -1594,7 +1542,7 @@ public class Computer : MonoBehaviour
 		//			GUI.FocusControl("FolderName");
 		//		}
 
-		if (Event.current.type == EventType.keyDown && Event.current.keyCode == KeyCode.Return || Event.current.type == EventType.keyDown && Event.current.keyCode == KeyCode.RightArrow)
+		if (Event.current.type == EventType.KeyDown && Event.current.keyCode == KeyCode.Return || Event.current.type == EventType.KeyDown && Event.current.keyCode == KeyCode.RightArrow)
 		{
 			if (GUI.GetNameOfFocusedControl().Equals("Address"))
 			{
@@ -1668,7 +1616,7 @@ public class Computer : MonoBehaviour
 				{
 					GUI.SetNextControlName("Address");
 					ComAddress = GUI.TextField(new Rect(23, 44, 200, 20), ComAddress, 100);
-					if (GUI.Button(new Rect(2, 44, 20, 20), "<-") || Event.current.type == EventType.keyDown && Event.current.keyCode == KeyCode.Backspace || Event.current.type == EventType.keyDown && Event.current.keyCode == KeyCode.LeftArrow)
+					if (GUI.Button(new Rect(2, 44, 20, 20), "<-") || Event.current.type == EventType.KeyDown && Event.current.keyCode == KeyCode.Backspace || Event.current.type == EventType.KeyDown && Event.current.keyCode == KeyCode.LeftArrow)
 					{
 						if (History.Count == 0)
 						{
@@ -1697,7 +1645,7 @@ public class Computer : MonoBehaviour
 				{
 					GUI.SetNextControlName("Address");
 					ComAddress = GUI.TextField(new Rect(23, 44, 200, 20), ComAddress, 100);
-					if (GUI.Button(new Rect(2, 44, 20, 20), "<-") || Event.current.type == EventType.keyDown && Event.current.keyCode == KeyCode.Backspace || Event.current.type == EventType.keyDown && Event.current.keyCode == KeyCode.LeftArrow)
+					if (GUI.Button(new Rect(2, 44, 20, 20), "<-") || Event.current.type == EventType.KeyDown && Event.current.keyCode == KeyCode.Backspace || Event.current.type == EventType.KeyDown && Event.current.keyCode == KeyCode.LeftArrow)
 					{
 						if (History.Count == 0)
 						{

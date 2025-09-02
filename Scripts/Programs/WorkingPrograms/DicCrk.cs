@@ -76,11 +76,11 @@ public class DicCrk : MonoBehaviour
 	{
 		Customize.cust.windowx[windowID] = windowRect.x;
 		Customize.cust.windowy[windowID] = windowRect.y;
-		GUI.skin = com.Skin[GameControl.control.GUIID];
+		GUI.skin = GameControl.control.Skins[Registry.GetIntData("Player", "System", "Skin")];
 
 		if(show == true)
 		{
-			GUI.color = com.colors[Customize.cust.WindowColorInt];
+			GUI.color = Registry.Get32ColorData("Player", "System", "WindowColor");
 			windowRect = WindowClamp.ClampToScreen(GUI.Window(windowID,windowRect,DoMyWindow,""));
 		}
 
@@ -104,7 +104,7 @@ public class DicCrk : MonoBehaviour
 	{
 		if (CloseButton.Contains (Event.current.mousePosition))
 		{
-			if (GUI.Button (new Rect (CloseButton), "X", com.Skin [GameControl.control.GUIID].customStyles [0])) 
+			if (GUI.Button (new Rect (CloseButton), "X", GameControl.control.Skins[Registry.GetIntData("Player", "System", "Skin")].customStyles [0])) 
 			{
 				show = false;
 			}
@@ -122,13 +122,13 @@ public class DicCrk : MonoBehaviour
 		{
 			if (!ExecuteButton.Contains (Event.current.mousePosition))
 			{
-				GUI.backgroundColor = com.colors[Customize.cust.ButtonColorInt];
-				GUI.contentColor = com.colors[Customize.cust.FontColorInt];
-				GUI.Button (new Rect (ExecuteButton), "Execute", com.Skin [GameControl.control.GUIID].customStyles [1]);
+				GUI.backgroundColor = Registry.Get32ColorData("Player", "System", "ButtonColor");
+				GUI.contentColor = Registry.Get32ColorData("Player", "System", "FontColor");
+				GUI.Button (new Rect (ExecuteButton), "Execute", GameControl.control.Skins[Registry.GetIntData("Player", "System", "Skin")].customStyles [1]);
 			} 
 			else 
 			{
-				if (GUI.Button (new Rect (ExecuteButton), "Execute", com.Skin [GameControl.control.GUIID].customStyles [0])) 
+				if (GUI.Button (new Rect (ExecuteButton), "Execute", GameControl.control.Skins[Registry.GetIntData("Player", "System", "Skin")].customStyles [0])) 
 				{
 					Matched = false;
 					if (pl.PasswordWords.Count <= 0) 
@@ -147,8 +147,8 @@ public class DicCrk : MonoBehaviour
 		} 
 		else
 		{
-			GUI.backgroundColor = com.colors[Customize.cust.ButtonColorInt];
-			GUI.contentColor = com.colors[Customize.cust.FontColorInt];
+			GUI.backgroundColor = Registry.Get32ColorData("Player", "System", "ButtonColor");
+			GUI.contentColor = Registry.Get32ColorData("Player", "System", "FontColor");
 
 			percentage = CurrentCount / StartingCount * 100;
 			float CountUpWords = CurrentCount - StartingCount;
@@ -165,9 +165,9 @@ public class DicCrk : MonoBehaviour
 
 		if (!CloseButton.Contains (Event.current.mousePosition))
 		{
-			GUI.backgroundColor = com.colors[Customize.cust.ButtonColorInt];
-			GUI.contentColor = com.colors[Customize.cust.FontColorInt];
-			if (GUI.Button (new Rect (CloseButton), "X", com.Skin [GameControl.control.GUIID].customStyles [1])) 
+			GUI.backgroundColor = Registry.Get32ColorData("Player", "System", "ButtonColor");
+			GUI.contentColor = Registry.Get32ColorData("Player", "System", "FontColor");
+			if (GUI.Button (new Rect (CloseButton), "X", GameControl.control.Skins[Registry.GetIntData("Player", "System", "Skin")].customStyles [1])) 
 			{
 				show = false;
 			}

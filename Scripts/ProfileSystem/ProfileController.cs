@@ -18,6 +18,7 @@ public class ProfileController : MonoBehaviour
 	public List<int> ProfileID = new List<int>();
 	public List<int> ProfilePic = new List<int>();
 	public bool ShowTOS;
+	public string ActualFilePath;
     //public List<float> VersionNumber = new List<float>();
 
     public int SelectedProfile;
@@ -77,7 +78,7 @@ public class ProfileController : MonoBehaviour
 	// Use this for initialization
 	void Start () 
 	{
-		
+		ActualFilePath = Application.dataPath + "/saves/" + VersionNumber + "/profiles/" + "Profiles";
 	}
 	
 	// Update is called once per frame
@@ -99,7 +100,7 @@ public class ProfileController : MonoBehaviour
 	public void Save()
 	{
 		BinaryFormatter bf = new BinaryFormatter ();
-		FileStream file = File.Create (Application.dataPath + "/saves/" + VersionNumber + "/profiles/" + "Profiles" + ".dat");
+		FileStream file = File.Create(ActualFilePath + ".dat");
 		ProfileData data = new ProfileData ();
 
 		data.Profiles = Profiles;
@@ -119,10 +120,10 @@ public class ProfileController : MonoBehaviour
 
 	public void Load()
 	{
-		if (File.Exists (Application.dataPath + "/saves/" + VersionNumber + "/profiles/" + "Profiles" + ".dat")) 
+		if (File.Exists (ActualFilePath + ".dat")) 
 		{
 			BinaryFormatter bf = new BinaryFormatter ();
-			FileStream file = File.Open (Application.dataPath + "/saves/" + VersionNumber + "/profiles/" + "Profiles" + ".dat", FileMode.Open);
+			FileStream file = File.Open (ActualFilePath + ".dat", FileMode.Open);
 			ProfileData data = (ProfileData)bf.Deserialize (file);
 			file.Close ();
 

@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
+using UnityEngine.SceneManagement;
 
 public class ShutdownProm : MonoBehaviour
 {
@@ -130,7 +131,7 @@ public class ShutdownProm : MonoBehaviour
 		Customize.cust.windowx[windowID] = windowRect.x;
 		Customize.cust.windowy[windowID] = windowRect.y;
 
-		GUI.skin = com.Skin[GameControl.control.GUIID];
+		GUI.skin = GameControl.control.Skins[Registry.GetIntData("Player", "System", "Skin")];
 
 		//set up scaling
 		//float rx = Screen.width / native_width;
@@ -140,7 +141,7 @@ public class ShutdownProm : MonoBehaviour
 
 		if(show == true)
 		{
-			GUI.color = com.colors[Customize.cust.WindowColorInt];
+			GUI.color = Registry.Get32ColorData("Player", "System", "WindowColor");
 			windowRect = WindowClamp.ClampToScreen(GUI.Window(windowID,windowRect,DoMyWindow,""));
 		}
 	}
@@ -151,7 +152,7 @@ public class ShutdownProm : MonoBehaviour
 		{
 			sc.SoundSelect = 2;
 			sc.PlaySound();
-			GameControl.control.Gateway.Status.Shutdown = true;
+			GameControl.control.GatewayStatus.Shutdown = true;
 			shutdown = true;
 			//Cursor.visible = true;
 		}
@@ -163,9 +164,9 @@ public class ShutdownProm : MonoBehaviour
 		{
 			sc.SoundSelect = 2;
 			sc.PlaySound();
-			GameControl.control.Gateway.Status.Booted = false;
-			GameControl.control.Gateway.Status.Terminal = false;
-			Application.LoadLevel(1);
+			GameControl.control.GatewayStatus.Booted = false;
+			GameControl.control.GatewayStatus.Terminal = false;
+			SceneManager.LoadScene("Game");
 			//Cursor.visible = true;
 		}
 	}
@@ -181,25 +182,25 @@ public class ShutdownProm : MonoBehaviour
 
 	public void SignOut()
 	{
-		GameControl.control.Gateway.Status.Terminal = false;
-		GameControl.control.Gateway.Status.Booted = false;
-		Application.LoadLevel(0);
+		GameControl.control.GatewayStatus.Terminal = false;
+		GameControl.control.GatewayStatus.Booted = false;
+		SceneManager.LoadScene("Login");
 	}
 
 	void DoMyWindow(int WindowID)
 	{
 		if (CloseButton.Contains (Event.current.mousePosition)) 
 		{
-			if (GUI.Button (new Rect (CloseButton), "X", com.Skin [GameControl.control.GUIID].customStyles [0])) 
+			if (GUI.Button (new Rect (CloseButton), "X", GameControl.control.Skins[Registry.GetIntData("Player", "System", "Skin")].customStyles [0])) 
 			{
 				show = false;
 			}
 		} 
 		else
 		{
-			GUI.backgroundColor = com.colors[Customize.cust.ButtonColorInt];
-			GUI.contentColor = com.colors[Customize.cust.FontColorInt];
-			GUI.Button (new Rect (CloseButton), "X", com.Skin [GameControl.control.GUIID].customStyles [1]);
+			GUI.backgroundColor = Registry.Get32ColorData("Player", "System", "ButtonColor");
+			GUI.contentColor = Registry.Get32ColorData("Player", "System", "FontColor");
+			GUI.Button (new Rect (CloseButton), "X", GameControl.control.Skins[Registry.GetIntData("Player", "System", "Skin")].customStyles [1]);
 		}
 
 		Render();
@@ -207,33 +208,33 @@ public class ShutdownProm : MonoBehaviour
 
 	void Render()
 	{
-		GUI.backgroundColor = com.colors[Customize.cust.ButtonColorInt];
-		GUI.contentColor = com.colors[Customize.cust.FontColorInt];
+		GUI.backgroundColor = Registry.Get32ColorData("Player", "System", "ButtonColor");
+		GUI.contentColor = Registry.Get32ColorData("Player", "System", "FontColor");
 
 		GUI.DragWindow (new Rect (2, 2, 249, 21));
 		GUI.Box (new Rect (2, 2, 249, 21), "Turn Off System");
 
 		GUI.backgroundColor = LogOffColor;
-		GUI.contentColor = com.colors[Customize.cust.FontColorInt];
+		GUI.contentColor = Registry.Get32ColorData("Player", "System", "FontColor");
 		GUI.Label (new Rect (210, 75, 100, 32), "Log Off");
 		GUI.contentColor = Color.white;
-		if (GUI.Button (new Rect (215, 40, 32, 32), logIcon, com.Skin [GameControl.control.GUIID].customStyles [DesktopStyle])) 
+		if (GUI.Button (new Rect (215, 40, 32, 32), logIcon, GameControl.control.Skins[Registry.GetIntData("Player", "System", "Skin")].customStyles [DesktopStyle])) 
 		{
 			SignOutUI();
 		}
 		GUI.backgroundColor = RestartColor;
-		GUI.contentColor = com.colors[Customize.cust.FontColorInt];
+		GUI.contentColor = Registry.Get32ColorData("Player", "System", "FontColor");
 		GUI.Label (new Rect (120, 75, 100, 32), "Restart");
 		GUI.contentColor = Color.white;
-		if (GUI.Button (new Rect (125, 40, 32, 32), restartIcon, com.Skin [GameControl.control.GUIID].customStyles [DesktopStyle])) 
+		if (GUI.Button (new Rect (125, 40, 32, 32), restartIcon, GameControl.control.Skins[Registry.GetIntData("Player", "System", "Skin")].customStyles [DesktopStyle])) 
 		{
 			Restart();
 		}
 		GUI.backgroundColor = ShutdownColor;
-		GUI.contentColor = com.colors[Customize.cust.FontColorInt];
+		GUI.contentColor = Registry.Get32ColorData("Player", "System", "FontColor");
 		GUI.Label (new Rect (30, 75, 100, 32), "Turn Off");
 		GUI.contentColor = Color.white;
-		if (GUI.Button (new Rect (35, 40, 32, 32), sdIcon, com.Skin [GameControl.control.GUIID].customStyles [DesktopStyle]))
+		if (GUI.Button (new Rect (35, 40, 32, 32), sdIcon, GameControl.control.Skins[Registry.GetIntData("Player", "System", "Skin")].customStyles [DesktopStyle]))
 		{
 			//SignMan.enabled = true;
 			//this.show = false;

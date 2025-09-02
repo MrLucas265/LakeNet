@@ -21,4 +21,8 @@ public class ProgramRequest
         ProgramName = programname;
         PersonName = personname;
     }
+
+    public ProgramRequest()
+    {
+    }
 }

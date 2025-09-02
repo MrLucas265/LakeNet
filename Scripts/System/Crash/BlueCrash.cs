@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class BlueCrash : MonoBehaviour 
 {
@@ -38,9 +39,9 @@ public class BlueCrash : MonoBehaviour
 
 		if (Timer <= 0)
 		{
-			GameControl.control.Gateway.Status.Booted = false;
-			GameControl.control.Gateway.Status.Terminal = false;
-			Application.LoadLevel(1);
+			GameControl.control.GatewayStatus.Booted = false;
+			GameControl.control.GatewayStatus.Terminal = false;
+            SceneManager.LoadScene("Game");
 		}
 	}
 

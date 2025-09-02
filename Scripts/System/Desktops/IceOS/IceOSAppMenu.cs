@@ -1,7 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using System.Linq;
 
 public class IceOSAppMenu : MonoBehaviour
 {
@@ -258,14 +257,11 @@ public class IceOSAppMenu : MonoBehaviour
 
 	void OnGUI()
 	{
-		GUI.skin = com.Skin[GameControl.control.GUIID];
+        GUI.skin = GameControl.control.Skins[Registry.GetIntData("Player", "System", "Skin")];
+        GUI.color = Registry.Get32ColorData("Player", "System", "WindowColor");
 
-		Customize.cust.windowx[windowID] = windowRect.x;
-		Customize.cust.windowy[windowID] = windowRect.y;
-
-		if(show == true)
+        if (show == true)
 		{
-			GUI.color = com.colors[Customize.cust.WindowColorInt];
 			AppMenuBgPos = GUI.Window(windowID,AppMenuBgPos,ShowAppMenu,"");
 			if (AppMenuState == 0)
 			{
@@ -302,35 +298,47 @@ public class IceOSAppMenu : MonoBehaviour
 	void AddAllFiles()
     {
 		ListOfPrograms.Clear();
-		var person = PersonController.control.People.FirstOrDefault(x => x.Name == "Player");
-		for (int i = 0; i < person.Gateway.CurrentOS.Partitions.Count; i++)
+		for (int j = 0; j < PersonController.control.People.Count; j++)
 		{
-			for (int FileCount = 0; FileCount < person.Gateway.CurrentOS.Partitions[i].Files.Count; FileCount++)
+			var person = PersonController.control.People[j];
+			if (person.Name == "Player")
 			{
-				var AllFilesInfo = person.Gateway.CurrentOS.Partitions[i].Files[FileCount];
-				if(AllFilesInfo.Extension == ProgramSystemv2.FileExtension.Exe)
+                for (int i = 0; i < person.Gateway.CurrentOS.Partitions.Count; i++)
                 {
-					ListOfPrograms.Add(AllFilesInfo);
-				}
-			}
+                    for (int FileCount = 0; FileCount < person.Gateway.CurrentOS.Partitions[i].Files.Count; FileCount++)
+                    {
+                        var AllFilesInfo = person.Gateway.CurrentOS.Partitions[i].Files[FileCount];
+                        if (AllFilesInfo.Extension == ProgramSystemv2.FileExtension.exe)
+                        {
+                            ListOfPrograms.Add(AllFilesInfo);
+                        }
+                    }
+                }
+            }
 		}
 	}
 
 	void AddAllFiles1()
 	{
 		ListOfPrograms.Clear();
-		var person = PersonController.control.People.FirstOrDefault(x => x.Name == "Player");
-		for (int i = 0; i < person.Gateway.CurrentOS.Partitions.Count; i++)
+		for (int j = 0; j < PersonController.control.People.Count; j++)
 		{
-			for (int FileCount = 0; FileCount < person.Gateway.CurrentOS.Partitions[i].Files.Count; FileCount++)
+			var person = PersonController.control.People[j];
+			if (person.Name == "Player")
 			{
-				var AllFilesInfo = person.Gateway.CurrentOS.Partitions[i].Files[FileCount];
-				ListOfPrograms.Add(AllFilesInfo);
-				if (AllFilesInfo.Extension != ProgramSystemv2.FileExtension.Exe)
-				{
-					ListOfPrograms.RemoveAt(FileCount);
-				}
-			}
+                for (int i = 0; i < person.Gateway.CurrentOS.Partitions.Count; i++)
+                {
+                    for (int FileCount = 0; FileCount < person.Gateway.CurrentOS.Partitions[i].Files.Count; FileCount++)
+                    {
+                        var AllFilesInfo = person.Gateway.CurrentOS.Partitions[i].Files[FileCount];
+                        ListOfPrograms.Add(AllFilesInfo);
+                        if (AllFilesInfo.Extension != ProgramSystemv2.FileExtension.exe)
+                        {
+                            ListOfPrograms.RemoveAt(FileCount);
+                        }
+                    }
+                }
+            }
 		}
 	}
 
@@ -348,11 +356,9 @@ public class IceOSAppMenu : MonoBehaviour
 				}
 			}
 
-			GUI.backgroundColor = Color.white;
+            GUI.backgroundColor = Registry.Get32ColorData("Player", "System", "ButtonColor");
 
-			GUI.backgroundColor = com.colors[Customize.cust.ButtonColorInt];
-
-			if(GUI.Button(new Rect(SettingsButton),SettingsIcon,com.Skin [GameControl.control.GUIID].customStyles [DesktopStyle]))
+            if (GUI.Button(new Rect(SettingsButton),SettingsIcon,GameControl.control.Skins[Registry.GetIntData("Player", "System", "Skin")].customStyles [DesktopStyle]))
 			{
 				PlayClickSound();
                 appman.ProgramName = "System Panel";
@@ -360,7 +366,7 @@ public class IceOSAppMenu : MonoBehaviour
 				AppMenuState = 2;
 			}
 
-			if(GUI.Button(new Rect(LogoutButton),LogoutIcon,com.Skin [GameControl.control.GUIID].customStyles [DesktopStyle]))
+			if(GUI.Button(new Rect(LogoutButton),LogoutIcon,GameControl.control.Skins[Registry.GetIntData("Player", "System", "Skin")].customStyles [DesktopStyle]))
 			{
 				PlayClickSound();
                 appman.ProgramName = "Shutdown";
@@ -368,12 +374,12 @@ public class IceOSAppMenu : MonoBehaviour
 				AppMenuState = 2;
 			}
 
-			//if(GUI.Button(new Rect(SearchButton), SearchIcon,com.Skin [GameControl.control.GUIID].customStyles [DesktopStyle]))
-			//{
-			//	ActivateSearch();
-			//}
+            //if(GUI.Button(new Rect(SearchButton), SearchIcon,GameControl.control.Skins[Registry.GetIntData("Player", "System", "Skin")].customStyles [DesktopStyle]))
+            //{
+            //	ActivateSearch();
+            //}
 
-			GUI.contentColor = com.colors[Customize.cust.FontColorInt];
+            GUI.contentColor = Registry.Get32ColorData("Player", "System", "FontColor");
 
 			//if (Event.current.type == EventType.keyDown && Event.current.keyCode == KeyCode.Return) 
 			//{
@@ -382,113 +388,113 @@ public class IceOSAppMenu : MonoBehaviour
 
 			SearchSites = GUI.TextField(new Rect(SearchBar),SearchSites);
 
-			var person = PersonController.control.People.FirstOrDefault(x => x.Name == "Player");
-
-			AddAllFiles();
-
-			if (SearchSites == "")
+			for (int x = 0; x < PersonController.control.People.Count; x++)
 			{
-				if (ShowAllApps == false) 
+				var person = PersonController.control.People[x];
+				if (person.Name == "Player")
 				{
-					if(person.Gateway.CurrentOS.FPC.QuickList != null)
+                    if (SearchSites == "")
                     {
-						if(person.Gateway.CurrentOS.FPC.QuickList.Count > 0)
+                        if (ShowAllApps == false)
                         {
-							scrollpos = GUI.BeginScrollView(new Rect(QuickList), scrollpos, new Rect(0, 0, 0, scrollsize * 21));
-							for (scrollsize = 0; scrollsize < person.Gateway.CurrentOS.FPC.QuickList.Count; scrollsize++)
-							{
-								var QuickListInfo = person.Gateway.CurrentOS.FPC.QuickList[scrollsize];
-								if (GUI.Button(new Rect(0 * Scale, scrollsize * 21, 130 * Scale, ButtonHeight), QuickListInfo.Name))
-								{
-									PlayClickSound();
-									//appman.ProgramRequest(QuickListInfo.Name, QuickListInfo.Target, "Player");
-									if (QuickListInfo.Content == "")
-									{
-										QuickListInfo.Content = "Run:" + ListOfPrograms[scrollsize].Name + ";";
-
-									}
-									TestCode.KeywordCheck(QuickListInfo.Content);
-								}
-							}
-							GUI.EndScrollView();
-						}
-					}
-
-					if (GUI.Button (new Rect (ShowAllButton), "Show All"))
-					{
-						PlayClickSound();
-						ShowAllApps = true;
-					}
-				}
-				else
-				{
-					if (GUI.Button (new Rect (ShowAllButton), "< Back"))
-					{
-						PlayClickSound();
-						ShowAllApps = false;
-					}
-
-					scrollpos = GUI.BeginScrollView(new Rect(QuickList), scrollpos, new Rect(0, 0, 0, scrollsize * 21));
-					for (scrollsize = 0; scrollsize < ListOfPrograms.Count; scrollsize++)
-					{
-						if (GUI.Button(new Rect(0 * Scale, scrollsize * 21, 130 * Scale, 20), ListOfPrograms[scrollsize].Name))
-						{
-							PlayClickSound();
-							//appman.ProgramRequest(ListOfPrograms[scrollsize].Name, ListOfPrograms[scrollsize].Target, "Player");
-							if(ListOfPrograms[scrollsize].Content == "")
+                            if (person.Gateway.CurrentOS.FPC.QuickList != null)
                             {
-								ListOfPrograms[scrollsize].Content = "Run:" + ListOfPrograms[scrollsize].Name + ";";
+                                if (person.Gateway.CurrentOS.FPC.QuickList.Count > 0)
+                                {
+                                    scrollpos = GUI.BeginScrollView(new Rect(QuickList), scrollpos, new Rect(0, 0, 0, scrollsize * 21));
+                                    for (scrollsize = 0; scrollsize < person.Gateway.CurrentOS.FPC.QuickList.Count; scrollsize++)
+                                    {
+                                        var QuickListInfo = person.Gateway.CurrentOS.FPC.QuickList[scrollsize];
+                                        if (GUI.Button(new Rect(0 * Scale, scrollsize * 21, 130 * Scale, ButtonHeight), QuickListInfo.Name))
+                                        {
+                                            PlayClickSound();
+                                            //appman.ProgramRequest(QuickListInfo.Name, QuickListInfo.Target, "Player");
+                                            if (QuickListInfo.Content == "")
+                                            {
+                                                QuickListInfo.Content = "Run:" + ListOfPrograms[scrollsize].Name + ";";
 
-							}
-							TestCode.KeywordCheck(ListOfPrograms[scrollsize].Content);
-						}
-					}
-					GUI.EndScrollView();
-				}
-			} 
-			else 
-			{
-                ActivateSearch();
-                if (SearchSites == "")
-				{
-					UpdateSearchUI = false;
-				}
+                                            }
+                                            TestCode.KeywordCheck(person.Name, QuickListInfo.Content);
+                                        }
+                                    }
+                                    GUI.EndScrollView();
+                                }
+                            }
 
-				if(UpdateSearchUI == true)
-				{
-                    if(Inputted!= "")
-                    {
-                        for (int FilterCount = 0; FilterCount < ListOfPrograms.Count; FilterCount++)
-                        {
-                            if(ListOfPrograms[FilterCount].Name != Inputted)
+                            if (GUI.Button(new Rect(ShowAllButton), "Show All"))
                             {
-								ListOfPrograms.RemoveAt(FilterCount);
+                                PlayClickSound();
+                                ShowAllApps = true;
                             }
                         }
-                    }
-                    scrollpos = GUI.BeginScrollView(new Rect(SearchList), scrollpos, new Rect(0, 0, 0, scrollsize * 21));
-					for (scrollsize = 0; scrollsize < ListOfPrograms.Count; scrollsize++)
-					{
-                        if (Inputted != "")
+                        else
                         {
-                            if (ListOfPrograms.Count > 0)
+                            if (GUI.Button(new Rect(ShowAllButton), "< Back"))
+                            {
+                                PlayClickSound();
+                                ShowAllApps = false;
+                            }
+
+                            scrollpos = GUI.BeginScrollView(new Rect(QuickList), scrollpos, new Rect(0, 0, 0, scrollsize * 21));
+                            for (scrollsize = 0; scrollsize < ListOfPrograms.Count; scrollsize++)
                             {
                                 if (GUI.Button(new Rect(0 * Scale, scrollsize * 21, 130 * Scale, 20), ListOfPrograms[scrollsize].Name))
                                 {
-									//appman.ProgramRequest(ListOfPrograms[scrollsize].Name, ListOfPrograms[scrollsize].Target, "Player");
-									if (ListOfPrograms[scrollsize].Content == "")
-									{
-										ListOfPrograms[scrollsize].Content = "Run:" + ListOfPrograms[scrollsize].Name + ";";
-
-									}
-									TestCode.KeywordCheck(ListOfPrograms[scrollsize].Content);
-								}
+                                    PlayClickSound();
+                                    //appman.ProgramRequest(ListOfPrograms[scrollsize].Name, ListOfPrograms[scrollsize].Target, "Player");
+                                    TestCode.KeywordCheck(person.Name, "Run:" + ListOfPrograms[scrollsize].Name + ";");
+                                }
                             }
+                            GUI.EndScrollView();
                         }
                     }
-					GUI.EndScrollView();
-				}
+                    else
+                    {
+                        ActivateSearch();
+                        if (SearchSites == "")
+                        {
+                            UpdateSearchUI = false;
+                        }
+
+                        if (UpdateSearchUI == true)
+                        {
+                            if (Inputted != "")
+                            {
+                                for (int FilterCount = 0; FilterCount < ListOfPrograms.Count; FilterCount++)
+                                {
+                                    if (ListOfPrograms[FilterCount].Name != Inputted)
+                                    {
+                                        ListOfPrograms.RemoveAt(FilterCount);
+                                    }
+                                }
+                            }
+                            scrollpos = GUI.BeginScrollView(new Rect(SearchList), scrollpos, new Rect(0, 0, 0, scrollsize * 21));
+                            for (scrollsize = 0; scrollsize < ListOfPrograms.Count; scrollsize++)
+                            {
+                                if (Inputted != "")
+                                {
+                                    if (ListOfPrograms.Count > 0)
+                                    {
+                                        if (GUI.Button(new Rect(0 * Scale, scrollsize * 21, 130 * Scale, 20), ListOfPrograms[scrollsize].Name))
+                                        {
+                                            //appman.ProgramRequest(ListOfPrograms[scrollsize].Name, ListOfPrograms[scrollsize].Target, "Player");
+                                            if (ListOfPrograms[scrollsize].Content == "")
+                                            {
+                                                ListOfPrograms[scrollsize].Content = "Run:" + ListOfPrograms[scrollsize].Name + ";";
+
+                                            }
+                                            TestCode.KeywordCheck(person.Name, ListOfPrograms[scrollsize].Content);
+                                        }
+                                    }
+                                }
+                            }
+                            GUI.EndScrollView();
+                        }
+                    }
+                }
 			}
+
+			AddAllFiles();
 		}
 	}
 }

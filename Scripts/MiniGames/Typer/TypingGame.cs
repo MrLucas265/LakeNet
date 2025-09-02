@@ -73,7 +73,7 @@ public class TypingGame : MonoBehaviour
 
         TimerBool = true;
 
-        if (Event.current.type == EventType.keyDown && Event.current.keyCode == KeyCode.Return)
+        if (Event.current.type == EventType.KeyDown && Event.current.keyCode == KeyCode.Return)
         {
             for (Count = 0; Count < EnemyWords.Count; Count++)
             {

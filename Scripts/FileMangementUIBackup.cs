@@ -13,7 +13,6 @@ public class FileMangementUIBackup : MonoBehaviour
 
 	private Computer com;
 	private SoundControl sc;
-	private FileExplorer fp;
 	private AppMan appman;
 
 	public float native_width = 1920;
@@ -55,7 +54,6 @@ public class FileMangementUIBackup : MonoBehaviour
 		native_height = Customize.cust.native_height;
 		native_width = Customize.cust.native_width;
 
-		fp = Puter.GetComponent<FileExplorer>();
 		appman = Puter.GetComponent<AppMan>();
 
 		winman = WindowHandel.GetComponent<WindowManager>();
@@ -75,7 +73,7 @@ public class FileMangementUIBackup : MonoBehaviour
 		if (Input.GetMouseButtonDown(0))
 		{
 			SelectedWindowID = WindowID;
-			winman.SelectedWID = WindowID;
+			Registry.SetIntData("Player", "WindowManager", "SelectedWindow", WindowID);
 		}
 	}
 
@@ -240,7 +238,7 @@ public class FileMangementUIBackup : MonoBehaviour
 
 	void OnGUI()
 	{
-		GUI.skin = com.Skin[GameControl.control.GUIID];
+		GUI.skin = GameControl.control.Skins[Registry.GetIntData("Player", "System", "Skin")];
 
 		for (int PersonCount = 0; PersonCount < PersonController.control.People.Count; PersonCount++)
 		{
@@ -252,7 +250,7 @@ public class FileMangementUIBackup : MonoBehaviour
 				{
 					if (pwinman.RunningPrograms[i].ProgramName == ProgramNameForWinMan)
 					{
-						GUI.color = com.colors[Customize.cust.WindowColorInt];
+						GUI.color = Registry.Get32ColorData("Player", "System", "WindowColor");
 						pwinman.RunningPrograms[i].windowRect = WindowClamp.ClampToScreen(GUI.Window(pwinman.RunningPrograms[i].WID, pwinman.RunningPrograms[i].windowRect, DoMyWindow, ""));
 
 						if (!pwinman.RunningPrograms[i].windowRect.Contains(Event.current.mousePosition))
@@ -411,20 +409,20 @@ public class FileMangementUIBackup : MonoBehaviour
 							CloseButton = new Rect(pwinman.RunningPrograms[i].windowRect.width - 23, 2, 21, 21);
 							if (CloseButton.Contains(Event.current.mousePosition))
 							{
-								if (GUI.Button(new Rect(CloseButton), "X", com.Skin[GameControl.control.GUIID].customStyles[0]))
+								if (GUI.Button(new Rect(CloseButton), "X", GameControl.control.Skins[Registry.GetIntData("Player", "System", "Skin")].customStyles[0]))
 								{
 									Close(SelectedWindowID);
 								}
 
-								GUI.backgroundColor = com.colors[Customize.cust.ButtonColorInt];
-								GUI.contentColor = com.colors[Customize.cust.FontColorInt];
+								GUI.backgroundColor = Registry.Get32ColorData("Player", "System", "ButtonColor");
+								GUI.contentColor = Registry.Get32ColorData("Player", "System", "FontColor");
 							}
 							else
 							{
-								GUI.backgroundColor = com.colors[Customize.cust.ButtonColorInt];
-								GUI.contentColor = com.colors[Customize.cust.FontColorInt];
+								GUI.backgroundColor = Registry.Get32ColorData("Player", "System", "ButtonColor");
+								GUI.contentColor = Registry.Get32ColorData("Player", "System", "FontColor");
 
-								if (GUI.Button(new Rect(CloseButton), "X", com.Skin[GameControl.control.GUIID].customStyles[1]))
+								if (GUI.Button(new Rect(CloseButton), "X", GameControl.control.Skins[Registry.GetIntData("Player", "System", "Skin")].customStyles[1]))
 								{
 									Close(SelectedWindowID);
 								}
@@ -521,7 +519,7 @@ public class FileMangementUIBackup : MonoBehaviour
 						{
 							switch (FMS[j].PageFile[m].Extension)
 							{
-								case ProgramSystemv2.FileExtension.Dir:
+								case ProgramSystemv2.FileExtension.dir:
 									if (FMS[j].SelectedFile == m)
 									{
 										GUI.DrawTexture(new Rect(0, 21 * m, 20, 20), com.IconHighlight[0]);
@@ -569,7 +567,7 @@ public class FileMangementUIBackup : MonoBehaviour
 										}
 									}
 									break;
-								case ProgramSystemv2.FileExtension.Fdl:
+								case ProgramSystemv2.FileExtension.fdl:
 
 									if (GUI.Button(new Rect(21, 21 * m, 100, 20), "" + FMS[j].PageFile[m].Name))
 									{
@@ -640,8 +638,8 @@ public class FileMangementUIBackup : MonoBehaviour
 	{
 		SelectWindowID(WindowID);
 		//GUI.Box (new Rect (Input.mousePosition.x, Input.mousePosition.y, 100, 200), "");
-		GUI.backgroundColor = com.colors[Customize.cust.ButtonColorInt];
-		GUI.contentColor = com.colors[Customize.cust.FontColorInt];
+		GUI.backgroundColor = Registry.Get32ColorData("Player", "System", "ButtonColor");
+		GUI.contentColor = Registry.Get32ColorData("Player", "System", "FontColor");
 
 		if (ContextMenuOptions.Count <= 0)
 		{

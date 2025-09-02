@@ -43,7 +43,7 @@
 
 //		if (Game == true)
 //		{
-//			GUI.skin = com.Skin[GameControl.control.GUIID];
+//			GUI.skin = GameControl.control.Skins[Registry.GetIntData("Player", "System", "Skin")];
 //		}
 
 //		//set up scaling

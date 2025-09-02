@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using System.Linq;
+using UnityEngine.SceneManagement;
 public class BootLoader : MonoBehaviour 
 {
 
@@ -50,7 +51,7 @@ public class BootLoader : MonoBehaviour
 			windowRect.width = Customize.cust.RezX;
 			windowRect.height = Customize.cust.RezY;
 		}
-	}
+    }
 
 	void OnGUI()
 	{
@@ -108,7 +109,7 @@ public class BootLoader : MonoBehaviour
 						if (Input.anyKeyDown)
 						{
 							person.Gateway.Status.BIOS = true;
-							Application.LoadLevel(1);
+							SceneManager.LoadScene("Game");
 						}
 					}
 				}
@@ -121,7 +122,7 @@ public class BootLoader : MonoBehaviour
 					if (Input.anyKeyDown)
 					{
 						person.Gateway.Status.BIOS = true;
-						Application.LoadLevel(1);
+						SceneManager.LoadScene("Game");
 					}
 				}
 			}
@@ -162,6 +163,7 @@ public class BootLoader : MonoBehaviour
 			}
 
 			person.Gateway.StorageDevices[SelectedDisk].OS[SelectedOS].Options.Selected = true;
+			Registry.SetStringData("Player", "OS", "SerialKey", person.Gateway.StorageDevices[SelectedDisk].OS[SelectedOS].SerialKey);
 		}
 
 		this.enabled = false;
@@ -193,7 +195,7 @@ public class BootLoader : MonoBehaviour
 				{
 					boot.enabled = true;
 					this.enabled = false;
-					GameControl.control.Gateway.Status.Terminal = true;
+					GameControl.control.GatewayStatus.Terminal = true;
 					ChangeOS = false;
 					show = false;
 				}
@@ -204,15 +206,15 @@ public class BootLoader : MonoBehaviour
 					if (Input.anyKeyDown)
 					{
 						GameControl.control.SelectedOS.Name = OperatingSystems.OSName.SafeMode;
-						GameControl.control.Gateway.Status.Booted = false;
-						GameControl.control.Gateway.Status.SafeMode = true;
-						Application.LoadLevel(1);
+						GameControl.control.GatewayStatus.Booted = false;
+						GameControl.control.GatewayStatus.SafeMode = true;
+						SceneManager.LoadScene("Game");
 					}
 				}
 			}
 			else
 			{
-				GameControl.control.Gateway.Status.Terminal = false;
+				GameControl.control.GatewayStatus.Terminal = false;
 
 				scrollpos = GUI.BeginScrollView(new Rect(100, 100, 920, 540), scrollpos, new Rect(0, 0, 0, scrollsize * 22));
 				for (scrollsize = 0; scrollsize < BootableOS.Count; scrollsize++)
@@ -230,7 +232,7 @@ public class BootLoader : MonoBehaviour
 					{
 						if(SelectedOS == "Kernal-Sanders")
 						{
-							GameControl.control.Gateway.Status.Terminal = true;
+							GameControl.control.GatewayStatus.Terminal = true;
 						}
 						GameControl.control.SelectedOS = GameControl.control.OSName[i];
 						GameControl.control.SelectedOS.Colour = GameControl.control.OSName[i].Colour;
@@ -247,7 +249,7 @@ public class BootLoader : MonoBehaviour
 				{
 					boot.enabled = true;
 					this.enabled = false;
-					GameControl.control.Gateway.Status.Terminal = true;
+					GameControl.control.GatewayStatus.Terminal = true;
 					ChangeOS = false;
 					show = false;
 				}
@@ -258,8 +260,8 @@ public class BootLoader : MonoBehaviour
 					if (Input.anyKeyDown)
 					{
 						GameControl.control.SelectedOS.Name = OperatingSystems.OSName.SafeMode;
-						GameControl.control.Gateway.Status.Booted = false;
-						Application.LoadLevel(1);
+						GameControl.control.GatewayStatus.Booted = false;
+						SceneManager.LoadScene("Game");
 					}
 				}
 			}
@@ -269,7 +271,7 @@ public class BootLoader : MonoBehaviour
 				{
 					this.enabled = false;
 					boot.enabled = true;
-					GameControl.control.Gateway.Status.Terminal = true;
+					GameControl.control.GatewayStatus.Terminal = true;
 				}
 				else
 				{

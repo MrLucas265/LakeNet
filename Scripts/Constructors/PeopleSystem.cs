@@ -2,7 +2,12 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+using System.Xml.Serialization;
+
+[XmlRoot("People")]
+
 [System.Serializable]
+
 public class PeopleSystem
 {
     public string Name;

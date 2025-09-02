@@ -7,6 +7,7 @@ public class OperatingSystems
 {
 	public string Title;
 	public OSName Name;
+	public string SerialKey;
 	public OSColorSystem Colour = new OSColorSystem();
 	public OSFPCSystem FPC = new OSFPCSystem();
 	public OSOptionsSystem Options = new OSOptionsSystem();
@@ -23,6 +24,7 @@ public class OperatingSystems
 		CSOSV1,
 		HackLink,
         QuantinitumOS,
+		RizaRami,
 		SafeMode,
 		EthelOS
     }

@@ -12,25 +12,25 @@
 
 //    private DictationRecognizer m_DictationRecognizer;
 
-//	public string Text;
-//	public string ResultText;
+//    public string Text;
+//    public string ResultText;
 
-//	private VoiceCMDS voicecmds;
+//    private VoiceCMDS voicecmds;
 
-//	public string ProgramName;
+//    public string ProgramName;
 
-//	public int SelectedProgram;
+//    public int SelectedProgram;
 
 //    void Start()
 //    {
-//		voicecmds = GetComponent<VoiceCMDS>();
+//        voicecmds = GetComponent<VoiceCMDS>();
 
 //        m_DictationRecognizer = new DictationRecognizer();
 
 //        m_DictationRecognizer.DictationResult += (Text, confidence) =>
 //        {
 //            Debug.LogFormat("Dictation result: {0}", Text);
-//			ResultText = Text;
+//            ResultText = Text;
 //            m_Recognitions.text += Text + "\n";
 //        };
 

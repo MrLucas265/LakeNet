@@ -3,7 +3,8 @@ using System.Collections.Generic;
 using UnityEngine;
 using System.Text.RegularExpressions;
 using System.IO;
-using System.Linq;
+using UnityEngine.Rendering;
+
 #if UNITY_EDITOR
 using UnityEditor;
 #endif
@@ -111,7 +112,12 @@ public class SystemPanel : MonoBehaviour
 
 	public string SelectedFilePath;
 
-	enum Menu
+    public float Red = 0;
+    public float Green = 0;
+    public float Blue = 0;
+    public float Alpha = 0;
+
+    enum Menu
 	{
 		Home,
 		WebBrowser,
@@ -133,6 +139,7 @@ public class SystemPanel : MonoBehaviour
 		FontColor,
 		WindowColor,
 		ButtonColor,
+		DesktopColor,
 		Background,
 		BackgroundSettings,
 		Dev,
@@ -224,36 +231,6 @@ public class SystemPanel : MonoBehaviour
 		Time.Add("hh/mm");
 		Time.Add("hh/mm/apm");
 	}
-
-	public void SetFontColor()
-	{
-		Color32 Fontcolor;
-		Fontcolor.r = (byte)GameControl.control.SelectedOS.Colour.Font.Red;
-		Fontcolor.g = (byte)GameControl.control.SelectedOS.Colour.Font.Green;
-		Fontcolor.b = (byte)GameControl.control.SelectedOS.Colour.Font.Blue;
-		Fontcolor.a = (byte)GameControl.control.SelectedOS.Colour.Font.Alpha;
-		com.colors[1] = Fontcolor;
-	}
-
-	public void SetButtonColor()
-	{
-		Color32 ButtonColor;
-		ButtonColor.r = (byte)GameControl.control.SelectedOS.Colour.Button.Red;
-		ButtonColor.g = (byte)GameControl.control.SelectedOS.Colour.Button.Green;
-		ButtonColor.b = (byte)GameControl.control.SelectedOS.Colour.Button.Blue;
-		ButtonColor.a = (byte)GameControl.control.SelectedOS.Colour.Button.Alpha;
-		com.colors[2] = ButtonColor;
-	}
-
-	public void SetWindowColor()
-	{
-		Color32 WindowColor;
-		WindowColor.r = (byte)GameControl.control.SelectedOS.Colour.Window.Red;
-		WindowColor.g = (byte)GameControl.control.SelectedOS.Colour.Window.Green;
-		WindowColor.b = (byte)GameControl.control.SelectedOS.Colour.Window.Blue;
-		WindowColor.a = (byte)GameControl.control.SelectedOS.Colour.Window.Alpha;
-		com.colors[3] = WindowColor;
-	}
 	
 	void Update()
 	{
@@ -286,14 +263,16 @@ public class SystemPanel : MonoBehaviour
 
 	void OnGUI()
 	{
-		GUI.skin = com.Skin[GameControl.control.GUIID];
+		GUI.skin = GameControl.control.Skins[Registry.GetIntData("Player", "System", "Skin")];
 
 		Customize.cust.windowx[windowID] = windowRect.x;
 		Customize.cust.windowy[windowID] = windowRect.y;
 
 		if(show == true)
 		{
-			GUI.color = com.colors[Customize.cust.WindowColorInt];
+            GUI.color = Registry.Get32ColorData("Player", "System", "WindowColor");
+
+            //GUI.color = Registry.Get32ColorData("Player", "System", "WindowColor");
 			windowRect = WindowClamp.ClampToScreen(GUI.Window(windowID,windowRect,DoMyWindow,""));
 		}
 	}
@@ -334,8 +313,15 @@ public class SystemPanel : MonoBehaviour
 
 	public void ApplyBackgrounds()
 	{
+		for(int i = 0; i < os.ListOfTextures.Count;i++)
+        {
+            if (os.ListOfTextures[i].Name == "CustomBackground")
+            {
+				os.ListOfTextures[i].Texture = null;
+
+			}
+        }
 		Registry.SetStringData("Player", "ControlPanel", "BackgroundAddress", Registry.GetStringData("Player", "ControlPanel", "BackgroundField"));
-		os.pic[2] = TextureLoader.LoadPNG(Registry.GetStringData("Player", "ControlPanel", "BackgroundAddress"));
 	}
 
 	public void ApplyMouseImage()
@@ -352,21 +338,21 @@ public class SystemPanel : MonoBehaviour
 	{
 		if (CloseButton.Contains (Event.current.mousePosition)) 
 		{
-			if (GUI.Button (new Rect (CloseButton), "X", com.Skin [GameControl.control.GUIID].customStyles [0])) 
+			if (GUI.Button (new Rect (CloseButton), "X", GameControl.control.Skins[Registry.GetIntData("Player", "System", "Skin")].customStyles [0])) 
 			{
                 appman.SelectedApp = "System Panel";
 			}
 		} 
 		else
 		{
-			GUI.backgroundColor = com.colors[Customize.cust.ButtonColorInt];
-			GUI.contentColor = com.colors[Customize.cust.FontColorInt];
-			GUI.Button (new Rect (CloseButton), "X", com.Skin [GameControl.control.GUIID].customStyles [1]);
+            GUI.backgroundColor = Registry.Get32ColorData("Player", "System", "ButtonColor");
+			GUI.contentColor = Registry.Get32ColorData("Player", "System", "FontColor");
+			GUI.Button (new Rect (CloseButton), "X", GameControl.control.Skins[Registry.GetIntData("Player", "System", "Skin")].customStyles [1]);
 		}
 
 		if (MiniButton.Contains (Event.current.mousePosition)) 
 		{
-			if (GUI.Button (new Rect (MiniButton), "-",com.Skin [GameControl.control.GUIID].customStyles [2])) 
+			if (GUI.Button (new Rect (MiniButton), "-",GameControl.control.Skins[Registry.GetIntData("Player", "System", "Skin")].customStyles [2])) 
 			{
 				minimize = !minimize;
 				Minimize();
@@ -374,9 +360,9 @@ public class SystemPanel : MonoBehaviour
 		} 
 		else
 		{
-			GUI.backgroundColor = com.colors[Customize.cust.ButtonColorInt];
-			GUI.contentColor = com.colors[Customize.cust.FontColorInt];
-			if (GUI.Button (new Rect (MiniButton), "-",com.Skin [GameControl.control.GUIID].customStyles [2])) 
+            GUI.backgroundColor = Registry.Get32ColorData("Player", "System", "ButtonColor");
+            GUI.contentColor = Registry.Get32ColorData("Player", "System", "FontColor");
+            if (GUI.Button (new Rect (MiniButton), "-",GameControl.control.Skins[Registry.GetIntData("Player", "System", "Skin")].customStyles [2])) 
 			{
 				minimize = !minimize;
 				Minimize();
@@ -388,9 +374,9 @@ public class SystemPanel : MonoBehaviour
 
 	void RenderUI()
 	{
-		GUI.backgroundColor = com.colors[Customize.cust.ButtonColorInt];
-		GUI.contentColor = com.colors[Customize.cust.FontColorInt];
-		GUI.DragWindow(new Rect(DefaltBoxSetting));
+        GUI.backgroundColor = Registry.Get32ColorData("Player", "System", "ButtonColor");
+        GUI.contentColor = Registry.Get32ColorData("Player", "System", "FontColor");
+        GUI.DragWindow(new Rect(DefaltBoxSetting));
 
 		if(CatName != "")
 		{
@@ -493,6 +479,9 @@ public class SystemPanel : MonoBehaviour
 			break;
 		case Menu.WindowColor:
 			WindowColorUI();
+			break;
+		case Menu.DesktopColor:
+			DesktopColorUI();
 			break;
 		case Menu.FontColor:
 			FontColorUI();
@@ -933,16 +922,6 @@ public class SystemPanel : MonoBehaviour
 			SelectedMenu = Menu.Home;
 			CatName = "Home";
 		}
-		//Customize.cust.DoubleClickEnable = GUI.Toggle (new Rect (3, 30, 150, 20), Customize.cust.DoubleClickEnable, "Icon Double Click");
-		//Customize.cust.MouseSpeed = GUI.HorizontalSlider (new Rect (50, 65, 200, 20), Customize.cust.MouseSpeed, 0.05f, 2);
-		if (Customize.cust.DoubleClickEnable == true)
-		{
-//			float IconDelay;
-//			IconDelay = Customize.cust.DoubleClickDelayIcon * 1000;
-//			GUI.Label (new Rect (250, 80, 200, 20), "" + IconDelay.ToString("F0") + "ms");
-//			GUI.Label (new Rect (5, 60, 200, 20), "Icon Double Click Delay");
-//			Customize.cust.DoubleClickDelayIcon = GUI.HorizontalSlider (new Rect (30, 75, 250, 20), Customize.cust.DoubleClickDelayIcon, 0.05f, 2);
-		}
 
 		GUI.Label(new Rect(2,20,100,22),"Cursor Size: " + Customize.cust.CursorSize);
 
@@ -981,9 +960,11 @@ public class SystemPanel : MonoBehaviour
 		Customize.cust.CustomTexFileNames[3] = GUI.TextField(new Rect (2, 100, 296, 21), Customize.cust.CustomTexFileNames[3]);
 
 		float IconDelay;
-		IconDelay = Customize.cust.DoubleClickDelayMenu * 1000;
-		GUI.Label (new Rect (5, 120, 200, 20), "Double Click Delay "+ IconDelay.ToString("F0") + "ms");
-		Customize.cust.DoubleClickDelayMenu = GUI.HorizontalSlider (new Rect (5, 140, 290, 20), Customize.cust.DoubleClickDelayMenu, 0.05f, 2);
+		IconDelay = Registry.GetFloatData("Player", "System", "DoubleClickSpeed") * 1000;
+		Registry.SetIntData("Player", "System", "DoubleClickSpeed", (int)IconDelay);
+		Registry.SetStringData("Player", "System", "DoubleClickSpeed", "Double Click Delay " + IconDelay.ToString("F0") + "ms");
+		GUI.Label (new Rect (5, 120, 200, 20), Registry.GetStringData("Player", "System", "DoubleClickSpeed"));
+		Registry.SetFloatData("Player", "System", "DoubleClickSpeed",GUI.HorizontalSlider (new Rect (5, 140, 290, 20), Registry.GetFloatData("Player", "System", "DoubleClickSpeed"), 0.05f, 2));
 
 		if(GUI.Button(new Rect(258, 70, 40, 21),"Apply"))
 		{
@@ -1196,13 +1177,7 @@ public class SystemPanel : MonoBehaviour
 			}
 		}
 
-		if (GUI.Button (new Rect (3, 30, 100, 20), "Backgrounds"))
-		{
-			SelectedMenu = Menu.Background;
-			CatName = "Backgrounds";
-		}
-
-		if (GUI.Button(new Rect(112, 30, 100, 20), "Desktop"))
+		if (GUI.Button(new Rect(3, 30, 100, 20), "Desktop"))
 		{
 			SelectedMenu = Menu.Desktop;
 			CatName = "Desktop";
@@ -1242,34 +1217,46 @@ public class SystemPanel : MonoBehaviour
 			CatName = "Display";
 		}
 
-		if (GameControl.control.SelectedOS.FPC.ShowDesktopIcons == true)
+		if (Registry.GetBoolData("Player", "System", "ShowDesktopIcons") == true)
         {
-			if (GUI.Button(new Rect(3, 30, 100, 20), "Hide Icons"))
+			if (GUI.Button(new Rect(3, 30, 130, 20), "Hide Icons"))
 			{
-				GameControl.control.SelectedOS.FPC.ShowDesktopIcons = !GameControl.control.SelectedOS.FPC.ShowDesktopIcons;
+				Registry.SetBoolData("Player", "System", "ShowDesktopIcons", false);
 			}
 		}
 		else
         {
-			if (GUI.Button(new Rect(3, 30, 100, 20), "Show Icons"))
+			if (GUI.Button(new Rect(3, 30, 130, 20), "Show Icons"))
 			{
-				GameControl.control.SelectedOS.FPC.ShowDesktopIcons = !GameControl.control.SelectedOS.FPC.ShowDesktopIcons;
+				Registry.SetBoolData("Player", "System", "ShowDesktopIcons", true);
 			}
 		}
 
-		if (GameControl.control.SelectedOS.FPC.ShowDesktopBackground == true)
+		if (Registry.GetBoolData("Player", "System", "ShowDesktopBackground") == true)
 		{
-			if (GUI.Button(new Rect(3, 60, 100, 20), "Hide Background"))
+			if (GUI.Button(new Rect(3, 60, 130, 20), "Hide Background"))
 			{
-				GameControl.control.SelectedOS.FPC.ShowDesktopBackground = !GameControl.control.SelectedOS.FPC.ShowDesktopBackground;
+				Registry.SetBoolData("Player", "System", "ShowDesktopBackground",false);
 			}
 		}
 		else
 		{
-			if (GUI.Button(new Rect(3, 60, 100, 20), "Show Background"))
+			if (GUI.Button(new Rect(3, 60, 130, 20), "Show Background"))
 			{
-				GameControl.control.SelectedOS.FPC.ShowDesktopBackground = !GameControl.control.SelectedOS.FPC.ShowDesktopBackground;
+				Registry.SetBoolData("Player", "System", "ShowDesktopBackground", true);
 			}
+		}
+
+		if (GUI.Button(new Rect(3, 90, 130, 20), "Set Background"))
+		{
+			SelectedMenu = Menu.Background;
+			CatName = "Backgrounds";
+		}
+
+		if (GUI.Button(new Rect(3, 120, 130, 20), "Background Color"))
+		{
+			SelectedMenu = Menu.DesktopColor;
+			CatName = "Desktop Color";
 		}
 	}
 
@@ -1543,31 +1530,45 @@ public class SystemPanel : MonoBehaviour
 
 	void Theme()
 	{
-		Customize.cust.GUIID = GameControl.control.GUIID;
-		GUI.Label(new Rect(10, 75, 200, 200), "" + GameControl.control.GUIID);
+		Customize.cust.GUIID = Registry.GetIntData("Player", "System", "Skin");
+		GUI.Label(new Rect(10, 75, 200, 200), "" + Registry.GetIntData("Player", "System", "Skin"));
 
 		if(GUI.Button(new Rect(2,2,20,20),"<-"))
 		{
 			SelectedMenu = Menu.Dev;
 		}
 
-		if(GUI.Button(new Rect(100,75,20,20),">"))
+        Registry.SetStringData("Player", "System", "Skin",GameControl.control.Skins[Registry.GetIntData("Player", "System", "Skin")].ToString());
+
+		GUI.Label(new Rect(100, 100, 100, 22), Registry.GetStringData("Player", "System", "Skin"));
+
+        if (GUI.Button(new Rect(100,75,20,20),">"))
 		{
-			if(GameControl.control.GUIID<com.Skin.Count-1)
+			if(Registry.GetIntData("Player","System","Skin")<GameControl.control.Skins.Length-1)
 			{
-				GameControl.control.GUIID++;
+                Registry.SetIntData("Player", "System", "Skin", Registry.GetIntData("Player", "System", "Skin") + 1);
 			}
 		}
 
 		if(GUI.Button(new Rect(75,75,20,20),"<"))
 		{
-			if(GameControl.control.GUIID>0)
+			if(Registry.GetIntData("Player", "System", "Skin") > 0)
 			{
-				GameControl.control.GUIID--;
-			}
+                Registry.SetIntData("Player", "System", "Skin", Registry.GetIntData("Player", "System", "Skin") - 1);
+            }
 		}
 
-		if (GameControl.control.GUIID == 10) 
+        if (GUI.Button(new Rect(50, 150, 100, 20), "White Font"))
+        {
+            TestCode.KeywordCheck("Player", "Font Color: " + 255 + ":" + 255 + ":" + 255 + ":" + 255 + ";");
+        }
+
+        if (GUI.Button(new Rect(50, 125, 100, 20), "Black Font"))
+        {
+            TestCode.KeywordCheck("Player", "Font Color: " + 0 + ":" + 0 + ":" + 0 + ":" + 255 + ";");
+        }
+
+        if (GameControl.control.GUIID == 10) 
 		{
 			if(GUI.Button(new Rect(10,100,150,20),"Custom Theme Settings"))
 			{
@@ -1615,9 +1616,10 @@ public class SystemPanel : MonoBehaviour
 		}
 	}
 
-	void FontColorUI()
+	//Simple FontColorUI Change Function using normal Public Vars
+    void FontColorUI()
 	{
-		if(GUI.Button(new Rect(2,2,20,20),"<-"))
+		if (GUI.Button(new Rect(2, 2, 20, 20), "<-"))
 		{
 			SelectedMenu = Menu.Color;
 			CatName = "Color";
@@ -1628,26 +1630,107 @@ public class SystemPanel : MonoBehaviour
 		GUI.Label(new Rect(5, 100, 300, 300), "Blue");
 		GUI.Label(new Rect(5, 120, 300, 300), "Alpha");
 
-		GUI.Label(new Rect(260, 60, 300, 300), "" + Registry.GetRedFloatColorData("Player", "System", "FontColor").ToString("F0"));
-		GUI.Label(new Rect(260, 80, 300, 300), "" + Registry.GetGreenFloatColorData("Player", "System", "FontColor").ToString("F0"));
-		GUI.Label(new Rect(260, 100, 300, 300), "" + Registry.GetBlueFloatColorData("Player", "System", "FontColor").ToString("F0"));
-		GUI.Label(new Rect(260, 120, 300, 300), "" + Registry.GetAlphaFloatColorData("Player", "System", "FontColor").ToString("F0"));
+        Red = GUI.HorizontalSlider(new Rect(60, 65, 200, 20), Red, 0, 255);
+        Green = GUI.HorizontalSlider(new Rect(60, 85, 200, 20), Green, 0, 255);
+        Blue = GUI.HorizontalSlider(new Rect(60, 105, 200, 20), Blue, 0, 255);
+        Alpha = GUI.HorizontalSlider(new Rect(60, 125, 200, 20), Alpha, 0, 255);
+
+        GUI.Label(new Rect(260, 60, 300, 300), "" + Red.ToString("F0"));
+		GUI.Label(new Rect(260, 80, 300, 300), "" + Green.ToString("F0"));
+		GUI.Label(new Rect(260, 100, 300, 300), "" + Blue.ToString("F0"));
+		GUI.Label(new Rect(260, 120, 300, 300), "" + Alpha.ToString("F0"));
+
+		if (GUI.Button(new Rect(200, 180, 60, 22), "Apply"))
+		{
+			TestCode.KeywordCheck("Player", "Font Color: " + Red + ":" + Green + ":" + Blue + ":" + Alpha + ";");
+		}
+
+	}
+
+    //void FontColorUI()
+    //{
+    //	if(GUI.Button(new Rect(2,2,20,20),"<-"))
+    //	{
+    //		SelectedMenu = Menu.Color;
+    //		CatName = "Color";
+    //	}
+
+    //	GUI.Label(new Rect(5, 60, 300, 300), "Red");
+    //	GUI.Label(new Rect(5, 80, 300, 300), "Green");
+    //	GUI.Label(new Rect(5, 100, 300, 300), "Blue");
+    //	GUI.Label(new Rect(5, 120, 300, 300), "Alpha");
+
+    //	//Setting Float to Color Data
+    //       byte red = DataConverter.FloatToByte(Registry.GetFloatColorData("Player", "System", "FontColor").Red);
+    //       byte green = DataConverter.FloatToByte(Registry.GetFloatColorData("Player", "System", "FontColor").Green);
+    //       byte blue = DataConverter.FloatToByte(Registry.GetFloatColorData("Player", "System", "FontColor").Blue);
+    //       byte alpha = DataConverter.FloatToByte(Registry.GetFloatColorData("Player", "System", "FontColor").Alpha);
+
+    //	//Actual Color Data
+    //       float red1 = DataConverter.ByteToFloat(Registry.GetColorData("Player", "System", "FontColor").r);
+    //       float green1 = DataConverter.ByteToFloat(Registry.GetColorData("Player", "System", "FontColor").g);
+    //       float blue1 = DataConverter.ByteToFloat(Registry.GetColorData("Player", "System", "FontColor").b);
+    //       float alpha1 = DataConverter.ByteToFloat(Registry.GetColorData("Player", "System", "FontColor").a);
+
+    //       //GUI.Label(new Rect(260, 60, 300, 300), "" + red1.ToString("F0"));
+    //       //GUI.Label(new Rect(260, 80, 300, 300), "" + green1.ToString("F0"));
+    //       //GUI.Label(new Rect(260, 100, 300, 300), "" + blue1.ToString("F0"));
+    //       //GUI.Label(new Rect(260, 120, 300, 300), "" + alpha1.ToString("F0"));
+
+    //       GUI.Label(new Rect(260, 60, 300, 300), "" + red.ToString("F0"));
+    //	GUI.Label(new Rect(260, 80, 300, 300), "" + green.ToString("F0"));
+    //	GUI.Label(new Rect(260, 100, 300, 300), "" + blue.ToString("F0"));
+    //	GUI.Label(new Rect(260, 120, 300, 300), "" + alpha.ToString("F0"));
+
+    //	Registry.SetRedFloatColorData("Player", "System", "FontColor", GUI.HorizontalSlider(new Rect(60, 65, 200, 20), Registry.GetRedFloatColorData("Player", "System", "FontColor"), 0, 255));
+    //	Registry.SetGreenFloatColorData("Player", "System", "FontColor", GUI.HorizontalSlider(new Rect(60, 85, 200, 20), Registry.GetGreenFloatColorData("Player", "System", "FontColor"), 0, 255));
+    //	Registry.SetBlueFloatColorData("Player", "System", "FontColor", GUI.HorizontalSlider(new Rect(60, 105, 200, 20), Registry.GetBlueFloatColorData("Player", "System", "FontColor"), 0, 255));
+    //	Registry.SetAlphaFloatColorData("Player", "System", "FontColor", GUI.HorizontalSlider(new Rect(60, 125, 200, 20), Registry.GetAlphaFloatColorData("Player", "System", "FontColor"), 0, 255));
+
+    //	//Registry.SetRedFloatColorData("Player", "System", "FontColor", GUI.HorizontalSlider(new Rect(60, 65, 200, 20), red1, 0, 255));
+    //	//Registry.SetGreenFloatColorData("Player", "System", "FontColor", GUI.HorizontalSlider(new Rect(60, 85, 200, 20), green1, 0, 255));
+    //	//Registry.SetBlueFloatColorData("Player", "System", "FontColor", GUI.HorizontalSlider(new Rect(60, 105, 200, 20), blue1, 0, 255));
+    //	//Registry.SetAlphaFloatColorData("Player", "System", "FontColor", GUI.HorizontalSlider(new Rect(60, 125, 200, 20), alpha1, 0, 255));
+
+    //	if(GUI.Button(new Rect(220,150,60,22),"set"))
+    //	{
+    //           TestCode.KeywordCheck("Player", "Font Color: " + red + ":" + blue + ":" + green + ":" + alpha + ";");
+    //       }
+
+    //	Customize.cust.FontColorInt = 1;
+    //}
+
+    void DesktopColorUI()
+	{
+		if (GUI.Button(new Rect(2, 2, 20, 20), "<-"))
+		{
+			SelectedMenu = Menu.Desktop;
+			CatName = "Desktop";
+		}
+
+		GUI.Label(new Rect(5, 60, 300, 300), "Red");
+		GUI.Label(new Rect(5, 80, 300, 300), "Green");
+		GUI.Label(new Rect(5, 100, 300, 300), "Blue");
+		GUI.Label(new Rect(5, 120, 300, 300), "Alpha");
+
+		GUI.Label(new Rect(260, 60, 300, 300), "" + Registry.GetRedFloatColorData("Player", "System", "DesktopBackgroundColor").ToString("F0"));
+		GUI.Label(new Rect(260, 80, 300, 300), "" + Registry.GetGreenFloatColorData("Player", "System", "DesktopBackgroundColor").ToString("F0"));
+		GUI.Label(new Rect(260, 100, 300, 300), "" + Registry.GetBlueFloatColorData("Player", "System", "DesktopBackgroundColor").ToString("F0"));
+		GUI.Label(new Rect(260, 120, 300, 300), "" + Registry.GetAlphaFloatColorData("Player", "System", "DesktopBackgroundColor").ToString("F0"));
 
 		//Registry.SetRedColorData("Player","System","WindowColor",GUI.HorizontalSlider (new Rect (60, 65, 200, 20), Registry.GetRedColorData("Player", "System", "WindowColor"), 1, 255));
-		Registry.SetRedFloatColorData("Player", "System", "FontColor", GUI.HorizontalSlider(new Rect(60, 65, 200, 20), Registry.GetRedFloatColorData("Player", "System", "FontColor"), 0, 255));
-		Registry.SetGreenFloatColorData("Player", "System", "FontColor", GUI.HorizontalSlider(new Rect(60, 85, 200, 20), Registry.GetGreenFloatColorData("Player", "System", "FontColor"), 0, 255));
-		Registry.SetBlueFloatColorData("Player", "System", "FontColor", GUI.HorizontalSlider(new Rect(60, 105, 200, 20), Registry.GetBlueFloatColorData("Player", "System", "FontColor"), 0, 255));
-		Registry.SetAlphaFloatColorData("Player", "System", "FontColor", GUI.HorizontalSlider(new Rect(60, 125, 200, 20), Registry.GetAlphaFloatColorData("Player", "System", "FontColor"), 0, 255));
+		Registry.SetRedFloatColorData("Player", "System", "DesktopBackgroundColor", GUI.HorizontalSlider(new Rect(60, 65, 200, 20), Registry.GetRedFloatColorData("Player", "System", "DesktopBackgroundColor"), 0, 255));
+		Registry.SetGreenFloatColorData("Player", "System", "DesktopBackgroundColor", GUI.HorizontalSlider(new Rect(60, 85, 200, 20), Registry.GetGreenFloatColorData("Player", "System", "DesktopBackgroundColor"), 0, 255));
+		Registry.SetBlueFloatColorData("Player", "System", "DesktopBackgroundColor", GUI.HorizontalSlider(new Rect(60, 105, 200, 20), Registry.GetBlueFloatColorData("Player", "System", "DesktopBackgroundColor"), 0, 255));
+		Registry.SetAlphaFloatColorData("Player", "System", "DesktopBackgroundColor", GUI.HorizontalSlider(new Rect(60, 125, 200, 20), Registry.GetAlphaFloatColorData("Player", "System", "DesktopBackgroundColor"), 0, 255));
 
 
-		byte red = DataConverter.FloatToByte(Registry.GetRedFloatColorData("Player", "System", "FontColor"));
-		byte green = DataConverter.FloatToByte(Registry.GetBlueFloatColorData("Player", "System", "FontColor"));
-		byte blue = DataConverter.FloatToByte(Registry.GetGreenFloatColorData("Player", "System", "FontColor"));
-		byte alpha = DataConverter.FloatToByte(Registry.GetAlphaFloatColorData("Player", "System", "FontColor"));
+		byte red = DataConverter.FloatToByte(Registry.GetRedFloatColorData("Player", "System", "DesktopBackgroundColor"));
+		byte green = DataConverter.FloatToByte(Registry.GetBlueFloatColorData("Player", "System", "DesktopBackgroundColor"));
+		byte blue = DataConverter.FloatToByte(Registry.GetGreenFloatColorData("Player", "System", "DesktopBackgroundColor"));
+		byte alpha = DataConverter.FloatToByte(Registry.GetAlphaFloatColorData("Player", "System", "DesktopBackgroundColor"));
 
-		TestCode.KeywordCheck("Font Color: " + red + ":" + blue + ":" + green + ":" + alpha + ";");
-
-		Customize.cust.FontColorInt = 1;
+		TestCode.KeywordCheck("Player", "Desktop Background Color:" + red + ":" + blue + ":" + green + ":" + alpha + ";");
 	}
 
 	void WindowColorUI()
@@ -1680,7 +1763,7 @@ public class SystemPanel : MonoBehaviour
 		byte blue = DataConverter.FloatToByte(Registry.GetGreenFloatColorData("Player", "System", "WindowColor"));
 		byte alpha = DataConverter.FloatToByte(Registry.GetAlphaFloatColorData("Player", "System", "WindowColor"));
 
-		TestCode.KeywordCheck("Window Color: " + red + ":" + blue + ":" +  green + ":" + alpha + ";");
+		TestCode.KeywordCheck("Player", "Window Color: " + red + ":" + blue + ":" +  green + ":" + alpha + ";");
 
 		Customize.cust.WindowColorInt = 3;
 	}
@@ -1715,7 +1798,7 @@ public class SystemPanel : MonoBehaviour
 		byte blue = DataConverter.FloatToByte(Registry.GetGreenFloatColorData("Player", "System", "ButtonColor"));
 		byte alpha = DataConverter.FloatToByte(Registry.GetAlphaFloatColorData("Player", "System", "ButtonColor"));
 
-		TestCode.KeywordCheck("Button Color: " + red + ":" + blue + ":" + green + ":" + alpha + ";");
+		TestCode.KeywordCheck("Player", "Button Color: " + red + ":" + blue + ":" + green + ":" + alpha + ";");
 
 		Customize.cust.ButtonColorInt = 2;
 	}
@@ -1803,11 +1886,10 @@ public class SystemPanel : MonoBehaviour
 
 	void Background()
 	{
-		GUI.contentColor = Color.white;
 		if(GUI.Button(new Rect(2,2,20,20),"<-"))
 		{
-			SelectedMenu = Menu.Display;
-			CatName = "Display";
+			SelectedMenu = Menu.Desktop;
+			CatName = "Desktop";
 		}
 
 		if(GUI.Button(new Rect(60,30,100,21),"Settings"))
@@ -1815,20 +1897,15 @@ public class SystemPanel : MonoBehaviour
 			SelectedMenu = Menu.BackgroundSettings;
 		}
 
+		GUI.contentColor = Color.white;
+
 		scrollpos = GUI.BeginScrollView(new Rect(5, 60, 275, 130), scrollpos, new Rect(0, 0, 0, scrollsize*64));
 		for (scrollsize = 0; scrollsize < os.ListOfBackgroundImages.Count; scrollsize++)
 		{
-			if(GUI.Button(new Rect(0, scrollsize * 64, 275, 64), os.ListOfBackgroundImages[scrollsize], com.Skin [GameControl.control.GUIID].customStyles [DesktopStyle]))
+			if(GUI.Button(new Rect(0, scrollsize * 64, 275, 64), os.ListOfBackgroundImages[scrollsize], GameControl.control.Skins[Registry.GetIntData("Player", "System", "Skin")].customStyles [DesktopStyle]))
 			{
-				os.pic [2] = os.ListOfBackgroundImages[scrollsize];
-				GameControl.control.SelectedOS.FPC.SelectedBackground = scrollsize;
-				for (int i = 0; i < GameControl.control.OSName.Count; i++)
-				{
-					if(GameControl.control.OSName[i].Title == GameControl.control.SelectedOS.Title && GameControl.control.OSName[i].Name == GameControl.control.SelectedOS.Name)
-					{
-						GameControl.control.OSName[i].FPC.SelectedBackground = GameControl.control.SelectedOS.FPC.SelectedBackground;
-					}
-				}
+				//Registry.SetTextrue2DData("Player", "ControlPanel", "BackgroundAddress", os.ListOfBackgroundImages[selec]);
+				Registry.SetIntData("Player","System", "SelectedBackground",scrollsize);
 			}
 		}
 		GUI.EndScrollView();
@@ -1860,6 +1937,43 @@ public class SystemPanel : MonoBehaviour
 		if (GUI.Button(new Rect(65, 60, 70, 21), "Open FE"))
 		{
 			OpenFileExplorerBackground();
+		}
+
+		if(Registry.GetStringData("Player", "ControlPanel", "BackgroundField") == "" || Registry.GetStringData("Player", "ControlPanel", "BackgroundField") == null)
+        {
+			Registry.SetStringData("Player", "ControlPanel", "BackgroundField", "");
+		}
+
+		GUI.Label(new Rect(100, 120, 150, 21),"Current Aspect: " + Registry.GetStringData("Player", "System", "Aspect"));
+
+        if (Registry.GetStringData("Player", "System", "Aspect") == "Fit")
+        {
+            if (GUI.Button(new Rect(2, 120, 70, 21), "Scale"))
+            {
+                Registry.SetStringData("Player", "System", "Aspect", "Scale");
+            }
+        }
+        if (Registry.GetStringData("Player", "System", "Aspect") == "Scale")
+        {
+            if (GUI.Button(new Rect(2, 120, 70, 21), "Default"))
+            {
+                Registry.SetStringData("Player", "System", "Aspect", "Default");
+            }
+        }
+        if (Registry.GetStringData("Player", "System", "Aspect") == "Default" || Registry.GetStringData("Player", "System", "Aspect") == "")
+        {
+            if (GUI.Button(new Rect(2, 120, 70, 21), "Fit"))
+            {
+                Registry.SetStringData("Player", "System", "Aspect", "Fit");
+            }
+        }
+
+        if (GUI.Button(new Rect(2, 150, 70, 21), "Toggle"))
+		{
+			if (Registry.GetBoolData("Player", "System", "SelectedBackground") == false)
+				Registry.SetBoolData("Player", "System", "SelectedBackground", true);
+			else
+				Registry.SetBoolData("Player", "System", "SelectedBackground", false);
 		}
 
 		Registry.SetStringData("Player", "ControlPanel", "BackgroundField", GUI.TextField(new Rect(2, 182, 296, 21), Registry.GetStringData("Player", "ControlPanel", "BackgroundField")));
@@ -1907,26 +2021,26 @@ public class SystemPanel : MonoBehaviour
 
 	void QuickLaunchCheck()
 	{
-		if (GameControl.control.QuickProgramList.Count > 0)
-		{
-			if (!GameControl.control.QuickLaunchNames.Contains (SelectablePrograms[Selecting].Name))
-			{
-				GameControl.control.QuickProgramList.Add (SelectablePrograms [Selecting]);
-				GameControl.control.QuickLaunchNames.Add(SelectablePrograms [Selecting].Name);
-				Status = "Added " + SelectablePrograms [Selecting].Name + " to quick launch list";
-			} 
-			else 
-			{
-				GameControl.control.QuickProgramList.Remove (SelectablePrograms [Selecting]);
-				GameControl.control.QuickLaunchNames.Remove(SelectablePrograms [Selecting].Name);
-				Status = "Removed " + SelectablePrograms [Selecting].Name + " from quick launch list";
-			}
-		} 
-		else 
-		{
-			GameControl.control.QuickProgramList.Add (SelectablePrograms [Selecting]);
-			GameControl.control.QuickLaunchNames.Add(SelectablePrograms [Selecting].Name);
-			Status = "Added " + SelectablePrograms [Selecting].Name + " to quick launch list";
-		}
+		//if (GameControl.control.QuickProgramList.Count > 0)
+		//{
+		//	if (!GameControl.control.QuickLaunchNames.Contains (SelectablePrograms[Selecting].Name))
+		//	{
+		//		GameControl.control.QuickProgramList.Add (SelectablePrograms [Selecting]);
+		//		GameControl.control.QuickLaunchNames.Add(SelectablePrograms [Selecting].Name);
+		//		Status = "Added " + SelectablePrograms [Selecting].Name + " to quick launch list";
+		//	} 
+		//	else 
+		//	{
+		//		GameControl.control.QuickProgramList.Remove (SelectablePrograms [Selecting]);
+		//		GameControl.control.QuickLaunchNames.Remove(SelectablePrograms [Selecting].Name);
+		//		Status = "Removed " + SelectablePrograms [Selecting].Name + " from quick launch list";
+		//	}
+		//} 
+		//else 
+		//{
+		//	GameControl.control.QuickProgramList.Add (SelectablePrograms [Selecting]);
+		//	GameControl.control.QuickLaunchNames.Add(SelectablePrograms [Selecting].Name);
+		//	Status = "Added " + SelectablePrograms [Selecting].Name + " to quick launch list";
+		//}
 	}
 }

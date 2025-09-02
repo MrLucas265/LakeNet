@@ -1,4 +1,5 @@
-﻿using System;
+﻿using NUnit.Framework.Constraints;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -105,7 +106,7 @@ public class ClearCommand : ConsoleCommand
 
     public override int Evaluate(string PersonsName, int PID, string KeyName, string ValueName, List<string> args)
     {
-        LocalRegistry.RemoveAllStringData(PersonsName, PID, KeyName, "CommandHistory");
+        LocalRegistry.RemoveAllStringListData(PersonsName, PID, KeyName, "CommandHistory");
 
         return 0;
     }
@@ -282,6 +283,9 @@ public class Background : ConsoleCommand
         GameControl.control.SelectedOS.FPC.BackgroundAddress = args[0];
         sp.ApplyBackgrounds();
 
+        string InputCheck = "SetBackground:";
+        TestCode.KeywordCheck(PersonsName, InputCheck + args[0] + ";");
+
         return 0;
     }
 }
@@ -321,11 +325,19 @@ public class Uwu : ConsoleCommand
 
         Registry.SetBoolData(PersonsName, "OS", "ColorOption", false);
 
+        Registry.SetBoolData(PersonsName, "System", "ForcedBackground", true);
+
         com.colors[1] = new Color32(Registry.GetRedColorData(PersonsName, "System", "SecondaryFontColor"), Registry.GetGreenColorData(PersonsName, "System", "SecondaryFontColor"), Registry.GetBlueColorData(PersonsName, "System", "SecondaryFontColor"), Registry.GetAlphaColorData(PersonsName, "System", "SecondaryFontColor"));
         com.colors[2] = new Color32(Registry.GetRedColorData(PersonsName, "System", "SecondaryButtonColor"), Registry.GetGreenColorData(PersonsName, "System", "SecondaryButtonColor"), Registry.GetBlueColorData(PersonsName, "System", "SecondaryButtonColor"), Registry.GetAlphaColorData(PersonsName, "System", "SecondaryButtonColor"));
         com.colors[3] = new Color32(Registry.GetRedColorData(PersonsName, "System", "SecondaryWindowColor"), Registry.GetGreenColorData(PersonsName, "System", "SecondaryWindowColor"), Registry.GetBlueColorData(PersonsName, "System", "SecondaryWindowColor"), Registry.GetAlphaColorData(PersonsName, "System", "SecondaryWindowColor"));
 
-        os.pic[2] = Resources.Load<Texture2D>("DesktopBackgrounds/" + "uwu1");
+        for(int i = 0; i < os.ListOfTextures.Count; i++)
+        {
+            if(os.ListOfTextures[i].Name == "AltBackground")
+            {
+                os.ListOfTextures[i].Texture = Resources.Load<Texture2D>("DesktopBackgrounds/" + "uwu1");
+            }
+        }
 
         for(int i = 0; i < com.Skin.Count; i++)
         {
@@ -337,6 +349,33 @@ public class Uwu : ConsoleCommand
         }
 
         return 0;
+    }
+}
+
+public class SetMoney : ConsoleCommand
+{
+    private string _name = "setmoney";
+    private string _desc = "color ui";
+
+    public override string GetName()
+    {
+        return _name;
+    }
+
+    public override string GetDesc()
+    {
+        return _desc;
+    }
+
+    public override int Evaluate(string PersonsName, int PID, string KeyName, string ValueName, List<string> args)
+    {
+        Registry.SetPlayerMoneyData(PersonsName, "PlayerData", "Stats",DataConverter.StringToFloat(args[0]));
+
+        //Registry.SetPlayerNameData(PersonsName, "PlayerData", "Stats", NameField);
+
+        //Registry.AddPlayerMoneyData(PersonsName, "PlayerData", "Stats", Registry.GetPlayerMoneyData(PersonsName, "PlayerData", "Stats").money)+RewardAmt);
+        return 0;
+
     }
 }
 
@@ -372,10 +411,58 @@ public class Unuwu : ConsoleCommand
         com.colors[2] = new Color32(Registry.GetRedColorData(PersonsName, "System", "ButtonColor"), Registry.GetGreenColorData(PersonsName, "System", "ButtonColor"), Registry.GetBlueColorData(PersonsName, "System", "ButtonColor"), Registry.GetAlphaColorData(PersonsName, "System", "ButtonColor"));
         com.colors[3] = new Color32(Registry.GetRedColorData(PersonsName, "System", "WindowColor"), Registry.GetGreenColorData(PersonsName, "System", "WindowColor"), Registry.GetBlueColorData(PersonsName, "System", "WindowColor"), Registry.GetAlphaColorData(PersonsName, "System", "WindowColor"));
 
-        os.pic[2] = os.ListOfBackgroundImages[Registry.GetIntData(PersonsName, "System", "SelectedBackground")];
-
         GameControl.control.GUIID = Registry.GetIntData(PersonsName, "System", "SelectedGUIID");
         Customize.cust.GUIID = Registry.GetIntData(PersonsName, "System", "SelectedGUIID");
+
+        Registry.SetBoolData(PersonsName, "System", "ForcedBackground", false);
+
+        return 0;
+    }
+}
+
+public class TestMeh : ConsoleCommand
+{
+    private string _name = "testmeh";
+    private string _desc = "color ui";
+
+    public override string GetName()
+    {
+        return _name;
+    }
+
+    public override string GetDesc()
+    {
+        return _desc;
+    }
+
+    public override int Evaluate(string PersonsName, int PID, string KeyName, string ValueName, List<string> args)
+    {
+        string InputCheck = "SetNewString:";
+        TestCode.KeywordCheck(PersonsName, InputCheck + args[0] + ";");
+
+        return 0;
+    }
+}
+
+public class TestMeh1 : ConsoleCommand
+{
+    private string _name = "testmeh1";
+    private string _desc = "color ui";
+
+    public override string GetName()
+    {
+        return _name;
+    }
+
+    public override string GetDesc()
+    {
+        return _desc;
+    }
+
+    public override int Evaluate(string PersonsName, int PID, string KeyName, string ValueName, List<string> args)
+    {
+        string InputCheck = "GetNewString:";
+        TestCode.KeywordCheck(PersonsName, InputCheck + args[0] + ";");
 
         return 0;
     }
@@ -399,7 +486,105 @@ public class Run : ConsoleCommand
     public override int Evaluate(string PersonsName, int PID, string KeyName, string ValueName, List<string> args)
     {
         string InputCheck = "Run:";
-        TestCode.KeywordCheck(InputCheck + args[0] + ";");
+        TestCode.KeywordCheck(PersonsName, InputCheck + args[0] + ";");
+        return 0;
+    }
+}
+
+
+public class Connect : ConsoleCommand
+{
+    private string _name = "connect";
+    private string _desc = "color ui";
+
+    public override string GetName()
+    {
+        return _name;
+    }
+
+    public override string GetDesc()
+    {
+        return _desc;
+    }
+
+    public override int Evaluate(string PersonsName, int PID, string KeyName, string ValueName, List<string> args)
+    {
+        string InputCheck = "Connect:";
+        TestCode.KeywordCheck(PersonsName, InputCheck + args[0] + ";");
+        return 0;
+    }
+}
+public class Disconnect : ConsoleCommand
+{
+    private string _name = "disconnect";
+    private string _desc = "color ui";
+
+    public override string GetName()
+    {
+        return _name;
+    }
+
+    public override string GetDesc()
+    {
+        return _desc;
+    }
+
+    public override int Evaluate(string PersonsName, int PID, string KeyName, string ValueName, List<string> args)
+    {
+        string InputCheck = "Disconnect:";
+        TestCode.KeywordCheck(PersonsName,InputCheck + args[0] + ";");
+        return 0;
+    }
+}
+
+public class PrintWorkingDirectory : ConsoleCommand
+{
+    private string _name = "pwd";
+    private string _desc = "color ui";
+
+    public override string GetName()
+    {
+        return _name;
+    }
+
+    public override string GetDesc()
+    {
+        return _desc;
+    }
+
+    public override int Evaluate(string PersonsName, int PID, string KeyName, string ValueName, List<string> args)
+    {
+
+        string output = LocalRegistry.GetStringData(PersonsName, PID, KeyName, "WorkingPath");
+
+        LocalRegistry.SetStringData(PersonsName, PID, KeyName, "Output", output);
+        return 0;
+    }
+}
+
+public class PrintDirectoryFiles : ConsoleCommand
+{
+    private string _name = "listdir";
+    private string _desc = "color ui";
+
+    public override string GetName()
+    {
+        return _name;
+    }
+
+    public override string GetDesc()
+    {
+        return _desc;
+    }
+
+    public override int Evaluate(string PersonsName, int PID, string KeyName, string ValueName, List<string> args)
+    {
+
+        string output = LocalRegistry.GetStringData(PersonsName, PID, KeyName, "WorkingPath");
+
+        string Files = FileSystemFunctions.GetFilesAtLocation(PersonsName, output);
+
+        LocalRegistry.SetStringData(PersonsName, PID, KeyName, "Output", Files);
         return 0;
     }
 }
@@ -620,7 +805,14 @@ class GlobalStuff
         new Quit(),
         new Uwu(),
         new Unuwu(),
-        new Run()
+        new Run(),
+        new Connect(),
+        new Disconnect(),
+        new TestMeh(),
+        new TestMeh1(),
+        new PrintWorkingDirectory(),
+        new PrintDirectoryFiles(),
+        new SetMoney(),
     };
 
     public static void RunCommand(string PersonsName, int PID, string KeyName, string ValueName, string commandString)

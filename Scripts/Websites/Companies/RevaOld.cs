@@ -339,7 +339,7 @@ public class RevaOld : MonoBehaviour
 						brow.Select = 0;
 					}
 
-					if (Event.current.type == EventType.keyDown && Event.current.keyCode == KeyCode.UpArrow)
+					if (Event.current.type == EventType.KeyDown && Event.current.keyCode == KeyCode.UpArrow)
 					{
 						if (brow.Select >= 1)
 						{
@@ -358,7 +358,7 @@ public class RevaOld : MonoBehaviour
 						}
 					}
 
-					if (Event.current.type == EventType.keyDown && Event.current.keyCode == KeyCode.DownArrow)
+					if (Event.current.type == EventType.KeyDown && Event.current.keyCode == KeyCode.DownArrow)
 					{
 						if (brow.Select < misgen.MissionTotal - 1)
 						{

@@ -53,11 +53,11 @@
 //		Customize.cust.windowx[windowID] = windowRect.x;
 //		Customize.cust.windowy[windowID] = windowRect.y;
 //
-//		GUI.skin = com.Skin[GameControl.control.GUIID];
+//		GUI.skin = GameControl.control.Skins[Registry.GetIntData("Player", "System", "Skin")];
 //
 //		if(show == true)
 //		{
-//			GUI.color = com.colors[Customize.cust.WindowColorInt];
+//			GUI.color = Registry.Get32ColorData("Player", "System", "WindowColor");
 //			windowRect = GUI.Window(windowID,windowRect,DoMyWindow,"");
 //		}
 //	}
@@ -66,15 +66,15 @@
 //	{
 //		if (CloseButton.Contains (Event.current.mousePosition)) 
 //		{
-//			if (GUI.Button (new Rect (CloseButton), "X", com.Skin [GameControl.control.GUIID].customStyles [0])) 
+//			if (GUI.Button (new Rect (CloseButton), "X", GameControl.control.Skins[Registry.GetIntData("Player", "System", "Skin")].customStyles [0])) 
 //			{
 //			}
 //		} 
 //		else
 //		{
-//			GUI.backgroundColor = com.colors[Customize.cust.ButtonColorInt];
-//			GUI.contentColor = com.colors[Customize.cust.FontColorInt];
-//			if (GUI.Button (new Rect (CloseButton), "X", com.Skin [GameControl.control.GUIID].customStyles [1])) 
+//			GUI.backgroundColor = Registry.Get32ColorData("Player", "System", "ButtonColor");
+//			GUI.contentColor = Registry.Get32ColorData("Player", "System", "FontColor");
+//			if (GUI.Button (new Rect (CloseButton), "X", GameControl.control.Skins[Registry.GetIntData("Player", "System", "Skin")].customStyles [1])) 
 //			{
 //			}
 //		}
@@ -83,8 +83,8 @@
 //
 //		Value = GUI.HorizontalSlider(new Rect (1, 24, 198, 21),Value,0,100);
 //
-//		GUI.backgroundColor = com.colors[Customize.cust.ButtonColorInt];
-//		GUI.contentColor = com.colors[Customize.cust.FontColorInt];
+//		GUI.backgroundColor = Registry.Get32ColorData("Player", "System", "ButtonColor");
+//		GUI.contentColor = Registry.Get32ColorData("Player", "System", "FontColor");
 //
 //		GUI.DragWindow (new Rect (1, 1, 170, 21));
 //		GUI.Box (new Rect (1, 1, 176, 21), ConfirmTitle);

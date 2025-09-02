@@ -56,7 +56,7 @@ public class RegiCost : MonoBehaviour
 	{
 		Customize.cust.windowx[windowID] = windowRect.x;
 		Customize.cust.windowy[windowID] = windowRect.y;
-		GUI.skin = com.Skin[GameControl.control.GUIID];
+		GUI.skin = GameControl.control.Skins[Registry.GetIntData("Player", "System", "Skin")];
 
 		//set up scaling
 		//float rx = Screen.width / native_width;
@@ -104,7 +104,7 @@ public class RegiCost : MonoBehaviour
 
 		if (CloseButton.Contains (Event.current.mousePosition)) 
 		{
-			if (GUI.Button (new Rect (CloseButton), "X", com.Skin [GameControl.control.GUIID].customStyles [0])) 
+			if (GUI.Button (new Rect (CloseButton), "X", GameControl.control.Skins[Registry.GetIntData("Player", "System", "Skin")].customStyles [0])) 
 			{
 				show = false;
 			}
@@ -113,7 +113,7 @@ public class RegiCost : MonoBehaviour
 		{
 			GUI.backgroundColor = com.colors [Customize.cust.ButtonColorInt];
 			GUI.contentColor = com.colors [Customize.cust.FontColorInt];
-			if (GUI.Button (new Rect (CloseButton), "X", com.Skin [GameControl.control.GUIID].customStyles [1]))
+			if (GUI.Button (new Rect (CloseButton), "X", GameControl.control.Skins[Registry.GetIntData("Player", "System", "Skin")].customStyles [1]))
 			{
 				show = false;
 			}

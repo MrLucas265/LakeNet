@@ -282,14 +282,14 @@ public class CmdSysOSAppMenu : MonoBehaviour
 
 	void OnGUI()
 	{
-		GUI.skin = com.Skin[GameControl.control.GUIID];
+		GUI.skin = GameControl.control.Skins[Registry.GetIntData("Player", "System", "Skin")];
 
 		Customize.cust.windowx[windowID] = windowRect.x;
 		Customize.cust.windowy[windowID] = windowRect.y;
 
 		if(show == true)
 		{
-			GUI.color = com.colors[Customize.cust.WindowColorInt];
+			GUI.color = Registry.Get32ColorData("Player", "System", "WindowColor");
 			AppMenuBgPos = GUI.Window(windowID,AppMenuBgPos,ShowAppMenu,"");
 			if (AppMenuState == 0)
 			{
@@ -345,30 +345,30 @@ public class CmdSysOSAppMenu : MonoBehaviour
 
 			GUI.backgroundColor = Color.white;
 
-			GUI.backgroundColor = com.colors[Customize.cust.ButtonColorInt];
+			GUI.backgroundColor = Registry.Get32ColorData("Player", "System", "ButtonColor");
 
-			if(GUI.Button(new Rect(SettingsButton),SettingsIcon,com.Skin [GameControl.control.GUIID].customStyles [DesktopStyle]))
+			if(GUI.Button(new Rect(SettingsButton),SettingsIcon,GameControl.control.Skins[Registry.GetIntData("Player", "System", "Skin")].customStyles [DesktopStyle]))
 			{
 				PlayClickSound();
 				appman.SelectedApp = "System Panel";
 				AppMenuState = 2;
 			}
 
-			if(GUI.Button(new Rect(LogoutButton),LogoutIcon,com.Skin [GameControl.control.GUIID].customStyles [DesktopStyle]))
+			if(GUI.Button(new Rect(LogoutButton),LogoutIcon,GameControl.control.Skins[Registry.GetIntData("Player", "System", "Skin")].customStyles [DesktopStyle]))
 			{
 				PlayClickSound();
 				appman.SelectedApp = "Shutdown";
 				AppMenuState = 2;
 			}
 
-			if(GUI.Button(new Rect(SearchButton), SearchIcon,com.Skin [GameControl.control.GUIID].customStyles [DesktopStyle]))
+			if(GUI.Button(new Rect(SearchButton), SearchIcon,GameControl.control.Skins[Registry.GetIntData("Player", "System", "Skin")].customStyles [DesktopStyle]))
 			{
 				ActivateSearch();
 			}
 
-			GUI.contentColor = com.colors[Customize.cust.FontColorInt];
+			GUI.contentColor = Registry.Get32ColorData("Player", "System", "FontColor");
 
-			if (Event.current.type == EventType.keyDown && Event.current.keyCode == KeyCode.Return) 
+			if (Event.current.type == EventType.KeyDown && Event.current.keyCode == KeyCode.Return) 
 			{
 				ActivateSearch();
 			}
@@ -381,14 +381,14 @@ public class CmdSysOSAppMenu : MonoBehaviour
 				if (ShowAllApps == false) 
 				{
 					scrollpos = GUI.BeginScrollView(new Rect(QuickList), scrollpos, new Rect(0, 0, 0,scrollsize * 21));
-					for (scrollsize = 0; scrollsize < GameControl.control.QuickProgramList.Count; scrollsize++)
-					{
-						if(GUI.Button(new Rect(0 * Scale,scrollsize * 21,120 * Scale,ButtonHeight),GameControl.control.QuickProgramList[scrollsize].Name))
-						{
-							PlayClickSound();
-							appman.SelectedApp = GameControl.control.QuickProgramList[scrollsize].Target;
-						}
-					}
+					//for (scrollsize = 0; scrollsize < GameControl.control.QuickProgramList.Count; scrollsize++)
+					//{
+					//	if(GUI.Button(new Rect(0 * Scale,scrollsize * 21,120 * Scale,ButtonHeight),GameControl.control.QuickProgramList[scrollsize].Name))
+					//	{
+					//		PlayClickSound();
+					//		appman.SelectedApp = GameControl.control.QuickProgramList[scrollsize].Target;
+					//	}
+					//}
 					GUI.EndScrollView();
 					//End of Quick Launch
 

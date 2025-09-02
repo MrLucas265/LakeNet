@@ -123,11 +123,11 @@ public class DeviceManager : MonoBehaviour
         Customize.cust.windowx[windowID] = windowRect.x;
         Customize.cust.windowy[windowID] = windowRect.y;
 
-        GUI.skin = com.Skin[GameControl.control.GUIID]; 
+        GUI.skin = GameControl.control.Skins[Registry.GetIntData("Player", "System", "Skin")]; 
 
         if (show == true)
         {
-            GUI.color = com.colors[Customize.cust.WindowColorInt];
+            GUI.color = Registry.Get32ColorData("Player", "System", "WindowColor");
             windowRect = WindowClamp.ClampToScreen(GUI.Window(windowID, windowRect, DoMyWindow, ""));
         }
     }
@@ -138,24 +138,24 @@ public class DeviceManager : MonoBehaviour
 
         if (CloseButton.Contains(Event.current.mousePosition))
         {
-            if (GUI.Button(new Rect(CloseButton), "X", com.Skin[GameControl.control.GUIID].customStyles[0]))
+            if (GUI.Button(new Rect(CloseButton), "X", GameControl.control.Skins[Registry.GetIntData("Player", "System", "Skin")].customStyles[0]))
             {
                 appman.SelectedApp = "Device Manager";
             }
         }
         else
         {
-            GUI.backgroundColor = com.colors[Customize.cust.ButtonColorInt];
-            GUI.contentColor = com.colors[Customize.cust.FontColorInt];
-            GUI.Button(new Rect(CloseButton), "X", com.Skin[GameControl.control.GUIID].customStyles[1]);
+            GUI.backgroundColor = Registry.Get32ColorData("Player", "System", "ButtonColor");
+            GUI.contentColor = Registry.Get32ColorData("Player", "System", "FontColor");
+            GUI.Button(new Rect(CloseButton), "X", GameControl.control.Skins[Registry.GetIntData("Player", "System", "Skin")].customStyles[1]);
         }
 
-        GUI.backgroundColor = com.colors[Customize.cust.ButtonColorInt];
-        GUI.contentColor = com.colors[Customize.cust.FontColorInt];
+        GUI.backgroundColor = Registry.Get32ColorData("Player", "System", "ButtonColor");
+        GUI.contentColor = Registry.Get32ColorData("Player", "System", "FontColor");
 
         if (MiniButton.Contains(Event.current.mousePosition))
         {
-            if (GUI.Button(new Rect(MiniButton), "-", com.Skin[GameControl.control.GUIID].customStyles[2]))
+            if (GUI.Button(new Rect(MiniButton), "-", GameControl.control.Skins[Registry.GetIntData("Player", "System", "Skin")].customStyles[2]))
             {
                 minimize = !minimize;
                 Minimize();
@@ -163,7 +163,7 @@ public class DeviceManager : MonoBehaviour
         }
         else
         {
-            if (GUI.Button(new Rect(MiniButton), "-", com.Skin[GameControl.control.GUIID].customStyles[2]))
+            if (GUI.Button(new Rect(MiniButton), "-", GameControl.control.Skins[Registry.GetIntData("Player", "System", "Skin")].customStyles[2]))
             {
                 minimize = !minimize;
                 Minimize();
@@ -174,7 +174,7 @@ public class DeviceManager : MonoBehaviour
 
         GUI.contentColor = Color.white;
 
-        GUI.contentColor = com.colors[Customize.cust.FontColorInt];
+        GUI.contentColor = Registry.Get32ColorData("Player", "System", "FontColor");
 
         MenuSystem();
 
@@ -253,8 +253,8 @@ public class DeviceManager : MonoBehaviour
 
         GUI.Box(new Rect(62, 166, 100, 21), person.Gateway.CPU[SelectedDevice].Status);
 
-        GUI.backgroundColor = com.colors[Customize.cust.ButtonColorInt];
-        GUI.contentColor = com.colors[Customize.cust.FontColorInt];
+        GUI.backgroundColor = Registry.Get32ColorData("Player", "System", "ButtonColor");
+        GUI.contentColor = Registry.Get32ColorData("Player", "System", "FontColor");
 
 
 

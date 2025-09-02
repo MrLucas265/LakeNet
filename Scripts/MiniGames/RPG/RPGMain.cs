@@ -111,7 +111,7 @@ public class RPGMain : MonoBehaviour
             MoveSpeed = 25;
         }
 
-        if (Event.current.type == EventType.keyDown)
+        if (Event.current.type == EventType.KeyDown)
         {
             if (Event.current.keyCode == KeyCode.W || Event.current.keyCode == KeyCode.UpArrow)
             {
@@ -145,7 +145,7 @@ public class RPGMain : MonoBehaviour
         }
 
 
-        if (Event.current.type == EventType.keyUp)
+        if (Event.current.type == EventType.KeyUp)
         {
             if (Event.current.keyCode == KeyCode.W || Event.current.keyCode == KeyCode.UpArrow)
             {

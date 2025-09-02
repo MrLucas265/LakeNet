@@ -247,14 +247,14 @@ public class LucOSAppMenu : MonoBehaviour
 
 	void OnGUI()
 	{
-		GUI.skin = com.Skin[GameControl.control.GUIID];
+		GUI.skin = GameControl.control.Skins[Registry.GetIntData("Player", "System", "Skin")];
 
 		Customize.cust.windowx[windowID] = windowRect.x;
 		Customize.cust.windowy[windowID] = windowRect.y;
 
 		if(show == true)
 		{
-			GUI.color = com.colors[Customize.cust.WindowColorInt];
+			GUI.color = Registry.Get32ColorData("Player", "System", "WindowColor");
 			AppMenuBgPos = GUI.Window(windowID,AppMenuBgPos,ShowAppMenu,""); 
 		}
 	}
@@ -283,7 +283,7 @@ public class LucOSAppMenu : MonoBehaviour
 	{
 		if (Customize.cust.Volume <= 0)
 		{
-			if (GUI.Button(new Rect(SpeakerButton), SpeakerIcon[0], com.Skin[GameControl.control.GUIID].customStyles[DesktopStyle]))
+			if (GUI.Button(new Rect(SpeakerButton), SpeakerIcon[0], GameControl.control.Skins[Registry.GetIntData("Player", "System", "Skin")].customStyles[DesktopStyle]))
 			{
 				PlayClickSound();
 				appman.SelectedApp = "Volume Controller";
@@ -292,7 +292,7 @@ public class LucOSAppMenu : MonoBehaviour
 		}
 		else if (Customize.cust.Volume > 0 && Customize.cust.Volume < 0.32f)
 		{
-			if (GUI.Button(new Rect(SpeakerButton), SpeakerIcon[1], com.Skin[GameControl.control.GUIID].customStyles[DesktopStyle]))
+			if (GUI.Button(new Rect(SpeakerButton), SpeakerIcon[1], GameControl.control.Skins[Registry.GetIntData("Player", "System", "Skin")].customStyles[DesktopStyle]))
 			{
 				PlayClickSound();
 				appman.SelectedApp = "Volume Controller";
@@ -301,7 +301,7 @@ public class LucOSAppMenu : MonoBehaviour
 		}
 		else if (Customize.cust.Volume < 0.64f)
 		{
-			if (GUI.Button(new Rect(SpeakerButton), SpeakerIcon[2], com.Skin[GameControl.control.GUIID].customStyles[DesktopStyle]))
+			if (GUI.Button(new Rect(SpeakerButton), SpeakerIcon[2], GameControl.control.Skins[Registry.GetIntData("Player", "System", "Skin")].customStyles[DesktopStyle]))
 			{
 				PlayClickSound();
 				appman.SelectedApp = "Volume Controller";
@@ -310,7 +310,7 @@ public class LucOSAppMenu : MonoBehaviour
 		}
 		else if (Customize.cust.Volume > 0.64f)
 		{
-			if (GUI.Button(new Rect(SpeakerButton), SpeakerIcon[3], com.Skin[GameControl.control.GUIID].customStyles[DesktopStyle]))
+			if (GUI.Button(new Rect(SpeakerButton), SpeakerIcon[3], GameControl.control.Skins[Registry.GetIntData("Player", "System", "Skin")].customStyles[DesktopStyle]))
 			{
 				PlayClickSound();
 				appman.SelectedApp = "Volume Controller";
@@ -338,13 +338,13 @@ public class LucOSAppMenu : MonoBehaviour
 
 			GUI.backgroundColor = Color.white;
 
-			GUI.backgroundColor = com.colors[Customize.cust.ButtonColorInt];
+			GUI.backgroundColor = Registry.Get32ColorData("Player", "System", "ButtonColor");
 
-			GUI.contentColor = com.colors[Customize.cust.FontColorInt];
+			GUI.contentColor = Registry.Get32ColorData("Player", "System", "FontColor");
 
 			//SpeakerUI();
 
-			if (GUI.Button(new Rect(SettingsButton),SettingsIcon,com.Skin [GameControl.control.GUIID].customStyles [DesktopStyle]))
+			if (GUI.Button(new Rect(SettingsButton),SettingsIcon,GameControl.control.Skins[Registry.GetIntData("Player", "System", "Skin")].customStyles [DesktopStyle]))
 			{
 				PlayClickSound();
                 appman.ProgramName = "System Panel";
@@ -352,7 +352,7 @@ public class LucOSAppMenu : MonoBehaviour
                 Close();
 			}
 
-			if(GUI.Button(new Rect(LogoutButton),LogoutIcon,com.Skin [GameControl.control.GUIID].customStyles [DesktopStyle]))
+			if(GUI.Button(new Rect(LogoutButton),LogoutIcon,GameControl.control.Skins[Registry.GetIntData("Player", "System", "Skin")].customStyles [DesktopStyle]))
 			{
 				PlayClickSound();
                 appman.ProgramName = "Shutdown";
@@ -360,7 +360,7 @@ public class LucOSAppMenu : MonoBehaviour
                 Close();
 			}
 
-			if (GUI.Button(new Rect(GatewayButton), "G", com.Skin[GameControl.control.GUIID].customStyles[DesktopStyle]))
+			if (GUI.Button(new Rect(GatewayButton), "G", GameControl.control.Skins[Registry.GetIntData("Player", "System", "Skin")].customStyles[DesktopStyle]))
 			{
 				PlayClickSound();
 				appman.ProgramName = "Computer";
@@ -368,20 +368,20 @@ public class LucOSAppMenu : MonoBehaviour
 				Close();
 			}
 
-			if (GUI.Button(new Rect(ShowAllButton), "A",com.Skin[GameControl.control.GUIID].customStyles[DesktopStyle]))
+			if (GUI.Button(new Rect(ShowAllButton), "A",GameControl.control.Skins[Registry.GetIntData("Player", "System", "Skin")].customStyles[DesktopStyle]))
 			{
 				PlayClickSound();
 				UpdateProgramList();
 				ShowAllApps = true;
 			}
 
-			if (GUI.Button(new Rect(ShowPinnedButton), "P", com.Skin[GameControl.control.GUIID].customStyles[DesktopStyle]))
+			if (GUI.Button(new Rect(ShowPinnedButton), "P", GameControl.control.Skins[Registry.GetIntData("Player", "System", "Skin")].customStyles[DesktopStyle]))
 			{
 				PlayClickSound();
 				ShowAllApps = false;
 			}
 
-			if (Event.current.type == EventType.keyDown && Event.current.keyCode == KeyCode.Return) 
+			if (Event.current.type == EventType.KeyDown && Event.current.keyCode == KeyCode.Return) 
 			{
 				ActivateSearch();
 			}
@@ -394,15 +394,15 @@ public class LucOSAppMenu : MonoBehaviour
 				if (ShowAllApps == false) 
 				{
 					scrollpos = GUI.BeginScrollView(new Rect(QuickList), scrollpos, new Rect(0, 0, 0,scrollsize * 21));
-					for (scrollsize = 0; scrollsize < GameControl.control.QuickProgramList.Count; scrollsize++)
-					{
-						if(GUI.Button(new Rect(0 * Scale,scrollsize * 21,130 * Scale,ButtonHeight),GameControl.control.QuickProgramList[scrollsize].Name))
-						{
-							PlayClickSound();
-                            appman.ProgramName = GameControl.control.QuickProgramList[scrollsize].Name;
-                            appman.SelectedApp = GameControl.control.QuickProgramList[scrollsize].Target;
-                        }
-					}
+					//for (scrollsize = 0; scrollsize < GameControl.control.QuickProgramList.Count; scrollsize++)
+					//{
+					//	if(GUI.Button(new Rect(0 * Scale,scrollsize * 21,130 * Scale,ButtonHeight),GameControl.control.QuickProgramList[scrollsize].Name))
+					//	{
+					//		PlayClickSound();
+     //                       appman.ProgramName = GameControl.control.QuickProgramList[scrollsize].Name;
+     //                       appman.SelectedApp = GameControl.control.QuickProgramList[scrollsize].Target;
+     //                   }
+					//}
 					GUI.EndScrollView();
 					//End of Quick Launch
 				}

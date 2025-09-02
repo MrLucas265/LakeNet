@@ -100,11 +100,11 @@ public class Support : MonoBehaviour
 		Customize.cust.windowx[windowID] = windowRect.x;
 		Customize.cust.windowy[windowID] = windowRect.y;
 
-		GUI.skin = com.Skin[GameControl.control.GUIID];
+		GUI.skin = GameControl.control.Skins[Registry.GetIntData("Player", "System", "Skin")];
 
 		if (show == true)
 		{
-			GUI.color = com.colors[Customize.cust.WindowColorInt];
+			GUI.color = Registry.Get32ColorData("Player", "System", "WindowColor");
 			windowRect = WindowClamp.ClampToScreen(GUI.Window(windowID, windowRect, DoMyWindow, ""));
 		}
 	}
@@ -113,7 +113,7 @@ public class Support : MonoBehaviour
 	{
 		if (CloseButton.Contains(Event.current.mousePosition))
 		{
-			if (GUI.Button(new Rect(CloseButton), "X", com.Skin[GameControl.control.GUIID].customStyles[0]))
+			if (GUI.Button(new Rect(CloseButton), "X", GameControl.control.Skins[Registry.GetIntData("Player", "System", "Skin")].customStyles[0]))
 			{
 				//appman.SelectedApp = "Account Tracker";
 				show = false;
@@ -122,14 +122,14 @@ public class Support : MonoBehaviour
 		}
 		else
 		{
-			GUI.backgroundColor = com.colors[Customize.cust.ButtonColorInt];
-			GUI.contentColor = com.colors[Customize.cust.FontColorInt];
-			GUI.Button(new Rect(CloseButton), "X", com.Skin[GameControl.control.GUIID].customStyles[1]);
+			GUI.backgroundColor = Registry.Get32ColorData("Player", "System", "ButtonColor");
+			GUI.contentColor = Registry.Get32ColorData("Player", "System", "FontColor");
+			GUI.Button(new Rect(CloseButton), "X", GameControl.control.Skins[Registry.GetIntData("Player", "System", "Skin")].customStyles[1]);
 		}
 
 		if (MiniButton.Contains(Event.current.mousePosition))
 		{
-			if (GUI.Button(new Rect(MiniButton), "-", com.Skin[GameControl.control.GUIID].customStyles[2]))
+			if (GUI.Button(new Rect(MiniButton), "-", GameControl.control.Skins[Registry.GetIntData("Player", "System", "Skin")].customStyles[2]))
 			{
 				minimize = !minimize;
 				Minimize();
@@ -137,9 +137,9 @@ public class Support : MonoBehaviour
 		}
 		else
 		{
-			GUI.backgroundColor = com.colors[Customize.cust.ButtonColorInt];
-			GUI.contentColor = com.colors[Customize.cust.FontColorInt];
-			if (GUI.Button(new Rect(MiniButton), "-", com.Skin[GameControl.control.GUIID].customStyles[2]))
+			GUI.backgroundColor = Registry.Get32ColorData("Player", "System", "ButtonColor");
+			GUI.contentColor = Registry.Get32ColorData("Player", "System", "FontColor");
+			if (GUI.Button(new Rect(MiniButton), "-", GameControl.control.Skins[Registry.GetIntData("Player", "System", "Skin")].customStyles[2]))
 			{
 				minimize = !minimize;
 				Minimize();
@@ -149,7 +149,7 @@ public class Support : MonoBehaviour
 		if (Menu != "Main")
 		{
 			DefaltBoxSetting = new Rect(2 + 24, 2, MiniButton.x - 24 - 3, 21);
-			if (GUI.Button(new Rect(2, 2, DefaltBoxSetting.x - 3, 21), "<", com.Skin[GameControl.control.GUIID].customStyles[2]))
+			if (GUI.Button(new Rect(2, 2, DefaltBoxSetting.x - 3, 21), "<", GameControl.control.Skins[Registry.GetIntData("Player", "System", "Skin")].customStyles[2]))
 			{
 
 			}

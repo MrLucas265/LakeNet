@@ -36,6 +36,8 @@ public class GameControl : MonoBehaviour
     public bool NewAccount;
 	public bool[] StoryMis;
 
+    public GUISkin[] Skins;
+
     public List<string> Sites = new List<string>();
 	public List<string> FavSites = new List<string>();
 
@@ -78,9 +80,8 @@ public class GameControl : MonoBehaviour
 	public List<EmailSystem> EmailData = new List<EmailSystem>();
 	public List<MissionSystem> Contracts = new List<MissionSystem>();
 	public List<ProgramSystem> ProgramFiles = new List<ProgramSystem>();
-	public List<ProgramSystem> QuickProgramList = new List<ProgramSystem>();
-	public List<ProgramSystem> DesktopIconList = new List<ProgramSystem>();
-	public MotherboardSystem Gateway;
+	public GatewayStatusSystem GatewayStatus;
+	public int SelectedMotherboardImage;
 	public List<WarehouseSystem> StoredParts = new List<WarehouseSystem>();
 
 	//Stocks
@@ -103,8 +104,6 @@ public class GameControl : MonoBehaviour
     //REP
     public List<RepSystem> Rep = new List<RepSystem>();
 
-	public string SerialKey;
-
     public bool ShortCommands;
 
 	public List<string> GameVersion = new List<string>();
@@ -117,6 +116,8 @@ public class GameControl : MonoBehaviour
 	public List<DialogueCharacterSystem> Contacts = new List<DialogueCharacterSystem>();
 
 	public bool GlobalCheckForPinnedFiles;
+
+	public string ActualFilePath;
 
 	// Use this for initialization
 
@@ -149,10 +150,15 @@ public class GameControl : MonoBehaviour
 		}
 	}
 
+	public void Update()
+    {
+		ActualFilePath = Application.dataPath + "/saves/" + ProfileController.procon.VersionNumber + "/profiles/" + ProfileName;
+	}
+
 	public void Save()
 	{
 		BinaryFormatter bf = new BinaryFormatter ();
-		FileStream file = File.Create(Application.dataPath + "/saves/" + ProfileController.procon.VersionNumber+ "/profiles/" + ProfileName + ".dat");
+		FileStream file = File.Create(ActualFilePath + ".dat");
 		//Debug.Log(Application.persistentDataPath);
 		ComputerData data = new ComputerData();
 
@@ -173,14 +179,12 @@ public class GameControl : MonoBehaviour
 		data.EmailData = EmailData;
 		data.Contracts = Contracts;
 		data.ProgramFiles = ProgramFiles;
-		data.QuickProgramList = QuickProgramList;
-		data.Gateway = Gateway;
+		data.GatewayStatus = GatewayStatus;
 		data.StoredParts = StoredParts;
         data.TransactionHistory = TransactionHistory;
         data.Portfolio = Portfolio;
 		data.Exchanges = Exchanges;
 		data.QuickLaunchNames = QuickLaunchNames;
-		data.DesktopIconList = DesktopIconList;
 		data.SelectedOS = SelectedOS;
         data.Notifications = Notifications;
         data.Reminders = Reminders;
@@ -192,12 +196,16 @@ public class GameControl : MonoBehaviour
 		data.GatewayPosY = GatewayPosY;
 		data.Commands = Commands;
 		data.SelectedOSInt = SelectedOSInt;
-		data.Serialkey = SerialKey;
         data.ShortCommands = ShortCommands;
 		data.GameVersion = GameVersion;
 		data.DefaultLaunchedPrograms = DefaultLaunchedPrograms;
 		data.CompanyServerData = CompanyServerData;
 		data.Contacts = Contacts;
+
+		string JsonString = JsonUtility.ToJson(data);
+		StreamWriter sw = new StreamWriter(ActualFilePath + ".json");
+		sw.Write(JsonString);
+		sw.Close();
 
 		bf.Serialize (file, data);
 		file.Close();
@@ -205,10 +213,10 @@ public class GameControl : MonoBehaviour
 
 	public void Load()
 	{
-		if (File.Exists (Application.dataPath + "/saves/" + ProfileController.procon.VersionNumber+ "/profiles/" + ProfileName + ".dat")) 
+		if (File.Exists (ActualFilePath + ".dat")) 
 		{
 			BinaryFormatter bf = new BinaryFormatter ();
-			FileStream file = File.Open (Application.dataPath + "/saves/" + ProfileController.procon.VersionNumber+ "/profiles/" + ProfileName + ".dat", FileMode.Open);
+			FileStream file = File.Open (ActualFilePath + ".dat", FileMode.Open);
 			//Debug.Log(Application.persistentDataPath);
 			ComputerData data = (ComputerData)
 			bf.Deserialize (file);
@@ -231,9 +239,7 @@ public class GameControl : MonoBehaviour
 			EmailData = data.EmailData;
 			Contracts = data.Contracts;
 			ProgramFiles = data.ProgramFiles;
-			QuickProgramList = data.QuickProgramList;
-			DesktopIconList = data.DesktopIconList;
-			Gateway = data.Gateway;
+			GatewayStatus = data.GatewayStatus;
 			StoredParts = data.StoredParts;
 			TransactionHistory = data.TransactionHistory;
             Portfolio = data.Portfolio;
@@ -250,7 +256,6 @@ public class GameControl : MonoBehaviour
 			GatewayPosY = data.GatewayPosY;
 			Commands = data.Commands;
 			SelectedOSInt = data.SelectedOSInt;
-			SerialKey = data.Serialkey;
             ShortCommands = data.ShortCommands;
 			GameVersion = data.GameVersion;
 			DefaultLaunchedPrograms = data.DefaultLaunchedPrograms;
@@ -312,9 +317,7 @@ class ComputerData
 	public List<EmailSystem> EmailData = new List<EmailSystem>();
 	public List<MissionSystem> Contracts = new List<MissionSystem>();
 	public List<ProgramSystem> ProgramFiles = new List<ProgramSystem>();
-	public List<ProgramSystem> QuickProgramList = new List<ProgramSystem>();
-	public List<ProgramSystem> DesktopIconList = new List<ProgramSystem>();
-	public MotherboardSystem Gateway;
+	public GatewayStatusSystem GatewayStatus;
 	public List<WarehouseSystem> StoredParts = new List<WarehouseSystem>();
 
 	//Stocks
@@ -335,8 +338,6 @@ class ComputerData
 
     //REP
     public List<RepSystem> Rep = new List<RepSystem>();
-
-	public string Serialkey;
 
     public bool ShortCommands;
 

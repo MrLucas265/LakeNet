@@ -243,7 +243,7 @@
 //		{
 //			GUI.backgroundColor = TitlebarColor;
 //			GUI.contentColor = fontColor;
-//			if (GUI.Button(new Rect(CloseButton), "X", com.Skin[GameControl.control.GUIID].customStyles[1]))
+//			if (GUI.Button(new Rect(CloseButton), "X", GameControl.control.Skins[Registry.GetIntData("Player", "System", "Skin")].customStyles[1]))
 //			{
 //				showExplorer = false;
 //			}
@@ -252,7 +252,7 @@
 //		{
 //			GUI.backgroundColor = ClosebuttonColor;
 //			GUI.contentColor = ClosefontColor;
-//			if (GUI.Button(new Rect(CloseButton), "X", com.Skin[GameControl.control.GUIID].customStyles[2]))
+//			if (GUI.Button(new Rect(CloseButton), "X", GameControl.control.Skins[Registry.GetIntData("Player", "System", "Skin")].customStyles[2]))
 //			{
 //				showExplorer = false;
 //			}
@@ -271,7 +271,7 @@
 //		{
 //			GUI.backgroundColor = TitlebarColor;
 //			GUI.contentColor = fontColor;
-//			if (GUI.Button(new Rect(MiniButton), "-", com.Skin[GameControl.control.GUIID].customStyles[2]))
+//			if (GUI.Button(new Rect(MiniButton), "-", GameControl.control.Skins[Registry.GetIntData("Player", "System", "Skin")].customStyles[2]))
 //			{
 //				MinimizeExplorer = !MinimizeExplorer;
 //			}
@@ -280,7 +280,7 @@
 //		{
 //			GUI.backgroundColor = TitlebarColor;
 //			GUI.contentColor = fontColor;
-//			if (GUI.Button(new Rect(MiniButton), "-", com.Skin[GameControl.control.GUIID].customStyles[2]))
+//			if (GUI.Button(new Rect(MiniButton), "-", GameControl.control.Skins[Registry.GetIntData("Player", "System", "Skin")].customStyles[2]))
 //			{
 //				MinimizeExplorer = !MinimizeExplorer;
 //			}

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using System.Linq;
+using UnityEngine.SceneManagement;
 
 public class AccSetup : MonoBehaviour
 {
@@ -128,6 +129,8 @@ public class AccSetup : MonoBehaviour
 
     public bool CreatePlayerData;
 
+    public bool RegCheck;
+
     public List<DiskPartSystem> Partitions = new List<DiskPartSystem>();
     public List<DiskPartSystem> PartitionsBlank = new List<DiskPartSystem>();
     public List<InfectionSystem> BlankInfections = new List<InfectionSystem>();
@@ -208,9 +211,14 @@ public class AccSetup : MonoBehaviour
 
     void Reset()
     {
-        GameControl.control.Save();
-        Customize.cust.Save();
-        PersonController.control.Save();
+        //GameControl.control.Save();
+        ProfileController.procon.Save();
+        //Customize.cust.Save();
+        //PersonController.control.Save();
+        //ThreadQ.RunNewThread(GameControl.control.Save);
+        //ThreadQ.RunNewThread(ProfileController.procon.Save);
+        //ThreadQ.RunNewThread(PersonController.control.Save);
+        //ThreadQ.RunNewThread(Customize.cust.Save);
     }
 
     void AfterStart()
@@ -268,11 +276,53 @@ public class AccSetup : MonoBehaviour
         }
     }
 
+    void DefaultMouseSettings()
+    {
+        Registry.SetFloatData("Player", "System", "DoubleClickSpeed", 0.5f);
+        float IconDelay;
+        IconDelay = Registry.GetFloatData("Player", "System", "DoubleClickSpeed") * 1000;
+        Registry.SetIntData("Player", "System", "DoubleClickSpeed", (int)IconDelay);
+        Registry.SetStringData("Player", "System", "DoubleClickSpeed", "Double Click Delay " + IconDelay.ToString("F0") + "ms");
+    }
+
+    void ColorSchemeSettings()
+    {
+        Registry.SetColorData("Player", "System", "ButtonColor", new SColor(new Color32(255,255,255,255)));
+        Registry.SetColorData("Player", "System", "WindowColor", new SColor(new Color32(255, 255, 255, 255)));
+        Registry.SetColorData("Player", "System", "FontColor", new SColor(new Color32(0, 0, 0, 255)));
+
+        Registry.SetFloatColorData("Player", "System", "ButtonColor", new ColorSystem(255, 255, 255, 255));
+        Registry.SetFloatColorData("Player", "System", "WindowColor", new ColorSystem(255, 255, 255, 255));
+        Registry.SetFloatColorData("Player", "System", "FontColor", new ColorSystem(0, 0, 0, 255));
+
+        Registry.SetBoolData("Player", "System", "ButtonColor",true);
+        Registry.SetBoolData("Player", "System", "WindowColor", true); 
+        Registry.SetBoolData("Player", "System", "FontColor", true);
+    }
+
+    void DesktopSettings()
+    {
+        Registry.SetBoolData("Player", "System", "ShowDesktopBackground", true);
+        Registry.SetBoolData("Player", "System", "ShowDesktopIcons", true);
+    }
+
     void Update()
     {
         if (CreatePlayerData == true)
         {
             StartSetupV2();
+        }
+
+        if (RegCheck == true)
+        {
+            CreatePlayerData = false;
+            RegistryLoader.RegLoad.RunRegLoad = true;
+            DefaultMouseSettings();
+            ColorSchemeSettings();
+            DesktopSettings();
+            Registry.SetBoolData("Player", "System", "ShowDesktopBackground", true);
+
+            POST();
         }
         string day = System.DateTime.Now.ToString("dd/MM");
 
@@ -565,7 +615,7 @@ public class AccSetup : MonoBehaviour
         {
             if (GUI.Button(new Rect(Screen.width / 3f, Screen.height / 1.5f, 75, 25), "< Back", Button))
             {
-                Application.LoadLevel(0);
+                SceneManager.LoadScene("Login");
             }
         }
 
@@ -578,7 +628,7 @@ public class AccSetup : MonoBehaviour
         {
             if (ProfileController.procon.Profiles.Count > 1)
             {
-                Application.LoadLevel(0);
+                SceneManager.LoadScene("Login");
             }
         }
     }
@@ -1186,14 +1236,6 @@ public class AccSetup : MonoBehaviour
         GameControl.control.ProgramFiles.Add(new ProgramSystem("Discord", "", "", "", "", "", "C:/Real", "C:/Users/lucas/AppData/Local/Discord/app-0.0.309/Discord.exe", "", "", ProgramSystem.FileExtension.Real, ProgramSystem.FileExtension.Null, 0, 0, 0, 0, 0, 0, 0, 100, 1.0f, 0, 0, 0, 0, 0, 0, 0, false, false, false, false, BlankInfections, BlankFileType));
         GameControl.control.ProgramFiles.Add(new ProgramSystem("Alfaykun king cover", "", "", "", "", "", "C:/Real", "C:/Users/lucas/Pictures/Alfaykun King Cover louder.mp4", "", "", ProgramSystem.FileExtension.Real, ProgramSystem.FileExtension.Null, 0, 0, 0, 0, 0, 0, 0, 100, 1.0f, 0, 0, 0, 0, 0, 0, 0, false, false, false, false, BlankInfections, BlankFileType));
         GameControl.control.ProgramFiles.Add(new ProgramSystem("German Mili Cover", "", "", "", "", "", "C:/Real", "F:/Photos/Masterful.mp4", "", "", ProgramSystem.FileExtension.Real, ProgramSystem.FileExtension.Null, 0, 0, 0, 0, 0, 0, 0, 100, 1.0f, 0, 0, 0, 0, 0, 0, 0, false, false, false, false, BlankInfections, BlankFileType));
-
-        GameControl.control.DesktopIconList.Add(new ProgramSystem("Notepad", "", "", "", "", "", "C:/Real", "Notepad", "", "", ProgramSystem.FileExtension.Real, ProgramSystem.FileExtension.Null, 0, 0, 0, 0, 0, 0, 0, 100, 1.0f, 0, 0, 0, 0, 0, 0, 0, false, false, false, false, BlankInfections, BlankFileType));
-        GameControl.control.DesktopIconList.Add(new ProgramSystem("Steam", "", "", "", "", "", "C:/Real", "D:/Steam/Steam.exe", "", "", ProgramSystem.FileExtension.Real, ProgramSystem.FileExtension.Null, 0, 0, 0, 0, 0, 0, 0, 100, 1.0f, 0, 0, 0, 0, 0, 0, 0, false, false, false, false, BlankInfections, BlankFileType));
-        GameControl.control.DesktopIconList.Add(new ProgramSystem("File Explorer", "", "", "", "", "", "C:/Real", "C:/Users", "", "", ProgramSystem.FileExtension.Real, ProgramSystem.FileExtension.Null, 0, 0, 0, 0, 0, 0, 0, 100, 1.0f, 0, 0, 0, 0, 0, 0, 0, false, false, false, false, BlankInfections, BlankFileType));
-        GameControl.control.DesktopIconList.Add(new ProgramSystem("Discord", "", "", "", "", "", "C:/Real", "C:/Users/lucas/AppData/Local/Discord/app-0.0.309/Discord.exe", "", "", ProgramSystem.FileExtension.Real, ProgramSystem.FileExtension.Null, 0, 0, 0, 0, 0, 0, 0, 100, 1.0f, 0, 0, 0, 0, 0, 0, 0, false, false, false, false, BlankInfections, BlankFileType));
-        GameControl.control.DesktopIconList.Add(new ProgramSystem("Alfaykun king cover", "", "", "", "", "", "C:/Real", "C:/Users/lucas/Pictures/Alfaykun King Cover louder.mp4", "", "", ProgramSystem.FileExtension.Real, ProgramSystem.FileExtension.Null, 0, 0, 0, 0, 0, 0, 0, 100, 1.0f, 0, 0, 0, 0, 0, 0, 0, false, false, false, false, BlankInfections, BlankFileType));
-        GameControl.control.DesktopIconList.Add(new ProgramSystem("German Mili Cover", "", "", "", "", "", "C:/Real", "F:/Photos/Masterful.mp4", "", "", ProgramSystem.FileExtension.Real, ProgramSystem.FileExtension.Null, 0, 0, 0, 0, 0, 0, 0, 100, 1.0f, 0, 0, 0, 0, 0, 0, 0, false, false, false, false, BlankInfections, BlankFileType));
-        GameControl.control.DesktopIconList.Add(new ProgramSystem("Media Player", "", "", "", "", "", "C:/Programs", "Media Player", "", "", ProgramSystem.FileExtension.Exe, ProgramSystem.FileExtension.Null, 0, 0, 0, 0, 0, 0, 0, 100, 1.0f, 0, 0, 0, 0, 0, 0, 0, false, false, false, false, BlankInfections, BlankFileType));
     }
 
     void InsiderAccount()
@@ -1216,14 +1258,6 @@ public class AccSetup : MonoBehaviour
         GameControl.control.ProgramFiles.Add(new ProgramSystem("Discord", "", "", "", "", "", "C:/Real", "C:/Users/lucas/AppData/Local/Discord/app-0.0.309/Discord.exe", "", "", ProgramSystem.FileExtension.Real, ProgramSystem.FileExtension.Null, 0, 0, 0, 0, 0, 0, 0, 100, 1.0f, 0, 0, 0, 0, 0, 0, 0, false, false, false, false, BlankInfections, BlankFileType));
         GameControl.control.ProgramFiles.Add(new ProgramSystem("Alfaykun king cover", "", "", "", "", "", "C:/Real", "C:/Users/lucas/Pictures/Alfaykun King Cover louder.mp4", "", "", ProgramSystem.FileExtension.Real, ProgramSystem.FileExtension.Null, 0, 0, 0, 0, 0, 0, 0, 100, 1.0f, 0, 0, 0, 0, 0, 0, 0, false, false, false, false, BlankInfections, BlankFileType));
         GameControl.control.ProgramFiles.Add(new ProgramSystem("German Mili Cover", "", "", "", "", "", "C:/Real", "F:/Photos/Masterful.mp4", "", "", ProgramSystem.FileExtension.Real, ProgramSystem.FileExtension.Null, 0, 0, 0, 0, 0, 0, 0, 100, 1.0f, 0, 0, 0, 0, 0, 0, 0, false, false, false, false, BlankInfections, BlankFileType));
-
-        GameControl.control.DesktopIconList.Add(new ProgramSystem("Notepad", "", "", "", "", "", "C:/Real", "Notepad", "", "", ProgramSystem.FileExtension.Real, ProgramSystem.FileExtension.Null, 0, 0, 0, 0, 0, 0, 0, 100, 1.0f, 0, 0, 0, 0, 0, 0, 0, false, false, false, false, BlankInfections, BlankFileType));
-        GameControl.control.DesktopIconList.Add(new ProgramSystem("Steam", "", "", "", "", "", "C:/Real", "D:/Steam/Steam.exe", "", "", ProgramSystem.FileExtension.Real, ProgramSystem.FileExtension.Null, 0, 0, 0, 0, 0, 0, 0, 100, 1.0f, 0, 0, 0, 0, 0, 0, 0, false, false, false, false, BlankInfections, BlankFileType));
-        GameControl.control.DesktopIconList.Add(new ProgramSystem("File Explorer", "", "", "", "", "", "C:/Real", "C:/Users", "", "", ProgramSystem.FileExtension.Real, ProgramSystem.FileExtension.Null, 0, 0, 0, 0, 0, 0, 0, 100, 1.0f, 0, 0, 0, 0, 0, 0, 0, false, false, false, false, BlankInfections, BlankFileType));
-        GameControl.control.DesktopIconList.Add(new ProgramSystem("Discord", "", "", "", "", "", "C:/Real", "C:/Users/lucas/AppData/Local/Discord/app-0.0.309/Discord.exe", "", "", ProgramSystem.FileExtension.Real, ProgramSystem.FileExtension.Null, 0, 0, 0, 0, 0, 0, 0, 100, 1.0f, 0, 0, 0, 0, 0, 0, 0, false, false, false, false, BlankInfections, BlankFileType));
-        GameControl.control.DesktopIconList.Add(new ProgramSystem("Alfaykun king cover", "", "", "", "", "", "C:/Real", "C:/Users/lucas/Pictures/Alfaykun King Cover louder.mp4", "", "", ProgramSystem.FileExtension.Real, ProgramSystem.FileExtension.Null, 0, 0, 0, 0, 0, 0, 0, 100, 1.0f, 0, 0, 0, 0, 0, 0, 0, false, false, false, false, BlankInfections, BlankFileType));
-        GameControl.control.DesktopIconList.Add(new ProgramSystem("German Mili Cover", "", "", "", "", "", "C:/Real", "F:/Photos/Masterful.mp4", "", "", ProgramSystem.FileExtension.Real, ProgramSystem.FileExtension.Null, 0, 0, 0, 0, 0, 0, 0, 100, 1.0f, 0, 0, 0, 0, 0, 0, 0, false, false, false, false, BlankInfections, BlankFileType));
-        GameControl.control.DesktopIconList.Add(new ProgramSystem("Media Player", "", "", "", "", "", "C:/Programs", "Media Player", "", "", ProgramSystem.FileExtension.Exe, ProgramSystem.FileExtension.Null, 0, 0, 0, 0, 0, 0, 0, 100, 1.0f, 0, 0, 0, 0, 0, 0, 0, false, false, false, false, BlankInfections, BlankFileType));
     }
 
     void TestAccount()
@@ -1272,7 +1306,7 @@ public class AccSetup : MonoBehaviour
             person.Gateway.Motherboard.RAMSlots.Add(new SocketSystem(138, 70));
 
             person.Gateway.CPU.Add(new CPUSystem("Zion Z-14", "Zion", "Z-14", "140", 32, 1, 0.5f, 0.1f, 0.5f, 0, 0, 0, 0, 0, 1, 0.01f, 0, 100, 100, 0, "", 0, 20, 0.0025f, 0, 0, 0));
-            person.Gateway.StorageDevices.Add(new StorageDevice("EasternVirtual 128", "", "", "", 133, 0, 128, 128, 15, 0.001f, 100, 100, 0, 0.0025f, 0.14f, StorageDevice.StorageType.HDD));
+            person.Gateway.StorageDevices.Add(new StorageDevice("EasternVirtual 256", "", "", "", 133, 0, 256, 256, 15, 0.001f, 100, 100, 0, 0.0025f, 0.14f, StorageDevice.StorageType.HDD));
             person.Gateway.StorageDevices.Add(new StorageDevice("EasternVirtual 128", "", "", "", 133, 0, 128, 128, 15, 0.001f, 100, 100, 0, 0.0025f, 0.14f, StorageDevice.StorageType.HDD));
 
             person.Gateway.Name = person.Name + "'s Gateway";
@@ -1300,34 +1334,42 @@ public class AccSetup : MonoBehaviour
                 person.Gateway.StorageDevices.First().OS[i].Options.EnableDesktopEnviroment = true;
                 person.Gateway.StorageDevices.First().OS[i].FPC.ShowDesktopBackground = true;
                 person.Gateway.StorageDevices.First().OS[i].FPC.ShowDesktopIcons = true;
+                person.Gateway.StorageDevices.First().OS[i].SerialKey = SerialKey;
 
-                person.Gateway.StorageDevices.First().OS[i].Partitions.First().Files.Add(new ProgramSystemv2("C:/", "System", "", "", "", "System", "Gateway", "C:/", "", "", ProgramSystemv2.FileExtension.Dir, ProgramSystemv2.FileExtension.Null, 0, 0, 60, 0, 0, 0, 0, 100, 0, 0, 0, 0, 0, 0, 0, 0, false, false, false, false, false, false, false));
-                person.Gateway.StorageDevices.First().OS[i].Partitions.First().Files.Add(new ProgramSystemv2("Downloads", "", "", "", "", "", "C:/", "C:/Downloads", "", "", ProgramSystemv2.FileExtension.Fdl, ProgramSystemv2.FileExtension.Null, 0, 0, 0, 0, 0, 0, 0, 100, 0, 0, 0, 0, 0, 0, 0, 0, false, false, false, false, false, false, false));
-                person.Gateway.StorageDevices.First().OS[i].Partitions.First().Files.Add(new ProgramSystemv2("Documents", "", "", "", "", "", "C:/", "C:/Documents", "", "", ProgramSystemv2.FileExtension.Fdl, ProgramSystemv2.FileExtension.Null, 0, 0, 0, 0, 0, 0, 0, 100, 0, 0, 0, 0, 0, 0, 0, 0, false, false, false, false, false, false, false));
-                person.Gateway.StorageDevices.First().OS[i].Partitions.First().Files.Add(new ProgramSystemv2("Programs", "", "", "", "", "", "C:/", "C:/Programs", "", "", ProgramSystemv2.FileExtension.Fdl, ProgramSystemv2.FileExtension.Null, 0, 0, 0, 0, 0, 0, 0, 100, 0, 0, 0, 0, 0, 0, 0, 0, false, false, false, false, false, false, false));
-                person.Gateway.StorageDevices.First().OS[i].Partitions.First().Files.Add(new ProgramSystemv2("System", "", "", "", "", "", "C:/", "C:/System", "", "", ProgramSystemv2.FileExtension.Fdl, ProgramSystemv2.FileExtension.Null, 0, 0, 0, 0, 0, 0, 0, 100, 0, 0, 0, 0, 0, 0, 0, 0, false, false, false, false, false, false, false));
+                person.Gateway.StorageDevices.First().OS[i].Partitions.First().Files.Add(new ProgramSystemv2("C:/", "System", "", "", "", "System", "Gateway", "C:/", "", "", ProgramSystemv2.FileExtension.dir, ProgramSystemv2.FileExtension.Null, 0, 0, 60, 0, 100, 0, 0, 0, 0, 0, 0, 0, 0, false, false, false, false, false, false, false,new ResourceManagerSystem()));
+                person.Gateway.StorageDevices.First().OS[i].Partitions.First().Files.Add(new ProgramSystemv2("Downloads", "", "", "", "", "", "C:/", "C:/Downloads", "", "", ProgramSystemv2.FileExtension.fdl, ProgramSystemv2.FileExtension.Null, 0, 0, 0, 0, 100, 0, 0, 0, 0, 0, 0, 0, 0, false, false, false, false, false, false, false, new ResourceManagerSystem()));
+                person.Gateway.StorageDevices.First().OS[i].Partitions.First().Files.Add(new ProgramSystemv2("Documents", "", "", "", "", "", "C:/", "C:/Documents", "", "", ProgramSystemv2.FileExtension.fdl, ProgramSystemv2.FileExtension.Null, 0, 0, 0, 0, 100, 0, 0, 0, 0, 0, 0, 0, 0, false, false, false, false, false, false, false, new ResourceManagerSystem()));
+                person.Gateway.StorageDevices.First().OS[i].Partitions.First().Files.Add(new ProgramSystemv2("Programs", "", "", "", "", "", "C:/", "C:/Programs", "", "", ProgramSystemv2.FileExtension.fdl, ProgramSystemv2.FileExtension.Null, 0, 0, 0, 0,100, 0, 0, 0, 0, 0, 0, 0, 0, false, false, false, false, false, false, false, new ResourceManagerSystem()));
+                person.Gateway.StorageDevices.First().OS[i].Partitions.First().Files.Add(new ProgramSystemv2("System", "", "", "", "", "", "C:/", "C:/System", "", "", ProgramSystemv2.FileExtension.fdl, ProgramSystemv2.FileExtension.Null, 0, 0, 0, 0, 100, 0, 0, 0, 0, 0, 0, 0, 0, false, false, false, false, false, false, false, new ResourceManagerSystem()));
+                person.Gateway.StorageDevices.First().OS[i].Partitions.First().Files.Add(new ProgramSystemv2("Control Panel", "", "", "", "", "", "C:/Programs", "ControlPanel", "", "", ProgramSystemv2.FileExtension.exe, ProgramSystemv2.FileExtension.Null, 0, 0, 0, 0, 100, 0, 0, 0, 0, 0, 0, 0, 0, false, false, false, false, false, false, false, new ResourceManagerSystem()));
+                person.Gateway.StorageDevices.First().OS[i].Partitions.First().Files.Add(new ProgramSystemv2("File Manager", "", "", "", "", "", "C:/Programs", "FileManager", "", "", ProgramSystemv2.FileExtension.exe, ProgramSystemv2.FileExtension.Null, 0, 0, 0, 0, 100, 0, 0, 0, 0, 0, 0, 0, 0, false, false, false, false, false, false, false, new ResourceManagerSystem()));
+                person.Gateway.StorageDevices.First().OS[i].Partitions.First().Files.Add(new ProgramSystemv2("CLI", "", "", "", "", "", "C:/Programs", "CLI", "", "", ProgramSystemv2.FileExtension.exe, ProgramSystemv2.FileExtension.Null, 0, 0, 0, 0, 100, 0, 0, 0, 0, 0, 0, 0, 0, false, false, false, false, false, false, false, new ResourceManagerSystem()));
+                person.Gateway.StorageDevices.First().OS[i].Partitions.First().Files.Add(new ProgramSystemv2("Task Viewer", "", "", "", "", "", "C:/Programs", "Task Viewer", "", "", ProgramSystemv2.FileExtension.exe, ProgramSystemv2.FileExtension.Null, 0, 0, 0, 0, 100, 0, 0, 0, 0, 0, 0, 0, 0, false, false, false, false, false, false, false, new ResourceManagerSystem()));
+                person.Gateway.StorageDevices.First().OS[i].Partitions.First().Files.Add(new ProgramSystemv2("Disk Manager", "", "", "", "", "", "C:/Programs", "Disk Manager", "", "", ProgramSystemv2.FileExtension.exe, ProgramSystemv2.FileExtension.Null, 0, 0, 0, 0, 100, 0, 0, 0, 0, 0, 0, 0, 0, false, false, false, false, false, false, false, new ResourceManagerSystem()));
+                person.Gateway.StorageDevices.First().OS[i].Partitions.First().Files.Add(new ProgramSystemv2("Gateway Viewer", "", "", "", "", "", "C:/Programs", "Gateway Viewer", "", "", ProgramSystemv2.FileExtension.exe, ProgramSystemv2.FileExtension.Null, 0, 0, 0, 0, 100, 0, 0, 0, 0, 0, 0, 0, 0, false, false, false, false, false, false, false, new ResourceManagerSystem()));
+                person.Gateway.StorageDevices.First().OS[i].Partitions.First().Files.Add(new ProgramSystemv2("Device Manager", "", "", "", "", "", "C:/Programs", "Device Manager", "", "", ProgramSystemv2.FileExtension.exe, ProgramSystemv2.FileExtension.Null, 0, 0, 0, 0, 100, 0, 0, 0, 0, 0, 0, 0, 0, false, false, false, false, false, false, false, new ResourceManagerSystem()));
+                person.Gateway.StorageDevices.First().OS[i].Partitions.First().Files.Add(new ProgramSystemv2("System Panel", "", "", "", "", "", "C:/Programs", "System Panel", "", "", ProgramSystemv2.FileExtension.exe, ProgramSystemv2.FileExtension.Null, 0, 0, 0, 0, 100, 0, 0, 0, 0, 0, 0, 0, 0, false, false, false, false, false, false, false, new ResourceManagerSystem()));
+                person.Gateway.StorageDevices.First().OS[i].Partitions.First().Files.Add(new ProgramSystemv2("Clock", "", "", "", "", "", "C:/Programs", "ClockPro", "", "", ProgramSystemv2.FileExtension.exe, ProgramSystemv2.FileExtension.Null, 0, 0, 0, 0, 100, 0, 0, 0, 0, 0, 0, 0, 0, false, false, false, false, false, false, false, new ResourceManagerSystem()));
+                person.Gateway.StorageDevices.First().OS[i].Partitions.First().Files.Add(new ProgramSystemv2("MediaPlayer", "", "", "", "", "", "C:/Programs", "MediaPlayer", "", "", ProgramSystemv2.FileExtension.exe, ProgramSystemv2.FileExtension.Null, 0, 0, 0, 0, 100, 0, 0, 0, 0, 0, 0, 0, 0, false, false, false, false, false, false, false, new ResourceManagerSystem()));
+                person.Gateway.StorageDevices.First().OS[i].Partitions.First().Files.Add(new ProgramSystemv2("Exchange", "", "", "", "", "", "C:/Programs", "Exchange Viewer", "", "", ProgramSystemv2.FileExtension.exe, ProgramSystemv2.FileExtension.Null, 0, 0, 0, 0, 100, 0, 0, 0, 0, 0, 0, 0, 0, false, false, false, false, false, false, false, new ResourceManagerSystem()));
+                person.Gateway.StorageDevices.First().OS[i].Partitions.First().Files.Add(new ProgramSystemv2("Calculator", "", "", "", "", "", "C:/Programs", "Calculator", "", "", ProgramSystemv2.FileExtension.exe, ProgramSystemv2.FileExtension.Null, 0, 0, 0, 0, 100, 0, 0, 0, 0, 0, 0, 0, 0, false, false, false, false, false, false, false, new ResourceManagerSystem()));
+                person.Gateway.StorageDevices.First().OS[i].Partitions.First().Files.Add(new ProgramSystemv2("Notepad", "", "", "", "", "", "C:/Programs", "Notepad", "", "", ProgramSystemv2.FileExtension.exe, ProgramSystemv2.FileExtension.Null, 0, 0, 0, 0, 100, 0, 0, 0, 0, 0, 0, 0, 0, false, false, false, false, false, false, false, new ResourceManagerSystem()));
+                person.Gateway.StorageDevices.First().OS[i].Partitions.First().Files.Add(new ProgramSystemv2("FileUtility", "", "", "", "", "", "C:/Programs", "FileUtility", "", "", ProgramSystemv2.FileExtension.exe, ProgramSystemv2.FileExtension.Null, 0, 0, 0, 0, 100, 0, 0, 0, 0, 0, 0, 0, 0, false, false, false, false, false, false, false, new ResourceManagerSystem()));
 
-                person.Gateway.StorageDevices.First().OS[i].Partitions.First().Files.Add(new ProgramSystemv2("Control Panel", "", "", "", "", "", "C:/Programs", "Control Panel", "", "", ProgramSystemv2.FileExtension.Exe, ProgramSystemv2.FileExtension.Null, 0, 0, 0, 0, 0, 0, 0, 100, 0, 0, 0, 0, 0, 0, 0, 0, false, false, false, false, false, false, false));
-                person.Gateway.StorageDevices.First().OS[i].Partitions.First().Files.Add(new ProgramSystemv2("File Manager", "", "", "", "", "", "C:/Programs", "FileManager", "", "", ProgramSystemv2.FileExtension.Exe, ProgramSystemv2.FileExtension.Null, 0, 0, 0, 0, 0, 0, 0, 100, 0, 0, 0, 0, 0, 0, 0, 0, false, false, false, false, false, false, false));
-                person.Gateway.StorageDevices.First().OS[i].Partitions.First().Files.Add(new ProgramSystemv2("CLI", "", "", "", "", "", "C:/Programs", "CLI", "", "", ProgramSystemv2.FileExtension.Exe, ProgramSystemv2.FileExtension.Null, 0, 0, 0, 0, 0, 0, 0, 100, 0, 0, 0, 0, 0, 0, 0, 0, false, false, false, false, false, false, false));
-                person.Gateway.StorageDevices.First().OS[i].Partitions.First().Files.Add(new ProgramSystemv2("Task Viewer", "", "", "", "", "", "C:/Programs", "Task Viewer", "", "", ProgramSystemv2.FileExtension.Exe, ProgramSystemv2.FileExtension.Null, 0, 0, 0, 0, 0, 0, 0, 100, 0, 0, 0, 0, 0, 0, 0, 0, false, false, false, false, false, false, false));
-                person.Gateway.StorageDevices.First().OS[i].Partitions.First().Files.Add(new ProgramSystemv2("Disk Manager", "", "", "", "", "", "C:/Programs", "Disk Manager", "", "", ProgramSystemv2.FileExtension.Exe, ProgramSystemv2.FileExtension.Null, 0, 0, 0, 0, 0, 0, 0, 100, 0, 0, 0, 0, 0, 0, 0, 0, false, false, false, false, false, false, false));
-                person.Gateway.StorageDevices.First().OS[i].Partitions.First().Files.Add(new ProgramSystemv2("Gateway Viewer", "", "", "", "", "", "C:/Programs", "Gateway Viewer", "", "", ProgramSystemv2.FileExtension.Exe, ProgramSystemv2.FileExtension.Null, 0, 0, 0, 0, 0, 0, 0, 100, 0, 0, 0, 0, 0, 0, 0, 0, false, false, false, false, false, false, false));
-                person.Gateway.StorageDevices.First().OS[i].Partitions.First().Files.Add(new ProgramSystemv2("Device Manager", "", "", "", "", "", "C:/Programs", "Device Manager", "", "", ProgramSystemv2.FileExtension.Exe, ProgramSystemv2.FileExtension.Null, 0, 0, 0, 0, 0, 0, 0, 100, 0, 0, 0, 0, 0, 0, 0, 0, false, false, false, false, false, false, false));
-                person.Gateway.StorageDevices.First().OS[i].Partitions.First().Files.Add(new ProgramSystemv2("System Panel", "", "", "", "", "", "C:/Programs", "System Panel", "", "", ProgramSystemv2.FileExtension.Exe, ProgramSystemv2.FileExtension.Null, 0, 0, 0, 0, 0, 0, 0, 100, 0, 0, 0, 0, 0, 0, 0, 0, false, false, false, false, false, false, false));
-                person.Gateway.StorageDevices.First().OS[i].Partitions.First().Files.Add(new ProgramSystemv2("Clock", "", "", "", "", "", "C:/Programs", "ClockPro", "", "", ProgramSystemv2.FileExtension.Exe, ProgramSystemv2.FileExtension.Null, 0, 0, 0, 0, 0, 0, 0, 100, 0, 0, 0, 0, 0, 0, 0, 0, false, false, false, false, false, false, false));
-                person.Gateway.StorageDevices.First().OS[i].Partitions.First().Files.Add(new ProgramSystemv2("MediaPlayer", "", "", "", "", "", "C:/Programs", "MediaPlayer", "", "", ProgramSystemv2.FileExtension.Exe, ProgramSystemv2.FileExtension.Null, 0, 0, 0, 0, 0, 0, 0, 100, 0, 0, 0, 0, 0, 0, 0, 0, false, false, false, false, false, false, false));
-                person.Gateway.StorageDevices.First().OS[i].Partitions.First().Files.Add(new ProgramSystemv2("Exchange", "", "", "", "", "", "C:/Programs", "Exchange Viewer", "", "", ProgramSystemv2.FileExtension.Exe, ProgramSystemv2.FileExtension.Null, 0, 0, 0, 0, 0, 0, 0, 100, 0, 0, 0, 0, 0, 0, 0, 0, false, false, false, false, false, false, false));
+                person.Gateway.StorageDevices.First().OS[i].Partitions.First().Files.Add(new ProgramSystemv2("Pss2Crew", "", "", "", "", "", "C:/Programs", "Pss2Crew", "", "", ProgramSystemv2.FileExtension.exe, ProgramSystemv2.FileExtension.Null, 0, 0, 0, 0, 100, 0, 0, 0, 0, 0, 0, 0, 0, false, false, false, false, false, false, false, new ResourceManagerSystem()));
+
+                person.Gateway.StorageDevices.First().OS[i].Partitions.First().Files.Add(new ProgramSystemv2("Document", "", "", "", "" +
+                    "Address: www.ping.com" + "\n" + "IP: Test",
+                    "", "C:/Documents", "", "", "", ProgramSystemv2.FileExtension.txt, ProgramSystemv2.FileExtension.Null, 0, 0, 0, 0, 100, 0, 0, 0, 0, 0, 0, 0, 0, false, false, false, false, false, false, false, new ResourceManagerSystem()));
             }
 
-            person.Gateway.StorageDevices.First().OS[0].Partitions.First().Files.Add(new ProgramSystemv2("" + "Kernal-Sanders", "", "", "", "", "", "C:/System", "", "", "", ProgramSystemv2.FileExtension.OS, ProgramSystemv2.FileExtension.Null, 0, 0, 1, 0, 0, 0, 0, 100, 1, 0, 0, 0, 0, 0, 0, 0, false, false, false, false, false, false, false));
-            person.Gateway.StorageDevices.First().OS[1].Partitions.First().Files.Add(new ProgramSystemv2("" + SelectedOS.Name, "", "", "", "", "", "C:/System", "", "", "", ProgramSystemv2.FileExtension.OS, ProgramSystemv2.FileExtension.Null, 0, 0, 10, 0, 0, 0, 0, 100, 1, 0, 0, 0, 0, 0, 0, 0, false, false, false, false, false, false, false));
+            person.Gateway.StorageDevices.First().OS[0].Partitions.First().Files.Add(new ProgramSystemv2("" + "Kernal-Sanders", "", "", "", "", "", "C:/System", "", "", "", ProgramSystemv2.FileExtension.os, ProgramSystemv2.FileExtension.Null, 0, 0, 1, 0, 100, 1, 0, 0, 0, 0, 0, 0, 0, false, false, false, false, false, false, false, new ResourceManagerSystem()));
+            person.Gateway.StorageDevices.First().OS[1].Partitions.First().Files.Add(new ProgramSystemv2("" + SelectedOS.Name, "", "", "", "", "", "C:/System", "", "", "", ProgramSystemv2.FileExtension.os, ProgramSystemv2.FileExtension.Null, 0, 0, 10, 0, 100, 1, 0, 0, 0, 0, 0, 0, 0, false, false, false, false, false, false, false, new ResourceManagerSystem()));
 
             person.Reputation.Add(new RepSystem("REVA", 0, 0, 0, 0, 0, 0));
         }
 
-        POST();
-        CreatePlayerData = false;
+        RegCheck = true;
     }
 
     void StartSetup()
@@ -1353,7 +1395,6 @@ public class AccSetup : MonoBehaviour
         GameControl.control.OSName.Add(new OperatingSystems("Kernal-Sanders",OperatingSystems.OSName.SafeMode));
         GameControl.control.OSName.Add(new OperatingSystems(SelectedOS.Title, SelectedOS.Name));
         GameControl.control.SelectedOS = SelectedOS;
-        GameControl.control.SerialKey = SerialKey;
         GameControl.control.ProgramFiles.Add(new ProgramSystem("Kernal-Sanders", "", "", "","","", "Reserved", "","","",ProgramSystem.FileExtension.OS, ProgramSystem.FileExtension.Null,0, 0, 0, 0, 0,0,0, 100, 1,0,0,0,0,0,0,0,false,false,false,false,BlankInfections,BlankFileType));
         GameControl.control.ProgramFiles.Add(new ProgramSystem("" + GameControl.control.SelectedOS.Name, "", "", "", "", "", "C:/System", "", "", "", ProgramSystem.FileExtension.OS, ProgramSystem.FileExtension.Null, 0, 0, 10, 0, 0, 0, 0, 100, 1, 0, 0, 0, 0, 0, 0, 0, false, false, false, false, BlankInfections, BlankFileType));
         GameControl.control.ShortCommands = ShortCommand;
@@ -1416,7 +1457,7 @@ public class AccSetup : MonoBehaviour
         string IPAddress = StringGenerator.RandomNumberChar(3, 3) + "." + StringGenerator.RandomNumberChar(3, 3) + "." + StringGenerator.RandomNumberChar(3, 3) + "." + StringGenerator.RandomNumberChar(3, 3);
 
         //GameControl.control.Gateway.CPUSockets.Add(new CPUSocketSystem("420",88,108,0,null));
-        GameControl.control.Gateway.RAMSlots.Add(new SocketSystem(139, 70));
+        //GameControl.control.Gateway.RAMSlots.Add(new SocketSystem(139, 70));
         //GameControl.control.Gateway.InstalledCPU.Add(new CPUSystem("Zion Z-14", "Zion", "Z-14", "420", 32, 1, 0.5f, 0.1f, 0.5f, 0, 0, 0, 0, 0, 1, 0.01f, 0, 100, 100, 0, "", 0, 20, 0.0025f, 0, 0, 0));
        // GameControl.control.Gateway.InstalledGPU.Add(new GPUSystem("Qividia 970", "PCI-E", 970, 2, 0.1f, 2f, 256, 0, 0, 0, 1, 0.01f, 100, 100, 0, 120, 0.0025f));
       ///  GameControl.control.Gateway.InstalledRAM.Add(new RamSystem("Vortex 2GB", "DDR1", 0, 2048, 0, 0, 100, 0.01f, 100, 100, 0, 0.0025f,0));
@@ -1497,7 +1538,9 @@ public class AccSetup : MonoBehaviour
     {
         Customize.cust.Load();
         GameControl.control.Load();
-        Application.LoadLevel("Game");
+        ProfileController.procon.Load();
+        SceneManager.LoadScene("Game");
+        //Application.LoadLevel("Game");
     }
 
     void Stream()

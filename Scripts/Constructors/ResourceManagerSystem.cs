@@ -14,4 +14,39 @@ public class ResourceManagerSystem
     public ResourceManagerSystem()
     {
     }
+
+    public ResourceManagerSystem(float cpuusage)
+    {
+        CPUUsage = cpuusage;
+    }
+
+    public ResourceManagerSystem(float cpuusage,float memoryusage)
+    {
+        CPUUsage = cpuusage;
+        MemoryUsage = memoryusage;
+    }
+
+    public ResourceManagerSystem(float cpuusage, float memoryusage,float graphicsusage)
+    {
+        CPUUsage = cpuusage;
+        MemoryUsage = memoryusage;
+        GraphicsUsage = graphicsusage;
+    }
+
+
+    public ResourceManagerSystem(float cpuusage, float memoryusage, float graphicsusage,float diskusage)
+    {
+        CPUUsage = cpuusage;
+        MemoryUsage = memoryusage;
+        GraphicsUsage = graphicsusage;
+        DiskUsage = diskusage;
+    }
+    public ResourceManagerSystem(float cpuusage, float memoryusage, float graphicsusage, float diskusage, float networkusage)
+    {
+        CPUUsage = cpuusage;
+        MemoryUsage = memoryusage;
+        GraphicsUsage = graphicsusage;
+        DiskUsage = diskusage;
+        NetworkUsage = networkusage;
+    }
 }

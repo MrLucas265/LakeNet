@@ -1,6 +1,7 @@
-﻿using UnityEngine;
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
+using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class ErrorProm : MonoBehaviour
 {
@@ -74,7 +75,7 @@ public class ErrorProm : MonoBehaviour
 		//Customize.cust.windowx[windowID] = windowRect.x;
 		//Customize.cust.windowy[windowID] = windowRect.y;
 
-		GUI.skin = com.Skin[GameControl.control.GUIID];
+		GUI.skin = GameControl.control.Skins[Registry.GetIntData("Player", "System", "Skin")];
 
 		if (playsound == true)
 		{
@@ -99,7 +100,7 @@ public class ErrorProm : MonoBehaviour
                         TitleBox = new Rect(22, 1, CloseButton.x - 22, 21);
                         MessageBox = new Rect(5, 30, 385, 90);
 
-                        GUI.color = com.colors[Customize.cust.WindowColorInt];
+                        GUI.color = Registry.Get32ColorData("Player", "System", "WindowColor");
                         pwinman.RunningPrograms[i].windowRect = WindowClamp.ClampToScreen(GUI.Window(pwinman.RunningPrograms[i].WID, pwinman.RunningPrograms[i].windowRect, DoMyWindow, ""));
                     }
                 }
@@ -175,20 +176,20 @@ public class ErrorProm : MonoBehaviour
 
         if (CloseButton.Contains(Event.current.mousePosition))
         {
-            if (GUI.Button(new Rect(CloseButton), "X", com.Skin[GameControl.control.GUIID].customStyles[0]))
+            if (GUI.Button(new Rect(CloseButton), "X", GameControl.control.Skins[Registry.GetIntData("Player", "System", "Skin")].customStyles[0]))
             {
                 Close();
             }
         }
         else
         {
-            GUI.backgroundColor = com.colors[Customize.cust.ButtonColorInt];
-            GUI.contentColor = com.colors[Customize.cust.FontColorInt];
-            GUI.Button(new Rect(CloseButton), "X", com.Skin[GameControl.control.GUIID].customStyles[1]);
+            GUI.backgroundColor = Registry.Get32ColorData("Player", "System", "ButtonColor");
+            GUI.contentColor = Registry.Get32ColorData("Player", "System", "FontColor");
+            GUI.Button(new Rect(CloseButton), "X", GameControl.control.Skins[Registry.GetIntData("Player", "System", "Skin")].customStyles[1]);
         }
 
-        GUI.backgroundColor = com.colors[Customize.cust.ButtonColorInt];
-        GUI.contentColor = com.colors[Customize.cust.FontColorInt];
+        GUI.backgroundColor = Registry.Get32ColorData("Player", "System", "ButtonColor");
+        GUI.contentColor = Registry.Get32ColorData("Player", "System", "FontColor");
 
         //GUI.DrawTexture(new Rect(1, 1, 21, 21), icon);
 
@@ -209,8 +210,8 @@ public class ErrorProm : MonoBehaviour
         {
             if (GUI.Button(new Rect(100, 125, 50, 20), "Restart Now"))
             {
-                GameControl.control.Gateway.Status.Booted = false;
-                Application.LoadLevel(1);
+                GameControl.control.GatewayStatus.Booted = false;
+                SceneManager.LoadScene("Game");
             }
 
             if (GUI.Button(new Rect(200, 125, 50, 20), "Cancel"))

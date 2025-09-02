@@ -1,5 +1,7 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
+using System.Threading;
 using UnityEngine;
 
 public class FileMangementUI : MonoBehaviour
@@ -13,7 +15,7 @@ public class FileMangementUI : MonoBehaviour
 
 	private Computer com;
 	private SoundControl sc;
-	private FileExplorer fp;
+	//private FileExplorer fp;
 	private AppMan appman;
 
 	public float native_width = 1920;
@@ -21,7 +23,6 @@ public class FileMangementUI : MonoBehaviour
 
 	public string ProgramNameForWinMan;
 
-	public int SelectedWindowID;
 	public int SelectedProgramID;
 	public int SelectedWPN;
 
@@ -35,8 +36,6 @@ public class FileMangementUI : MonoBehaviour
 	public List<string> ContextMenuOptions = new List<string>();
 	public string SelectedOption;
 	public string ContextMenuName;
-
-	public List<FileMangementSystem> FMS = new List<FileMangementSystem>();
 
 	public string PersonName;
 	public string ProgramName;
@@ -56,43 +55,27 @@ public class FileMangementUI : MonoBehaviour
 		native_height = Customize.cust.native_height;
 		native_width = Customize.cust.native_width;
 
-		fp = Puter.GetComponent<FileExplorer>();
+		//fp = Puter.GetComponent<FileExplorer>();
 		appman = Puter.GetComponent<AppMan>();
 
 		winman = WindowHandel.GetComponent<WindowManager>();
 
 		ProgramName = "FileManager";
 		PersonName = "Player";
-
 		//LocalRegistry.AddNewKey(PersonName, 1, "Test");
 	}
 
-	// Update is called once per frame
-	void Update()
-	{
-
-	}
-
-	void SelectWindowID(int WindowID)
+    void SelectWindowID(int WindowID)
 	{
 		if (Input.GetMouseButtonDown(0))
 		{
-			SelectedWindowID = WindowID;
-			winman.SelectedWID = WindowID;
-		}
-	}
-
-	void SelectWPN(int WPN)
-	{
-		if (Input.GetMouseButtonDown(0))
-		{
-			SelectedWindowID = WPN;
+			Registry.SetIntData("Player", "WindowManager", "SelectedWindow", WindowID);
 		}
 	}
 
 	bool GUIKeyDown(KeyCode key)
 	{
-		if (Event.current.type == EventType.KeyDown)
+        if (Event.current.type == EventType.KeyDown)
 			return (Event.current.keyCode == key);
 		return false;
 
@@ -119,107 +102,98 @@ public class FileMangementUI : MonoBehaviour
 		}
 	}
 
-	void GUIControls()
+	void GUIControls(int PID)
 	{
-		if (GUI.GetNameOfFocusedControl().Equals("Address"))
+		if (GUIKeyDown(KeyCode.LeftArrow))
 		{
-			if (GUIKeyDown(KeyCode.DownArrow))
-			{
-				//DisplayedItems = PageFile.Count / 21;
-			}
-
-			if (GUIKeyDown(KeyCode.UpArrow))
-			{
-
-			}
-
-
-			if (GUIKeyDown(KeyCode.Return) || GUIKeyDown(KeyCode.KeypadEnter))
-			{
-				LocalRegistry.SetStringData(PersonName,1, ProgramName, "CurrentDirectory", FMS[1].TypedDirectory);
-			}
-		}
-		else
-		{
-			if (GUIKeyDown(KeyCode.LeftArrow) || GUIKeyDown(KeyCode.Backspace))
-			{
-				HistorySystem("Back");
-			}
-
-			if (GUIKeyDown(KeyCode.DownArrow))
-			{
-				if (FMS[SelectedProgramID].PageFile.Count > 0)
-				{
-					if (FMS[SelectedProgramID].SelectedFile < FMS[SelectedProgramID].PageFile.Count - 1)
-					{
-						if (FMS[SelectedProgramID].SelectedFile >= 0)
-						{
-							Registry.GetRectData(PersonName, ProgramName, "MainScrollPos").y += 21;
-							FMS[SelectedProgramID].SelectedFile++;
-						}
-					}
-					if (FMS[SelectedProgramID].SelectedFile < 0)
-					{
-						FMS[SelectedProgramID].SelectedFile++;
-					}
-				}
-				//DisplayedItems = PageFile.Count / 21;
-			}
-
-			if (GUIKeyDown(KeyCode.UpArrow))
-			{
-				if (FMS[SelectedProgramID].PageFile.Count > 0)
-				{
-					if (FMS[SelectedProgramID].SelectedFile < 0)
-					{
-						FMS[SelectedProgramID].SelectedFile = FMS[SelectedProgramID].PageFile.Count;
-						Registry.GetRectData(PersonName, ProgramName, "MainScrollPos").y = 21 * FMS[SelectedProgramID].SelectedFile;
-					}
-					if (FMS[SelectedProgramID].SelectedFile >= 1)
-					{
-						Registry.GetRectData(PersonName, ProgramName, "MainScrollPos").y -= 21;
-						FMS[SelectedProgramID].SelectedFile--;
-					}
-				}
-			}
-
-			if (GUIKeyDown(KeyCode.Delete))
-			{
-				//LocalRegistry.SetIntData(PersonName,1, ProgramName,"Health",100);
-				if (FMS[SelectedProgramID].SelectedFile >= 0)
-				{
-					//DeleteSystem();
-				}
-			}
+			HistorySystem("Back", PID);
+			PlayClickSound();
 		}
 
-		if (GUIKeyDown(KeyCode.Tab))
+		if (GUIKeyDown(KeyCode.DownArrow))
 		{
-			if (GUI.GetNameOfFocusedControl().Equals("Address"))
+            if (LocalRegistry.GetProgramDataCount(PersonName, PID, ProgramName, "Test 1") > 0)
 			{
-				GUI.FocusControl("None");
-			}
-			if (GUI.GetNameOfFocusedControl().Equals("None"))
-			{
-				if (Registry.GetIntData(PersonName, ProgramName, "SelectedMenu") <= 1)
+				if (LocalRegistry.GetIntData(PersonName, PID, ProgramName, "SelectedFile") < LocalRegistry.GetProgramDataCount(PersonName, PID, ProgramName, "Test 1") - 1)
 				{
-					GUI.FocusControl("Address");
+					if (LocalRegistry.GetIntData(PersonName, PID, ProgramName, "SelectedFile") >= 0)
+					{
+						LocalRegistry.SetVector2Data(PersonName, PID, ProgramName, "MainScrollPos",new Vector2(0, LocalRegistry.GetVector2Data(PersonName, PID, ProgramName, "MainScrollPos").y + 21));
+						LocalRegistry.SetIntData(PersonName, PID, ProgramName, "SelectedFile", LocalRegistry.GetIntData(PersonName, PID, ProgramName, "SelectedFile") + 1);
+					}
 				}
-				if (Registry.GetIntData(PersonName, ProgramName, "SelectedMenu") == 2)
+				if (LocalRegistry.GetIntData(PersonName, PID, ProgramName, "SelectedFile") < 0)
 				{
-					GUI.FocusControl("FolderName");
-				}
-				if (Registry.GetIntData(PersonName, ProgramName, "SelectedMenu") == 3)
-				{
-					GUI.FocusControl("RenameFile");
+					LocalRegistry.SetIntData(PersonName, PID, ProgramName, "SelectedFile", LocalRegistry.GetIntData(PersonName, PID, ProgramName, "SelectedFile") + 1);
 				}
 			}
+			//DisplayedItems = PageFile.Count / 21;
 		}
+
+		if (GUIKeyDown(KeyCode.UpArrow))
+		{
+			if (LocalRegistry.GetProgramDataCount(PersonName, PID, ProgramName, "Test 1") > 0)
+			{
+				if (LocalRegistry.GetIntData(PersonName, PID, ProgramName, "SelectedFile") < 0)
+				{
+					LocalRegistry.SetIntData(PersonName, PID, ProgramName, "SelectedFile", LocalRegistry.GetProgramDataCount(PersonName, PID, ProgramName, "Test 1"));
+					//LocalRegistry.GetRectData(PersonName, PID, ProgramName, "MainScrollPos").y = 21 * LocalRegistry.GetIntData(PersonName, PID, ProgramName, "SelectedFile");
+					LocalRegistry.SetVector2Data(PersonName, PID, ProgramName, "MainScrollPos", new Vector2(0, 21 * LocalRegistry.GetIntData(PersonName, PID, ProgramName, "SelectedFile")));
+				}
+				if (LocalRegistry.GetIntData(PersonName, PID, ProgramName, "SelectedFile") >= 1)
+				{
+					LocalRegistry.SetVector2Data(PersonName, PID, ProgramName, "MainScrollPos", new Vector2(0, LocalRegistry.GetVector2Data(PersonName, PID, ProgramName, "MainScrollPos").y - 21));
+					LocalRegistry.SetIntData(PersonName, PID, ProgramName, "SelectedFile", LocalRegistry.GetIntData(PersonName, PID, ProgramName, "SelectedFile") - 1);
+				}
+			}
+
+		}
+
+		if (GUIKeyDown(KeyCode.Delete))
+		{
+			////LocalRegistry.SetIntData(PersonName,1, ProgramName,"Health",100);
+			//if (FMS[SelectedProgramID].SelectedFile >= 0)
+			//{
+			//	//DeleteSystem();
+			//}
+		}
+
+        if (GUIKeyDown(KeyCode.Tab))
+        {
+            if (GUI.GetNameOfFocusedControl().Equals("Address"))
+            {
+                GUI.FocusControl("None");
+            }
+            if (GUI.GetNameOfFocusedControl().Equals("None"))
+            {
+                if (Registry.GetIntData(PersonName, ProgramName, "SelectedMenu") <= 1)
+                {
+                    GUI.FocusControl("Address");
+                }
+                if (Registry.GetIntData(PersonName, ProgramName, "SelectedMenu") == 2)
+                {
+                    GUI.FocusControl("FolderName");
+                }
+                if (Registry.GetIntData(PersonName, ProgramName, "SelectedMenu") == 3)
+                {
+                    GUI.FocusControl("RenameFile");
+                }
+            }
+        }
+    }
+
+
+	void ColorUI(int WPN)
+	{
+		LocalRegistry.SetColorData(PersonName, WPN, ProgramName, "FontColor", new SColor(new Color32(0, 0, 0, 255)));
+
+		LocalRegistry.SetColorData(PersonName, WPN, ProgramName, "WindowColor", new SColor(new Color32(0, 0, 0, 255)));
 	}
 
 	void OnGUI()
 	{
-		GUI.skin = com.Skin[GameControl.control.GUIID];
+		GUI.skin = GameControl.control.Skins[Registry.GetIntData("Player", "System", "Skin")];
+		GUI.color = Registry.Get32ColorData("Player", "System", "WindowColor");
 
 		for (int PersonCount = 0; PersonCount < PersonController.control.People.Count; PersonCount++)
 		{
@@ -231,8 +205,15 @@ public class FileMangementUI : MonoBehaviour
 				{
 					if (pwinman.RunningPrograms[i].ProgramName == ProgramNameForWinMan)
 					{
-						GUI.color = new Color32(Registry.GetRedColorData(PersonName, ProgramName, "WindowColor"), Registry.GetGreenColorData(PersonName, ProgramName, "WindowColor"), Registry.GetBlueColorData(PersonName, ProgramName, "WindowColor"), Registry.GetAlphaColorData(PersonName, ProgramName, "WindowColor"));
+						//ColorUI(pwinman.RunningPrograms[i].WPN);
+						//GUI.color = new Color32(LocalRegistry.GetRedColorData(PersonName, pwinman.RunningPrograms[i].WPN, ProgramName, "WindowColor"),
+						//	LocalRegistry.GetGreenColorData(PersonName, pwinman.RunningPrograms[i].WPN, ProgramName, "WindowColor"),
+						//	LocalRegistry.GetBlueColorData(PersonName, pwinman.RunningPrograms[i].WPN, ProgramName, "WindowColor"),
+						//	LocalRegistry.GetAlphaColorData(PersonName, pwinman.RunningPrograms[i].WPN, ProgramName, "WindowColor"));
+
 						pwinman.RunningPrograms[i].windowRect = WindowClamp.ClampToScreen(GUI.Window(pwinman.RunningPrograms[i].WID, pwinman.RunningPrograms[i].windowRect, DoMyWindow, ""));
+
+						LocalRegistry.SetRectData(PersonName, pwinman.RunningPrograms[i].WPN, ProgramName, "WindowRect", pwinman.RunningPrograms[i].windowRect);
 
 						if (!pwinman.RunningPrograms[i].windowRect.Contains(Event.current.mousePosition))
 						{
@@ -264,48 +245,67 @@ public class FileMangementUI : MonoBehaviour
 	void TitleBarStuff(int PID)
 	{
 		GUI.DragWindow(new Rect(2, 2, CloseButton.x - 41, 20));
-		winman.WindowDragging(SelectedWindowID, new Rect(2, 2, CloseButton.x - 41, 21));
-		GUI.Box(new Rect(2, 2, CloseButton.x - 41, 20), ProgramNameForWinMan);
+		winman.WindowDragging(Registry.GetIntData(PersonName,"WindowManager","SelectedWindow"), new Rect(2, 2, CloseButton.x - 41, 21));
+		GUI.Box(new Rect(2, 2, CloseButton.x - 41, 20), ProgramNameForWinMan + "-" + LocalRegistry.GetStringData(PersonName, PID, ProgramName, "CurrentDirectory"));
 
-		if (LocalRegistry.GetStringDataCount(PersonName, PID, ProgramName, "PageHistory") <= 0)
+		if (LocalRegistry.GetStringListDataCount(PersonName, PID, ProgramName, "PageHistory") <= 1)
 		{
-			LocalRegistry.SetStringData(PersonName, PID, ProgramName, "TypedDirectory", GUI.TextField(new Rect(2, CloseButton.y + CloseButton.height, 200, 20), LocalRegistry.GetStringData(PersonName, PID, ProgramName, "TypedDirectory"), 100));
+			LocalRegistry.SetRectData(PersonName, PID, ProgramName, "TypedDirectory", new SRect(new Rect(
+				2,
+				LocalRegistry.GetRectData(PersonName, PID, ProgramName, "TypedDirectory").y,
+				LocalRegistry.GetRectData(PersonName, PID, ProgramName, "TypedDirectory").width,
+				LocalRegistry.GetRectData(PersonName, PID, ProgramName, "TypedDirectory").height)));
 
-			if (LocalRegistry.GetStringData(PersonName, PID, ProgramName, "CurrentDirectory") == "")
-			{
-				LocalRegistry.SetStringData(PersonName, PID, ProgramName, "TypedDirectory", "Gateway");
-				LocalRegistry.SetStringData(PersonName, PID, ProgramName, "CurrentDirectory", "Gateway");
-			}
+			LocalRegistry.SetStringData(PersonName, PID, ProgramName, "TypedDirectory", GUI.TextField(new Rect(LocalRegistry.GetRectData(PersonName, PID, ProgramName, "TypedDirectory")), LocalRegistry.GetStringData(PersonName, PID, ProgramName, "TypedDirectory"), 400));
 
-			if (GUI.Button(new Rect(250, CloseButton.y + CloseButton.height, 20, 20), "⏎"))
+			if (GUI.Button(new Rect(LocalRegistry.GetRectData(PersonName, PID, ProgramName, "TypedDirectory").x + LocalRegistry.GetRectData(PersonName, PID, ProgramName, "TypedDirectory").width + 1, LocalRegistry.GetRectData(PersonName, PID, ProgramName, "TypedDirectory").y, 20, 20), "⏎"))
 			{
 				LocalRegistry.SetStringData(PersonName, PID, ProgramName, "CurrentDirectory", LocalRegistry.GetStringData(PersonName, PID, ProgramName, "TypedDirectory"));
-				HistorySystem("Add");
+				//HistorySystem("Add");
 			}
 		}
 		else
 		{
-			LocalRegistry.SetStringData(PersonName, PID, ProgramName, "TypedDirectory", GUI.TextField(new Rect(2, CloseButton.y + CloseButton.height, 200, 20), LocalRegistry.GetStringData(PersonName, 1, ProgramName, "TypedDirectory"), 100));
+			LocalRegistry.SetRectData(PersonName, PID, ProgramName, "TypedDirectory", new SRect(new Rect(
+				23,
+				LocalRegistry.GetRectData(PersonName, PID, ProgramName, "TypedDirectory").y,
+				LocalRegistry.GetRectData(PersonName, PID, ProgramName, "TypedDirectory").width,
+				LocalRegistry.GetRectData(PersonName, PID, ProgramName, "TypedDirectory").height)));
 
-			if (GUI.Button(new Rect(2, CloseButton.y + CloseButton.height, 20, 20), "<-"))
+			LocalRegistry.SetStringData(PersonName, PID, ProgramName, "TypedDirectory", GUI.TextField(new Rect(LocalRegistry.GetRectData(PersonName, PID, ProgramName, "TypedDirectory")), LocalRegistry.GetStringData(PersonName, PID, ProgramName, "TypedDirectory"), 400));
+
+			if (GUI.Button(new Rect(2, LocalRegistry.GetRectData(PersonName, PID, ProgramName, "TypedDirectory").y, 20, 20), "<-"))
 			{
-				HistorySystem("Back");
+				HistorySystem("Back",PID);
 				PlayClickSound();
 			}
 
-			if (GUI.Button(new Rect(250, CloseButton.y + CloseButton.height, 20, 20), "⏎"))
+			if (GUI.Button(new Rect(LocalRegistry.GetRectData(PersonName, PID, ProgramName, "TypedDirectory").x + LocalRegistry.GetRectData(PersonName, PID, ProgramName, "TypedDirectory").width+1, LocalRegistry.GetRectData(PersonName, PID, ProgramName, "TypedDirectory").y, 20, 20), "⏎"))
 			{
 				LocalRegistry.SetStringData(PersonName, PID, ProgramName, "CurrentDirectory", LocalRegistry.GetStringData(PersonName, PID, ProgramName, "TypedDirectory"));
-				HistorySystem("Add");
+				//HistorySystem("Add");
 			}
 		}
 	}
 
+	void CheckInitalRun(int WindowID)
+    {
+		if (LocalRegistry.GetBoolData(PersonName, WindowID, ProgramName, "InitalRun") == false)
+		{
+			LocalRegistry.SetIntData(PersonName, WindowID, ProgramName, "SelectedFile", -1);
+			LocalRegistry.SetBoolData(PersonName, WindowID, ProgramName, "InitalRun", true);
+		}
+
+	}
+
 	void Refresh(int WindowID)
 	{
+		CheckInitalRun(WindowID);
+
 		if (LocalRegistry.GetStringData(PersonName, WindowID, ProgramName, "CurrentDirectory") == "")
 		{
 			LocalRegistry.SetStringData(PersonName, WindowID, ProgramName, "CurrentDirectory", "Gateway");
+			LocalRegistry.SetStringData(PersonName, WindowID, ProgramName, "TypedDirectory", Registry.GetStringData(PersonName, "OS", "DefaultVolumeAddress"));
 		}
 
 		LocalRegistry.RemoveAllProgramData(PersonName, WindowID, ProgramName, "Test 1");
@@ -346,25 +346,26 @@ public class FileMangementUI : MonoBehaviour
 	{
 		SelectWindowID(WindowID);
 
-		GUIControls();
-
 		for (int PersonCount = 0; PersonCount < PersonController.control.People.Count; PersonCount++)
 		{
 			var pwinman = PersonController.control.People[PersonCount].Gateway;
 
 			if (pwinman.RunningPrograms.Count > 0)
 			{
-				winman.WindowResize(PersonName, SelectedWindowID);
+				if(WindowID == Registry.GetIntData(PersonName,"WindowManager","SelectedWindow"))
+                {
+					winman.WindowResize(PersonName, Registry.GetIntData(PersonName,"WindowManager","SelectedWindow"));
+				}
 
 				for (int i = 0; i < pwinman.RunningPrograms.Count; i++)
 				{
 					if (pwinman.RunningPrograms[i].ProgramName == ProgramNameForWinMan)
 					{
-						if (pwinman.RunningPrograms[i].WID == SelectedWindowID)
+						if (pwinman.RunningPrograms[i].WID == Registry.GetIntData(PersonName,"WindowManager","SelectedWindow"))
 						{
+							GUIControls(pwinman.RunningPrograms[i].WPN);
 							SelectedProgramID = pwinman.RunningPrograms[i].PID;
 						}
-
 						Refresh(pwinman.RunningPrograms[i].WPN);
 
 						if (WindowID == pwinman.RunningPrograms[i].WID)
@@ -372,31 +373,33 @@ public class FileMangementUI : MonoBehaviour
 							CloseButton = new Rect(pwinman.RunningPrograms[i].windowRect.width - 23, 2, 21, 21);
 							if (CloseButton.Contains(Event.current.mousePosition))
 							{
-								if (GUI.Button(new Rect(CloseButton), "X", com.Skin[GameControl.control.GUIID].customStyles[0]))
+								if (GUI.Button(new Rect(CloseButton), "X", GameControl.control.Skins[Registry.GetIntData("Player", "System", "Skin")].customStyles[0]))
 								{
 									WindowManager.QuitProgram(PersonName, ProgramName, pwinman.RunningPrograms[i].WPN);
 								}
 
-								GUI.backgroundColor = com.colors[Customize.cust.ButtonColorInt];
-								GUI.contentColor = com.colors[Customize.cust.FontColorInt];
+								GUI.backgroundColor = Registry.Get32ColorData("Player", "System", "ButtonColor");
+								GUI.contentColor = Registry.Get32ColorData("Player", "System", "FontColor");
 							}
 							else
 							{
-								GUI.backgroundColor = com.colors[Customize.cust.ButtonColorInt];
-								GUI.contentColor = com.colors[Customize.cust.FontColorInt];
+								GUI.backgroundColor = Registry.Get32ColorData("Player", "System", "ButtonColor");
+								GUI.contentColor = Registry.Get32ColorData("Player", "System", "FontColor");
 
-								if (GUI.Button(new Rect(CloseButton), "X", com.Skin[GameControl.control.GUIID].customStyles[1]))
+								if (GUI.Button(new Rect(CloseButton), "X", GameControl.control.Skins[Registry.GetIntData("Player", "System", "Skin")].customStyles[1]))
 								{
 									WindowManager.QuitProgram(PersonName, ProgramName, pwinman.RunningPrograms[i].WPN);
 								}
 							}
 
-							TitleBarStuff(pwinman.RunningPrograms[i].WPN);
+                            TitleBarStuff(pwinman.RunningPrograms[i].WPN);
 
 							RenderFileUI(pwinman.RunningPrograms[i].WPN);
 
-							//LocalRegistry.SetStringData("Player", 1, "FileManager", "CurrentDirectory", "Test");//THIS WORKS ON A EPIC LEVEL
-						}
+							RenderRibbonUI(pwinman.RunningPrograms[i].WPN);
+
+                            //LocalRegistry.SetStringData("Player", 1, "FileManager", "CurrentDirectory", "Test");//THIS WORKS ON A EPIC LEVEL
+                        }
 					}
 				}
 			}
@@ -409,61 +412,196 @@ public class FileMangementUI : MonoBehaviour
 		sc.PlaySound();
 	}
 
-	void HistorySystem(string Action)
-	{
-		if (Action == "Add")
-		{
+    void HistorySystem(string Action, int PID)
+    {
 
-			if (!FMS[SelectedProgramID].History.Contains("Gateway"))
+		//PageHistory
+
+		//LocalRegistry.SetStringData(PersonName, PID, ProgramName, "PageHistory", LocalRegistry.GetStringData(PersonName, PID, ProgramName, "CurrentDirectory"));
+
+		if (Action == "Add")
+        {
+			if (LocalRegistry.GetStringListDataCount(PersonName, PID, ProgramName, "PageHistory") == 0)
 			{
-				FMS[SelectedProgramID].History.Insert(0, "Gateway");
+				LocalRegistry.AddStringListData(PersonName, PID, ProgramName, "PageHistory", "");
 			}
 
-			FMS[SelectedProgramID].History.Add(FMS[SelectedProgramID].CurrentDirectory);
-			FMS[SelectedProgramID].HistoryPosition = FMS[SelectedProgramID].History.Count - 1;
-		}
+			LocalRegistry.AddStringListData(PersonName, PID, ProgramName, "PageHistory", LocalRegistry.GetProgramData(PersonName, PID, ProgramName, "Test 1", LocalRegistry.GetIntData(PersonName, PID, ProgramName, "SelectedFile")).Target);
+
+			//if (!FMS[SelectedProgramID].History.Contains("Gateway"))
+           // {
+           //     FMS[SelectedProgramID].History.Insert(0, "Gateway");
+           // }
+
+           // FMS[SelectedProgramID].History.Add(FMS[SelectedProgramID].CurrentDirectory);
+            //FMS[SelectedProgramID].HistoryPosition = FMS[SelectedProgramID].History.Count - 1;
+        }
+
+
 		if (Action == "Back")
 		{
-			if (FMS[SelectedProgramID].HistoryPosition <= 0)
-			{
-				FMS[SelectedProgramID].HistoryPosition = 0;
-				FMS[SelectedProgramID].CurrentDirectory = FMS[SelectedProgramID].History[FMS[SelectedProgramID].HistoryPosition];
-				FMS[SelectedProgramID].TypedDirectory = FMS[SelectedProgramID].CurrentDirectory;
+
+			if(LocalRegistry.GetStringListDataCount(PersonName, PID, ProgramName, "PageHistory")>0)
+            {
+				LocalRegistry.RemoveAtStringListData(PersonName, PID, ProgramName, "PageHistory",
+					LocalRegistry.GetLastStringListData(PersonName, PID, ProgramName, "PageHistory"));
 			}
-			else
-			{
-				FMS[SelectedProgramID].HistoryPosition--;
-				FMS[SelectedProgramID].CurrentDirectory = FMS[SelectedProgramID].History[FMS[SelectedProgramID].HistoryPosition];
-				FMS[SelectedProgramID].TypedDirectory = FMS[SelectedProgramID].CurrentDirectory;
+
+			if(LocalRegistry.GetStringListDataCount(PersonName, PID, ProgramName, "PageHistory")==0)
+            {
+				LocalRegistry.AddStringListData(PersonName, PID, ProgramName, "PageHistory", "");
 			}
+
+			LocalRegistry.SetIntData(PersonName, PID, ProgramName, "SelectedFile", -1);
+
+			LocalRegistry.SetStringData(PersonName, PID, ProgramName, "CurrentDirectory",
+				LocalRegistry.GetStringListData(PersonName, PID, ProgramName, "PageHistory",
+				LocalRegistry.GetLastStringListData(PersonName, PID, ProgramName, "PageHistory")));
+
+			LocalRegistry.SetStringData(PersonName, PID, ProgramName, "TypedDirectory",
+				LocalRegistry.GetStringData(PersonName, PID, ProgramName, "CurrentDirectory"));
 		}
 
-		if (Action == "Foward")
-		{
-			if (FMS[SelectedProgramID].HistoryPosition >= FMS[SelectedProgramID].History.Count)
-			{
-				FMS[SelectedProgramID].HistoryPosition = FMS[SelectedProgramID].History.Count - 1;
-				FMS[SelectedProgramID].CurrentDirectory = FMS[SelectedProgramID].History[FMS[SelectedProgramID].HistoryPosition];
-				FMS[SelectedProgramID].TypedDirectory = FMS[SelectedProgramID].CurrentDirectory;
-			}
-			else
-			{
-				FMS[SelectedProgramID].HistoryPosition++;
-				FMS[SelectedProgramID].CurrentDirectory = FMS[SelectedProgramID].History[FMS[SelectedProgramID].HistoryPosition];
-				FMS[SelectedProgramID].TypedDirectory = FMS[SelectedProgramID].CurrentDirectory;
-			}
+		/*if (Action == "Back")
+        {
+            if (FMS[SelectedProgramID].HistoryPosition <= 0) 
+            {
+                FMS[SelectedProgramID].HistoryPosition = 0;
+                FMS[SelectedProgramID].CurrentDirectory = FMS[SelectedProgramID].History[FMS[SelectedProgramID].HistoryPosition];
+                FMS[SelectedProgramID].TypedDirectory = FMS[SelectedProgramID].CurrentDirectory;
+            }
+            else
+            {
+                FMS[SelectedProgramID].HistoryPosition--;
+                FMS[SelectedProgramID].CurrentDirectory = FMS[SelectedProgramID].History[FMS[SelectedProgramID].HistoryPosition];
+                FMS[SelectedProgramID].TypedDirectory = FMS[SelectedProgramID].CurrentDirectory;
+            }
+        }
+
+        if (Action == "Foward")
+        {
+            if (FMS[SelectedProgramID].HistoryPosition >= FMS[SelectedProgramID].History.Count)
+            {
+                FMS[SelectedProgramID].HistoryPosition = FMS[SelectedProgramID].History.Count - 1;
+                FMS[SelectedProgramID].CurrentDirectory = FMS[SelectedProgramID].History[FMS[SelectedProgramID].HistoryPosition];
+                FMS[SelectedProgramID].TypedDirectory = FMS[SelectedProgramID].CurrentDirectory;
+            }
+            else
+            {
+                FMS[SelectedProgramID].HistoryPosition++;
+                FMS[SelectedProgramID].CurrentDirectory = FMS[SelectedProgramID].History[FMS[SelectedProgramID].HistoryPosition];
+                FMS[SelectedProgramID].TypedDirectory = FMS[SelectedProgramID].CurrentDirectory;
+            }
+        }*/
+	}
+
+	void RenderRibbonUI(int PID)
+    {
+		//LocalRegistry.SetRectData(PersonName, PID, ProgramName, "Ribbon", new SRect(new Rect(200,20,100,20)));
+
+        LocalRegistry.SetRectData(PersonName, PID, ProgramName, "TypedDirectory", new SRect(new Rect(
+			LocalRegistry.GetRectData(PersonName, PID, ProgramName, "TypedDirectory").x,
+			23,
+			LocalRegistry.GetRectData(PersonName, PID, ProgramName, "TypedDirectory").width,
+			LocalRegistry.GetRectData(PersonName, PID, ProgramName, "TypedDirectory").height)));
+
+        int ButtonSize = 21;
+
+        if (LocalRegistry.GetMenuButtonCountData(PersonName, PID, ProgramName, "RenderedRibbon") == 0)
+        {
+            switch (LocalRegistry.GetStringData(PersonName, PID, ProgramName, "Ribbon"))
+            {
+                case "":
+                    if (LocalRegistry.GetIntData(PersonName, PID, ProgramName, "SelectedFile") >= 0)
+                    {
+                        LocalRegistry.AddMenuButtonData(PersonName, PID, ProgramName, "RenderedRibbon", new MenuButtonSystem("Unselect", "", 70, ButtonSize));
+                        LocalRegistry.AddMenuButtonData(PersonName, PID, ProgramName, "RenderedRibbon", new MenuButtonSystem("Edit", "Edit", 40, ButtonSize));
+                        LocalRegistry.AddMenuButtonData(PersonName, PID, ProgramName, "RenderedRibbon", new MenuButtonSystem("Copy Path", "", 80, ButtonSize));
+                        LocalRegistry.AddMenuButtonData(PersonName, PID, ProgramName, "RenderedRibbon", new MenuButtonSystem("Properties", "", 90, ButtonSize));
+                    }
+                    else
+                    {
+                        LocalRegistry.AddMenuButtonData(PersonName, PID, ProgramName, "RenderedRibbon", new MenuButtonSystem("New Folder", "", 90, ButtonSize));
+                    }
+                    break;
+                case "Edit":
+                    LocalRegistry.AddMenuButtonData(PersonName, PID, ProgramName, "RenderedRibbon", new MenuButtonSystem("Back", "Home", 50, ButtonSize));
+                    LocalRegistry.AddMenuButtonData(PersonName, PID, ProgramName, "RenderedRibbon", new MenuButtonSystem("Copy", "", 50, ButtonSize));
+                    LocalRegistry.AddMenuButtonData(PersonName, PID, ProgramName, "RenderedRibbon", new MenuButtonSystem("Paste", "", 50, ButtonSize));
+                    LocalRegistry.AddMenuButtonData(PersonName, PID, ProgramName, "RenderedRibbon", new MenuButtonSystem("Cut", "", 40, ButtonSize));
+                    LocalRegistry.AddMenuButtonData(PersonName, PID, ProgramName, "RenderedRibbon", new MenuButtonSystem("Pin", "Pin", 40, ButtonSize));
+                    LocalRegistry.AddMenuButtonData(PersonName, PID, ProgramName, "RenderedRibbon", new MenuButtonSystem("Rename", "", 70, ButtonSize));
+                    LocalRegistry.AddMenuButtonData(PersonName, PID, ProgramName, "RenderedRibbon", new MenuButtonSystem("Delete", "", 60, ButtonSize));
+                    break;
+                case "Pin":
+                    LocalRegistry.AddMenuButtonData(PersonName, PID, ProgramName, "RenderedRibbon", new MenuButtonSystem("Back", "Edit", 40, ButtonSize));
+                    LocalRegistry.AddMenuButtonData(PersonName, PID, ProgramName, "RenderedRibbon", new MenuButtonSystem("To Desktop", "", 90, ButtonSize));
+                    LocalRegistry.AddMenuButtonData(PersonName, PID, ProgramName, "RenderedRibbon", new MenuButtonSystem("To Taskbar", "", 90, ButtonSize));
+                    LocalRegistry.AddMenuButtonData(PersonName, PID, ProgramName, "RenderedRibbon", new MenuButtonSystem("To Quicklaunch", "", 110, ButtonSize));
+                    break;
+                case "Home":
+                    LocalRegistry.SetStringData(PersonName, PID, ProgramName, "Ribbon", "");
+                    break;
+            }
+        }
+
+        for (int i = 0; i < LocalRegistry.GetMenuButtonCountData(PersonName, PID, ProgramName, "RenderedRibbon"); i++)
+        {
+            if (i == 0)
+            {
+                LocalRegistry.SetMenuButtonPosXData(PersonName, PID, ProgramName, "RenderedRibbon", i, 2);
+
+            }
+            if (i >= 1)
+            {
+                LocalRegistry.SetMenuButtonPosXData(PersonName, PID, ProgramName, "RenderedRibbon", i,
+                    LocalRegistry.GetMenuButtonData(PersonName, PID, ProgramName, "RenderedRibbon", i - 1).PosX +
+                    LocalRegistry.GetMenuButtonData(PersonName, PID, ProgramName, "RenderedRibbon", i - 1).Width + 1);
+            }
+
+            if (GUI.Button(new Rect(LocalRegistry.GetMenuButtonData(PersonName, PID, ProgramName, "RenderedRibbon", i).PosX, LocalRegistry.GetRectData(PersonName, PID, ProgramName, "TypedDirectory").y + 21, LocalRegistry.GetMenuButtonData(PersonName, PID, ProgramName, "RenderedRibbon", i).Width, ButtonSize), LocalRegistry.GetMenuButtonData(PersonName, PID, ProgramName, "RenderedRibbon", i).Name))
+            {
+				if(LocalRegistry.GetMenuButtonData(PersonName, PID, ProgramName, "RenderedRibbon", i).Menu != "")
+				{
+                    LocalRegistry.SetStringData(PersonName, PID, ProgramName, "Ribbon", LocalRegistry.GetMenuButtonData(PersonName, PID, ProgramName, "RenderedRibbon", i).Menu);
+                    LocalRegistry.RemoveAllMenuButtonData(PersonName, PID, ProgramName, "RenderedRibbon");
+                }
+				else
+				{
+                    LocalRegistry.SetStringData(PersonName, PID, ProgramName, "SelectedButton", LocalRegistry.GetMenuButtonData(PersonName, PID, ProgramName, "RenderedRibbon", i).Name);
+					LocalRegistry.SetBoolData(PersonName, PID, ProgramName, "SelectedButton", true);
+                    //TestCode.KeywordCheck(PersonName,
+                    //Tasks.RunNewTaskWithProgramData(PersonName, LocalRegistry.GetMenuButtonData(PersonName, PID, ProgramName, "RenderedRibbon", i).Name, 
+                    //	LocalRegistry.GetProgramData(PersonName, PID, ProgramName, "Test 1",
+                    //	LocalRegistry.GetIntData(PersonName, PID, ProgramName, "SelectedFile")));
+                }
+            }
+        }
+
+
+        LocalRegistry.SetRectData(PersonName, PID, ProgramName, "TypedDirectory", new SRect(new Rect(
+			LocalRegistry.GetRectData(PersonName, PID, ProgramName, "TypedDirectory").x,
+			LocalRegistry.GetRectData(PersonName, PID, ProgramName, "TypedDirectory").y,CloseButton.x - 83,20)));
+
+		if(LocalRegistry.GetIntData(PersonName, PID, ProgramName, "SelectedFile") == -1)
+        {
+			LocalRegistry.SetStringData(PersonName, PID, ProgramName, "RenderedRibbon", "");
+			LocalRegistry.RemoveAllMenuButtonData(PersonName, PID, ProgramName, "RenderedRibbon");
 		}
 	}
 
-	void OpenFld(int PID)
+    void OpenFld(int PID)
 	{
 		PlayClickSound();
+
+        HistorySystem("Add",PID);
 
 		//ProgramSystemv2 Test = LocalRegistry.GetProgramData(PersonName, PID, ProgramName,"Test 1",0);
 
 		//LocalRegistry.SetStringData(PersonName, PID, ProgramName, "CurrentDirectory", Test.Target);
 
 		//var ProgramSystemV2 test = new ProgramSystemv2();
+
 
 		LocalRegistry.SetStringData(PersonName, PID, ProgramName, "CurrentDirectory", LocalRegistry.GetProgramData(PersonName, PID, ProgramName, "Test 1", LocalRegistry.GetIntData(PersonName, PID, ProgramName, "SelectedFile")).Target);
 		//LocalRegistry.SetStringData(PersonName, PID, ProgramName, "CurrentDirectory", local);
@@ -489,8 +627,12 @@ public class FileMangementUI : MonoBehaviour
 		//var ProgramSystemV2 test = new ProgramSystemv2();
 
 		var PName = LocalRegistry.GetProgramData(PersonName, PID, ProgramName, "Test 1", LocalRegistry.GetIntData(PersonName, PID, ProgramName, "SelectedFile")).Name;
-		var PTarget = LocalRegistry.GetProgramData(PersonName, PID, ProgramName, "Test 1", LocalRegistry.GetIntData(PersonName, PID, ProgramName, "SelectedFile")).Target;
-		appman.ProgramRequest(PName, PTarget, PersonName);
+		//var PTarget = LocalRegistry.GetProgramData(PersonName, PID, ProgramName, "Test 1", LocalRegistry.GetIntData(PersonName, PID, ProgramName, "SelectedFile")).Target;
+		//var PUsage = LocalRegistry.GetProgramData(PersonName, PID, ProgramName, "Test 1", LocalRegistry.GetIntData(PersonName, PID, ProgramName, "SelectedFile")).FileUsage;
+
+		TestCode.KeywordCheck(PersonName, "Run:" + PName + ";");
+
+		//appman.ProgramRequest(PName, PTarget, PersonName);
 		LocalRegistry.SetIntData(PersonName, PID, ProgramName, "SelectedFile", -1);
 
 		//FMS[PID].PageFile.RemoveRange(0, FMS[PID].PageFile.Count);
@@ -500,24 +642,52 @@ public class FileMangementUI : MonoBehaviour
 		//MenuSelected = 0;
 	}
 
-	void RenderFileUI(int ProgramID)
+    void OpenTxt(int PID)
+    {
+        PlayClickSound();
+
+        //ProgramSystemv2 Test = LocalRegistry.GetProgramData(PersonName, PID, ProgramName,"Test 1",0);
+
+        //LocalRegistry.SetStringData(PersonName, PID, ProgramName, "CurrentDirectory", Test.Target);
+
+        //var ProgramSystemV2 test = new ProgramSystemv2();
+
+        var PName = LocalRegistry.GetProgramData(PersonName, PID, ProgramName, "Test 1", LocalRegistry.GetIntData(PersonName, PID, ProgramName, "SelectedFile")).Name;
+        //var PTarget = LocalRegistry.GetProgramData(PersonName, PID, ProgramName, "Test 1", LocalRegistry.GetIntData(PersonName, PID, ProgramName, "SelectedFile")).Target;
+        //var PUsage = LocalRegistry.GetProgramData(PersonName, PID, ProgramName, "Test 1", LocalRegistry.GetIntData(PersonName, PID, ProgramName, "SelectedFile")).FileUsage;
+
+        TestCode.KeywordCheck(PersonName, "Run:" + PName + ";");
+
+        //appman.ProgramRequest(PName, PTarget, PersonName);
+        LocalRegistry.SetIntData(PersonName, PID, ProgramName, "SelectedFile", -1);
+
+        //FMS[PID].PageFile.RemoveRange(0, FMS[PID].PageFile.Count);
+        //FMS[PID].SelectedFile = -1;
+        //FMS[SelectedProgramID].TypedDirectory = FMS[SelectedProgramID].CurrentDirectory;
+        //HistorySystem("Add");
+        //MenuSelected = 0;
+    }
+
+    void RenderFileUI(int ProgramID)
 	{
 
-		Registry.SetVector2Data(PersonName, ProgramName, "MainScrollPos", GUI.BeginScrollView(new Rect(3, 85, 290, 106), Registry.GetVector2Data(PersonName, ProgramName, "MainScrollPos"), new Rect(0, 0, 0, Registry.GetIntData(PersonName, ProgramName, "MainScrollSize") * 21)));
-
 		if (LocalRegistry.GetProgramDataCount(PersonName, ProgramID, ProgramName, "Test 1") > 0)
-        {
+		{
+			LocalRegistry.SetVector2Data(PersonName, ProgramID, ProgramName, "MainScrollPos", GUI.BeginScrollView(new Rect(3, 85, LocalRegistry.GetRectData(PersonName,ProgramID,ProgramName,"WindowRect").width, 106), LocalRegistry.GetVector2Data(PersonName, ProgramID, ProgramName, "MainScrollPos"), new Rect(0, 0, 0, LocalRegistry.GetIntData(PersonName, ProgramID, ProgramName, "MainScrollPos") * 21)));
+
+			LocalRegistry.SetIntData(PersonName, ProgramID, ProgramName, "MainScrollPos", LocalRegistry.GetProgramDataCount(PersonName, ProgramID, ProgramName, "Test 1"));
+
 			for (int m = 0; m < LocalRegistry.GetProgramDataCount(PersonName, ProgramID, ProgramName, "Test 1"); m++)
 			{
 				if (LocalRegistry.GetProgramData(PersonName, ProgramID, ProgramName, "Test 1", m).Location == LocalRegistry.GetStringData(PersonName, ProgramID, ProgramName, "CurrentDirectory"))
 				{
 					switch (LocalRegistry.GetProgramData(PersonName, ProgramID, ProgramName, "Test 1", m).Extension)
 					{
-						case ProgramSystemv2.FileExtension.Dir:
+						case ProgramSystemv2.FileExtension.dir:
 							if (LocalRegistry.GetIntData(PersonName, ProgramID, ProgramName, "SelectedFile") == m)
 							{
 								GUI.DrawTexture(new Rect(0, 21 * m, 20, 20), com.IconHighlight[0]);
-							}
+                            }
 							else
 							{
 								GUI.DrawTexture(new Rect(0, 21 * m, 20, 20), com.Icon[0]);
@@ -528,20 +698,12 @@ public class FileMangementUI : MonoBehaviour
 							//	dm.FreeSpace [scrollsize] = dm.DriveCapacity[scrollsize];
 							//}
 
-							if (GUI.Button(new Rect(21, 21 * m, 250, 20), "" + LocalRegistry.GetProgramData(PersonName, ProgramID, ProgramName, "Test 1", m).Name + " " + "(" + LocalRegistry.GetProgramData(PersonName, ProgramID, ProgramName, "Test 1", m).Description + ")" + " " + LocalRegistry.GetProgramData(PersonName, ProgramID, ProgramName, "Test 1", m).Free.ToString("F2") + " free of " + LocalRegistry.GetProgramData(PersonName, ProgramID, ProgramName, "Test 1", m).Capacity) || GUIKeyDown(KeyCode.Return) || GUIKeyDown(KeyCode.RightArrow))
+							if (GUI.Button(new Rect(21, 21 * m, 250, 20), "" + LocalRegistry.GetProgramData(PersonName, ProgramID, ProgramName, "Test 1", m).Name + " " + "(" + LocalRegistry.GetProgramData(PersonName, ProgramID, ProgramName, "Test 1", m).Description + ")" + " " + LocalRegistry.GetProgramData(PersonName, ProgramID, ProgramName, "Test 1", m).Free.ToString("F2") + " free of " + LocalRegistry.GetProgramData(PersonName, ProgramID, ProgramName, "Test 1", m).Capacity))
 							{
-								if (GUIKeyDown(KeyCode.Return) || GUIKeyDown(KeyCode.RightArrow))
-								{
-									PlayClickSound();
-									//FMS[j].SelectedFile = m;
-									LocalRegistry.SetIntData(PersonName, ProgramID, ProgramName, "SelectedFile", m);
-									OpenFld(ProgramID);
-								}
 								if (Input.GetMouseButtonUp(0))
 								{
-									if (Time.time - Registry.GetFloatData(PersonName, ProgramName, "LastClick") < Registry.GetFloatData(PersonName, ProgramName, "LastClickThreshold"))
+									if (Time.time - LocalRegistry.GetFloatData(PersonName, ProgramID, ProgramName, "LastClick") < Registry.GetFloatData(PersonName, "System", "DoubleClickSpeed"))
 									{
-										PlayClickSound();
 										LocalRegistry.SetIntData(PersonName, ProgramID, ProgramName, "SelectedFile", m);
 										OpenFld(ProgramID);
 									}
@@ -550,7 +712,7 @@ public class FileMangementUI : MonoBehaviour
 										PlayClickSound();
 										LocalRegistry.SetIntData(PersonName, ProgramID, ProgramName, "SelectedFile", m);
 									}
-									Registry.SetFloatData(PersonName, ProgramName, "LastClick", Time.time);
+									LocalRegistry.SetFloatData(PersonName, ProgramID, ProgramName, "LastClick", Time.time);
 								}
 								if (Input.GetMouseButtonUp(1))
 								{
@@ -563,7 +725,7 @@ public class FileMangementUI : MonoBehaviour
 							}
 							break;
 
-						case ProgramSystemv2.FileExtension.Fdl:
+						case ProgramSystemv2.FileExtension.fdl:
 							if (LocalRegistry.GetIntData(PersonName, ProgramID, ProgramName, "SelectedFile") == m)
 							{
 								GUI.DrawTexture(new Rect(0, 21 * m, 20, 20), com.IconHighlight[0]);
@@ -580,18 +742,10 @@ public class FileMangementUI : MonoBehaviour
 
 							if (GUI.Button(new Rect(21, 21 * m, 250, 20), "" + LocalRegistry.GetProgramData(PersonName, ProgramID, ProgramName, "Test 1", m).Name) || GUIKeyDown(KeyCode.Return) || GUIKeyDown(KeyCode.RightArrow))
 							{
-								if (GUIKeyDown(KeyCode.Return) || GUIKeyDown(KeyCode.RightArrow))
-								{
-									PlayClickSound();
-									//FMS[j].SelectedFile = m;
-									LocalRegistry.SetIntData(PersonName, ProgramID, ProgramName, "SelectedFile", m);
-									OpenFld(ProgramID);
-								}
 								if (Input.GetMouseButtonUp(0))
 								{
-									if (Time.time - Registry.GetFloatData(PersonName, ProgramName, "LastClick") < Registry.GetFloatData(PersonName, ProgramName, "LastClickThreshold"))
+									if (Time.time - LocalRegistry.GetFloatData(PersonName, ProgramID, ProgramName, "LastClick") < Registry.GetFloatData(PersonName, "System", "DoubleClickSpeed"))
 									{
-										PlayClickSound();
 										LocalRegistry.SetIntData(PersonName, ProgramID, ProgramName, "SelectedFile", m);
 										OpenFld(ProgramID);
 									}
@@ -600,7 +754,7 @@ public class FileMangementUI : MonoBehaviour
 										PlayClickSound();
 										LocalRegistry.SetIntData(PersonName, ProgramID, ProgramName, "SelectedFile", m);
 									}
-									Registry.SetFloatData(PersonName, ProgramName, "LastClick", Time.time);
+									LocalRegistry.SetFloatData(PersonName, ProgramID, ProgramName, "LastClick", Time.time);
 								}
 								if (Input.GetMouseButtonUp(1))
 								{
@@ -613,7 +767,49 @@ public class FileMangementUI : MonoBehaviour
 							}
 							break;
 
-						case ProgramSystemv2.FileExtension.Exe:
+                        case ProgramSystemv2.FileExtension.txt:
+                            if (LocalRegistry.GetIntData(PersonName, ProgramID, ProgramName, "SelectedFile") == m)
+                            {
+                                GUI.DrawTexture(new Rect(0, 21 * m, 20, 20), com.IconHighlight[0]);
+                            }
+                            else
+                            {
+                                GUI.DrawTexture(new Rect(0, 21 * m, 20, 20), com.Icon[0]);
+                            }
+
+                            //if (dm.UsedSpace [scrollsize] == 0 && dm.FreeSpace [scrollsize] == 0)
+                            //{
+                            //	dm.FreeSpace [scrollsize] = dm.DriveCapacity[scrollsize];
+                            //}
+
+                            if (GUI.Button(new Rect(21, 21 * m, 250, 20), "" + LocalRegistry.GetProgramData(PersonName, ProgramID, ProgramName, "Test 1", m).Name) || GUIKeyDown(KeyCode.Return) || GUIKeyDown(KeyCode.RightArrow))
+                            {
+                                if (Input.GetMouseButtonUp(0))
+                                {
+                                    if (Time.time - LocalRegistry.GetFloatData(PersonName, ProgramID, ProgramName, "LastClick") < Registry.GetFloatData(PersonName, "System", "DoubleClickSpeed"))
+                                    {
+                                        LocalRegistry.SetIntData(PersonName, ProgramID, ProgramName, "SelectedFile", m);
+                                        OpenTxt(ProgramID);
+                                    }
+                                    else
+                                    {
+                                        PlayClickSound();
+                                        LocalRegistry.SetIntData(PersonName, ProgramID, ProgramName, "SelectedFile", m);
+                                    }
+                                    LocalRegistry.SetFloatData(PersonName, ProgramID, ProgramName, "LastClick", Time.time);
+                                }
+                                if (Input.GetMouseButtonUp(1))
+                                {
+                                    LocalRegistry.SetIntData(PersonName, ProgramID, ProgramName, "SelectedFile", m);
+                                    if (new Rect(21, 21 * LocalRegistry.GetIntData(PersonName, ProgramID, ProgramName, "SelectedFile"), 200, 20).Contains(Event.current.mousePosition))
+                                    {
+                                        //ContextPos();
+                                    }
+                                }
+                            }
+                            break;
+
+                        case ProgramSystemv2.FileExtension.exe:
 							if (LocalRegistry.GetIntData(PersonName, ProgramID, ProgramName, "SelectedFile") == m)
 							{
 								GUI.DrawTexture(new Rect(0, 21 * m, 20, 20), com.IconHighlight[0]);
@@ -630,18 +826,10 @@ public class FileMangementUI : MonoBehaviour
 
 							if (GUI.Button(new Rect(21, 21 * m, 250, 20), "" + LocalRegistry.GetProgramData(PersonName, ProgramID, ProgramName, "Test 1", m).Name) || GUIKeyDown(KeyCode.Return) || GUIKeyDown(KeyCode.RightArrow))
 							{
-								if (GUIKeyDown(KeyCode.Return) || GUIKeyDown(KeyCode.RightArrow))
-								{
-									PlayClickSound();
-									//FMS[j].SelectedFile = m;
-									LocalRegistry.SetIntData(PersonName, ProgramID, ProgramName, "SelectedFile", m);
-									OpenExe(ProgramID);
-								}
 								if (Input.GetMouseButtonUp(0))
 								{
-									if (Time.time - Registry.GetFloatData(PersonName, ProgramName, "LastClick") < Registry.GetFloatData(PersonName, ProgramName, "LastClickThreshold"))
+									if (Time.time - LocalRegistry.GetFloatData(PersonName, ProgramID, ProgramName, "LastClick") < Registry.GetFloatData(PersonName, "System", "DoubleClickSpeed"))
 									{
-										PlayClickSound();
 										LocalRegistry.SetIntData(PersonName, ProgramID, ProgramName, "SelectedFile", m);
 										OpenExe(ProgramID);
 									}
@@ -650,7 +838,7 @@ public class FileMangementUI : MonoBehaviour
 										PlayClickSound();
 										LocalRegistry.SetIntData(PersonName, ProgramID, ProgramName, "SelectedFile", m);
 									}
-									Registry.SetFloatData(PersonName, ProgramName, "LastClick", Time.time);
+									LocalRegistry.SetFloatData(PersonName, ProgramID, ProgramName, "LastClick", Time.time);
 								}
 								if (Input.GetMouseButtonUp(1))
 								{
@@ -665,9 +853,9 @@ public class FileMangementUI : MonoBehaviour
 					}
 				}
 			}
-		}
 
-		GUI.EndScrollView();
+			GUI.EndScrollView();
+		}
 	}
 
 	void CreateContextWindow(float x, float y)
@@ -693,8 +881,8 @@ public class FileMangementUI : MonoBehaviour
 	{
 		SelectWindowID(WindowID);
 		//GUI.Box (new Rect (Input.mousePosition.x, Input.mousePosition.y, 100, 200), "");
-		GUI.backgroundColor = com.colors[Customize.cust.ButtonColorInt];
-		GUI.contentColor = com.colors[Customize.cust.FontColorInt];
+		GUI.backgroundColor = Registry.Get32ColorData("Player", "System", "ButtonColor");
+		GUI.contentColor = Registry.Get32ColorData("Player", "System", "FontColor");
 
 		if (ContextMenuOptions.Count <= 0)
 		{

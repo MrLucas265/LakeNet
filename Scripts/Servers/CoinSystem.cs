@@ -93,7 +93,7 @@ public class CoinSystem : MonoBehaviour
 		Customize.cust.windowx[windowID] = windowRect.x;
 		Customize.cust.windowy[windowID] = windowRect.y;
 
-//		GUI.skin = com.Skin[GameControl.control.GUIID];
+//		GUI.skin = GameControl.control.Skins[Registry.GetIntData("Player", "System", "Skin")];
 
 		//set up scaling
 		//float rx = Screen.width / native_width;
@@ -103,7 +103,7 @@ public class CoinSystem : MonoBehaviour
 
 		if(show == true)
 		{
-//			GUI.color = com.colors[Customize.cust.WindowColorInt];
+//			GUI.color = Registry.Get32ColorData("Player", "System", "WindowColor");
 			windowRect = GUI.Window(windowID,windowRect,DoMyWindow,"");
 		}
 	}
@@ -115,7 +115,7 @@ public class CoinSystem : MonoBehaviour
 
 	void ConsoleSystem()
 	{
-		if (Event.current.type == EventType.keyDown && Event.current.keyCode == KeyCode.Return) 
+		if (Event.current.type == EventType.KeyDown && Event.current.keyCode == KeyCode.Return) 
 		{
 			TempValue = ConsoleList.Count;
 			TempValue -= 1;

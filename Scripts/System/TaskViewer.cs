@@ -23,7 +23,7 @@ public class TaskViewer : MonoBehaviour
 
     public List<TasksSystem> RunningTasks = new List<TasksSystem>();
 
-    public Vector2 scrollpos = Vector2.zero;
+	public Vector2 scrollpos = Vector2.zero;
 	public int scrollsize;
 
 	public bool ShowApplications;
@@ -198,7 +198,7 @@ public class TaskViewer : MonoBehaviour
 		Customize.cust.windowx[windowID] = windowRect.x;
 		Customize.cust.windowy[windowID] = windowRect.y;
 
-		GUI.skin = com.Skin[GameControl.control.GUIID];
+		GUI.skin = GameControl.control.Skins[Registry.GetIntData("Player", "System", "Skin")];
 
 		//set up scaling
 		//float rx = Screen.width / native_width;
@@ -208,15 +208,15 @@ public class TaskViewer : MonoBehaviour
 
 		if(show == true)
 		{
-			GUI.color = com.colors[Customize.cust.WindowColorInt];
+			GUI.color = Registry.Get32ColorData("Player", "System", "WindowColor");
 			windowRect = WindowClamp.ClampToScreen(GUI.Window(windowID,windowRect,DoMyWindow,""));
 		}
 
 		if (ShowContext == true) 
 		{
 			ContextwindowRect.height = 21*ContextMenuOptions.Count+2;
-			GUI.skin = com.Skin[GameControl.control.GUIID];
-			GUI.color = com.colors[Customize.cust.WindowColorInt];
+			GUI.skin = GameControl.control.Skins[Registry.GetIntData("Player", "System", "Skin")];
+			GUI.color = Registry.Get32ColorData("Player", "System", "WindowColor");
 			ContextwindowRect = WindowClamp.ClampToScreen(GUI.Window(ContextMenuID,ContextwindowRect,DoMyContextWindow,""));
 		}
 
@@ -244,7 +244,7 @@ public class TaskViewer : MonoBehaviour
 
 		if (CloseButton.Contains (Event.current.mousePosition)) 
 		{
-			if (GUI.Button (new Rect (CloseButton), "X", com.Skin [GameControl.control.GUIID].customStyles [0])) 
+			if (GUI.Button (new Rect (CloseButton), "X", GameControl.control.Skins[Registry.GetIntData("Player", "System", "Skin")].customStyles [0])) 
 			{
                 appman.SelectedApp = "Task Viewer";
 
@@ -252,29 +252,29 @@ public class TaskViewer : MonoBehaviour
 		} 
 		else
 		{
-			GUI.backgroundColor = com.colors[Customize.cust.ButtonColorInt];
-			GUI.contentColor = com.colors[Customize.cust.FontColorInt];
-			if (GUI.Button (new Rect (CloseButton), "X", com.Skin [GameControl.control.GUIID].customStyles [1])) 
+			GUI.backgroundColor = Registry.Get32ColorData("Player", "System", "ButtonColor");
+			GUI.contentColor = Registry.Get32ColorData("Player", "System", "FontColor");
+			if (GUI.Button (new Rect (CloseButton), "X", GameControl.control.Skins[Registry.GetIntData("Player", "System", "Skin")].customStyles [1])) 
 			{
                 appman.SelectedApp = "Task Viewer";
             }
 		}
 
-		GUI.backgroundColor = com.colors[Customize.cust.ButtonColorInt];
-		GUI.contentColor = com.colors[Customize.cust.FontColorInt];
+		GUI.backgroundColor = Registry.Get32ColorData("Player", "System", "ButtonColor");
+		GUI.contentColor = Registry.Get32ColorData("Player", "System", "FontColor");
 
 		if (MiniButton.Contains (Event.current.mousePosition)) 
 		{
 			if (CompactMode == true) 
 			{
-				if (GUI.Button (new Rect (MiniButton), "-", com.Skin [GameControl.control.GUIID].customStyles [2])) {
+				if (GUI.Button (new Rect (MiniButton), "-", GameControl.control.Skins[Registry.GetIntData("Player", "System", "Skin")].customStyles [2])) {
 					minimize = !minimize;
 					Minimize ();
 				}
 			} 
 			else 
 			{
-				if (GUI.Button (new Rect (MiniButton), "-",com.Skin [GameControl.control.GUIID].customStyles [2])) 
+				if (GUI.Button (new Rect (MiniButton), "-",GameControl.control.Skins[Registry.GetIntData("Player", "System", "Skin")].customStyles [2])) 
 				{
 					minimize = !minimize;
 					Minimize();
@@ -283,7 +283,7 @@ public class TaskViewer : MonoBehaviour
 		} 
 		else
 		{
-			if (GUI.Button (new Rect (MiniButton), "-",com.Skin [GameControl.control.GUIID].customStyles [2])) 
+			if (GUI.Button (new Rect (MiniButton), "-",GameControl.control.Skins[Registry.GetIntData("Player", "System", "Skin")].customStyles [2])) 
 			{
 				minimize = !minimize;
 				Minimize();
@@ -307,7 +307,7 @@ public class TaskViewer : MonoBehaviour
 			showSettings = true;
 		}
 
-		GUI.contentColor = com.colors[Customize.cust.FontColorInt];
+		GUI.contentColor = Registry.Get32ColorData("Player", "System", "FontColor");
 
 		MenuSystem();
 
@@ -334,16 +334,46 @@ public class TaskViewer : MonoBehaviour
 //			GUI.EndScrollView();
 		}
 
-		if (ShowApplications == true) 
+		if (ShowApplications == true)
 		{
-			GUI.Button (new Rect (1, 42 + 2, 150, 20),"Application Name");
-			GUI.Button (new Rect (152, 42 + 2, 60, 20),"CPU");
-			GUI.Button (new Rect (213, 42 + 2, 60, 20),"Memory");
-			GUI.Button (new Rect (274, 42 + 2, 60, 20),"GPU");
-			GUI.Button (new Rect (335, 42 + 2, 60, 20),"Disk");
-			GUI.Button (new Rect (396, 42 + 2, 66, 20),"Network");
+			GUI.Button(new Rect(1, 42 + 2, 150, 20), "Application Name");
+			GUI.Button(new Rect(152, 42 + 2, 60, 20), "CPU");
+			GUI.Button(new Rect(213, 42 + 2, 60, 20), "Memory");
+			GUI.Button(new Rect(274, 42 + 2, 60, 20), "GPU");
+			GUI.Button(new Rect(335, 42 + 2, 60, 20), "Disk");
+			GUI.Button(new Rect(396, 42 + 2, 66, 20), "Network");
 
-			scrollpos = GUI.BeginScrollView(new Rect(1, 65 + 0, 500, 125), scrollpos, new Rect(0, 0, 0, scrollsize * 21));
+			for (int i = 0; i < PersonController.control.People.Count; i++)
+            {
+				if (PersonController.control.People[i].Name == "Player")
+				{
+					scrollpos = GUI.BeginScrollView(new Rect(1, 65 + 0, 500, 125), scrollpos, new Rect(0, 0, 0, scrollsize * 21));
+					for (scrollsize = 0; scrollsize < PersonController.control.People[i].Gateway.RunningPrograms.Count; scrollsize++)
+					{
+						//GUI.Button(new Rect(2, scrollsize * 20, 20, 20), "" + scrollsize);
+
+						if (GUI.Button(new Rect(0, scrollsize * 21, 150, 20), PersonController.control.People[i].Gateway.RunningPrograms[scrollsize].ProgramName))
+						{
+
+						}
+
+						if(PersonController.control.People[i].Gateway.RunningPrograms[scrollsize].CurrentRMS != null)
+                        {
+							GUI.Button(new Rect(151, scrollsize * 21, 60, 20), "" +
+								PersonController.control.People[i].Gateway.RunningPrograms[scrollsize].TotalRMS.CPUUsage.ToString("F2") + "%");
+							GUI.Button(new Rect(212, scrollsize * 21, 60, 20), "" +
+								PersonController.control.People[i].Gateway.RunningPrograms[scrollsize].TotalRMS.MemoryUsage.ToString("F2") + "%");
+							GUI.Button(new Rect(273, scrollsize * 21, 60, 20), "" +
+								PersonController.control.People[i].Gateway.RunningPrograms[scrollsize].TotalRMS.GraphicsUsage.ToString("F2") + "%");
+							GUI.Button(new Rect(334, scrollsize * 21, 60, 20), "" +
+								PersonController.control.People[i].Gateway.RunningPrograms[scrollsize].TotalRMS.DiskUsage.ToString("F2") + "%");
+							GUI.Button(new Rect(395, scrollsize * 21, 60, 20), "" +
+								PersonController.control.People[i].Gateway.RunningPrograms[scrollsize].TotalRMS.NetworkUsage.ToString("F2") + "%");
+						}
+					}
+				}
+
+			/*scrollpos = GUI.BeginScrollView(new Rect(1, 65 + 0, 500, 125), scrollpos, new Rect(0, 0, 0, scrollsize * 21));
 			for (scrollsize = 0; scrollsize < RunningTasks.Count; scrollsize++)
 			{
 				//GUI.Button (new Rect (2, scrollsize * 20, 20, 20),"" + scrollsize);
@@ -351,7 +381,7 @@ public class TaskViewer : MonoBehaviour
 				{
 					if (Input.GetMouseButtonUp (0)) 
 					{
-						if (Time.time - LastClick < Customize.cust.DoubleClickDelayMenu) 
+						if (Time.time - LastClick < Registry.GetFloatData("Player", "System", "DoubleClickSpeed")) 
 						{
 							PlayClickSound ();
 							SelectedProgram = scrollsize;
@@ -384,13 +414,13 @@ public class TaskViewer : MonoBehaviour
 							GUI.BringWindowToFront(ContextMenuID);
 						}
 					}
-				}
+				}*/
 
-                GUI.Button(new Rect(151, scrollsize * 21, 60, 20), "" + RunningTasks[scrollsize].CPU.ToString("F2") + "%");
-                GUI.Button(new Rect(212, scrollsize * 21, 60, 20), "" + RunningTasks[scrollsize].Memory.ToString("F2") + "%");
-                GUI.Button(new Rect(273, scrollsize * 21, 60, 20), "" + RunningTasks[scrollsize].Graphics.ToString("F2") + "%");
-                GUI.Button(new Rect(334, scrollsize * 21, 60, 20), "" + RunningTasks[scrollsize].Disk.ToString("F2") + "%");
-                GUI.Button(new Rect(395, scrollsize * 21, 60, 20), "" + RunningTasks[scrollsize].Network.ToString("F2") + "%");
+                //GUI.Button(new Rect(151, scrollsize * 21, 60, 20), "" + RunningTasks[scrollsize].CPU.ToString("F2") + "%");
+                //GUI.Button(new Rect(212, scrollsize * 21, 60, 20), "" + RunningTasks[scrollsize].Memory.ToString("F2") + "%");
+               // GUI.Button(new Rect(273, scrollsize * 21, 60, 20), "" + RunningTasks[scrollsize].Graphics.ToString("F2") + "%");
+               // GUI.Button(new Rect(334, scrollsize * 21, 60, 20), "" + RunningTasks[scrollsize].Disk.ToString("F2") + "%");
+               // GUI.Button(new Rect(395, scrollsize * 21, 60, 20), "" + RunningTasks[scrollsize].Network.ToString("F2") + "%");
 
                 //            GUI.Button (new Rect (151, scrollsize * 21, 60, 20),"" + CPUList [scrollsize].ToString("F2") + "%");
                 //GUI.Button (new Rect (212, scrollsize * 21, 60, 20),"" + MemoryList [scrollsize].ToString("F2") + "%");
@@ -647,8 +677,8 @@ public class TaskViewer : MonoBehaviour
 	void DoMyContextWindow(int WindowID)
 	{
 		//GUI.Box (new Rect (Input.mousePosition.x, Input.mousePosition.y, 100, 200), "");
-		GUI.backgroundColor = com.colors[Customize.cust.ButtonColorInt];
-		GUI.contentColor = com.colors[Customize.cust.FontColorInt];
+		GUI.backgroundColor = Registry.Get32ColorData("Player", "System", "ButtonColor");
+		GUI.contentColor = Registry.Get32ColorData("Player", "System", "FontColor");
 
 		if (ContextMenuOptions.Count <= 0) 
 		{

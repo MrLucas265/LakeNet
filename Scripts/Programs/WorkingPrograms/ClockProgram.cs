@@ -13,7 +13,6 @@ public class ClockProgram : MonoBehaviour
 
 	private Computer com;
 	private SoundControl sc;
-	private FileExplorer fp;
 	private AppMan appman;
 
 	public float native_width = 1920;
@@ -35,6 +34,9 @@ public class ClockProgram : MonoBehaviour
 	public string SelectedOption;
 	public string ContextMenuName;
 
+	public string PersonName;
+	public string ProgramName;
+
 	// Use this for initialization
 	void Start()
 	{
@@ -48,7 +50,6 @@ public class ClockProgram : MonoBehaviour
 		native_height = Customize.cust.native_height;
 		native_width = Customize.cust.native_width;
 
-		fp = Puter.GetComponent<FileExplorer>();
 		appman = Puter.GetComponent<AppMan>();
 
 		winman = WindowHandel.GetComponent<WindowManager>();
@@ -65,7 +66,7 @@ public class ClockProgram : MonoBehaviour
 		if (Input.GetMouseButtonDown(0))
 		{
 			SelectedWindowID = WindowID;
-			winman.SelectedWID = WindowID;
+			Registry.SetIntData("Player", "WindowManager", "SelectedWindow", WindowID);
 		}
 	}
 
@@ -127,7 +128,7 @@ public class ClockProgram : MonoBehaviour
 
 	void OnGUI()
 	{
-		GUI.skin = com.Skin[GameControl.control.GUIID];
+		GUI.skin = GameControl.control.Skins[Registry.GetIntData("Player", "System", "Skin")];
 
 		for (int PersonCount = 0; PersonCount < PersonController.control.People.Count; PersonCount++)
 		{
@@ -139,7 +140,7 @@ public class ClockProgram : MonoBehaviour
 				{
 					if (pwinman.RunningPrograms[i].ProgramName == ProgramNameForWinMan)
 					{
-						GUI.color = com.colors[Customize.cust.WindowColorInt];
+						GUI.color = Registry.Get32ColorData("Player", "System", "WindowColor");
 						pwinman.RunningPrograms[i].windowRect = WindowClamp.ClampToScreen(GUI.Window(pwinman.RunningPrograms[i].WID, pwinman.RunningPrograms[i].windowRect, DoMyWindow, ""));
 
 						if (!pwinman.RunningPrograms[i].windowRect.Contains(Event.current.mousePosition))
@@ -198,6 +199,10 @@ public class ClockProgram : MonoBehaviour
 
 			if (pwinman.RunningPrograms.Count > 0)
 			{
+				if (WindowID == Registry.GetIntData(PersonName,"WindowManager","SelectedWindow"))
+				{
+					winman.WindowResize("Player", Registry.GetIntData(PersonName,"WindowManager","SelectedWindow"));
+				}
 				//winman.WindowResize(SelectedWindowID);
 
 				for (int i = 0; i < pwinman.RunningPrograms.Count; i++)
@@ -214,20 +219,20 @@ public class ClockProgram : MonoBehaviour
 							CloseButton = new Rect(pwinman.RunningPrograms[i].windowRect.width - 23, 2, 21, 21);
 							if (CloseButton.Contains(Event.current.mousePosition))
 							{
-								if (GUI.Button(new Rect(CloseButton), "X", com.Skin[GameControl.control.GUIID].customStyles[0]))
+								if (GUI.Button(new Rect(CloseButton), "X", GameControl.control.Skins[Registry.GetIntData("Player", "System", "Skin")].customStyles[0]))
 								{
 									Close(SelectedWindowID);
 								}
 
-								GUI.backgroundColor = com.colors[Customize.cust.ButtonColorInt];
-								GUI.contentColor = com.colors[Customize.cust.FontColorInt];
+								GUI.backgroundColor = Registry.Get32ColorData("Player", "System", "ButtonColor");
+								GUI.contentColor = Registry.Get32ColorData("Player", "System", "FontColor");
 							}
 							else
 							{
-								GUI.backgroundColor = com.colors[Customize.cust.ButtonColorInt];
-								GUI.contentColor = com.colors[Customize.cust.FontColorInt];
+								GUI.backgroundColor = Registry.Get32ColorData("Player", "System", "ButtonColor");
+								GUI.contentColor = Registry.Get32ColorData("Player", "System", "FontColor");
 
-								if (GUI.Button(new Rect(CloseButton), "X", com.Skin[GameControl.control.GUIID].customStyles[1]))
+								if (GUI.Button(new Rect(CloseButton), "X", GameControl.control.Skins[Registry.GetIntData("Player", "System", "Skin")].customStyles[1]))
 								{
 									Close(SelectedWindowID);
 								}
@@ -271,10 +276,10 @@ public class ClockProgram : MonoBehaviour
 
 			GUI.Box(new Rect(40, 2, CloseButton.x - 41, 21), ProgramNameForWinMan);
 
-			if (pwinman.RunningPrograms[i].Resize == true)
-			{
-				pwinman.RunningPrograms[i].WindowResizeRect = new Rect(pwinman.RunningPrograms[i].windowRect.x, pwinman.RunningPrograms[i].windowRect.y, pwinman.RunningPrograms[i].windowRect.width - 4, pwinman.RunningPrograms[i].windowRect.height - 27);
-			}
+			//if (pwinman.RunningPrograms[i].Resize == true)
+			//{
+			//	pwinman.RunningPrograms[i].WindowResizeRect = new Rect(pwinman.RunningPrograms[i].windowRect.x, pwinman.RunningPrograms[i].windowRect.y, pwinman.RunningPrograms[i].windowRect.width - 4, pwinman.RunningPrograms[i].windowRect.height - 27);
+			//}
 
 			GUI.Box(new Rect(pwinman.RunningPrograms[i].ResizeRect), "");
 		}
@@ -310,8 +315,8 @@ public class ClockProgram : MonoBehaviour
 	{
 		SelectWindowID(WindowID);
 		//GUI.Box (new Rect (Input.mousePosition.x, Input.mousePosition.y, 100, 200), "");
-		GUI.backgroundColor = com.colors[Customize.cust.ButtonColorInt];
-		GUI.contentColor = com.colors[Customize.cust.FontColorInt];
+		GUI.backgroundColor = Registry.Get32ColorData("Player", "System", "ButtonColor");
+		GUI.contentColor = Registry.Get32ColorData("Player", "System", "FontColor");
 
 		if (ContextMenuOptions.Count <= 0)
 		{

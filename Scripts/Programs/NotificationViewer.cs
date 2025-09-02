@@ -13,8 +13,6 @@ public class NotificationViewer : MonoBehaviour
     public float native_height = 1080;
     public bool Drag;
 
-    private FileExplorer fp;
-
     private AppMan appman;
 
     public float DiskUsage;
@@ -67,7 +65,6 @@ public class NotificationViewer : MonoBehaviour
         SysSoftware = GameObject.Find("System");
         com = SysSoftware.GetComponent<Computer>();
         defalt = SysSoftware.GetComponent<Defalt>();
-        fp = SysSoftware.GetComponent<FileExplorer>();
         appman = SysSoftware.GetComponent<AppMan>();
 
         PosCheck();
@@ -102,7 +99,7 @@ public class NotificationViewer : MonoBehaviour
     {
         Customize.cust.windowx[windowID] = windowRect.x;
         Customize.cust.windowy[windowID] = windowRect.y;
-        GUI.skin = com.Skin[GameControl.control.GUIID];
+        GUI.skin = GameControl.control.Skins[Registry.GetIntData("Player", "System", "Skin")];
 
         if (Input.GetMouseButtonDown(0) || Input.GetMouseButtonDown(1) || Input.GetMouseButtonDown(2))
         {
@@ -114,7 +111,7 @@ public class NotificationViewer : MonoBehaviour
 
         if (show == true)
         {
-            GUI.color = com.colors[Customize.cust.WindowColorInt];
+            GUI.color = Registry.Get32ColorData("Player", "System", "WindowColor");
             windowRect = WindowClamp.ClampToScreen(GUI.Window(windowID, windowRect, DoMyWindow, ""));
             // windowRect = GUI.Window(windowID,windowRect,DoMyWindow,""); 
         }
@@ -122,8 +119,8 @@ public class NotificationViewer : MonoBehaviour
         if (ShowContext == true)
         {
             ContextwindowRect.height = 21 * ContextMenuOptions.Count + 2;
-            GUI.skin = com.Skin[GameControl.control.GUIID];
-            GUI.color = com.colors[Customize.cust.WindowColorInt];
+            GUI.skin = GameControl.control.Skins[Registry.GetIntData("Player", "System", "Skin")];
+            GUI.color = Registry.Get32ColorData("Player", "System", "WindowColor");
             ContextwindowRect = WindowClamp.ClampToScreen(GUI.Window(ContextMenuID, ContextwindowRect, DoMyContextWindow, ""));
         }
     }
@@ -144,8 +141,8 @@ public class NotificationViewer : MonoBehaviour
     void DoMyContextWindow(int WindowID)
     {
         //GUI.Box (new Rect (Input.mousePosition.x, Input.mousePosition.y, 100, 200), "");
-        GUI.backgroundColor = com.colors[Customize.cust.ButtonColorInt];
-        GUI.contentColor = com.colors[Customize.cust.FontColorInt];
+        GUI.backgroundColor = Registry.Get32ColorData("Player", "System", "ButtonColor");
+        GUI.contentColor = Registry.Get32ColorData("Player", "System", "FontColor");
 
         if (ContextMenuOptions.Count <= 0)
         {
@@ -194,20 +191,20 @@ public class NotificationViewer : MonoBehaviour
     {
         if (CloseButton.Contains(Event.current.mousePosition))
         {
-            if (GUI.Button(new Rect(CloseButton), "X", com.Skin[GameControl.control.GUIID].customStyles[0]))
+            if (GUI.Button(new Rect(CloseButton), "X", GameControl.control.Skins[Registry.GetIntData("Player", "System", "Skin")].customStyles[0]))
             {
                 appman.SelectedApp = "Notification Viewer";
             }
 
-            GUI.backgroundColor = com.colors[Customize.cust.ButtonColorInt];
-            GUI.contentColor = com.colors[Customize.cust.FontColorInt];
+            GUI.backgroundColor = Registry.Get32ColorData("Player", "System", "ButtonColor");
+            GUI.contentColor = Registry.Get32ColorData("Player", "System", "FontColor");
         }
         else
         {
-            GUI.backgroundColor = com.colors[Customize.cust.ButtonColorInt];
-            GUI.contentColor = com.colors[Customize.cust.FontColorInt];
+            GUI.backgroundColor = Registry.Get32ColorData("Player", "System", "ButtonColor");
+            GUI.contentColor = Registry.Get32ColorData("Player", "System", "FontColor");
 
-            GUI.Button(new Rect(CloseButton), "X", com.Skin[GameControl.control.GUIID].customStyles[1]);
+            GUI.Button(new Rect(CloseButton), "X", GameControl.control.Skins[Registry.GetIntData("Player", "System", "Skin")].customStyles[1]);
         }
 
         GUI.DragWindow(new Rect(40, 2, 236, 21));
@@ -223,12 +220,12 @@ public class NotificationViewer : MonoBehaviour
 					SelectedNotification = 0;
 				}
 
-				if (Event.current.type == EventType.keyDown && Event.current.keyCode == KeyCode.RightArrow) 
+				if (Event.current.type == EventType.KeyDown && Event.current.keyCode == KeyCode.RightArrow) 
 				{
 					SelectedMenu = 2;
 				}
 
-                if (Event.current.type == EventType.keyDown && Event.current.keyCode == KeyCode.UpArrow) 
+                if (Event.current.type == EventType.KeyDown && Event.current.keyCode == KeyCode.UpArrow) 
 				{
 					if (SelectedNotification >= 1)
 					{
@@ -247,7 +244,7 @@ public class NotificationViewer : MonoBehaviour
 					}
 				}
 
-				if (Event.current.type == EventType.keyDown && Event.current.keyCode == KeyCode.DownArrow) 
+				if (Event.current.type == EventType.KeyDown && Event.current.keyCode == KeyCode.DownArrow) 
 				{
 					if (SelectedNotification < GameControl.control.Notifications.Count-1)
 					{
@@ -269,12 +266,12 @@ public class NotificationViewer : MonoBehaviour
                 if(GameControl.control.Notifications.Count > 0)
                 {
 				
-					if (Event.current.type == EventType.keyDown && Event.current.keyCode == KeyCode.Return) 
+					if (Event.current.type == EventType.KeyDown && Event.current.keyCode == KeyCode.Return) 
 					{
 						SelectedMenu = 2;
 					}
 
-					if (Event.current.type == EventType.keyDown && Event.current.keyCode == KeyCode.Delete) 
+					if (Event.current.type == EventType.KeyDown && Event.current.keyCode == KeyCode.Delete) 
 					{
 						GameControl.control.Notifications.RemoveAt (SelectedNotification);
 					}
@@ -304,18 +301,18 @@ public class NotificationViewer : MonoBehaviour
                 TextAreaRect = new Rect(115, 25, 150, 128);
                 break;
             case 2:
-				if (Event.current.type == EventType.keyDown && Event.current.keyCode == KeyCode.Backspace) 
+				if (Event.current.type == EventType.KeyDown && Event.current.keyCode == KeyCode.Backspace) 
 				{
 					SelectedMenu = 0;
 				}
 
-				if (Event.current.type == EventType.keyDown && Event.current.keyCode == KeyCode.Delete) 
+				if (Event.current.type == EventType.KeyDown && Event.current.keyCode == KeyCode.Delete) 
 				{
 					GameControl.control.Notifications.RemoveAt (SelectedNotification);
 					SelectedMenu = 0;
 				}
 
-				if (Event.current.type == EventType.keyDown && Event.current.keyCode == KeyCode.LeftArrow) 
+				if (Event.current.type == EventType.KeyDown && Event.current.keyCode == KeyCode.LeftArrow) 
 				{
 					SelectedMenu = 0;
 				}
@@ -330,7 +327,7 @@ public class NotificationViewer : MonoBehaviour
 
         if (ShowFileNameMaker == true)
         {
-            SaveLocation = fp.SelectedFolderLocation;
+           // SaveLocation = fp.SelectedFolderLocation;
 
             GUI.Label(new Rect(5, 50, 150, 21), "File Name");
             TypedTitle = GUI.TextField(new Rect(5, 100, 140, 21), TypedTitle);

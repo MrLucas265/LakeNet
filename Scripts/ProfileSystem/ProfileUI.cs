@@ -1,7 +1,8 @@
-﻿using UnityEngine;
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
 using System.IO;
+using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class ProfileUI : MonoBehaviour
 {
@@ -175,14 +176,15 @@ public class ProfileUI : MonoBehaviour
 		GameControl.control.ProfileID = Select;
 		Customize.cust.ProfileName = ProfileController.procon.Profiles[Select];
 		PersonController.control.ProfileName = ProfileController.procon.Profiles[Select];
-		Application.LoadLevel(1);
-	}
+		LoadProfileData(Select);
+        SceneManager.LoadScene("Game");
+    }
 
 	void PasswordLogin()
 	{
 		GUI.DrawTexture(new Rect(400, 100, 128, 128),GameControl.control.UserPic[ProfileController.procon.ProfilePic[Select]]);
 
-		if (Event.current.type == EventType.keyDown && Event.current.keyCode == KeyCode.Return) 
+		if (Event.current.type == EventType.KeyDown && Event.current.keyCode == KeyCode.Return) 
 		{
 			GameControl.control.SelectedOS.Name = ProfileController.procon.SelectedOS [Select].Name;
 			TypedPass[0] = InputtedPass;
@@ -250,7 +252,7 @@ public class ProfileUI : MonoBehaviour
 
 		//GUI.Label(new Rect(300, 325, 250, 150), "Press enter or click DEL to confirm the deletion of the account.");
 
-		if (Event.current.type == EventType.keyDown && Event.current.keyCode == KeyCode.Return || Event.current.type == EventType.keyDown && Event.current.keyCode == KeyCode.Delete)
+		if (Event.current.type == EventType.KeyDown && Event.current.keyCode == KeyCode.Return || Event.current.type == EventType.KeyDown && Event.current.keyCode == KeyCode.Delete)
 		{
 			if (TypedPass[1] == ProfileController.procon.ProfilePassWord[DeleteSelectedAccount])
 			{
@@ -272,7 +274,7 @@ public class ProfileUI : MonoBehaviour
 			TypedPass[1] = InputtedPass;
 		}
 
-		if (Event.current.type == EventType.keyDown && Event.current.keyCode == KeyCode.Backspace)
+		if (Event.current.type == EventType.KeyDown && Event.current.keyCode == KeyCode.Backspace)
 		{
 			ShowDeleteInfo = false;
 			TypedPass[1] = "";
@@ -400,9 +402,10 @@ public class ProfileUI : MonoBehaviour
 		GameControl.control.ProfileName = ProfileController.procon.Profiles[Selected];
 		Customize.cust.ProfileName = ProfileController.procon.Profiles[Selected];
 		PersonController.control.ProfileName = ProfileController.procon.Profiles[Selected];
-		GameControl.control.Load();
-		Customize.cust.Load();
-		PersonController.control.Load();
+
+        GameControl.control.Load();
+        Customize.cust.Load();
+        PersonController.control.Load();
 	}
 
 	void OnGUI()

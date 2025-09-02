@@ -105,18 +105,18 @@ public class Store : MonoBehaviour
 
 	void UpdateCatalog()
 	{
-		Catalog.Add(new ProgramSystemv2("Notepad", "", "", "", "", "The notepad for all your typing needs.", "www.store.com", "Notepad", "", "", ProgramSystemv2.FileExtension.Ins, ProgramSystemv2.FileExtension.Exe, 0, 0, 2, 0, 0, 0, 0, 100, 1.0f, 250, 0, 0, 0, 0, 0, 0, false, false, false, false,false,false,false));
+		Catalog.Add(new ProgramSystemv2("Notepad", "", "", "", "", "The notepad for all your typing needs.", "www.store.com", "Notepad", "", "", ProgramSystemv2.FileExtension.ins, ProgramSystemv2.FileExtension.exe, 0, 0, 2, 0, 100, 1.0f, 250, 0, 0, 0, 0, 0, 0, false, false, false, false,false,false,false, new ResourceManagerSystem()));
 
-		Catalog.Add(new ProgramSystemv2("Notepad v2", "", "", "", "", "The notepad for all your typing needs.", "www.store.com", "Notepadv2", "", "", ProgramSystemv2.FileExtension.Ins, ProgramSystemv2.FileExtension.Exe, 0, 0, 4, 0, 0, 0, 0, 100, 2.0f, 500, 0, 0, 0, 0, 0, 0, false, false, false, false, false, false, false));
+		Catalog.Add(new ProgramSystemv2("Notepad v2", "", "", "", "", "The notepad for all your typing needs.", "www.store.com", "Notepadv2", "", "", ProgramSystemv2.FileExtension.ins, ProgramSystemv2.FileExtension.exe, 0, 0, 4, 0, 100, 2.0f, 500, 0, 0, 0, 0, 0, 0, false, false, false, false, false, false, false, new ResourceManagerSystem()));
 
 		OSName = OperatingSystems.OSName.FluidicIceOS.ToString();
-		Catalog.Add(new ProgramSystemv2(OSName, "", "", "", "", "FluidicIceOS", "www.store.com", OSName, "", "", ProgramSystemv2.FileExtension.Ins, ProgramSystemv2.FileExtension.Exe, 0, 0, 20, 0, 0, 0, 0, 100, 1.0f, 500, 0, 0, 0, 0, 0, 0, false, false, false, false, false, false, false));
+		Catalog.Add(new ProgramSystemv2(OSName, "", "", "", "", "FluidicIceOS", "www.store.com", OSName, "", "", ProgramSystemv2.FileExtension.ins, ProgramSystemv2.FileExtension.exe, 0, 0, 20, 0, 100, 1.0f, 500, 0, 0, 0, 0, 0, 0, false, false, false, false, false, false, false, new ResourceManagerSystem()));
 
 		OSName = OperatingSystems.OSName.AppatureOS.ToString();
-		Catalog.Add(new ProgramSystemv2(OSName, "", "", "", "", "The notepad for all your typing needs.", "www.store.com", OSName, "", "", ProgramSystemv2.FileExtension.Ins, ProgramSystemv2.FileExtension.OS, 0, 0, 15, 0, 0, 0, 0, 100, 1.0f, 500, 0, 0, 0, 0, 0, 0, false, false, false, false, false, false, false));
+		Catalog.Add(new ProgramSystemv2(OSName, "", "", "", "", "The notepad for all your typing needs.", "www.store.com", OSName, "", "", ProgramSystemv2.FileExtension.ins, ProgramSystemv2.FileExtension.os, 0, 0, 15, 0, 100, 1.0f, 500, 0, 0, 0, 0, 0, 0, false, false, false, false, false, false, false, new ResourceManagerSystem()));
 
 		OSName = OperatingSystems.OSName.TreeOS.ToString();
-		Catalog.Add(new ProgramSystemv2(OSName, "", "", "", "", "The notepad for all your typing needs.", "www.store.com", OSName, "", "", ProgramSystemv2.FileExtension.Ins, ProgramSystemv2.FileExtension.OS, 0, 0, 20, 0, 0, 0, 0, 100, 1.0f, 500, 0, 0, 0, 0, 0, 0, false, false, false, false, false, false, false));
+		Catalog.Add(new ProgramSystemv2(OSName, "", "", "", "", "The notepad for all your typing needs.", "www.store.com", OSName, "", "", ProgramSystemv2.FileExtension.ins, ProgramSystemv2.FileExtension.os, 0, 0, 20, 0, 100, 1.0f, 500, 0, 0, 0, 0, 0, 0, false, false, false, false, false, false, false, new ResourceManagerSystem()));
 	}
 
 	void Bought()

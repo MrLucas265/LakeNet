@@ -10,6 +10,10 @@ public class ServerCreator : MonoBehaviour
 	public List<ProgramSystem> JaildewFiles = new List<ProgramSystem>();
 	public List<UACSystem> JaildewAccounts = new List<UACSystem>();
 
+	public List<RemoteFileSystem> UplinkWebPages = new List<RemoteFileSystem>();
+	public List<ProgramSystem> UplinkFiles = new List<ProgramSystem>();
+	public List<UACSystem> UplinkAccounts = new List<UACSystem>();
+
 
 	public List<RemoteFileSystem> BecasWebPages = new List<RemoteFileSystem>();
 	public List<ProgramSystem> BecasFiles = new List<ProgramSystem>();
@@ -87,6 +91,34 @@ public class ServerCreator : MonoBehaviour
 		JaildewWebPages.Add(new RemoteFileSystem("< Back", "", "", "", "www.jaildew.com/internal/logs", "www.jaildew.com/internal", 0, 0, 0, 0, 0, 0, false, RemoteFileSystem.ProgramType.Fdl));
 
 		GameControl.control.CompanyServerData.Add(new CompanyServerSystem("Jaildew", "123.456.789", JaildewWebPages, JaildewFiles, null, null, CompanyServerSystem.ServerType.FileServer,JaildewAccounts,null,null));
+	}
+
+	void AddUplinkServer()
+	{
+		//Public
+		UplinkWebPages.Add(new RemoteFileSystem("< Back", "", "", "", "www.uplink.com/public", "www.uplink.com", 0, 0, 0, 0, 0, 0, false, RemoteFileSystem.ProgramType.Fdl));
+		UplinkWebPages.Add(new RemoteFileSystem("< Back", "", "", "", "www.uplink.com/contracts", "www.uplink.com", 0, 0, 0, 0, 0, 0, false, RemoteFileSystem.ProgramType.Fdl));
+		UplinkWebPages.Add(new RemoteFileSystem("< Back", "", "", "", "www.uplink.com/tempfiles", "www.uplink.com/public", 0, 0, 0, 0, 0, 0, false, RemoteFileSystem.ProgramType.Fdl));
+		UplinkWebPages.Add(new RemoteFileSystem("Public", "", "", "", "www.uplink.com", "www.uplink.com/public", 0, 0, 0, 0, 0, 0, false, RemoteFileSystem.ProgramType.Fdl));
+		UplinkWebPages.Add(new RemoteFileSystem("Sign in", "", "", "", "www.uplink.com", "www.uplink.com/login", 0, 0, 0, 0, 0, 0, false, RemoteFileSystem.ProgramType.Fdl));
+		UplinkWebPages.Add(new RemoteFileSystem("Contracts", "", "", "", "www.uplink.com", "www.uplink.com/contracts", 0, 0, 0, 0, 0, 0, false, RemoteFileSystem.ProgramType.Fdl));
+		UplinkWebPages.Add(new RemoteFileSystem("Temp Files", "", "", "", "www.uplink.com/public", "www.uplink.com/tempfiles", 0, 0, 0, 0, 0, 0, false, RemoteFileSystem.ProgramType.Fdl));
+		//Internal/Private
+		UplinkWebPages.Add(new RemoteFileSystem("< Back", "", "", "", "www.uplink.com/internal/files", "www.uplink.com/internal", 0, 0, 0, 0, 0, 0, false, RemoteFileSystem.ProgramType.Fdl));
+		UplinkWebPages.Add(new RemoteFileSystem("Internal Files", "", "", "", "www.uplink.com/internal", "www.uplink.com/internal/files", 0, 0, 0, 0, 0, 0, false, RemoteFileSystem.ProgramType.Fdl));
+		UplinkWebPages.Add(new RemoteFileSystem("Documents", "", "", "", "www.uplink.com/internal", "www.uplink.com/internal/docs", 0, 0, 0, 0, 0, 0, false, RemoteFileSystem.ProgramType.Fdl));
+		UplinkWebPages.Add(new RemoteFileSystem("Logs", "", "", "", "www.uplink.com/internal", "www.uplink.com/internal/logs", 0, 0, 0, 0, 0, 0, false, RemoteFileSystem.ProgramType.Fdl));
+		UplinkWebPages.Add(new RemoteFileSystem("Signout", "", "", "", "www.uplink.com/internal", "www.uplink.com/signout", 0, 0, 0, 0, 0, 0, false, RemoteFileSystem.ProgramType.Fdl));
+		//Private Documents
+		UplinkWebPages.Add(new RemoteFileSystem("< Back", "", "", "", "www.uplink.com/internal/docs", "www.uplink.com/internal", 0, 0, 0, 0, 0, 0, false, RemoteFileSystem.ProgramType.Fdl));
+		UplinkWebPages.Add(new RemoteFileSystem("< Back", "", "", "", "www.uplink.com/internal/docs/emails", "www.uplink.com/internal/docs", 0, 0, 0, 0, 0, 0, false, RemoteFileSystem.ProgramType.Fdl));
+		UplinkWebPages.Add(new RemoteFileSystem("< Back", "", "", "", "www.uplink.com/internal/docs/notes", "www.uplink.com/internal/docs", 0, 0, 0, 0, 0, 0, false, RemoteFileSystem.ProgramType.Fdl));
+		UplinkWebPages.Add(new RemoteFileSystem("Emails", "", "", "", "www.uplink.com/internal/docs", "www.uplink.com/internal_docs/emails", 0, 0, 0, 0, 0, 0, false, RemoteFileSystem.ProgramType.Fdl));
+		UplinkWebPages.Add(new RemoteFileSystem("Notes", "", "", "", "www.uplink.com/internal/docs", "www.uplink.com/internal_docs/notes", 0, 0, 0, 0, 0, 0, false, RemoteFileSystem.ProgramType.Fdl));
+		//Private Logs
+		UplinkWebPages.Add(new RemoteFileSystem("< Back", "", "", "", "www.jaildew.com/internal/logs", "www.uplink.com/internal", 0, 0, 0, 0, 0, 0, false, RemoteFileSystem.ProgramType.Fdl));
+
+		GameControl.control.CompanyServerData.Add(new CompanyServerSystem("Uplink", "123.456.789", UplinkWebPages, UplinkFiles, null, null, CompanyServerSystem.ServerType.FileServer, UplinkAccounts, null, null));
 	}
 
 	void AddBecasServer()

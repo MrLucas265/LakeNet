@@ -74,12 +74,12 @@ public class DragRacer : MonoBehaviour
 		Speed = ((float)RPM / (float)MaxRPM) * (float)maxSpeedsPerGear[CurrentGear];
 		RPM = (MaxRPM * Speed) / maxSpeedsPerGear[CurrentGear] ;
 
-		if (Event.current.type == EventType.keyUp && Event.current.keyCode == KeyCode.Space)
+		if (Event.current.type == EventType.KeyUp && Event.current.keyCode == KeyCode.Space)
 		{
 			GearUp();
 		} 
 
-		if (Event.current.type == EventType.keyDown && Event.current.keyCode == KeyCode.W) 
+		if (Event.current.type == EventType.KeyDown && Event.current.keyCode == KeyCode.W) 
 		{
 			RPM += 0.1f * Acceleration;
 		} 

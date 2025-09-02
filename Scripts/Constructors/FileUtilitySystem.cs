@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using System.ComponentModel;
 using UnityEngine;
 
 [System.Serializable]
@@ -16,18 +17,26 @@ public class FileUtilitySystem
 	public float TimeRemainUISeconds;
 	public float TimeRemainMin;
 	public float TimeRemainHour;
-	public float ItemRemain;
+    public float TimeRemainDays;
+    public float ItemRemain;
 	public float OurFileSize;
 	public float Count;
 	public float Timer;
 	public float StartTime;
-	public ProgramType Type;
+	public float Speed;
+
+    public double SpeedDbl;
+    public double OurFileSizeDbl;
+
+    public ProgramType Type;
 	public int RequestedPersonID;
 	public int DestinationPersonID;
 	public ProgramSystemv2 ProgramFile;
 
 	public enum ProgramType
 	{
+		Null,
+		Save,
 		Upload,
 		RemoteDelete,
 		RemoteDelete1,
@@ -40,7 +49,16 @@ public class FileUtilitySystem
 		Paste
 	}
 
-	public FileUtilitySystem (string name,string destinationpath,bool minimize,bool start,bool show,bool done,float percentage,float timeremainseconds,
+    public FileUtilitySystem(string name, string destinationpath,
+		ProgramType type, ProgramSystemv2 programfile)
+    {
+        Name = name;
+        DestinationPath = destinationpath;
+        Type = type;
+        ProgramFile = programfile;
+    }
+
+    public FileUtilitySystem (string name,string destinationpath,bool minimize,bool start,bool show,bool done,float percentage,float timeremainseconds,
 		float timeremainuiseconds, float timeremainmin, float timeremainhour, float itemtemain, float ourfilesize,float count,float timer,
 		float starttime, ProgramType type,int requestedpersonid,int destinationpersonid,ProgramSystemv2 programfile)
 	{

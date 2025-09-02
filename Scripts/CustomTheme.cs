@@ -93,7 +93,7 @@ public class CustomTheme : MonoBehaviour
 		//com.Skin[10].window.onNormal.background = tex1[4];
 		ss.ScreensaverBackGround = tex1[5];
 		ss.ScreensaverPicture = tex1[6];
-		os.pic[3] = tex1[4];
+		//os.pic[3] = tex1[4];
 		mouse.cursorImage = tex1[3];
 
 		Once = true;

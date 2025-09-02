@@ -1,336 +1,451 @@
-﻿using UnityEngine;
+﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.IO;
+using System.Security.Cryptography;
+using System.Threading;
+using UnityEngine;
 
-public class Notepad : MonoBehaviour 
+public class Notepad : MonoBehaviour
 {
-	public GameObject SysSoftware;
-	public bool show;
-	private Computer com;    
-	public int windowID;
-	public Rect windowRect;
-	public float native_width = 1920;
-	public float native_height = 1080;
-	public bool Drag;
+    public bool quit;
 
-	private AppMan appman;
+    private GameObject Puter;
 
-	public float DiskUsage;
+    private GameObject WindowHandel;
+    private WindowManager winman;
 
-	private Defalt defalt;
+    private Computer com;
+    private SoundControl sc;
+    //private FileExplorer fp;
+    private AppMan appman;
 
-	public string TypedText;
-	public string CurrentWorkingTitle;
-	public string TypedTitle;
-	public string SaveLocation;
+    public float native_width = 1920;
+    public float native_height = 1080;
 
-	public int SelectedDocument;
+    public string ProgramNameForWinMan;
 
-	public Vector2 scrollpos = Vector2.zero;
-	public int scrollsize;
+    public int SelectedProgramID;
+    public int SelectedWPN;
 
-	public int FoundAt;
+    private Rect CloseButton;
+    public Rect CurrentTimeRect;
+    public Rect CurrentDateRect;
 
-	public bool ShowFileNameMaker;
-	public bool ShowFileContent;
-	public bool ShowFileOpen;
+    public bool ShowSettings;
 
-	public bool showSave;
+    // Vars for context menu
 
-	public Texture2D Icon;
+    public string PersonName;
+    public string ProgramName;
 
-	public float FileSize;
+    public float LastClick;
 
-	public Rect TextAreaRect;
+    // Use this for initialization
+    void Start()
+    {
+        ProgramNameForWinMan = "Notepad";
 
-	public int SelectedMenu;
+        Puter = GameObject.Find("System");
+        WindowHandel = GameObject.Find("WindowHandel");
+        com = Puter.GetComponent<Computer>();
+        sc = Puter.GetComponent<SoundControl>();
+        native_height = Customize.cust.native_height;
+        native_width = Customize.cust.native_width;
 
-	public List<string> Name = new List<string>();
-	public List<string> Location = new List<string>();
-	public List<int> FileIndex = new List<int>();
+        //fp = Puter.GetComponent<FileExplorer>();
+        appman = Puter.GetComponent<AppMan>();
 
-	public List<ProgramSystem> Files = new List<ProgramSystem>();
+        winman = WindowHandel.GetComponent<WindowManager>();
 
-	public List<InfectionSystem> BlankInfections = new List<InfectionSystem>();
-	public List<ProgramSystem.FileType> BlankFileType = new List<ProgramSystem.FileType>();
+        ProgramName = "Notepad";
+        PersonName = "Player";
+        //LocalRegistry.AddNewKey(PersonName, 1, "Test");
+    }
 
-	void Start ()
-	{
-		SysSoftware = GameObject.Find("System");
-		com = SysSoftware.GetComponent<Computer>();
-		defalt = SysSoftware.GetComponent<Defalt>();
+    void SelectWindowID(int WindowID)
+    {
+        if (Input.GetMouseButtonDown(0))
+        {
+            Registry.SetIntData("Player", "WindowManager", "SelectedWindow", WindowID);
+        }
+    }
 
-		appman = SysSoftware.GetComponent<AppMan>();
+    bool GUIKeyDown(KeyCode key)
+    {
+        if (Event.current.type == EventType.KeyDown)
+            return (Event.current.keyCode == key);
+        return false;
 
-		PosCheck();
+    }
 
-		native_height = Customize.cust.native_height;
-		native_width = Customize.cust.native_width;
+    void GUIControls(int PID)
+    {
+    }
 
-		windowRect.width = 300;
-		windowRect.height = 300;
-	}
 
-	void PosCheck()
-	{
-		if (Customize.cust.windowx[windowID] == 0) 
-		{
-			Customize.cust.windowx [windowID] = Screen.width / 2;
-		}
-		if (Customize.cust.windowy[windowID] <= 35) 
-		{
-			Customize.cust.windowy [windowID] = 35;
-		}
+    void ColorUI(int WPN)
+    {
+        LocalRegistry.SetColorData(PersonName, WPN, ProgramName, "FontColor", new SColor(new Color32(0, 0, 0, 255)));
 
-		windowRect.x = Customize.cust.windowx[windowID];
-		windowRect.y = Customize.cust.windowy[windowID];
-	}
+        LocalRegistry.SetColorData(PersonName, WPN, ProgramName, "WindowColor", new SColor(new Color32(0, 0, 0, 255)));
+    }
 
-	void OnGUI()
-	{
-		Customize.cust.windowx[windowID] = windowRect.x;
-		Customize.cust.windowy[windowID] = windowRect.y;
-		GUI.skin = com.Skin[GameControl.control.GUIID];
+    void OnGUI()
+    {
+        GUI.skin = GameControl.control.Skins[Registry.GetIntData("Player", "System", "Skin")];
+        GUI.color = Registry.Get32ColorData("Player", "System", "WindowColor");
 
-		if(show == true)
-		{
-			GUI.color = com.colors[Customize.cust.WindowColorInt];
-			windowRect = WindowClamp.ClampToScreen(GUI.Window(windowID,windowRect,DoMyWindow,""));
-			// windowRect = GUI.Window(windowID,windowRect,DoMyWindow,""); 
-		}
-	}
+        for (int PersonCount = 0; PersonCount < PersonController.control.People.Count; PersonCount++)
+        {
+            var pwinman = PersonController.control.People[PersonCount].Gateway;
 
-	public void Open()
-	{
-		CurrentWorkingTitle = GameControl.control.ProgramFiles[SelectedDocument].Name;
-		TypedText = GameControl.control.ProgramFiles[SelectedDocument].Content;
-		TypedTitle = GameControl.control.ProgramFiles[SelectedDocument].Name;
-		SaveLocation = GameControl.control.ProgramFiles[SelectedDocument].Location;
-		showSave = true;
-		ShowFileContent = true;
-		ShowFileNameMaker = false;
-		ShowFileOpen = false;
-		SelectedMenu = 0;
-	}
+            if (pwinman.RunningPrograms.Count > 0)
+            {
+                for (int i = 0; i < pwinman.RunningPrograms.Count; i++)
+                {
+                    if (pwinman.RunningPrograms[i].ProgramName == ProgramNameForWinMan)
+                    {
+                        //ColorUI(pwinman.RunningPrograms[i].WPN);
+                        //GUI.color = new Color32(LocalRegistry.GetRedColorData(PersonName, pwinman.RunningPrograms[i].WPN, ProgramName, "WindowColor"),
+                        //	LocalRegistry.GetGreenColorData(PersonName, pwinman.RunningPrograms[i].WPN, ProgramName, "WindowColor"),
+                        //	LocalRegistry.GetBlueColorData(PersonName, pwinman.RunningPrograms[i].WPN, ProgramName, "WindowColor"),
+                        //	LocalRegistry.GetAlphaColorData(PersonName, pwinman.RunningPrograms[i].WPN, ProgramName, "WindowColor"));
 
-	void Save()
-	{
-		if (GameControl.control.ProgramFiles.Count > 0) 
-		{
-			if (CurrentWorkingTitle == GameControl.control.ProgramFiles [SelectedDocument].Name)
-			{
-				GameControl.control.ProgramFiles[SelectedDocument].Content = TypedText;
-				GameControl.control.ProgramFiles[SelectedDocument].Used = FileSize;
-			} 
-			else 
-			{
-				if (GameControl.control.ProgramFiles[SelectedDocument].Name != TypedTitle)
-				{
-					GameControl.control.ProgramFiles.Insert(0,new ProgramSystem(TypedTitle, "", "", GameControl.control.Time.DayName, TypedText, "", SaveLocation,"", "", "", ProgramSystem.FileExtension.Txt, ProgramSystem.FileExtension.Null, 0, 0, FileSize, 0, 0, 0, 0, 100, 0f, 0, 0, 0, 0, 0, 0, 0, false, false, false, false, BlankInfections, BlankFileType));
-					GameControl.control.ProgramFiles[0].Used = FileSize;
-				}
-			}
-		} 
-		else 
-		{
-			GameControl.control.ProgramFiles.Insert(0, new ProgramSystem(TypedTitle, "", "", GameControl.control.Time.DayName, TypedText, "", SaveLocation, "", "", "", ProgramSystem.FileExtension.Txt, ProgramSystem.FileExtension.Null, 0, 0, FileSize, 0, 0, 0, 0, 100, 0f, 0, 0, 0, 0, 0, 0, 0, false, false, false, false, BlankInfections, BlankFileType));
-			GameControl.control.ProgramFiles[0].Used = FileSize;
-		}
-	}
+                        pwinman.RunningPrograms[i].windowRect = WindowClamp.ClampToScreen(GUI.Window(pwinman.RunningPrograms[i].WID, pwinman.RunningPrograms[i].windowRect, DoMyWindow, ""));
 
-	void DiskCheck()
-	{		
-		Name.RemoveRange(0, Name.Count);
-		Location.RemoveRange(0, Location.Count);
-		FileIndex.RemoveRange(0, FileIndex.Count);
-		Files.RemoveRange(0, Files.Count);
-		for (int i = 0; i < GameControl.control.ProgramFiles.Count; i++)
-		{
-			if (GameControl.control.ProgramFiles[i].Extension == ProgramSystem.FileExtension.Txt)
-			{
-				if (Name.Contains (GameControl.control.ProgramFiles [i].Name)) 
-				{
-					if (!Location.Contains (GameControl.control.ProgramFiles [i].Location)) 
-					{
-						Name.Add (GameControl.control.ProgramFiles [i].Name);
-						Location.Add (GameControl.control.ProgramFiles [i].Location);
-						FileIndex.Add (i);
-						Files.Add (GameControl.control.ProgramFiles [i]);
-					}
-				} 
-				else
-				{
-					Name.Add (GameControl.control.ProgramFiles [i].Name);
-					Location.Add (GameControl.control.ProgramFiles [i].Location);
-					FileIndex.Add (i);
-					Files.Add (GameControl.control.ProgramFiles [i]);
-				}
-			}
-		}
-	}
+                        LocalRegistry.SetRectData(PersonName, i, ProgramNameForWinMan, "Window", pwinman.RunningPrograms[i].windowRect);
+                    }
+                }
+            }
+        }
+    }
 
-	void DoMyWindow(int windowID)
-	{
-		GUI.backgroundColor = com.colors[Customize.cust.ButtonColorInt];
-		GUI.contentColor = com.colors[Customize.cust.FontColorInt];
+    void TitleBarStuff(int PID)
+    {
+        if (LocalRegistry.GetStringData(PersonName, PID, ProgramName, "OpenedFile") == "")
+        {
+            LocalRegistry.SetStringData(PersonName, PID, ProgramName, "Window", "Untitled");
+        }
+        else
+        {
+            LocalRegistry.GetStringData(PersonName, PID, ProgramName, "Window");
+        }
 
-		GUI.DragWindow(new Rect(2,2,271,21));
-		GUI.Box(new Rect(2,2,271,21), "" + CurrentWorkingTitle + " - Notepad");
+        if(LocalRegistry.GetRectData(PersonName, PID, ProgramName, "Window").width <= 220)
+        {
+            GUI.Box(new Rect(40, 2, CloseButton.x - 79, 20), LocalRegistry.GetStringData(PersonName, PID, ProgramName, "Window"));
+        }
+        else
+        {
+            GUI.Box(new Rect(40, 2, CloseButton.x - 79, 20), ProgramNameForWinMan + "-" + LocalRegistry.GetStringData(PersonName, PID, ProgramName, "Window"));
+        }
+        GUI.DragWindow(new Rect(40, 2, CloseButton.x - 79, 20));
+        winman.WindowDragging(Registry.GetIntData(PersonName,"WindowManager","SelectedWindow"), new Rect(40, 2, CloseButton.x - 79, 21));
 
-		if(GUI.Button(new Rect(windowRect.width-23,2,21,21),"X"))
-		{
-			//show = false;
-			//this.enabled = false;
-			appman.SelectedApp = "Notepad";
-		}
+        if(GUI.Button(new Rect(2, 2, 37, 20), "File"))
+        {
+            if(LocalRegistry.GetStringData(PersonName, PID, ProgramName, "MenuBar") != "File")
+            {
+                LocalRegistry.SetStringData(PersonName, PID, ProgramName, "MenuBar", "File");
+            }
+            else
+            {
+                LocalRegistry.SetStringData(PersonName, PID, ProgramName, "MenuBar", "");
+                LocalRegistry.RemoveAllMenuButtonData(PersonName, PID, ProgramName, "MenuBar");
+            }
+        }
+    }
 
-		switch (SelectedMenu)
-		{
-		case 0:
-			TextAreaRect = new Rect (1, 47, windowRect.width-2, windowRect.height-48);
-			TypedText = GUI.TextArea(new Rect(TextAreaRect), TypedText, 500);
-			break;
-		case 1:
-			TextAreaRect = new Rect (115, 25, 150, 128);
-			//TypedText = GUI.TextArea(new Rect(TextAreaRect), TypedText, 500);
-			break;
-		case 2:
-			TextAreaRect = new Rect (windowRect.width-151, 47, 150, windowRect.height-48);
-			TypedText = GUI.TextArea(new Rect(TextAreaRect), TypedText, 500);
-			break;
-		case 3:
-			TextAreaRect = new Rect (115, 25, 150, 128);
-			break;
-		}
+    void CheckInitalRun(int WindowID)
+    {
+        if (LocalRegistry.GetBoolData(PersonName, WindowID, ProgramName, "InitalRun") == false)
+        {
+            LocalRegistry.SetIntData(PersonName, WindowID, ProgramName, "SelectedFile", -1);
+            LocalRegistry.SetBoolData(PersonName, WindowID, ProgramName, "InitalRun", true);
+        }
 
-		if (CurrentWorkingTitle == "") 
-		{
-			CurrentWorkingTitle = "Untitled";
-		}
+    }
 
-		if (ShowFileNameMaker == true) 
-		{
-			GUI.Label (new Rect (5, 50, 150, 21), "File Name");
-			TypedTitle = GUI.TextField (new Rect (5, 100, 140, 21), TypedTitle);
+    void DoMyWindow(int WindowID)
+    {
+        SelectWindowID(WindowID);
 
-			GUI.Label (new Rect (5, 150, 150, 21), "File Location");
-			SaveLocation = GUI.TextField (new Rect (5, 200, 140, 21), SaveLocation);
+        for (int PersonCount = 0; PersonCount < PersonController.control.People.Count; PersonCount++)
+        {
+            var pwinman = PersonController.control.People[PersonCount].Gateway;
 
-			if (TypedTitle != "")
-			{
-				if (SaveLocation != "")
-				{
-					if(GUI.Button(new Rect(50,250,80,21),"Add File"))
-					{
-						CurrentWorkingTitle = TypedTitle;
+            if (pwinman.RunningPrograms.Count > 0)
+            {
+                if (WindowID == Registry.GetIntData(PersonName,"WindowManager","SelectedWindow"))
+                {
+                    winman.WindowResize(PersonName, Registry.GetIntData(PersonName,"WindowManager","SelectedWindow"));
+                }
 
-						FileSize = 0;
-						FileSize = TypedTitle.Length + TypedText.Length;
-						FileSize = FileSize / 100;
-						Save();
+                for (int i = 0; i < pwinman.RunningPrograms.Count; i++)
+                {
+                    if (pwinman.RunningPrograms[i].ProgramName == ProgramNameForWinMan)
+                    {
+                        if (pwinman.RunningPrograms[i].WID == Registry.GetIntData(PersonName,"WindowManager","SelectedWindow"))
+                        {
+                            GUIControls(pwinman.RunningPrograms[i].WPN);
+                            SelectedProgramID = pwinman.RunningPrograms[i].PID;
+                        }
 
-						ShowFileContent = true;
-						ShowFileNameMaker = false;
-						ShowFileOpen = false;
-						SelectedMenu = 0;
-					}
-				}
-			}
-		}
+                        if (WindowID == pwinman.RunningPrograms[i].WID)
+                        {
+                            CloseButton = new Rect(pwinman.RunningPrograms[i].windowRect.width - 23, 2, 20, 20);
+                            if (CloseButton.Contains(Event.current.mousePosition))
+                            {
+                                if (GUI.Button(new Rect(CloseButton), "X", GameControl.control.Skins[Registry.GetIntData("Player", "System", "Skin")].customStyles[0]))
+                                {
+                                    WindowManager.QuitProgram(PersonName, ProgramName, pwinman.RunningPrograms[i].WPN);
+                                }
 
-		if(ShowFileContent == true) 
-		{
-			if(GUI.Button(new Rect(144,24,37,21),"Save"))
-			{
-				FileSize = 0;
-				FileSize = TypedTitle.Length + TypedText.Length;
-				FileSize = FileSize / 100;
-				Save();
-			}
+                                GUI.backgroundColor = Registry.Get32ColorData("Player", "System", "ButtonColor");
+                                GUI.contentColor = Registry.Get32ColorData("Player", "System", "FontColor");
+                            }
+                            else
+                            {
+                                GUI.backgroundColor = Registry.Get32ColorData("Player", "System", "ButtonColor");
+                                GUI.contentColor = Registry.Get32ColorData("Player", "System", "FontColor");
 
-			if (GUI.Button(new Rect(183, 24, 37, 21), "Compile"))
-			{
-				TestCode.KeywordCheck(TypedText);
-			}
+                                if (GUI.Button(new Rect(CloseButton), "X", GameControl.control.Skins[Registry.GetIntData("Player", "System", "Skin")].customStyles[1]))
+                                {
+                                    WindowManager.QuitProgram(PersonName, ProgramName, pwinman.RunningPrograms[i].WPN);
+                                }
+                            }
 
-			if (SelectedMenu > 0)
-			{
-				if(GUI.Button(new Rect(182,24,50,21),"Cancel"))
-				{
-					if (showSave == true)
-					{
-						ShowFileContent = true;
-					}
-					ShowFileNameMaker = false;
-					ShowFileOpen = false;
-					SelectedMenu = 0;
-				}	
-			}
-		}
-		else
-		{
-			if (SelectedMenu > 0) 
-			{
-				if(GUI.Button(new Rect(144,24,50,21),"Cancel"))
-				{
-					if (showSave == true)
-					{
-						ShowFileContent = true;
-					}
-					ShowFileNameMaker = false;
-					ShowFileOpen = false;
-					SelectedMenu = 0;
-				}
-			}
-		}
+                            TitleBarStuff(pwinman.RunningPrograms[i].WPN);
 
-		if(GUI.Button(new Rect(83,24,60,21),"Save As"))
-		{
-			if (SaveLocation == "") 
-			{
-				SaveLocation = "C:/Documents";
-			}
-			ShowFileNameMaker = true;
-			ShowFileContent = false;
-			ShowFileOpen = false;
-			SelectedMenu = 2;
-		}
+                            RenderFileUI(pwinman.RunningPrograms[i].WPN);
 
-		if(GUI.Button(new Rect(2,24,37,21),"New"))
-		{
-			ShowFileNameMaker = false;
-			ShowFileContent = false;
-			ShowFileOpen = false;
-			CurrentWorkingTitle = "Untitled";
-			SaveLocation = "";
-			TypedTitle = "";
-			TypedText = "";
-			SelectedMenu = 0;
-		}
-			
-		if(GUI.Button(new Rect(40,24,42,21),"Open"))
-		{
-			ShowFileOpen = true;
-			ShowFileNameMaker = false;
-			SelectedMenu = 2;
-		}
+                            RenderRibbonUI(pwinman.RunningPrograms[i].WPN);
+                        }
+                    }
+                }
+            }
+        }
+    }
 
-		if (ShowFileOpen == true)
-		{
-			DiskCheck();
-			if (Files.Count > 0) 
-			{
-				scrollpos = GUI.BeginScrollView(new Rect(2, 50, 120, 100), scrollpos, new Rect(0, 0, 0, scrollsize * 24));
-				for (scrollsize = 0; scrollsize < Files.Count; scrollsize++)
-				{
-					if(GUI.Button(new Rect(0,24*scrollsize,100,21),Files[scrollsize].Name))
-					{
-						SelectedDocument = FileIndex[scrollsize];
-						Open();
-					}
-				}
-				GUI.EndScrollView();
-			}
-		}
-	}
+    void PlayClickSound()
+    {
+        sc.SoundSelect = 3;
+        sc.PlaySound();
+    }
+
+    void HistorySystem(string Action, int PID)
+    {
+
+        //PageHistory
+
+        //LocalRegistry.SetStringData(PersonName, PID, ProgramName, "PageHistory", LocalRegistry.GetStringData(PersonName, PID, ProgramName, "CurrentDirectory"));
+
+        if (Action == "Add")
+        {
+            if (LocalRegistry.GetStringListDataCount(PersonName, PID, ProgramName, "PageHistory") == 0)
+            {
+                LocalRegistry.AddStringListData(PersonName, PID, ProgramName, "PageHistory", "");
+            }
+
+            LocalRegistry.AddStringListData(PersonName, PID, ProgramName, "PageHistory", LocalRegistry.GetProgramData(PersonName, PID, ProgramName, "Test 1", LocalRegistry.GetIntData(PersonName, PID, ProgramName, "SelectedFile")).Target);
+        }
+
+
+        if (Action == "Back")
+        {
+
+            if (LocalRegistry.GetStringListDataCount(PersonName, PID, ProgramName, "PageHistory") > 0)
+            {
+                LocalRegistry.RemoveAtStringListData(PersonName, PID, ProgramName, "PageHistory",
+                    LocalRegistry.GetLastStringListData(PersonName, PID, ProgramName, "PageHistory"));
+            }
+
+            if (LocalRegistry.GetStringListDataCount(PersonName, PID, ProgramName, "PageHistory") == 0)
+            {
+                LocalRegistry.AddStringListData(PersonName, PID, ProgramName, "PageHistory", "");
+            }
+
+            LocalRegistry.SetIntData(PersonName, PID, ProgramName, "SelectedFile", -1);
+
+            LocalRegistry.SetStringData(PersonName, PID, ProgramName, "CurrentDirectory",
+                LocalRegistry.GetStringListData(PersonName, PID, ProgramName, "PageHistory",
+                LocalRegistry.GetLastStringListData(PersonName, PID, ProgramName, "PageHistory")));
+
+            LocalRegistry.SetStringData(PersonName, PID, ProgramName, "TypedDirectory",
+                LocalRegistry.GetStringData(PersonName, PID, ProgramName, "CurrentDirectory"));
+        }
+    }
+
+    void RenderRibbonUI(int PID)
+    {
+        //LocalRegistry.SetRectData(PersonName, PID, ProgramName, "Ribbon", new SRect(new Rect(200,20,100,20)));
+        int ButtonSize = 21;
+
+        if (LocalRegistry.GetMenuButtonCountData(PersonName, PID, ProgramName, "MenuBar") > 0)
+        {
+            if (LocalRegistry.GetStringData(PersonName, PID, ProgramName, "SelectedMenu") == "")
+            {
+                if (LocalRegistry.MenuDataListContains(PersonName, PID, ProgramName, "MenuBar", "Back"))
+                {
+                    LocalRegistry.RemoveMenuButtonData(PersonName, PID, ProgramName, "MenuBar", "Back");
+                }
+            }
+            else
+            {
+                if (!LocalRegistry.MenuDataListContains(PersonName, PID, ProgramName, "MenuBar", "Back"))
+                {
+                    LocalRegistry.AddMenuButtonData(PersonName, PID, ProgramName, "MenuBar", new MenuButtonSystem("Back", "Back", 40, ButtonSize));
+                }
+            }
+        }
+
+        if (LocalRegistry.GetMenuButtonCountData(PersonName, PID, ProgramName, "MenuBar") == 0)
+        {
+            switch (LocalRegistry.GetStringData(PersonName, PID, ProgramName, "MenuBar"))
+            {
+                case "File":
+                    if (LocalRegistry.GetIntData(PersonName, PID, ProgramName, "MenuBar") >= 0)
+                    {
+                        LocalRegistry.AddMenuButtonData(PersonName, PID, ProgramName, "MenuBar", new MenuButtonSystem("New", "New", 40, ButtonSize));
+                        LocalRegistry.AddMenuButtonData(PersonName, PID, ProgramName, "MenuBar", new MenuButtonSystem("Save", "Save", 40, ButtonSize));
+                        LocalRegistry.AddMenuButtonData(PersonName, PID, ProgramName, "MenuBar", new MenuButtonSystem("Save As", "Save As", 60, ButtonSize));
+                        LocalRegistry.AddMenuButtonData(PersonName, PID, ProgramName, "MenuBar", new MenuButtonSystem("Open", "Open", 45, ButtonSize));
+                        LocalRegistry.AddMenuButtonData(PersonName, PID, ProgramName, "MenuBar", new MenuButtonSystem("Title", "Title", 40, ButtonSize));
+                        LocalRegistry.AddMenuButtonData(PersonName, PID, ProgramName, "MenuBar", new MenuButtonSystem("Type", "Type", 40, ButtonSize));
+                        LocalRegistry.AddMenuButtonData(PersonName, PID, ProgramName, "MenuBar", new MenuButtonSystem("Compile", "Compile", 60, ButtonSize));
+
+                    }
+                    break;
+            }
+        }
+
+
+        //if (GUI.Button(new Rect(183, 24, 45, 21), "Compile"))
+        //{
+        //    TestCode.KeywordCheck("Player", TypedText);
+        //}
+
+        for (int i = 0; i < LocalRegistry.GetMenuButtonCountData(PersonName, PID, ProgramName, "MenuBar"); i++)
+        {
+            if (i == 0)
+            {
+                LocalRegistry.SetMenuButtonPosXData(PersonName, PID, ProgramName, "MenuBar", i, 2);
+
+            }
+            if (i >= 1)
+            {
+                LocalRegistry.SetMenuButtonPosXData(PersonName, PID, ProgramName, "MenuBar", i,
+                    LocalRegistry.GetMenuButtonData(PersonName, PID, ProgramName, "MenuBar", i - 1).PosX +
+                    LocalRegistry.GetMenuButtonData(PersonName, PID, ProgramName, "MenuBar", i - 1).Width + 1);
+            }
+
+            if (GUI.Button(new Rect(LocalRegistry.GetMenuButtonData(PersonName, PID, ProgramName, "MenuBar", i).PosX, LocalRegistry.GetRectData(PersonName, PID, ProgramName, "TypedDirectory").y + ButtonSize + 2, LocalRegistry.GetMenuButtonData(PersonName, PID, ProgramName, "MenuBar", i).Width, ButtonSize), LocalRegistry.GetMenuButtonData(PersonName, PID, ProgramName, "MenuBar", i).Name))
+            {
+                if (LocalRegistry.GetMenuButtonData(PersonName, PID, ProgramName, "MenuBar", i).Menu != "")
+                {
+                    LocalRegistry.SetStringData(PersonName, PID, ProgramName, "SelectedMenu",LocalRegistry.GetMenuButtonData(PersonName, PID, ProgramName, "MenuBar", i).Menu);
+                }
+            }
+        }
+    }
+
+    void OpenFld(int PID)
+    {
+        PlayClickSound();
+
+        HistorySystem("Add", PID);
+
+        LocalRegistry.SetStringData(PersonName, PID, ProgramName, "CurrentDirectory", LocalRegistry.GetProgramData(PersonName, PID, ProgramName, "Test 1", LocalRegistry.GetIntData(PersonName, PID, ProgramName, "SelectedFile")).Target);
+        LocalRegistry.SetStringData(PersonName, PID, ProgramName, "TypedDirectory", LocalRegistry.GetStringData(PersonName, PID, ProgramName, "CurrentDirectory"));
+        LocalRegistry.RemoveAllProgramData(PersonName, PID, ProgramName, "Test 1");
+        LocalRegistry.SetIntData(PersonName, PID, ProgramName, "SelectedFile", -1);
+    }
+
+    void OpenFile(int PID)
+    {
+        PlayClickSound();
+
+        var PName = LocalRegistry.GetProgramData(PersonName, PID, ProgramName, "Test 1", LocalRegistry.GetIntData(PersonName, PID, ProgramName, "SelectedFile")).Name;
+
+        TestCode.KeywordCheck(PersonName, "Open:" + PName + ";");
+
+        LocalRegistry.SetIntData(PersonName, PID, ProgramName, "SelectedFile", -1);
+    }
+
+    void RenderFileUI(int PID)
+    {
+        switch (LocalRegistry.GetStringData(PersonName, PID, ProgramName, "SelectedMenu"))
+        {
+            case "":
+                RenderTextEditor(PID);
+                break;
+            case "Save As":
+                RenderFileSaveAs(PID);
+                break;
+            case "New":
+                LocalRegistry.SetStringData(PersonName, PID, ProgramName, "SelectedMenu", "");
+                LocalRegistry.SetStringData(PersonName, PID, ProgramName, "TypedText", "");
+                LocalRegistry.SetStringData(PersonName, PID, ProgramName, "OpenedFile", "");
+                break;
+            case "Back":
+                LocalRegistry.SetStringData(PersonName, PID, ProgramName, "SelectedMenu", "");
+                LocalRegistry.RemoveMenuButtonData(PersonName, PID, ProgramName, "MenuBar","Back");
+                break;
+            case"Compile":
+                TestCode.KeywordCheck("Player", LocalRegistry.GetStringData(PersonName, PID, ProgramName, "TypedText"));
+                LocalRegistry.SetStringData(PersonName, PID, ProgramName, "SelectedMenu", "");
+                break;
+        }
+    }
+
+    void RenderTextEditor(int PID)
+    {
+        if (LocalRegistry.GetMenuButtonCountData(PersonName, PID, ProgramName, "MenuBar") > 0)
+        {
+            LocalRegistry.SetRectData(PersonName, PID, ProgramName, "TypedText", new Rect(2, 46,
+            LocalRegistry.GetRectData(PersonName, PID, ProgramName, "Window").width - 4,
+            LocalRegistry.GetRectData(PersonName, PID, ProgramName, "Window").height - 48));
+        }
+        else
+        {
+            LocalRegistry.SetRectData(PersonName, PID, ProgramName, "TypedText", new Rect(2, 25,
+            LocalRegistry.GetRectData(PersonName, PID, ProgramName, "Window").width - 4,
+            LocalRegistry.GetRectData(PersonName, PID, ProgramName, "Window").height - 27));
+        }
+
+        LocalRegistry.SetStringData(PersonName, PID, ProgramName, "TypedText", GUI.TextArea(
+            LocalRegistry.GetRectData(PersonName, PID, ProgramName, "TypedText"),
+            LocalRegistry.GetStringData(PersonName, PID, ProgramName, "TypedText")));
+    }
+
+    void RenderFileSaveAs(int PID)
+    {
+
+        var FileName = LocalRegistry.GetStringData(PersonName, PID, ProgramName, "TypedTitle");
+        var SaveLocation = LocalRegistry.GetStringData(PersonName, PID, ProgramName, "SaveLocation");
+        var TypedText = LocalRegistry.GetStringData(PersonName, PID, ProgramName, "TypedText");
+
+        GUI.Label(new Rect(5, 50, 150, 21), "File Name");
+        LocalRegistry.SetStringData(PersonName, PID, ProgramName, "TypedTitle",
+            GUI.TextField(new Rect(5, 100, 140, 21),
+            LocalRegistry.GetStringData(PersonName, PID, ProgramName, "TypedTitle")));
+
+        GUI.Label(new Rect(5, 150, 150, 21), "File Location");
+        LocalRegistry.SetStringData(PersonName, PID, ProgramName, "SaveLocation",
+            GUI.TextField(new Rect(5, 200, 140, 21),
+            LocalRegistry.GetStringData(PersonName, PID, ProgramName, "SaveLocation")));
+
+        if (FileName != "")
+        {
+            if (SaveLocation != "")
+            {
+                if (GUI.Button(new Rect(50, 250, 80, 21), "Add File"))
+                {
+                    LocalRegistry.SetStringData(PersonName, PID, ProgramName, "Window",FileName);
+                    TestCode.KeywordCheck("Player", "SaveAs?" + FileName + "?" + SaveLocation + "?" + "Txt" + "?" + TypedText + ";");
+                }
+            }
+        }
+    }
 }

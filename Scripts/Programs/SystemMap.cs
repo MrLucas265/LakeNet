@@ -53,6 +53,11 @@ public class SystemMap : MonoBehaviour
 	public Vector2 CabbagePos = new Vector2(200, 100);
 	public string CabbageIP = "192.168.26";
 
+	public string CompanyName = "Masssive Electronic Producer";
+	public string CompanyAbv = "MEP";
+	public string CompanyIP = "128.0.0.1";
+	public Vector2 CompanyCords = new Vector2(0, 0);
+
 	public float w;
 	public float h;
 	public float wh;
@@ -229,8 +234,8 @@ public class SystemMap : MonoBehaviour
 
 	void OnGUI()
 	{
-		GUI.skin = com.Skin[GameControl.control.GUIID];
-		Map = com.Skin[GameControl.control.GUIID].customStyles[3];
+		GUI.skin = GameControl.control.Skins[Registry.GetIntData("Player", "System", "Skin")];
+		Map = GameControl.control.Skins[Registry.GetIntData("Player", "System", "Skin")].customStyles[3];
 		Customize.cust.windowx[windowID] = windowRect.x;
 		Customize.cust.windowy[windowID] = windowRect.y;
 
@@ -257,7 +262,7 @@ public class SystemMap : MonoBehaviour
 		RightClamp = 0-ClampDiff * 10 * 70;
 		DownClamp = 0-ClampDiff * 10 * 25;
 
-		if (Event.current.type == EventType.keyDown && Event.current.keyCode == KeyCode.D || Event.current.type == EventType.keyDown && Event.current.keyCode == KeyCode.RightArrow) 
+		if (Event.current.type == EventType.KeyDown && Event.current.keyCode == KeyCode.D || Event.current.type == EventType.KeyDown && Event.current.keyCode == KeyCode.RightArrow) 
 		{
 			if (PanHorizontal > RightClamp) 
 			{
@@ -265,7 +270,7 @@ public class SystemMap : MonoBehaviour
 				ModX -= PanningSpeed;
 			}
 		}
-		if (Event.current.type == EventType.keyDown && Event.current.keyCode == KeyCode.A || Event.current.type == EventType.keyDown && Event.current.keyCode == KeyCode.LeftArrow) 
+		if (Event.current.type == EventType.KeyDown && Event.current.keyCode == KeyCode.A || Event.current.type == EventType.KeyDown && Event.current.keyCode == KeyCode.LeftArrow) 
 		{
 			if (PanHorizontal < 0) 
 			{
@@ -273,7 +278,7 @@ public class SystemMap : MonoBehaviour
 				ModX += PanningSpeed;
 			}
 		}
-		if (Event.current.type == EventType.keyDown && Event.current.keyCode == KeyCode.W || Event.current.type == EventType.keyDown && Event.current.keyCode == KeyCode.UpArrow) 
+		if (Event.current.type == EventType.KeyDown && Event.current.keyCode == KeyCode.W || Event.current.type == EventType.KeyDown && Event.current.keyCode == KeyCode.UpArrow) 
 		{
 			if (PanVertical >= 0)
 			{
@@ -285,7 +290,7 @@ public class SystemMap : MonoBehaviour
 				ModY += PanningSpeed;
 			}
 		}
-		if (Event.current.type == EventType.keyDown && Event.current.keyCode == KeyCode.S || Event.current.type == EventType.keyDown && Event.current.keyCode == KeyCode.DownArrow) 
+		if (Event.current.type == EventType.KeyDown && Event.current.keyCode == KeyCode.S || Event.current.type == EventType.KeyDown && Event.current.keyCode == KeyCode.DownArrow) 
 		{
 			if(PanVertical > DownClamp)
 				PanVertical -= 1 * PanningSpeed;
@@ -297,7 +302,7 @@ public class SystemMap : MonoBehaviour
 			}
 		}
 
-		if (Event.current.type == EventType.keyDown && Event.current.keyCode == KeyCode.Equals || Event.current.type == EventType.keyDown && Event.current.keyCode == KeyCode.KeypadPlus) 
+		if (Event.current.type == EventType.KeyDown && Event.current.keyCode == KeyCode.Equals || Event.current.type == EventType.KeyDown && Event.current.keyCode == KeyCode.KeypadPlus) 
 		{
 			if (ZoomLevel <= 3.9) 
 			{
@@ -310,7 +315,7 @@ public class SystemMap : MonoBehaviour
 
 			MathX = 20 * ZoomInt;
 		}
-		if (Event.current.type == EventType.keyDown && Event.current.keyCode == KeyCode.Minus || Event.current.type == EventType.keyDown && Event.current.keyCode == KeyCode.KeypadMinus) 
+		if (Event.current.type == EventType.KeyDown && Event.current.keyCode == KeyCode.Minus || Event.current.type == EventType.KeyDown && Event.current.keyCode == KeyCode.KeypadMinus) 
 		{
 			if (ZoomLevel >= 1.1f) 
 			{
@@ -476,6 +481,9 @@ public class SystemMap : MonoBehaviour
 			}
 			if(GUI.Button(new Rect(5,270,80,21),Message))
 			{
+
+				//Domain.Search(LastBounce[0]);
+
 				switch(LastBounce[0])
 				{
 				case "JD":

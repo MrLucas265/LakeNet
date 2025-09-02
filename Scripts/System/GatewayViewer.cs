@@ -121,7 +121,7 @@ public class GatewayViewer : MonoBehaviour
             Gateway.height = GatewayPic.height;
 
             windowRect.width = Gateway.width * 1.07f;
-            windowRect.height = Gateway.height * 1.15f;
+           windowRect.height = Gateway.height * 1.15f;
 
             CloseButton = new Rect(windowRect.width - 22, 2, 21, 21);
         }
@@ -131,7 +131,7 @@ public class GatewayViewer : MonoBehaviour
     {
         for (int j = 0; j < hcf.ListOfMotherboardImages.Count; j++)
         {
-            if (GameControl.control.Gateway.SelectedMotherboardImage == j)
+            if (GameControl.control.SelectedMotherboardImage == j)
             {
                 GatewayPic = hcf.ListOfMotherboardImages[j];
             }
@@ -213,11 +213,11 @@ public class GatewayViewer : MonoBehaviour
         Customize.cust.windowx[windowID] = windowRect.x;
         Customize.cust.windowy[windowID] = windowRect.y;
 
-        GUI.skin = com.Skin[GameControl.control.GUIID];
+        GUI.skin = GameControl.control.Skins[Registry.GetIntData("Player", "System", "Skin")];
 
         if (show == true)
         {
-            GUI.color = com.colors[Customize.cust.WindowColorInt];
+            GUI.color = Registry.Get32ColorData("Player", "System", "WindowColor");
             windowRect = WindowClamp.ClampToScreen(GUI.Window(windowID, windowRect, DoMyWindow, ""));
         }
     }
@@ -226,16 +226,16 @@ public class GatewayViewer : MonoBehaviour
     {
         if (CloseButton.Contains(Event.current.mousePosition))
         {
-            if (GUI.Button(new Rect(CloseButton), "X", com.Skin[GameControl.control.GUIID].customStyles[0]))
+            if (GUI.Button(new Rect(CloseButton), "X", GameControl.control.Skins[Registry.GetIntData("Player", "System", "Skin")].customStyles[0]))
             {
                 appman.SelectedApp = "Gateway Viewer";
             }
         }
         else
         {
-            GUI.backgroundColor = com.colors[Customize.cust.ButtonColorInt];
-            GUI.contentColor = com.colors[Customize.cust.FontColorInt];
-            GUI.Button(new Rect(CloseButton), "X", com.Skin[GameControl.control.GUIID].customStyles[1]);
+            GUI.backgroundColor = Registry.Get32ColorData("Player", "System", "ButtonColor");
+            GUI.contentColor = Registry.Get32ColorData("Player", "System", "FontColor");
+            GUI.Button(new Rect(CloseButton), "X", GameControl.control.Skins[Registry.GetIntData("Player", "System", "Skin")].customStyles[1]);
         }
 
         Render();
@@ -248,8 +248,8 @@ public class GatewayViewer : MonoBehaviour
         var PlayerStorageDevice = person.Gateway.StorageDevices;
         var PlayerCPU = person.Gateway.CPU;
 
-        GUI.backgroundColor = com.colors[Customize.cust.ButtonColorInt];
-        GUI.contentColor = com.colors[Customize.cust.FontColorInt];
+        GUI.backgroundColor = Registry.Get32ColorData("Player", "System", "ButtonColor");
+        GUI.contentColor = Registry.Get32ColorData("Player", "System", "FontColor");
 
         UpdatePos();
 

@@ -34,7 +34,7 @@ public class LoginBackground : MonoBehaviour
 	{
 		//GameControl.control.windowx[windowID] = windowRect.x;
 		//GameControl.control.windowy[windowID] = windowRect.y;
-		//GUI.skin = com.Skin[GameControl.control.GUIID];
+		//GUI.skin = GameControl.control.Skins[Registry.GetIntData("Player", "System", "Skin")];
 		//set up scaling
 		float rx = Screen.width / native_width;
 		float ry = Screen.height / native_height;

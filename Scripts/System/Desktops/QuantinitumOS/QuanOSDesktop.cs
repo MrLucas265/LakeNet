@@ -292,7 +292,7 @@ public class QuanOSDesktop : MonoBehaviour
 	void OnGUI()
 	{
 		GUI.depth = 0;
-		GUI.skin = com.Skin[GameControl.control.GUIID];
+		GUI.skin = GameControl.control.Skins[Registry.GetIntData("Player", "System", "Skin")];
 
 		Customize.cust.windowx[windowID] = windowRect.x;
 		Customize.cust.windowy[windowID] = windowRect.y;
@@ -384,12 +384,12 @@ public class QuanOSDesktop : MonoBehaviour
 
 	public void DesktopEnv()
 	{
-		GUI.backgroundColor = com.colors[Customize.cust.ButtonColorInt];
+		GUI.backgroundColor = Registry.Get32ColorData("Player", "System", "ButtonColor");
 
-		//GUI.contentColor = com.colors[Customize.cust.FontColorInt];
+		//GUI.contentColor = Registry.Get32ColorData("Player", "System", "FontColor");
 		//GUI.color = Color.blue;
-		GUI.backgroundColor = com.colors[Customize.cust.ButtonColorInt];
-		GUI.contentColor = com.colors[Customize.cust.FontColorInt];
+		GUI.backgroundColor = Registry.Get32ColorData("Player", "System", "ButtonColor");
+		GUI.contentColor = Registry.Get32ColorData("Player", "System", "FontColor");
 
 		//GUI.skin.box.alignment = TextAnchor.MiddleCenter;
 
@@ -401,7 +401,7 @@ public class QuanOSDesktop : MonoBehaviour
 
 		//GUI.TextArea(new Rect (Hint), com.Hint);
 
-		if (GUI.Button (new Rect (AppButton), desk.ApplicationsIcon,com.Skin [GameControl.control.GUIID].customStyles [DesktopStyle]))
+		if (GUI.Button (new Rect (AppButton), desk.ApplicationsIcon,GameControl.control.Skins[Registry.GetIntData("Player", "System", "Skin")].customStyles [DesktopStyle]))
 		{
 			sc.SoundSelect = 3;
 			sc.PlaySound();
@@ -421,7 +421,7 @@ public class QuanOSDesktop : MonoBehaviour
 			com.Hint = "Application Launcher";
 		}
 
-		if(GUI.Button(new Rect(GatewayButton),desk.GatewayIcon,com.Skin [GameControl.control.GUIID].customStyles [DesktopStyle]))
+		if(GUI.Button(new Rect(GatewayButton),desk.GatewayIcon,GameControl.control.Skins[Registry.GetIntData("Player", "System", "Skin")].customStyles [DesktopStyle]))
 		{
 			PlayClickSound();
             for (int i = 0; i < GameControl.control.ProgramFiles.Count; i++)
@@ -439,7 +439,7 @@ public class QuanOSDesktop : MonoBehaviour
 			com.Hint = "this is your gateway";
 		}
 
-		if(GUI.Button(new Rect(LogoutButton),desk.LogoutIcon,com.Skin [GameControl.control.GUIID].customStyles [DesktopStyle]))
+		if(GUI.Button(new Rect(LogoutButton),desk.LogoutIcon,GameControl.control.Skins[Registry.GetIntData("Player", "System", "Skin")].customStyles [DesktopStyle]))
 		{
 			sc.SoundSelect = 3;
 			sc.PlaySound();
@@ -447,7 +447,7 @@ public class QuanOSDesktop : MonoBehaviour
             //show = false;
         }
 
-		if(GUI.Button(new Rect(SettingsButton),desk.SettingsIcon,com.Skin [GameControl.control.GUIID].customStyles [DesktopStyle]))
+		if(GUI.Button(new Rect(SettingsButton),desk.SettingsIcon,GameControl.control.Skins[Registry.GetIntData("Player", "System", "Skin")].customStyles [DesktopStyle]))
 		{
 			sc.SoundSelect = 3;
 			sc.PlaySound();
@@ -462,7 +462,7 @@ public class QuanOSDesktop : MonoBehaviour
 			//show = false;
 		}
 
-		if(GUI.Button(new Rect(NetButton),desk.InternetIcon,com.Skin [GameControl.control.GUIID].customStyles [DesktopStyle]))
+		if(GUI.Button(new Rect(NetButton),desk.InternetIcon,GameControl.control.Skins[Registry.GetIntData("Player", "System", "Skin")].customStyles [DesktopStyle]))
 		{
 			PlayClickSound();
             for (int i = 0; i < GameControl.control.ProgramFiles.Count; i++)
@@ -476,7 +476,7 @@ public class QuanOSDesktop : MonoBehaviour
 			show = false;
 		}
 
-		if(GUI.Button(new Rect(EmailButton),desk.EmailIcon,com.Skin [GameControl.control.GUIID].customStyles [DesktopStyle]))
+		if(GUI.Button(new Rect(EmailButton),desk.EmailIcon,GameControl.control.Skins[Registry.GetIntData("Player", "System", "Skin")].customStyles [DesktopStyle]))
 		{
 			PlayClickSound();
             for (int i = 0; i < GameControl.control.ProgramFiles.Count; i++)
@@ -490,13 +490,13 @@ public class QuanOSDesktop : MonoBehaviour
 			show = false;
 		}
 
-		if(GUI.Button(new Rect(InfoButton),desk.InfoIcon,com.Skin [GameControl.control.GUIID].customStyles [DesktopStyle]))
+		if(GUI.Button(new Rect(InfoButton),desk.InfoIcon,GameControl.control.Skins[Registry.GetIntData("Player", "System", "Skin")].customStyles [DesktopStyle]))
 		{
 			PlayClickSound();
 			show = false;
 		}
 
-		if(GUI.Button(new Rect(PlayerButton),GameControl.control.UserPic[GameControl.control.ProfilePicID],com.Skin [GameControl.control.GUIID].customStyles [DesktopStyle]))
+		if(GUI.Button(new Rect(PlayerButton),GameControl.control.UserPic[GameControl.control.ProfilePicID],GameControl.control.Skins[Registry.GetIntData("Player", "System", "Skin")].customStyles [DesktopStyle]))
 		{
 			PlayClickSound();
 			show = false;
@@ -575,7 +575,7 @@ public class QuanOSDesktop : MonoBehaviour
 		//{
 		//	string Time = "";
 		//	Time = "" + MTF.ToString ("00") + ":" + ProfileController.procon.Min.ToString ("00") + MTS + " " + Date;
-		//	GUI.Box (new Rect (Clock),Time,com.Skin [GameControl.control.GUIID].box);
+		//	GUI.Box (new Rect (Clock),Time,GameControl.control.Skins[Registry.GetIntData("Player", "System", "Skin")].box);
 		//} 
 		//if (ProfileController.procon.Hour >= 13 && MilitaryTime == false)
 		//{
@@ -583,13 +583,13 @@ public class QuanOSDesktop : MonoBehaviour
 		//	MTF -= 12;
 		//	string Time = "";
 		//	Time = "" + MTF.ToString ("00") + ":" + ProfileController.procon.Min.ToString ("00") + MTS + " " + Date;
-		//	GUI.Box (new Rect (Clock),Time,com.Skin [GameControl.control.GUIID].box);
+		//	GUI.Box (new Rect (Clock),Time,GameControl.control.Skins[Registry.GetIntData("Player", "System", "Skin")].box);
 		//}
 		//if (MilitaryTime == true || BootTime == true)
 		//{
 		//	string Time = "";
 		//	Time = "" + ProfileController.procon.Hour.ToString ("00") + ":" + ProfileController.procon.Min.ToString ("00") + " " + Date;
-		//	GUI.Box (new Rect (Clock),Time,com.Skin [GameControl.control.GUIID].box);
+		//	GUI.Box (new Rect (Clock),Time,GameControl.control.Skins[Registry.GetIntData("Player", "System", "Skin")].box);
 		//}
 	}
 
@@ -604,28 +604,28 @@ public class QuanOSDesktop : MonoBehaviour
 
         if (Customize.cust.Volume <= 0)
         {
-            if (GUI.Button(new Rect(SpeakerButton), desk.SpeakerIconArray[0], com.Skin[GameControl.control.GUIID].customStyles[DesktopStyle]))
+            if (GUI.Button(new Rect(SpeakerButton), desk.SpeakerIconArray[0], GameControl.control.Skins[Registry.GetIntData("Player", "System", "Skin")].customStyles[DesktopStyle]))
             {
                 ShowVolume = !ShowVolume;
             }
         }
         else if (Customize.cust.Volume > 0 && Customize.cust.Volume < 0.32f)
         {
-            if (GUI.Button(new Rect(SpeakerButton), desk.SpeakerIconArray[1], com.Skin[GameControl.control.GUIID].customStyles[DesktopStyle]))
+            if (GUI.Button(new Rect(SpeakerButton), desk.SpeakerIconArray[1], GameControl.control.Skins[Registry.GetIntData("Player", "System", "Skin")].customStyles[DesktopStyle]))
             {
                 ShowVolume = !ShowVolume;
             }
         }
         else if (Customize.cust.Volume < 0.64f)
         {
-            if (GUI.Button(new Rect(SpeakerButton), desk.SpeakerIconArray[2], com.Skin[GameControl.control.GUIID].customStyles[DesktopStyle]))
+            if (GUI.Button(new Rect(SpeakerButton), desk.SpeakerIconArray[2], GameControl.control.Skins[Registry.GetIntData("Player", "System", "Skin")].customStyles[DesktopStyle]))
             {
                 ShowVolume = !ShowVolume;
             }
         }
         else if (Customize.cust.Volume > 0.64f)
         {
-            if (GUI.Button(new Rect(SpeakerButton), desk.SpeakerIconArray[3], com.Skin[GameControl.control.GUIID].customStyles[DesktopStyle]))
+            if (GUI.Button(new Rect(SpeakerButton), desk.SpeakerIconArray[3], GameControl.control.Skins[Registry.GetIntData("Player", "System", "Skin")].customStyles[DesktopStyle]))
             {
                 ShowVolume = !ShowVolume;
             }

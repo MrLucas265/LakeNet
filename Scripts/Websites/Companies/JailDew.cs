@@ -79,7 +79,11 @@ public class JailDew : MonoBehaviour
 		MaxPublicFiles = Random.Range(25,50);
 		MaxPrivateFiles = Random.Range(25,50);
 
-        LoadPresetColors();
+		MaxPublicFiles = MaxPublicFiles / 2;
+		MaxPrivateFiles = MaxPrivateFiles / 2;
+
+
+		LoadPresetColors();
 		FileSystemGenerator();
 		Documents();
 		WebSearch();

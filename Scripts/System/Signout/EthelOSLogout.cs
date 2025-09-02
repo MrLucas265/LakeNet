@@ -1,6 +1,8 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using UnityEditor.SearchService;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class EthelOSLogout : MonoBehaviour
 {
@@ -54,7 +56,7 @@ public class EthelOSLogout : MonoBehaviour
         }
         if (Timer <= 0)
         {
-            Application.LoadLevel(0);
+            SceneManager.LoadScene("Login");
         }
     }
 

@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
+using System.Xml.Schema;
 
 public class DesktopEnviroment : MonoBehaviour
 {
@@ -16,7 +16,6 @@ public class DesktopEnviroment : MonoBehaviour
 
 	private RAM ram;
 
-	public Texture2D[] pic;
 	public Texture2D[] Icon;
 	public int SelectedIcon;
 
@@ -110,6 +109,8 @@ public class DesktopEnviroment : MonoBehaviour
 
 	public float SizeMod;
 
+	public List<TextureWNameSystem> ListOfTextures = new List<TextureWNameSystem>();
+	public List<ProgramSystemv2> DesktopIcons = new List<ProgramSystemv2>();
 
 
 	// Use this for initialization
@@ -160,7 +161,7 @@ public class DesktopEnviroment : MonoBehaviour
 		ContextwindowRect.width = 100;
 		LoadPics();
 		//ContextwindowRect.height = 21*6+7;
-		if (GameControl.control.Gateway.Status.Terminal == true)
+		if (GameControl.control.GatewayStatus.Terminal == true)
 		{
 			ForcedBackground = true;
 			Index = 0;
@@ -177,7 +178,16 @@ public class DesktopEnviroment : MonoBehaviour
 			StartUpdateOS = true;
 		}
 
-		com.SetColors();
+		LoadImageList();
+
+		Registry.SetBoolData("Player", "System", "DesktopBackgroundColor", true);
+	}
+
+	void LoadImageList()
+    {
+		ListOfTextures.Add(new TextureWNameSystem("Background"));
+		ListOfTextures.Add(new TextureWNameSystem("CustomBackground"));
+		ListOfTextures.Add(new TextureWNameSystem("AltBackground"));
 	}
 
 	void LoadPics()
@@ -190,21 +200,24 @@ public class DesktopEnviroment : MonoBehaviour
 
 	void Update()
 	{
-		if (StartUpdateOS == true)
+		for (int i = 0; i < PersonController.control.People.Count; i++)
 		{
-			var person = PersonController.control.People.FirstOrDefault(x => x.Name == "Player");
-
-			if (person.Gateway.CurrentOS.Options.FirstBoot == true)
+			if (StartUpdateOS == true)
 			{
-				FirstBoot();
-			}
-			UpdateOS ();
-
-			if(person.Gateway.CurrentOS.Options.EnableDesktopEnviroment)
-            {
-				pic[2] = ListOfBackgroundImages[GameControl.control.SelectedOS.FPC.SelectedBackground];
-
-				appman.LaunchRequest = Program.Run("Desktop", "Desktop", "Player");
+				if (PersonController.control.People[i].Gateway.CurrentOS.Options.FirstBoot == true)
+				{
+					FirstBoot();
+					PersonController.control.People[i].Gateway.CurrentOS.Options.FirstBoot = false;
+				}
+				UpdateOS();
+				if (PersonController.control.People[i].Gateway.CurrentOS.Options.EnableDesktopEnviroment)
+				{
+					appman.LaunchRequest = Program.Run("Desktop", "Desktop", "Player");
+				}
+            }
+			for (int j = 0; j < PersonController.control.People[i].Gateway.RunningPrograms.Count; j++)
+			{
+				PersonController.control.People[i].Gateway.RunningPrograms[j].WPN = j;
 			}
 		}
 
@@ -216,10 +229,13 @@ public class DesktopEnviroment : MonoBehaviour
 
 	void FirstBoot()
 	{
-		var person = PersonController.control.People.FirstOrDefault(x => x.Name == "Player");
-
-		person.Gateway.CurrentOS.FPC.SelectedBackground = ListOfBackgroundImages.Count;
-		person.Gateway.CurrentOS.Options.FirstBoot = false;
+		for (int i = 0; i < PersonController.control.People.Count; i++)
+		{
+			if (PersonController.control.People[i].Name == "Player")
+			{
+                PersonController.control.People[i].Gateway.CurrentOS.FPC.SelectedBackground = ListOfBackgroundImages.Count;
+            }
+		}
 	}
 
 	void SetUsage()
@@ -357,20 +373,21 @@ public class DesktopEnviroment : MonoBehaviour
 	void OpenFld()
 	{
         PlayClickSound();
-        if (com.show == true && com.enabled == true)
+
+		if (com.show == true && com.enabled == true)
         {
             com.History.Add(com.ComAddress);
-            com.ComAddress = GameControl.control.DesktopIconList[SelectedProgram].Target;
+            com.ComAddress = DesktopIcons[SelectedProgram].Target;
             com.PageFile.RemoveRange(0, com.PageFile.Count);
             SelectedProgram = -1;
             com.MenuSelected = 0;
         }
         if (com.show == false || com.enabled == false)
         {
-            appman.ProgramName = GameControl.control.DesktopIconList[SelectedProgram].Name;
+            appman.ProgramName = DesktopIcons[SelectedProgram].Name;
             appman.SelectedApp = "Computer";
             com.History.Add(com.ComAddress);
-            com.ComAddress = GameControl.control.DesktopIconList[SelectedProgram].Target;
+            com.ComAddress = DesktopIcons[SelectedProgram].Target;
             com.PageFile.RemoveRange(0, com.PageFile.Count);
             SelectedProgram = -1;
             com.MenuSelected = 0;
@@ -379,41 +396,40 @@ public class DesktopEnviroment : MonoBehaviour
 
     void OpenTxt()
     {
-        PlayClickSound();
-        if (note.show == true && note.enabled == true)
-        {
-            note.CurrentWorkingTitle = GameControl.control.DesktopIconList[SelectedProgram].Name;
-            note.TypedTitle = GameControl.control.DesktopIconList[SelectedProgram].Name;
-            note.TypedText = GameControl.control.DesktopIconList[SelectedProgram].Content;
-            note.SaveLocation = GameControl.control.DesktopIconList[SelectedProgram].Location;
-            note.ShowFileContent = true;
-        }
-        if (note.show == false || note.enabled == false)
-        {
-            appman.ProgramName = GameControl.control.DesktopIconList[SelectedProgram].Name;
-            appman.SelectedApp = "Notepad";
-            note.CurrentWorkingTitle = GameControl.control.DesktopIconList[SelectedProgram].Name;
-            note.TypedTitle = GameControl.control.DesktopIconList[SelectedProgram].Name;
-            note.TypedText = GameControl.control.DesktopIconList[SelectedProgram].Content;
-            note.SaveLocation = GameControl.control.DesktopIconList[SelectedProgram].Location;
-            note.ShowFileContent = true;
-        }
-        SelectedProgram = -1;
+        //PlayClickSound();
+        //if (note.show == true && note.enabled == true)
+        //{
+        //    note.CurrentWorkingTitle = DesktopIcons[SelectedProgram].Name;
+        //    note.TypedTitle = DesktopIcons[SelectedProgram].Name;
+        //    note.TypedText = DesktopIcons[SelectedProgram].Content;
+        //    note.SaveLocation = DesktopIcons[SelectedProgram].Location;
+        //    note.ShowFileContent = true;
+        //}
+        //if (note.show == false || note.enabled == false)
+        //{
+        //    appman.ProgramName = DesktopIcons[SelectedProgram].Name;
+        //    appman.SelectedApp = "Notepad";
+        //    note.CurrentWorkingTitle = DesktopIcons[SelectedProgram].Name;
+        //    note.TypedTitle = DesktopIcons[SelectedProgram].Name;
+        //    note.TypedText = DesktopIcons[SelectedProgram].Content;
+        //    note.SaveLocation = DesktopIcons[SelectedProgram].Location;
+        //    note.ShowFileContent = true;
+        //}
+        //SelectedProgram = -1;
     }
 
     void OpenExe()
 	{
 		PlayClickSound ();
-        appman.ProgramName = GameControl.control.DesktopIconList[SelectedProgram].Name;
-        appman.SelectedApp = GameControl.control.DesktopIconList[SelectedProgram].Target;
-		SelectedProgram = -1;
+		TestCode.KeywordCheck("Player","Run:" + DesktopIcons[SelectedProgram].Name + ";");
+        SelectedProgram = -1;
 		com.MenuSelected = 0;
 	}
 
 	void OpenReal()
 	{
 		PlayClickSound ();
-		System.Diagnostics.Process.Start(GameControl.control.DesktopIconList[SelectedProgram].Target);
+		System.Diagnostics.Process.Start(DesktopIcons[SelectedProgram].Target);
 		SelectedProgram = -1;
 		com.MenuSelected = 0;
 	}
@@ -421,7 +437,7 @@ public class DesktopEnviroment : MonoBehaviour
 	void OpenRealWeb()
 	{
 		PlayClickSound ();
-		Application.OpenURL(GameControl.control.DesktopIconList[SelectedProgram].Target);
+		Application.OpenURL(DesktopIcons[SelectedProgram].Target);
 		SelectedProgram = -1;
 		com.MenuSelected = 0;
 	}
@@ -429,55 +445,91 @@ public class DesktopEnviroment : MonoBehaviour
 	void OpenWeb()
 	{
 		PlayClickSound ();
-		ib.AddressBar = GameControl.control.DesktopIconList[SelectedProgram].Target;
-		ib.Inputted = GameControl.control.DesktopIconList[SelectedProgram].Target;
+		ib.AddressBar = DesktopIcons[SelectedProgram].Target;
+		ib.Inputted = DesktopIcons[SelectedProgram].Target;
 		SelectedProgram = -1;
 		com.MenuSelected = 0;
 	}
 
 	void OnGUI()
 	{
-		GUI.skin = skin;
-		FTextSize = new GUIStyle();
-		BTextSize = new GUIStyle();
-
-        //IconWidth = 100;
-
-		//IconHeight = 100;
-
-        IconSize = IconHeight / SizeMod;
-
-		Customize.cust.windowx[windowID] = windowRect.x;
-		Customize.cust.windowy[windowID] = windowRect.y;
-
-		if (ShowContext == true) 
-		{
-			ContextwindowRect.height = 21*ContextMenuOptions.Count+2;
-			GUI.skin = com.Skin[GameControl.control.GUIID];
-			GUI.color = com.colors[Customize.cust.WindowColorInt];
-			ContextwindowRect = WindowClamp.ClampToScreen(GUI.Window(ContextMenuID,ContextwindowRect,DoMyContextWindow,""));
-		}
+        GUI.color = Registry.Get32ColorData("Player", "System", "DesktopBackgroundColor");
+        GUI.skin = skin;
 
         for (int PersonCount = 0; PersonCount < PersonController.control.People.Count; PersonCount++)
         {
             var pwinman = PersonController.control.People[PersonCount].Gateway;
 
-			if(PersonController.control.People[PersonCount].Name == "Player")
+            if (PersonController.control.People[PersonCount].Name == "Player")
             {
-				if (pwinman.RunningPrograms.Count > 0)
-				{
-					for (int i = 0; i < pwinman.RunningPrograms.Count; i++)
-					{
-						if (pwinman.RunningPrograms[i].ProgramName == "Desktop")
+                if (pwinman.RunningPrograms.Count > 0)
+                {
+                    for (int i = 0; i < pwinman.RunningPrograms.Count; i++)
+                    {
+						if (pwinman.RunningPrograms[i].ProgramName == "MediaPlayer")
 						{
-							GUI.BringWindowToBack(pwinman.RunningPrograms[i].WID);
-							GUI.color = com.colors[Customize.cust.WindowColorInt];
-							pwinman.RunningPrograms[i].windowRect = WindowClamp.ClampToScreen(GUI.Window(pwinman.RunningPrograms[i].WID, pwinman.RunningPrograms[i].windowRect, DoMyWindow, ""));
+							if (Registry.GetBoolData("Player", "MediaPlayer", "Exists") == false)
+							{
+								Registry.SetBoolData("Player", "MediaPlayer", "Exists", true);
+							}
+							if (Registry.GetBoolData("Player", "MediaPlayer", "Fullscreen") == true)
+							{
+								if (Registry.GetBoolData("Player", "MediaPlayer", "HideUI") == true)
+								{
+									Registry.SetRectData("Player", "MediaPlayer", "Fullscreen", new Rect(
+									0,
+									0,
+									Screen.width,
+									Screen.height));
+								}
+								else
+								{
+									Registry.SetRectData("Player", "MediaPlayer", "Fullscreen", new Rect(
+									50,
+									50,
+									Screen.width-100,
+									Screen.height-100));
+								}
+
+								GUI.BringWindowToBack(pwinman.RunningPrograms[i].WID);
+							}
+							else
+							{
+								Registry.SetVector2Data("Player", "MediaPlayer", "Fullscreen", new Vector2(
+														Registry.GetRectData("Player", "MediaPlayer", "Fullscreen").x,
+														Registry.GetRectData("Player", "MediaPlayer", "Fullscreen").y));
+								//GUI.BringWindowToBack(pwinman.RunningPrograms[i].WID);
+							}
 						}
-					}
-				}
-			}
+                        if (pwinman.RunningPrograms[i].ProgramName == "Desktop")
+                        {
+							if (Registry.GetBoolData("Player", "MediaPlayer", "Exists") == true)
+							{
+								if (Registry.GetBoolData("Player", "MediaPlayer", "Fullscreen") == false)
+								{
+									pwinman.RunningPrograms[i].windowRect = WindowClamp.ClampToScreen(GUI.Window(pwinman.RunningPrograms[i].WID, pwinman.RunningPrograms[i].windowRect, DoMyWindow, ""));
+								}
+							}
+							else
+							{
+                                pwinman.RunningPrograms[i].windowRect = WindowClamp.ClampToScreen(GUI.Window(pwinman.RunningPrograms[i].WID, pwinman.RunningPrograms[i].windowRect, DoMyWindow, ""));
+                            }
+                            GUI.BringWindowToBack(pwinman.RunningPrograms[i].WID);
+                        }
+                    }
+                }
+            }
         }
+
+        IconSize = IconHeight / SizeMod;
+
+		if (ShowContext == true) 
+		{
+			ContextwindowRect.height = 21*ContextMenuOptions.Count+2;
+			GUI.skin = GameControl.control.Skins[Registry.GetIntData("Player", "System", "Skin")];
+			//GUI.color = Registry.Get32ColorData("Player", "System", "DesktopBackgroundColor");
+			ContextwindowRect = WindowClamp.ClampToScreen(GUI.Window(ContextMenuID,ContextwindowRect,DoMyContextWindow,""));
+		}
 
         if (Input.GetMouseButtonUp (0) || Input.GetMouseButtonUp (1) || Input.GetMouseButtonUp (2))
 		{
@@ -490,12 +542,12 @@ public class DesktopEnviroment : MonoBehaviour
 
 	void AddContextOptions()
 	{
-		if (GameControl.control.DesktopIconList [SelectedProgram].Extension == ProgramSystem.FileExtension.Exe)
+		if (DesktopIcons[SelectedProgram].Extension == ProgramSystemv2.FileExtension.exe)
 		{
 			ContextMenuOptions.Add ("Open");
 			//ContextMenuOptions.Add ("Copy");
 			ContextMenuOptions.Add ("Rename");
-			if (!GameControl.control.QuickLaunchNames.Contains (GameControl.control.DesktopIconList [SelectedProgram].Name)) 
+			if (!GameControl.control.QuickLaunchNames.Contains (DesktopIcons[SelectedProgram].Name)) 
 			{
 				ContextMenuOptions.Add ("Pin to QL");
 			}
@@ -507,12 +559,12 @@ public class DesktopEnviroment : MonoBehaviour
 			//ContextMenuOptions.Add ("Create Icon");
 			ContextMenuOptions.Add ("Details");
 		}
-        if (GameControl.control.DesktopIconList[SelectedProgram].Extension == ProgramSystem.FileExtension.Txt)
+        if (DesktopIcons[SelectedProgram].Extension == ProgramSystemv2.FileExtension.txt)
         {
             ContextMenuOptions.Add("Open");
             //ContextMenuOptions.Add ("Copy");
             ContextMenuOptions.Add("Rename");
-            if (!GameControl.control.QuickLaunchNames.Contains(GameControl.control.DesktopIconList[SelectedProgram].Name))
+            if (!GameControl.control.QuickLaunchNames.Contains(DesktopIcons[SelectedProgram].Name))
             {
                 ContextMenuOptions.Add("Pin to QL");
             }
@@ -524,12 +576,12 @@ public class DesktopEnviroment : MonoBehaviour
             //ContextMenuOptions.Add ("Create Icon");
             ContextMenuOptions.Add("Details");
         }
-        if (GameControl.control.DesktopIconList [SelectedProgram].Extension == ProgramSystem.FileExtension.Real)
+        if (DesktopIcons[SelectedProgram].Extension == ProgramSystemv2.FileExtension.real)
 		{
 			ContextMenuOptions.Add ("Open");
 			//ContextMenuOptions.Add ("Copy");
 			ContextMenuOptions.Add ("Rename");
-			if (!GameControl.control.QuickLaunchNames.Contains (GameControl.control.DesktopIconList [SelectedProgram].Name)) 
+			if (!GameControl.control.QuickLaunchNames.Contains (DesktopIcons[SelectedProgram].Name)) 
 			{
 				ContextMenuOptions.Add ("Pin to QL");
 			}
@@ -541,7 +593,7 @@ public class DesktopEnviroment : MonoBehaviour
 			//ContextMenuOptions.Add ("Create Icon");
 			ContextMenuOptions.Add ("Details");
 		}
-		if (GameControl.control.DesktopIconList [SelectedProgram].Extension == ProgramSystem.FileExtension.Dir || GameControl.control.DesktopIconList [SelectedProgram].Extension == ProgramSystem.FileExtension.Fdl)
+		if (DesktopIcons[SelectedProgram].Extension == ProgramSystemv2.FileExtension.dir || DesktopIcons[SelectedProgram].Extension == ProgramSystemv2.FileExtension.fdl)
 		{
 			ContextMenuOptions.Add ("Open");
 			//ContextMenuOptions.Add ("Create Icon");
@@ -562,8 +614,8 @@ public class DesktopEnviroment : MonoBehaviour
 	void DoMyContextWindow(int WindowID)
 	{
 		//GUI.Box (new Rect (Input.mousePosition.x, Input.mousePosition.y, 100, 200), "");
-		GUI.backgroundColor = com.colors[Customize.cust.ButtonColorInt];
-		GUI.contentColor = com.colors[Customize.cust.FontColorInt];
+		GUI.backgroundColor = Registry.Get32ColorData("Player", "System", "ButtonColor");
+		GUI.contentColor = Registry.Get32ColorData("Player", "System", "FontColor");
 
 		if (ContextMenuOptions.Count <= 0) 
 		{
@@ -584,37 +636,37 @@ public class DesktopEnviroment : MonoBehaviour
 		switch (SelectedOption) 
 		{
 		case "Open":
-			switch (GameControl.control.DesktopIconList [SelectedProgram].Extension) 
+			switch (DesktopIcons[SelectedProgram].Extension) 
 			{
-			case ProgramSystem.FileExtension.Txt:
+			case ProgramSystemv2.FileExtension.txt:
 				OpenTxt();
 				CloseContextMenu();
 				break;
-			case ProgramSystem.FileExtension.Fdl:
+			case ProgramSystemv2.FileExtension.fdl:
 				OpenFld();
 				CloseContextMenu();
 				break;
-			case ProgramSystem.FileExtension.Ins:
+			case ProgramSystemv2.FileExtension.ins:
 				//OpenIns();
 				CloseContextMenu();
 				break;
-			case ProgramSystem.FileExtension.Exe:
+			case ProgramSystemv2.FileExtension.exe:
 				OpenExe();
 				CloseContextMenu();
 				break;
-			case ProgramSystem.FileExtension.Real:
+			case ProgramSystemv2.FileExtension.real:
 				OpenReal();
 				CloseContextMenu();
 				break;
-			case ProgramSystem.FileExtension.Web:
+			case ProgramSystemv2.FileExtension.web:
 				OpenWeb();
 				CloseContextMenu();
 				break;
-			case ProgramSystem.FileExtension.RealWeb:
+			case ProgramSystemv2.FileExtension.realweb:
 				OpenRealWeb();
 				CloseContextMenu();
 				break;
-			case ProgramSystem.FileExtension.Dir:
+			case ProgramSystemv2.FileExtension.dir:
 				OpenFld();
 				CloseContextMenu();
 				break;
@@ -628,26 +680,26 @@ public class DesktopEnviroment : MonoBehaviour
 		case "Rename":
 			//RenameContextOption();
 			break;
-		case "Delete":
-			DeleteSystem();
-			PlayClickSound();
-			CloseContextMenu();
-			break;
+		//case "Delete":
+		//	DeleteSystem();
+		//	PlayClickSound();
+		//	CloseContextMenu();
+		//	break;
 		case "Create Icon":
 			//CreateIcon();
 			PlayClickSound();
 			CloseContextMenu();
 			break;
-		case "Pin to QL":
-			CreateQLI();
-			PlayClickSound();
-			CloseContextMenu();
-			break;
-		case "Unpin from QL":
-			CreateQLI();
-			PlayClickSound();
-			CloseContextMenu();
-			break;
+		//case "Pin to QL":
+		//	CreateQLI();
+		//	PlayClickSound();
+		//	CloseContextMenu();
+		//	break;
+		//case "Unpin from QL":
+		//	CreateQLI();
+		//	PlayClickSound();
+		//	CloseContextMenu();
+		//	break;
 		case "Details":
             Details();
 			PlayClickSound();
@@ -656,32 +708,32 @@ public class DesktopEnviroment : MonoBehaviour
 		}
 	}
 
-	void CreateQLI()
-	{
-		if (GameControl.control.QuickProgramList.Count > 0)
-		{
-			if (!GameControl.control.QuickLaunchNames.Contains (GameControl.control.DesktopIconList[SelectedProgram].Name))
-			{
-				GameControl.control.QuickProgramList.Add (GameControl.control.DesktopIconList[SelectedProgram]);
-				GameControl.control.QuickLaunchNames.Add(GameControl.control.DesktopIconList[SelectedProgram].Name);
-			} 
-			else 
-			{
-				GameControl.control.QuickProgramList.Remove (GameControl.control.DesktopIconList[SelectedProgram]);
-				GameControl.control.QuickLaunchNames.Remove(GameControl.control.DesktopIconList[SelectedProgram].Name);
-			}
-		} 
-		else 
-		{
-			GameControl.control.QuickProgramList.Add (GameControl.control.DesktopIconList[SelectedProgram]);
-			GameControl.control.QuickLaunchNames.Add(GameControl.control.DesktopIconList[SelectedProgram].Name);
-		}
-	}
+	//void CreateQLI()
+	//{
+	//	if (GameControl.control.QuickProgramList.Count > 0)
+	//	{
+	//		if (!GameControl.control.QuickLaunchNames.Contains (GameControl.control.DesktopIconList[SelectedProgram].Name))
+	//		{
+	//			GameControl.control.QuickProgramList.Add (GameControl.control.DesktopIconList[SelectedProgram]);
+	//			GameControl.control.QuickLaunchNames.Add(GameControl.control.DesktopIconList[SelectedProgram].Name);
+	//		} 
+	//		else 
+	//		{
+	//			GameControl.control.QuickProgramList.Remove (GameControl.control.DesktopIconList[SelectedProgram]);
+	//			GameControl.control.QuickLaunchNames.Remove(GameControl.control.DesktopIconList[SelectedProgram].Name);
+	//		}
+	//	} 
+	//	else 
+	//	{
+	//		GameControl.control.QuickProgramList.Add (GameControl.control.DesktopIconList[SelectedProgram]);
+	//		GameControl.control.QuickLaunchNames.Add(GameControl.control.DesktopIconList[SelectedProgram].Name);
+	//	}
+	//}
 
-	void DeleteSystem()
-	{
-		GameControl.control.DesktopIconList.RemoveAt(SelectedProgram);
-	}
+	//void DeleteSystem()
+	//{
+	//	GameControl.control.DesktopIconList.RemoveAt(SelectedProgram);
+	//}
 
     void Details()
     {
@@ -691,21 +743,31 @@ public class DesktopEnviroment : MonoBehaviour
         com.MenuSelected = 0;
     }
 
-    void DoMyWindow(int WindowID)
+	void SelectWindowID(int WindowID)
 	{
-		//GUI.contentColor = com.colors[Customize.cust.FontColorInt];
+		if (Input.GetMouseButtonDown(0))
+		{
+			Registry.SetIntData("Player", "WindowManager", "SelectedWindow", WindowID);
+		}
+	}
+
+	void DoMyWindow(int WindowID)
+	{
+		SelectWindowID(WindowID);
+
+		//GUI.contentColor = Registry.Get32ColorData("Player", "System", "FontColor");
 
 		if (Input.GetMouseButtonDown(0))
 		{
-			winman.SelectedWID = -1;
+			Registry.SetIntData("Player","WindowManager","SelectedWindow",-1);
 		}
 
-		if (Event.current.type == EventType.keyDown && Event.current.keyCode == KeyCode.C)
+		if (Event.current.type == EventType.KeyDown && Event.current.keyCode == KeyCode.C)
         {
             Held = true;
         }
 
-        if (Event.current.type == EventType.keyUp && Event.current.keyCode == KeyCode.C)
+        if (Event.current.type == EventType.KeyUp && Event.current.keyCode == KeyCode.C)
         {
             Held = false;
         }
@@ -726,26 +788,70 @@ public class DesktopEnviroment : MonoBehaviour
             }
         }
 
-		if(GameControl.control.SelectedOS.FPC.ShowDesktopBackground == true)
+		if(Registry.GetBoolData("Player", "System", "ShowDesktopBackground") == true)
         {
-			if (ForcedBackground == false)
+			if (Registry.GetBoolData("Player", "System", "SelectedBackground") == false)
 			{
-				if (GameControl.control.SelectedOS.FPC.BackgroundAddress == "")
+				for (int i = 0; i < ListOfTextures.Count; i++)
 				{
-					GUI.DrawTexture(new Rect(0, 0, windowRect.width, windowRect.height), pic[Index]);
-				}
-				else
-				{
-					GUI.DrawTexture(new Rect(0, 0, windowRect.width, windowRect.height), pic[Index]);
+					if (Registry.GetStringData("Player", "ControlPanel", "BackgroundAddress") != "")
+					{
+						if (ListOfTextures[i].Name == "CustomBackground")
+						{
+							if (ListOfTextures[i].Texture == null)
+							{
+								ListOfTextures[i].Texture = TextureLoader.LoadPNG(Registry.GetStringData("Player", "ControlPanel", "BackgroundAddress"));
+							}
+							else
+							{
+                                if (Registry.GetStringData("Player", "System", "Aspect") == "Default" || Registry.GetStringData("Player", "System", "Aspect") == "")
+                                {
+                                    GUI.DrawTexture(new Rect(0, 0, windowRect.width, windowRect.height), ListOfTextures[i].Texture);
+                                }
+
+                                if (Registry.GetStringData("Player", "System", "Aspect") == "Fit")
+								{
+                                    GUI.DrawTexture(new Rect(0, 0, windowRect.width, windowRect.height), ListOfTextures[i].Texture, ScaleMode.ScaleToFit);
+                                }
+
+                                if (Registry.GetStringData("Player", "System", "Aspect") == "Scale")
+                                {
+                                    GUI.DrawTexture(new Rect(0, 0, windowRect.width, windowRect.height), ListOfTextures[i].Texture,ScaleMode.ScaleAndCrop);
+                                }
+                            }
+						}
+					}
+					else
+					{
+						if (ListOfTextures[i].Name == "Background")
+							GUI.DrawTexture(new Rect(0, 0, windowRect.width, windowRect.height), ListOfTextures[i].Texture = ListOfBackgroundImages[Registry.GetIntData("Player", "System", "SelectedBackground")]);
+					}
 				}
 			}
 			else
 			{
-				GUI.DrawTexture(new Rect(0, 0, windowRect.width, windowRect.height), ListOfBackgroundImages[Index]);
+				if (Registry.GetBoolData("Player", "System", "ForcedBackground") == false)
+				{
+					GUI.DrawTexture(new Rect(0, 0, windowRect.width, windowRect.height), ListOfBackgroundImages[Registry.GetIntData("Player", "System", "SelectedBackground")]);
+				}
+			}
+
+			if (Registry.GetBoolData("Player", "System", "ForcedBackground") == true)
+            {
+				for (int i = 0; i < ListOfTextures.Count; i++)
+				{
+					if (ListOfTextures[i].Name == "AltBackground")
+					{
+						if(ListOfTextures[i].Texture != null)
+                        {
+							GUI.DrawTexture(new Rect(0, 0, windowRect.width, windowRect.height), ListOfTextures[i].Texture);
+						}
+					}
+				}
 			}
 		}
 
-		if (GameControl.control.SerialKey == "")
+		if (Registry.GetStringData("Player", "OS", "SerialKey") == "")
 		{
 			float OSNameWidth = OSName.Length+60;
 			float BuildNumberWidth = BuildNumber.Length+60;
@@ -754,6 +860,7 @@ public class DesktopEnviroment : MonoBehaviour
 			GUI.Label(new Rect (2, windowRect.height-38, 300, 22), BuildNumber);
 			GUI.Label(new Rect (2, windowRect.height-22, 300, 22), NotLegitCopy);
 		}
+
 		if (GameControl.control.SelectedOS.FPC.ShowDesktopIcons == true)
 		{
 			Icons();
@@ -861,19 +968,50 @@ public class DesktopEnviroment : MonoBehaviour
 		float x = 0;
 		float y = 0;
 
-		if (GameControl.control.DesktopIconList.Count > 0)
-		{
-			for (int i = 0; i < GameControl.control.DesktopIconList.Count; i++) 
-			{
-				switch (GameControl.control.DesktopIconList [i].Extension) 
+		DesktopIcons.RemoveRange(0, DesktopIcons.Count);
+
+		int FoundPerson = 0;
+
+		for (int i = 0; i < PersonController.control.People.Count; i++)
+        {
+            if (PersonController.control.People[i].Name == "Player")
+            {
+				FoundPerson = i;
+				for (int j = 0; j < PersonController.control.People[i].Gateway.StorageDevices.Count; j++)
 				{
-				case ProgramSystem.FileExtension.Dir:
+					for (int k = 0; k < PersonController.control.People[i].Gateway.StorageDevices[j].OS.Count; k++)
+					{
+						if (PersonController.control.People[i].Gateway.StorageDevices[j].OS[k].Name == PersonController.control.People[i].Gateway.CurrentOS.Name)
+						{
+							for (int l = 0; l < PersonController.control.People[i].Gateway.StorageDevices[j].OS[k].Partitions.Count; l++)
+							{
+								for (int m = 0; m < PersonController.control.People[i].Gateway.StorageDevices[j].OS[k].Partitions[l].Files.Count; m++)
+								{
+									if (PersonController.control.People[i].Gateway.StorageDevices[j].OS[k].Partitions[l].Files[m].PinToDesktop)
+									{
+										DesktopIcons.Add(PersonController.control.People[i].Gateway.StorageDevices[j].OS[k].Partitions[l].Files[m]);
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+
+		if (DesktopIcons.Count > 0)
+		{
+			for (int i = 0; i < DesktopIcons.Count; i++) 
+			{
+				switch (DesktopIcons[i].Extension) 
+				{
+				case ProgramSystemv2.FileExtension.dir:
 					GUI.Box (new Rect (x + IconWidth/xmodpic, y + 30 + IconSize/ymodpic, IconSize, IconSize), com.Icon [0],FTextSize);
 					if (GUI.Button (new Rect (x, y + 30, IconWidth, IconHeight),"")) 
 					{
 						if (Input.GetMouseButtonUp (0)) 
 						{
-							if (Time.time - LastClick < Customize.cust.DoubleClickDelayMenu) 
+							if (Time.time - LastClick < Registry.GetFloatData("Player", "System", "DoubleClickSpeed")) 
 							{
 								PlayClickSound ();
 								SelectedProgram = i;
@@ -900,14 +1038,14 @@ public class DesktopEnviroment : MonoBehaviour
 						}
 					}
 					break;
-				case ProgramSystem.FileExtension.Fdl:
+				case ProgramSystemv2.FileExtension.fdl:
 					GUI.Box (new Rect (x + IconWidth/xmodpic, y + 30 + IconSize/ymodpic, IconSize, IconSize), com.Icon [1],FTextSize);
 					//GUI.TextArea (new Rect (x, y + 30, IconSize, IconSize), GameControl.control.DesktopIconList [i].Name);
 					if (GUI.Button (new Rect (x, y + 30, IconWidth, IconHeight),"")) 
 					{
 						if (Input.GetMouseButtonUp (0)) 
 						{
-							if (Time.time - LastClick < Customize.cust.DoubleClickDelayMenu) 
+							if (Time.time - LastClick < Registry.GetFloatData("Player", "System", "DoubleClickSpeed")) 
 							{
 								PlayClickSound ();
 								SelectedProgram = i;
@@ -934,13 +1072,13 @@ public class DesktopEnviroment : MonoBehaviour
 						}
 					}
 					break;
-				case ProgramSystem.FileExtension.Exe:
+				case ProgramSystemv2.FileExtension.exe:
 					GUI.Box (new Rect (x + IconWidth/xmodpic, y + 30 + IconSize/ymodpic, IconSize, IconSize), com.Icon [2],FTextSize);
 					if (GUI.Button (new Rect (x, y + 30, IconWidth, IconHeight),"")) 
 					{
 						if (Input.GetMouseButtonUp (0)) 
 						{
-							if (Time.time - LastClick < Customize.cust.DoubleClickDelayMenu) 
+							if (Time.time - LastClick < Registry.GetFloatData("Player", "System", "DoubleClickSpeed")) 
 							{
 								PlayClickSound ();
 								SelectedProgram = i;
@@ -967,13 +1105,13 @@ public class DesktopEnviroment : MonoBehaviour
 						}
 					}
 					break;
-				case ProgramSystem.FileExtension.Real:
+				case ProgramSystemv2.FileExtension.real:
 					GUI.Box (new Rect (x + IconWidth/xmodpic, y + 30 + IconSize/ymodpic, IconSize, IconSize), com.Icon [2],FTextSize);
 					if (GUI.Button (new Rect (x, y + 30, IconWidth, IconHeight),"")) 
 					{
 						if (Input.GetMouseButtonUp (0)) 
 						{
-							if (Time.time - LastClick < Customize.cust.DoubleClickDelayMenu) 
+							if (Time.time - LastClick < Registry.GetFloatData("Player", "System", "DoubleClickSpeed")) 
 							{
 								PlayClickSound ();
 								SelectedProgram = i;
@@ -1000,13 +1138,13 @@ public class DesktopEnviroment : MonoBehaviour
 						}
 					}
 					break;
-				case ProgramSystem.FileExtension.Web:
+				case ProgramSystemv2.FileExtension.web:
 					GUI.Box (new Rect (x + IconWidth/xmodpic, y + 30 + IconSize/ymodpic, IconSize, IconSize), com.Icon [2],FTextSize);
 					if (GUI.Button (new Rect (x, y + 30, IconWidth, IconHeight),"")) 
 					{
 						if (Input.GetMouseButtonUp (0)) 
 						{
-							if (Time.time - LastClick < Customize.cust.DoubleClickDelayMenu) 
+							if (Time.time - LastClick < Registry.GetFloatData("Player", "System", "DoubleClickSpeed")) 
 							{
 								PlayClickSound ();
 								SelectedProgram = i;
@@ -1033,13 +1171,13 @@ public class DesktopEnviroment : MonoBehaviour
 						}
 					}
 					break;
-				case ProgramSystem.FileExtension.RealWeb:
+				case ProgramSystemv2.FileExtension.realweb:
 					GUI.Box (new Rect (x + IconWidth/xmodpic, y + 30 + IconSize/ymodpic, IconSize, IconSize), com.Icon [2],FTextSize);
 					if (GUI.Button (new Rect (x, y + 30, IconWidth, IconHeight),"")) 
 					{
 						if (Input.GetMouseButtonUp (0)) 
 						{
-							if (Time.time - LastClick < Customize.cust.DoubleClickDelayMenu) 
+							if (Time.time - LastClick < Registry.GetFloatData("Player", "System", "DoubleClickSpeed")) 
 							{
 								PlayClickSound ();
 								SelectedProgram = i;
@@ -1066,13 +1204,13 @@ public class DesktopEnviroment : MonoBehaviour
 						}
 					}
 					break;
-				case ProgramSystem.FileExtension.Ins:
+				case ProgramSystemv2.FileExtension.ins:
 					GUI.Box (new Rect (x + IconWidth/xmodpic, y + 30 + IconSize/ymodpic, IconSize, IconSize), com.Icon [3],FTextSize);
 					if (GUI.Button (new Rect (x, y + 30, IconWidth, IconHeight),"")) 
 					{
 						if (Input.GetMouseButtonUp (0)) 
 						{
-							if (Time.time - LastClick < Customize.cust.DoubleClickDelayMenu) 
+							if (Time.time - LastClick < Registry.GetFloatData("Player", "System", "DoubleClickSpeed")) 
 							{
 								PlayClickSound ();
 								SelectedProgram = i;
@@ -1099,13 +1237,13 @@ public class DesktopEnviroment : MonoBehaviour
 						}
 					}
 					break;
-				case ProgramSystem.FileExtension.File:
+				case ProgramSystemv2.FileExtension.file:
 					GUI.Box (new Rect (x + IconWidth/xmodpic, y + 30 + IconSize/ymodpic, IconSize, IconSize), com.Icon [4],FTextSize);
 					if (GUI.Button (new Rect (x, y + 30, IconWidth, IconHeight),"")) 
 					{
 						if (Input.GetMouseButtonUp (0)) 
 						{
-							if (Time.time - LastClick < Customize.cust.DoubleClickDelayMenu) 
+							if (Time.time - LastClick < Registry.GetFloatData("Player", "System", "DoubleClickSpeed")) 
 							{
 								PlayClickSound ();
 								SelectedProgram = i;
@@ -1131,7 +1269,7 @@ public class DesktopEnviroment : MonoBehaviour
 						}
 					}
 					break;
-				case ProgramSystem.FileExtension.Txt:
+				case ProgramSystemv2.FileExtension.txt:
                     GUI.Box(new Rect(x + IconWidth / xmodpic, y + 30 + IconSize / ymodpic, IconSize, IconSize), com.Icon[4], FTextSize);
                     if (GUI.Button(new Rect(x, y + 30, IconWidth, IconHeight), ""))
                     {
@@ -1164,7 +1302,7 @@ public class DesktopEnviroment : MonoBehaviour
                     }
                     break;
 
-					case ProgramSystem.FileExtension.Black:
+					case ProgramSystemv2.FileExtension.black:
 						GUI.Box(new Rect(x + IconWidth / xmodpic, y + 30 + IconSize / ymodpic, IconSize, IconSize), com.Icon[6], FTextSize);
 						if (GUI.Button(new Rect(x, y + 30, IconWidth, IconHeight), ""))
 						{
@@ -1197,7 +1335,7 @@ public class DesktopEnviroment : MonoBehaviour
 						}
 						break;
 
-					case ProgramSystem.FileExtension.White:
+					case ProgramSystemv2.FileExtension.white:
 						GUI.Box(new Rect(x + IconWidth / xmodpic, y + 30 + IconSize / ymodpic, IconSize, IconSize), com.Icon[7], FTextSize);
 						if (GUI.Button(new Rect(x, y + 30, IconWidth, IconHeight), ""))
 						{
@@ -1241,7 +1379,7 @@ public class DesktopEnviroment : MonoBehaviour
 				//				}
 				//TextSize.normal.textColor = (PerceivedBrightness(BackgroundColor[i]) > 130 ? Color.black : Color.white);
 				//TextSize.font = (Font)Resources.Load ("Fonts/RedVelvetica-ShadowsBold");
-				//TextSize.normal.textColor = com.colors[Customize.cust.FontColorInt];
+				//TextSize.normal.textColor = Registry.Get32ColorData("Player", "System", "FontColor");
 
 				FTextSize.normal.background = Button;
 				BTextSize.normal.background = Button;
@@ -1261,16 +1399,16 @@ public class DesktopEnviroment : MonoBehaviour
 
 				FTextSize.fontStyle = FontStyle.Bold;
 
-				GUI.Label(new Rect(x, y + IconHeight - 2, IconWidth, 23), GameControl.control.DesktopIconList[i].Name, FTextSize);
+				GUI.Label(new Rect(x, y + IconHeight - 2, IconWidth, 23), DesktopIcons[i].Name, FTextSize);
 
 				//GUI.Label (new Rect (x+1, y + IconHeight + 5 + 1, IconWidth, 23), GameControl.control.DesktopIconList [i].Name,FTextSize);
 				//GUI.Label(new Rect (x+1, y + IconHeight + 5 - 1, IconWidth, 23), GameControl.control.DesktopIconList [i].Name,FTextSize);
 				//GUI.Label(new Rect (x+1, y + IconHeight + 5, IconWidth, 23), GameControl.control.DesktopIconList [i].Name,FTextSize);
 				//GUI.Label(new Rect (x, y + IconHeight + 5, IconWidth, 23), GameControl.control.DesktopIconList [i].Name,FTextSize);
 				BTextSize.normal.textColor = Color.white;
-				GUI.Label(new Rect (x, y+IconHeight-2, IconWidth, 23), GameControl.control.DesktopIconList [i].Name,BTextSize);
-				//GUI.Label (new Rect (x+IconWidth/xmod, y+IconHeight+15, 200, 23), GameControl.control.DesktopIconList [i].Name,BTextSize);
-				if(GameControl.control.SelectedOS.FPC.GridMode == true)
+				GUI.Label(new Rect (x, y+IconHeight-2, IconWidth, 23), DesktopIcons[i].Name,BTextSize);
+                //GUI.Label (new Rect (x+IconWidth/xmod, y+IconHeight+15, 200, 23), GameControl.control.DesktopIconList [i].Name,BTextSize);
+                if (PersonController.control.People[FoundPerson].Gateway.CurrentOS.FPC.GridMode == true)
 				{
 					MaxIconsPerRow = Screen.height / ((int)IconHeight + 30);
 					rows++;

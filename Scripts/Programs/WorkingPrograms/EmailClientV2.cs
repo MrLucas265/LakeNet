@@ -13,7 +13,7 @@ public class EmailClientV2 : MonoBehaviour
 
 	private Computer com;
 	private SoundControl sc;
-	private FileExplorer fp;
+	//private FileExplorer fp;
 	private AppMan appman;
 
 	public float native_width = 1920;
@@ -54,7 +54,7 @@ public class EmailClientV2 : MonoBehaviour
 		native_height = Customize.cust.native_height;
 		native_width = Customize.cust.native_width;
 
-		fp = Puter.GetComponent<FileExplorer>();
+		//fp = Puter.GetComponent<FileExplorer>();
 		appman = Puter.GetComponent<AppMan>();
 
 		winman = WindowHandel.GetComponent<WindowManager>();
@@ -103,7 +103,7 @@ public class EmailClientV2 : MonoBehaviour
 		if (Input.GetMouseButtonDown(0))
 		{
 			SelectedWindowID = WindowID;
-			winman.SelectedWID = WindowID;
+			Registry.SetIntData("Player", "WindowManager", "SelectedWindow", WindowID);
 		}
 	}
 
@@ -129,7 +129,7 @@ public class EmailClientV2 : MonoBehaviour
 
 	void OnGUI()
 	{
-		GUI.skin = com.Skin[GameControl.control.GUIID];
+		GUI.skin = GameControl.control.Skins[Registry.GetIntData("Player", "System", "Skin")];
 
 		for (int PersonCount = 0; PersonCount < PersonController.control.People.Count; PersonCount++)
 		{
@@ -141,7 +141,7 @@ public class EmailClientV2 : MonoBehaviour
 				{
 					if (pwinman.RunningPrograms[i].ProgramName == ProgramNameForWinMan)
 					{
-						GUI.color = com.colors[Customize.cust.WindowColorInt];
+						GUI.color = Registry.Get32ColorData("Player", "System", "WindowColor");
 						pwinman.RunningPrograms[i].windowRect = WindowClamp.ClampToScreen(GUI.Window(pwinman.RunningPrograms[i].WID, pwinman.RunningPrograms[i].windowRect, DoMyWindow, ""));
 					}
 					if (pwinman.RunningPrograms[i].ProgramName == ContextMenuName)
@@ -199,20 +199,20 @@ public class EmailClientV2 : MonoBehaviour
 							CloseButton = new Rect(pwinman.RunningPrograms[i].windowRect.width - 23, 2, 21, 21);
 							if (CloseButton.Contains(Event.current.mousePosition))
 							{
-								if (GUI.Button(new Rect(CloseButton), "X", com.Skin[GameControl.control.GUIID].customStyles[0]))
+								if (GUI.Button(new Rect(CloseButton), "X", GameControl.control.Skins[Registry.GetIntData("Player", "System", "Skin")].customStyles[0]))
 								{
 									Close(SelectedWindowID);
 								}
 
-								GUI.backgroundColor = com.colors[Customize.cust.ButtonColorInt];
-								GUI.contentColor = com.colors[Customize.cust.FontColorInt];
+								GUI.backgroundColor = Registry.Get32ColorData("Player", "System", "ButtonColor");
+								GUI.contentColor = Registry.Get32ColorData("Player", "System", "FontColor");
 							}
 							else
 							{
-								GUI.backgroundColor = com.colors[Customize.cust.ButtonColorInt];
-								GUI.contentColor = com.colors[Customize.cust.FontColorInt];
+								GUI.backgroundColor = Registry.Get32ColorData("Player", "System", "ButtonColor");
+								GUI.contentColor = Registry.Get32ColorData("Player", "System", "FontColor");
 
-								if (GUI.Button(new Rect(CloseButton), "X", com.Skin[GameControl.control.GUIID].customStyles[1]))
+								if (GUI.Button(new Rect(CloseButton), "X", GameControl.control.Skins[Registry.GetIntData("Player", "System", "Skin")].customStyles[1]))
 								{
 									Close(SelectedWindowID);
 								}
@@ -313,8 +313,8 @@ public class EmailClientV2 : MonoBehaviour
 	{
 		SelectWindowID(WindowID);
 		//GUI.Box (new Rect (Input.mousePosition.x, Input.mousePosition.y, 100, 200), "");
-		GUI.backgroundColor = com.colors[Customize.cust.ButtonColorInt];
-		GUI.contentColor = com.colors[Customize.cust.FontColorInt];
+		GUI.backgroundColor = Registry.Get32ColorData("Player", "System", "ButtonColor");
+		GUI.contentColor = Registry.Get32ColorData("Player", "System", "FontColor");
 
 		if (ContextMenuOptions.Count <= 0)
 		{
@@ -330,7 +330,7 @@ public class EmailClientV2 : MonoBehaviour
 					SelectedOption = ContextMenuOptions[i];
 				}
 
-				if (Input.GetMouseButtonDown(0) && winman.SelectedWID != WindowID)
+				if (Input.GetMouseButtonDown(0) && Registry.GetIntData("Player","WindowManager","SelectedWindow") != WindowID)
 				{
 					if (!new Rect(1, 1 + 21 * i, 100 - 2, 21).Contains(Event.current.mousePosition))
 					{
@@ -340,37 +340,37 @@ public class EmailClientV2 : MonoBehaviour
 			}
 		}
 
-		switch (SelectedOption)
-		{
-			case "New":
-				CloseContextMenu();
-				break;
-			case "Open":
-				if (fp.enabled == true)
-				{
-					fp.SetFileExplorerData("Text", "Open", "Notepad");
-					CloseContextMenu();
-				}
-				else
-				{
-					appman.SelectedApp = "File Explorer";
-					fp.SetFileExplorerData("Text", "Open", "Notepad");
-					CloseContextMenu();
-				}
-				break;
-			case "Save As":
-				if (fp.enabled == true)
-				{
-					fp.SetFileExplorerData("Text", "Save As", "Notepad");
-					CloseContextMenu();
-				}
-				else
-				{
-					appman.SelectedApp = "File Explorer";
-					fp.SetFileExplorerData("Text", "Save As", "Notepad");
-					CloseContextMenu();
-				}
-				break;
-		}
+		//switch (SelectedOption)
+		//{
+		//	case "New":
+		//		CloseContextMenu();
+		//		break;
+		//	case "Open":
+		//		if (fp.enabled == true)
+		//		{
+		//			fp.SetFileExplorerData("Text", "Open", "Notepad");
+		//			CloseContextMenu();
+		//		}
+		//		else
+		//		{
+		//			appman.SelectedApp = "File Explorer";
+		//			fp.SetFileExplorerData("Text", "Open", "Notepad");
+		//			CloseContextMenu();
+		//		}
+		//		break;
+		//	case "Save As":
+		//		if (fp.enabled == true)
+		//		{
+		//			fp.SetFileExplorerData("Text", "Save As", "Notepad");
+		//			CloseContextMenu();
+		//		}
+		//		else
+		//		{
+		//			appman.SelectedApp = "File Explorer";
+		//			fp.SetFileExplorerData("Text", "Save As", "Notepad");
+		//			CloseContextMenu();
+		//		}
+		//		break;
+		//}
 	}
 }

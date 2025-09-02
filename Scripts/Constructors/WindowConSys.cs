@@ -13,6 +13,7 @@ public class WindowConSys
     public int WID;
     public int PID;
     public int WPN;
+    public string CurrentTask;
     public SRect windowRect;
     public SRect TitleBoxRect;
     public List<SRect> windowButtons = new List<SRect>();
@@ -22,8 +23,10 @@ public class WindowConSys
     public List<RegistrySystem> LocalRegister = new List<RegistrySystem>();
     public ResourceManagerSystem CurrentRMS;
     public ResourceManagerSystem InitalRMS;
+    public ResourceManagerSystem TotalRMS;
+    public bool show;
 
-    public WindowConSys(string windowName,string programName,string processName, string status, string type,int wid,int pid,int wpn, SRect WindowRect, List<SRect> WindowButtons, SRect titleboxrect,bool resize, SRect resizerect, SRect windowresizerect)
+    public WindowConSys(string windowName,string programName,string processName, string status, string type,int wid,int pid,int wpn, SRect WindowRect, List<SRect> WindowButtons, SRect titleboxrect,bool resize, SRect resizerect, SRect windowresizerect,ResourceManagerSystem initalrms)
     {
         WindowName = windowName;
         ProgramName = programName;
@@ -39,5 +42,6 @@ public class WindowConSys
         Resize = resize;
         ResizeRect = resizerect;
         WindowResizeRect = windowresizerect;
+        InitalRMS = initalrms;
     }
 }

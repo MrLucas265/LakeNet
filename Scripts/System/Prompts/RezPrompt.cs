@@ -58,7 +58,7 @@ public class RezPrompt : MonoBehaviour
 
 		if (Game == true)
 		{
-			GUI.skin = com.Skin[GameControl.control.GUIID];
+			GUI.skin = GameControl.control.Skins[Registry.GetIntData("Player", "System", "Skin")];
 		}
 
 		//set up scaling
@@ -80,16 +80,16 @@ public class RezPrompt : MonoBehaviour
 
 		if (CloseButton.Contains (Event.current.mousePosition)) 
 		{
-			if (GUI.Button (new Rect (CloseButton), "X", com.Skin [GameControl.control.GUIID].customStyles [0])) 
+			if (GUI.Button (new Rect (CloseButton), "X", GameControl.control.Skins[Registry.GetIntData("Player", "System", "Skin")].customStyles [0])) 
 			{
 				Restart = false;
 			}
 		} 
 		else
 		{
-			GUI.backgroundColor = com.colors[Customize.cust.ButtonColorInt];
-			GUI.contentColor = com.colors[Customize.cust.FontColorInt];
-			if (GUI.Button (new Rect (CloseButton), "X", com.Skin [GameControl.control.GUIID].customStyles [1])) 
+			GUI.backgroundColor = Registry.Get32ColorData("Player", "System", "ButtonColor");
+			GUI.contentColor = Registry.Get32ColorData("Player", "System", "FontColor");
+			if (GUI.Button (new Rect (CloseButton), "X", GameControl.control.Skins[Registry.GetIntData("Player", "System", "Skin")].customStyles [1])) 
 			{
 				Restart = false;
 			}
@@ -107,7 +107,7 @@ public class RezPrompt : MonoBehaviour
 		{
 			if(GUI.Button(new Rect(100, 125, 50, 20),"Restart Now"))
 			{
-				GameControl.control.Gateway.Status.Booted = false;
+				GameControl.control.GatewayStatus.Booted = false;
 				//Application.LoadLevel (1);
 			}
 

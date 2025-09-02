@@ -203,11 +203,11 @@ public class NetViewer : MonoBehaviour
 		Customize.cust.windowx[windowID] = windowRect.x;
 		Customize.cust.windowy[windowID] = windowRect.y;
 
-		GUI.skin = com.Skin[GameControl.control.GUIID];
+		GUI.skin = GameControl.control.Skins[Registry.GetIntData("Player", "System", "Skin")];
 
 		if(show == true)
 		{
-			GUI.color = com.colors[Customize.cust.WindowColorInt];
+			GUI.color = Registry.Get32ColorData("Player", "System", "WindowColor");
 			windowRect = WindowClamp.ClampToScreen(GUI.Window(windowID,windowRect,DoMyWindow,""));
 		}
 
@@ -225,21 +225,21 @@ public class NetViewer : MonoBehaviour
 
 		if (CloseButton.Contains (Event.current.mousePosition)) 
 		{
-			if (GUI.Button (new Rect (CloseButton), "X", com.Skin [GameControl.control.GUIID].customStyles [0])) 
+			if (GUI.Button (new Rect (CloseButton), "X", GameControl.control.Skins[Registry.GetIntData("Player", "System", "Skin")].customStyles [0])) 
 			{
 				Close();
 			}
 		} 
 		else
 		{
-			GUI.backgroundColor = com.colors[Customize.cust.ButtonColorInt];
-			GUI.contentColor = com.colors[Customize.cust.FontColorInt];
-			GUI.Button (new Rect (CloseButton), "X", com.Skin [GameControl.control.GUIID].customStyles [1]);
+			GUI.backgroundColor = Registry.Get32ColorData("Player", "System", "ButtonColor");
+			GUI.contentColor = Registry.Get32ColorData("Player", "System", "FontColor");
+			GUI.Button (new Rect (CloseButton), "X", GameControl.control.Skins[Registry.GetIntData("Player", "System", "Skin")].customStyles [1]);
 		}
 
 		if (MiniButton.Contains (Event.current.mousePosition)) 
 		{
-			if (GUI.Button (new Rect (MiniButton), "-",com.Skin [GameControl.control.GUIID].customStyles [2])) 
+			if (GUI.Button (new Rect (MiniButton), "-",GameControl.control.Skins[Registry.GetIntData("Player", "System", "Skin")].customStyles [2])) 
 			{
 				minimize = !minimize;
 				Minimize();
@@ -247,17 +247,17 @@ public class NetViewer : MonoBehaviour
 		} 
 		else
 		{
-			GUI.backgroundColor = com.colors[Customize.cust.ButtonColorInt];
-			GUI.contentColor = com.colors[Customize.cust.FontColorInt];
-			if (GUI.Button (new Rect (MiniButton), "-",com.Skin [GameControl.control.GUIID].customStyles [2])) 
+			GUI.backgroundColor = Registry.Get32ColorData("Player", "System", "ButtonColor");
+			GUI.contentColor = Registry.Get32ColorData("Player", "System", "FontColor");
+			if (GUI.Button (new Rect (MiniButton), "-",GameControl.control.Skins[Registry.GetIntData("Player", "System", "Skin")].customStyles [2])) 
 			{
 				minimize = !minimize;
 				Minimize();
 			}
 		}
 
-		GUI.backgroundColor = com.colors[Customize.cust.ButtonColorInt];
-		GUI.contentColor = com.colors[Customize.cust.FontColorInt];
+		GUI.backgroundColor = Registry.Get32ColorData("Player", "System", "ButtonColor");
+		GUI.contentColor = Registry.Get32ColorData("Player", "System", "FontColor");
 
 		GUI.DragWindow (new Rect (DefaltBoxSetting));
 		GUI.Box(new Rect(DefaltBoxSetting),"Net Viewer");
@@ -292,12 +292,12 @@ public class NetViewer : MonoBehaviour
 
 			GUI.contentColor = Color.white;
 
-			if (GUI.Button (new Rect (ForwardButtonLocation), ForwardIcon, com.Skin [GameControl.control.GUIID].customStyles [2])) 
+			if (GUI.Button (new Rect (ForwardButtonLocation), ForwardIcon, GameControl.control.Skins[Registry.GetIntData("Player", "System", "Skin")].customStyles [2])) 
 			{
 				ib.Foward();
 			}
 
-			if (GUI.Button (new Rect (BackButtonLocation), BackIcon, com.Skin [GameControl.control.GUIID].customStyles [2]))
+			if (GUI.Button (new Rect (BackButtonLocation), BackIcon, GameControl.control.Skins[Registry.GetIntData("Player", "System", "Skin")].customStyles [2]))
 			{
 				ib.Back();
 			}
@@ -309,7 +309,7 @@ public class NetViewer : MonoBehaviour
 			//	ib.SiteConnection();
 			//}
 
-			if (GUI.Button(new Rect(URLSearchLocation), SearchIcon, com.Skin[GameControl.control.GUIID].customStyles[2]))
+			if (GUI.Button(new Rect(URLSearchLocation), SearchIcon, GameControl.control.Skins[Registry.GetIntData("Player", "System", "Skin")].customStyles[2]))
 			{
 				ib.SiteConnectingStuff();
 				ib.SiteConnectingStuff();
@@ -324,7 +324,7 @@ public class NetViewer : MonoBehaviour
 
 			if (AddbookmarkButton.Contains (Event.current.mousePosition)) 
 			{
-				if (GUI.Button (new Rect (AddbookmarkButton), AddBookmarkIcon,com.Skin [GameControl.control.GUIID].customStyles [2])) 
+				if (GUI.Button (new Rect (AddbookmarkButton), AddBookmarkIcon,GameControl.control.Skins[Registry.GetIntData("Player", "System", "Skin")].customStyles [2])) 
 				{
 					if (!GameControl.control.FavSites.Contains (ib.Inputted)) 
 					{
@@ -334,9 +334,9 @@ public class NetViewer : MonoBehaviour
 			} 
 			else
 			{
-				GUI.backgroundColor = com.colors[Customize.cust.ButtonColorInt];
+				GUI.backgroundColor = Registry.Get32ColorData("Player", "System", "ButtonColor");
 				GUI.contentColor = Color.white;
-				if (GUI.Button (new Rect (AddbookmarkButton), AddBookmarkIcon,com.Skin [GameControl.control.GUIID].customStyles [2])) 
+				if (GUI.Button (new Rect (AddbookmarkButton), AddBookmarkIcon,GameControl.control.Skins[Registry.GetIntData("Player", "System", "Skin")].customStyles [2])) 
 				{
 					if (!GameControl.control.FavSites.Contains (ib.Inputted)) 
 					{
@@ -347,9 +347,9 @@ public class NetViewer : MonoBehaviour
 
 			if (ExtraButton.Contains (Event.current.mousePosition)) 
 			{
-				GUI.backgroundColor = com.colors[Customize.cust.ButtonColorInt];
-				GUI.contentColor = com.colors[Customize.cust.FontColorInt];
-				if (GUI.Button (new Rect (ExtraButton), "|||",com.Skin [GameControl.control.GUIID].customStyles [2])) 
+				GUI.backgroundColor = Registry.Get32ColorData("Player", "System", "ButtonColor");
+				GUI.contentColor = Registry.Get32ColorData("Player", "System", "FontColor");
+				if (GUI.Button (new Rect (ExtraButton), "|||",GameControl.control.Skins[Registry.GetIntData("Player", "System", "Skin")].customStyles [2])) 
 				{
 					//showTabMenu = !showTabMenu;
 					if (Page == 0)
@@ -364,9 +364,9 @@ public class NetViewer : MonoBehaviour
 			} 
 			else
 			{
-				GUI.backgroundColor = com.colors[Customize.cust.ButtonColorInt];
-				GUI.contentColor = com.colors[Customize.cust.FontColorInt];
-				if (GUI.Button (new Rect (ExtraButton), "|||",com.Skin [GameControl.control.GUIID].customStyles [2])) 
+				GUI.backgroundColor = Registry.Get32ColorData("Player", "System", "ButtonColor");
+				GUI.contentColor = Registry.Get32ColorData("Player", "System", "FontColor");
+				if (GUI.Button (new Rect (ExtraButton), "|||",GameControl.control.Skins[Registry.GetIntData("Player", "System", "Skin")].customStyles [2])) 
 				{
 					//showTabMenu = !showTabMenu;
 					if (Page == 0)

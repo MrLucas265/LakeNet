@@ -145,7 +145,7 @@ public class CLIV3 : MonoBehaviour
 
     void OnGUI()
     {
-        Skin = com.Skin[GameControl.control.GUIID];
+        Skin = GameControl.control.Skins[Registry.GetIntData("Player", "System", "Skin")];
         GUI.skin = Skin;
 
         Customize.cust.windowx[windowID] = windowRect.x;
@@ -161,7 +161,7 @@ public class CLIV3 : MonoBehaviour
     void DoMyWindow(int WindowID)
     {
 
-        if (GameControl.control.Gateway.Status.Terminal == false)
+        if (GameControl.control.GatewayStatus.Terminal == false)
         {
             if (CloseButton.Contains(Event.current.mousePosition))
             {
@@ -172,8 +172,8 @@ public class CLIV3 : MonoBehaviour
             }
             else
             {
-                GUI.backgroundColor = com.colors[Customize.cust.ButtonColorInt];
-                GUI.contentColor = com.colors[Customize.cust.FontColorInt];
+                GUI.backgroundColor = Registry.Get32ColorData("Player", "System", "ButtonColor");
+                GUI.contentColor = Registry.Get32ColorData("Player", "System", "FontColor");
                 GUI.Button(new Rect(CloseButton), "X", Skin.customStyles[1]);
             }
 
@@ -187,8 +187,8 @@ public class CLIV3 : MonoBehaviour
             }
             else
             {
-                GUI.backgroundColor = com.colors[Customize.cust.ButtonColorInt];
-                GUI.contentColor = com.colors[Customize.cust.FontColorInt];
+                GUI.backgroundColor = Registry.Get32ColorData("Player", "System", "ButtonColor");
+                GUI.contentColor = Registry.Get32ColorData("Player", "System", "FontColor");
                 if (GUI.Button(new Rect(MiniButton), "-", Skin.customStyles[2]))
                 {
                     minimize = !minimize;
@@ -226,7 +226,7 @@ public class CLIV3 : MonoBehaviour
         //	//AudioSoucres.pitch = 1;
         //}
 
-        if (Event.current.type == EventType.keyDown && Event.current.keyCode == KeyCode.Return)
+        if (Event.current.type == EventType.KeyDown && Event.current.keyCode == KeyCode.Return)
         {
             cli.PastCommands.Add(cli.Parse);
             cli.CommandCheck();
@@ -234,7 +234,7 @@ public class CLIV3 : MonoBehaviour
             cli.SetScrollPos = true;
         }
 
-        if (Event.current.type == EventType.keyDown && Event.current.keyCode == KeyCode.DownArrow)
+        if (Event.current.type == EventType.KeyDown && Event.current.keyCode == KeyCode.DownArrow)
         {
             if (PastCommandSelect < scrollsize - 1)
             {
@@ -243,7 +243,7 @@ public class CLIV3 : MonoBehaviour
             }
         }
 
-        if (Event.current.type == EventType.keyDown && Event.current.keyCode == KeyCode.UpArrow)
+        if (Event.current.type == EventType.KeyDown && Event.current.keyCode == KeyCode.UpArrow)
         {
             if (PastCommandSelect >= 1)
             {
@@ -259,7 +259,7 @@ public class CLIV3 : MonoBehaviour
         //Customize.cust.TerminalTextPosMod = SMod * User.Length;
 
 
-        if (GameControl.control.Gateway.Status.Terminal == true)
+        if (GameControl.control.GatewayStatus.Terminal == true)
         {
             GUI.contentColor = Color.white;
 

@@ -281,7 +281,7 @@ public class AppatureDesktop : MonoBehaviour
 	void OnGUI()
 	{
 		GUI.depth = -30;
-		GUI.skin = com.Skin[GameControl.control.GUIID];
+		GUI.skin = GameControl.control.Skins[Registry.GetIntData("Player", "System", "Skin")];
 
 		Customize.cust.windowx[windowID] = windowRect.x;
 		Customize.cust.windowy[windowID] = windowRect.y;
@@ -406,7 +406,7 @@ public class AppatureDesktop : MonoBehaviour
 			GUI.Label (new Rect(VolumeText),"%" + TempVol.ToString("F0"));
 		}
 
-		if (GUI.Button (new Rect (SpeakerButton),desk.SpeakerIcon,com.Skin[GameControl.control.GUIID].customStyles[DesktopStyle])) 
+		if (GUI.Button (new Rect (SpeakerButton),desk.SpeakerIcon,GameControl.control.Skins[Registry.GetIntData("Player", "System", "Skin")].customStyles[DesktopStyle])) 
 		{
 			ShowVolume = !ShowVolume;
 		}
@@ -421,8 +421,8 @@ public class AppatureDesktop : MonoBehaviour
 
 	public void DesktopEnv()
 	{
-		GUI.backgroundColor = com.colors[Customize.cust.ButtonColorInt];
-		//GUI.contentColor = com.colors[Customize.cust.FontColorInt];
+		GUI.backgroundColor = Registry.Get32ColorData("Player", "System", "ButtonColor");
+		//GUI.contentColor = Registry.Get32ColorData("Player", "System", "FontColor");
 		//GUI.color = Color.blue;
 
 		ClockUI();
@@ -430,7 +430,7 @@ public class AppatureDesktop : MonoBehaviour
 
 		//GUI.TextArea(new Rect (Hint), com.Hint);
 
-		if (GUI.Button (new Rect (AppButton), "Appatures",com.Skin [GameControl.control.GUIID].customStyles [DesktopStyle]))
+		if (GUI.Button (new Rect (AppButton), "Appatures",GameControl.control.Skins[Registry.GetIntData("Player", "System", "Skin")].customStyles [DesktopStyle]))
 		{
 			sc.SoundSelect = 3;
 			sc.PlaySound();

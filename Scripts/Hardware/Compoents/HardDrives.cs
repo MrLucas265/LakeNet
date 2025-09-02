@@ -1,8 +1,10 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
+using System.Threading;
 using UnityEngine;
 
-public class HardDrives : MonoBehaviour 
+public class HardDrives : MonoBehaviour
 {
 	public float PowerUsage;
 	public float DriveSpeed;
@@ -19,31 +21,30 @@ public class HardDrives : MonoBehaviour
 	void Start ()
 	{
 
-	}
-	
-	// Update is called once per frame
-	void Update ()
-	{
-		if(PersonController.control.People.Count > 0)
-		{
-			for (int i = 0; i < PersonController.control.People.Count; i++)
-			{
-				for (int j = 0; j < PersonController.control.People[i].Gateway.StorageDevices.Count; j++)
-				{
-					if (PersonController.control.People[i].Gateway.Status.On == true)
-					{
-						if (PersonController.control.People[i].Gateway.Timer.TimeRemain <= 0)
-						{
-							Health(i,j);
-							FileSizesCheck(i, j);
-						}
-					}
-				}
-			}
-		}
-	}
+    }
 
-	void Health(int PeopleIndex, int StorageDevice)
+	public static void CheckAllDrives()
+	{
+        if (PersonController.control.People.Count > 0)
+        {
+            for (int i = 0; i < PersonController.control.People.Count; i++)
+            {
+                for (int j = 0; j < PersonController.control.People[i].Gateway.StorageDevices.Count; j++)
+                {
+                    if (PersonController.control.People[i].Gateway.Status.On == true)
+                    {
+                        if (PersonController.control.People[i].Gateway.Timer.TimeRemain <= 0)
+                        {
+                            Health(i, j);
+                            FileSizesCheck(i, j);
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+	static void Health(int PeopleIndex, int StorageDevice)
 	{
 		if (PersonController.control.People[PeopleIndex].Gateway.StorageDevices[StorageDevice].CurrentHealth > 0)
 		{
@@ -56,9 +57,9 @@ public class HardDrives : MonoBehaviour
 		}
 	}
 
-	public void FileSizesCheck(int i, int j)
+	static void FileSizesCheck(int i, int j)
 	{
-		PersonController.control.People[i].Gateway.StorageDevices[j].UsedSpace = 0;
+        PersonController.control.People[i].Gateway.StorageDevices[j].UsedSpace = 0;
 		PersonController.control.People[i].Gateway.StorageDevices[j].FreeSpacePercentage = ((double)PersonController.control.People[i].Gateway.StorageDevices[j].FreeSpace * 100) / PersonController.control.People[i].Gateway.StorageDevices[j].Capacity;
 
 		for (int l = 0; l < PersonController.control.People[i].Gateway.StorageDevices[j].OS.Count; l++)
@@ -72,11 +73,27 @@ public class HardDrives : MonoBehaviour
 
 				for (int n = 0; n < PersonController.control.People[i].Gateway.StorageDevices[j].OS[l].Partitions[m].Files.Count; n++)
 				{
-					if (PersonController.control.People[i].Gateway.StorageDevices[j].OS[l].Partitions[m].Files[n].Extension == ProgramSystemv2.FileExtension.Exe ||
-						PersonController.control.People[i].Gateway.StorageDevices[j].OS[l].Partitions[m].Files[n].Extension == ProgramSystemv2.FileExtension.Txt ||
-						PersonController.control.People[i].Gateway.StorageDevices[j].OS[l].Partitions[m].Files[n].Extension == ProgramSystemv2.FileExtension.File ||
-						PersonController.control.People[i].Gateway.StorageDevices[j].OS[l].Partitions[m].Files[n].Extension == ProgramSystemv2.FileExtension.OS ||
-						PersonController.control.People[i].Gateway.StorageDevices[j].OS[l].Partitions[m].Files[n].Extension == ProgramSystemv2.FileExtension.Ins)
+                    var programname = PersonController.control.People[i].Gateway.StorageDevices[j].OS[l].Partitions[m].Files[n].Location
+								+ "/" + PersonController.control.People[i].Gateway.StorageDevices[j].OS[l].Partitions[m].Files[n].Name +
+								"." + PersonController.control.People[i].Gateway.StorageDevices[j].OS[l].Partitions[m].Files[n].Extension;
+
+                    if (!Registry.StringDataListContains(PersonController.control.People[i].Name, "Core", "InstalledPrograms", programname))
+                    {
+                        Registry.AddStringListData(PersonController.control.People[i].Name, "Core", "InstalledPrograms", programname);
+                    }
+
+                    //if (!Registry.ProgramDataContains(PersonController.control.People[i].Name, "Core", "InstalledPrograms", PersonController.control.People[i].Gateway.StorageDevices[j].OS[l].Partitions[m].Files[n]))
+                    //{
+                    //    Registry.AddProgramData(PersonController.control.People[i].Name, "Core", "InstalledPrograms",
+                    //        PersonController.control.People[i].Gateway.StorageDevices[j].OS[l].Partitions[m].Files[n]);
+                    //}
+
+
+                    if (PersonController.control.People[i].Gateway.StorageDevices[j].OS[l].Partitions[m].Files[n].Extension == ProgramSystemv2.FileExtension.exe ||
+						PersonController.control.People[i].Gateway.StorageDevices[j].OS[l].Partitions[m].Files[n].Extension == ProgramSystemv2.FileExtension.txt ||
+						PersonController.control.People[i].Gateway.StorageDevices[j].OS[l].Partitions[m].Files[n].Extension == ProgramSystemv2.FileExtension.file ||
+						PersonController.control.People[i].Gateway.StorageDevices[j].OS[l].Partitions[m].Files[n].Extension == ProgramSystemv2.FileExtension.os ||
+						PersonController.control.People[i].Gateway.StorageDevices[j].OS[l].Partitions[m].Files[n].Extension == ProgramSystemv2.FileExtension.ins)
 					{
 						if (PersonController.control.People[i].Gateway.StorageDevices[j].OS[l].Partitions[m].Files[n].Location.StartsWith(PersonController.control.People[i].Gateway.StorageDevices[j].OS[l].Partitions[m].DriveLetter))
 						{
@@ -85,7 +102,7 @@ public class HardDrives : MonoBehaviour
 						}
 					}
 
-					if (PersonController.control.People[i].Gateway.StorageDevices[j].OS[l].Partitions[m].Files[n].Extension == ProgramSystemv2.FileExtension.Dir)
+					if (PersonController.control.People[i].Gateway.StorageDevices[j].OS[l].Partitions[m].Files[n].Extension == ProgramSystemv2.FileExtension.dir)
 					{
 						if (PersonController.control.People[i].Gateway.StorageDevices[j].OS[l].Partitions[m].Files[n].Name.StartsWith(PersonController.control.People[i].Gateway.StorageDevices[j].OS[l].Partitions[m].DriveLetter))
 						{
