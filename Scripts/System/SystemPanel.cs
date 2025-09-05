@@ -280,7 +280,7 @@ public class SystemPanel : MonoBehaviour
 	public void OpenFileExplorerBackground()
 	{
 		//appman.SelectedApp = "FileBrow"; // old
-		appman.LaunchRequest = Program.Run("File Browser", "FileBrow", "Player"); // new
+		appman.LaunchRequest = Program.Run("File Browser", ProgramSystemv2.ProgramTypes.FileBrow, "Player"); // new
 	}
 
 	public void OpenFileExplorerScreensaverBackground()

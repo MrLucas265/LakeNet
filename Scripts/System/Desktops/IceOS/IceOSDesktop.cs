@@ -413,7 +413,7 @@ public class IceOSDesktop : MonoBehaviour
             //        appman.SelectedApp = GameControl.control.ProgramFiles[i].Target;
             //    }
             //}
-			appman.LaunchRequest = Program.Run("Start Menu", "Start Menu", "Player");
+			appman.LaunchRequest = Program.Run("Start Menu", ProgramSystemv2.ProgramTypes.StartMenu, "Player");
 		}
 
 		if(new Rect(AppButton).Contains (Event.current.mousePosition)) 

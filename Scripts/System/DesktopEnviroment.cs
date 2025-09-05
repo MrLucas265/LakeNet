@@ -212,7 +212,7 @@ public class DesktopEnviroment : MonoBehaviour
 				UpdateOS();
 				if (PersonController.control.People[i].Gateway.CurrentOS.Options.EnableDesktopEnviroment)
 				{
-					appman.LaunchRequest = Program.Run("Desktop", "Desktop", "Player");
+					appman.LaunchRequest = Program.Run("Desktop", ProgramSystemv2.ProgramTypes.Desktop, "Player");
 				}
             }
 			for (int j = 0; j < PersonController.control.People[i].Gateway.RunningPrograms.Count; j++)
@@ -282,7 +282,7 @@ public class DesktopEnviroment : MonoBehaviour
 			GraphicsUsage += 5;
 			Index = 2;
 			SetOSUsage = false;
-			ListOfBackgroundImages.Add(Resources.Load<Texture2D>("DesktopBackgrounds/" + "ethelbg"));
+			ListOfBackgroundImages.Insert(0,Resources.Load<Texture2D>("DesktopBackgrounds/" + "ethelbg"));
 			StartUpdateOS = false;
 			DefaultBackground = true;
 			SetUsage ();
@@ -315,7 +315,7 @@ public class DesktopEnviroment : MonoBehaviour
 			MemoryUsage += 256;
 			GraphicsUsage += 2;
 			Index = 2;
-			ListOfBackgroundImages.Add(Resources.Load<Texture2D>("DesktopBackgrounds/" + "ice1"));
+			ListOfBackgroundImages.Insert(0,Resources.Load<Texture2D>("DesktopBackgrounds/" + "ice1"));
 			SetOSUsage = false;
 			StartUpdateOS = false;
 			DefaultBackground = true;

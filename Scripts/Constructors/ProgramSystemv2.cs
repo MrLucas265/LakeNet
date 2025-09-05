@@ -42,8 +42,60 @@ public class ProgramSystemv2
 	public List<InfectionSystem> Infections = new List<InfectionSystem>();
 	public List<FileType> Type = new List<FileType>();
 	public ResourceManagerSystem FileUsage = new ResourceManagerSystem();
+	public ProgramTypes ProgramType;
 
-	public enum FileExtension
+    public enum ProgramTypes
+    {
+		Null,
+        BugReport,
+        fakeapp,
+        Desktop,
+        DeviceManager,
+        ClockPro,
+        ControlPanel,
+        FileManager,
+        FileUtility,
+        Notepad,
+        FileBrow,
+        Calculator,
+        GatewayViewer,
+        CLI,
+        ErrorPrompt,
+        Email,
+        EmailV2,
+        MediaPlayer,
+        Executor,
+        VolumeController,
+        AccountTracker,
+		Accounts,
+        NetViewer,
+        ExchangeViewer,
+        PasswordCracker,
+        TraceTracker,
+        CHM,
+        TaskViewer,
+        DictionaryCracker,
+        DirectorySearcher,
+        RemoteViewer,
+        SystemMap,
+        NotificationViewer,
+        PlanViewer,
+        Calendar,
+        Calendarv2,
+        EventViewer,
+        StartMenu,
+        Shutdown,
+        SystemPanel,
+        RealExeCreator,
+        MusicPlayer,
+        Version,
+        DiskManager,
+        Computer,
+        Store
+
+    }
+
+    public enum FileExtension
 	{
 		Null,
 		exe,
@@ -89,11 +141,83 @@ public class ProgramSystemv2
 
 	}
 
+    public ProgramSystemv2(ProgramTypes programtype)
+    {
+		ProgramType = programtype;
+    }
+
     public ProgramSystemv2(string name,string location,string target,FileExtension extension)
     {
 
     }
 
+    public ProgramSystemv2(string name, string content, string description, string location, string target, string iconlocation, string picturelocation,
+FileExtension extension, long used, float health,
+float version, int permissionlevel, ProgramTypes type, ResourceManagerSystem fileusage) //,Texture2D icon)
+    {
+        Name = name;
+        Content = content;
+        Description = description;
+        Location = location;
+        Target = target;
+        IconLocation = iconlocation;
+        PictureLocation = picturelocation;
+        Extension = extension;
+        Used = used;
+        Health = health;
+        Version = version;
+        PermisionLevel = permissionlevel;
+        ProgramType = type;
+        FileUsage = fileusage;
+    }
+
+
+    public ProgramSystemv2(string name, string content, string description, string location, string target, string iconlocation, string picturelocation,
+FileExtension extension, FileExtension fileinstallextension, long used, float health,
+float version, float price, float value, int permissionlevel, bool pintodesktop, bool pintomenu, bool pintobar, ProgramTypes type, ResourceManagerSystem fileusage) //,Texture2D icon)
+    {
+        Name = name;
+        Content = content;
+        Description = description;
+        Location = location;
+        Target = target;
+        IconLocation = iconlocation;
+        PictureLocation = picturelocation;
+        Extension = extension;
+        FileInstallExtension = fileinstallextension;
+        Used = used;
+        Health = health;
+        Version = version;
+        PermisionLevel = permissionlevel;
+        PinToDesktop = pintodesktop;
+        PinToMenu = pintomenu;
+        PinToBar = pintobar;
+		ProgramType = type;
+        FileUsage = fileusage;
+    }
+
+    public ProgramSystemv2(string name, string content, string description, string location, string target, 
+		string iconlocation, string picturelocation,FileExtension extension, long used, float health,float version, 
+		float price, float value, int permissionlevel, bool pintodesktop, bool pintomenu, bool pintobar, ProgramTypes type, ResourceManagerSystem fileusage) //,Texture2D icon)
+    {
+        Name = name;
+        Content = content;
+        Description = description;
+        Location = location;
+        Target = target;
+        IconLocation = iconlocation;
+        PictureLocation = picturelocation;
+        Extension = extension;
+        Used = used;
+        Health = health;
+        Version = version;
+        PermisionLevel = permissionlevel;
+        PinToDesktop = pintodesktop;
+        PinToMenu = pintomenu;
+        PinToBar = pintobar;
+        ProgramType = type;
+        FileUsage = fileusage;
+    }
 
     public ProgramSystemv2(string name, string sender, string creator, string date, string content, string description, string location, string target, string iconlocation, string picturelocation,
 	FileExtension extension, FileExtension fileinstallextension, float encryption, long free, long used, long capacity, float health,

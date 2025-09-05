@@ -4,8 +4,8 @@ using UnityEngine;
 
 public class Program 
 {
-	public static ProgramRequest Run(string ProgramName, string ProgramTarget, string PersonsName)
-	{
-		return new ProgramRequest(ProgramName, ProgramTarget, PersonsName);
-	}
+    public static ProgramRequest Run(string ProgramName, ProgramSystemv2.ProgramTypes ProgramType, string PersonsName)
+    {
+        return new ProgramRequest(ProgramName, ProgramType, PersonsName);
+    }
 }

@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using UnityEditor.Search;
 using UnityEngine;
 
 public class AppMan : MonoBehaviour
@@ -104,8 +105,6 @@ public class AppMan : MonoBehaviour
 
     ControlPanel cp;
 
-    PSS2CrewProto randomProgram1;
-
     //BugReport bugreport;
 
     public string PromptTitle;
@@ -117,6 +116,7 @@ public class AppMan : MonoBehaviour
 
     public string ProgramName;
     public string SelectedApp;
+    public ProgramSystemv2.ProgramTypes SelectedProgram;
 
     public string filename;
     public string content;
@@ -139,6 +139,7 @@ public class AppMan : MonoBehaviour
     public float WindowHeight;
 
     public ResourceManagerSystem RMS;
+
     // Use this for initialization
     void Start()
     {
@@ -174,9 +175,6 @@ public class AppMan : MonoBehaviour
         dicCrk = Hacking.GetComponent<DicCrk>();
         passwordcracker = Hacking.GetComponent<PasswordCracker>();
         dirsearch = Hacking.GetComponent<DirSearch>();
-
-
-        randomProgram1 = Random.GetComponent<PSS2CrewProto>();
 
         //STOCK SYSTEMS
         //		port = Applications.GetComponent<Portfolio>();
@@ -264,6 +262,8 @@ public class AppMan : MonoBehaviour
         LaunchRequest.PersonName = "";
         LaunchRequest.ProgramName = "";
         LaunchRequest.ProgramTarget = "";
+        LaunchRequest.ProgramType = ProgramSystemv2.ProgramTypes.Null;
+        SelectedProgram = ProgramSystemv2.ProgramTypes.Null;
         SelectedApp = "";
     }
 
@@ -327,6 +327,7 @@ public class AppMan : MonoBehaviour
                                             LaunchRequest.ProgramName = ProgramData.ProgramName;
                                         }
                                         LaunchRequest.PersonName = ProgramData.PersonName;
+                                        LaunchRequest.ProgramType = PersonController.control.People[i].Gateway.StorageDevices[j].OS[k].Partitions[l].Files[m].ProgramType;
                                         LaunchRequest.ProgramTarget = PersonController.control.People[i].Gateway.StorageDevices[j].OS[k].Partitions[l].Files[m].Target;
                                     }
                                 }
@@ -340,12 +341,20 @@ public class AppMan : MonoBehaviour
 
     public void SetRequestInfo()
     {
+        SelectedProgram = LaunchRequest.ProgramType;
         SelectedApp = LaunchRequest.ProgramTarget;
         ProgramName = LaunchRequest.ProgramName;
         winman.Name = LaunchRequest.PersonName;
         winman.ProgramName = ProgramName;
         winman.WindowName = ProgramName;
-        winman.ProcessName = SelectedApp;
+        if(SelectedProgram != ProgramSystemv2.ProgramTypes.Null)
+        {
+            winman.ProcessName = SelectedProgram.ToString();
+        }
+        else
+        {
+            winman.ProcessName = SelectedApp;
+        }
     }
 
     void SetWindowInfo(float Width,float Height)
@@ -363,9 +372,61 @@ public class AppMan : MonoBehaviour
 
     void ProgramInfo()
     {
-        switch (SelectedApp)
+        switch(SelectedProgram)
         {
-            case "Bug Report":
+            case ProgramSystemv2.ProgramTypes.Desktop:
+                winman.Name = LaunchRequest.PersonName;
+                winman.ProgramName = LaunchRequest.ProgramName;
+                winman.windowRect = new Rect(0, 0, Screen.width, Screen.height);
+                winman.AddProgramWindow();
+
+                SRM.ProgramName = LaunchRequest.ProgramName;
+                SRM.ApplicationName = LaunchRequest.ProgramTarget;
+                SRM.CPUUsage = 0.00f;
+                SRM.MemoryUsage = 0f;
+
+                ResetRequestInfo();
+                break;
+
+            case ProgramSystemv2.ProgramTypes.ControlPanel:
+                if (cp.quit == false)
+                {
+                    winman.ProgramName = LaunchRequest.ProgramName;
+                    winman.ProcessName = LaunchRequest.ProgramType.ToString();
+                    winman.WindowName = LaunchRequest.ProgramName;
+                    winman.windowRect = new Rect(200, 200, 150 * Customize.cust.UIScale, 150 * Customize.cust.UIScale);
+                    winman.AddProgramWindow();
+
+                    SRM.ProgramName = ProgramName;
+                    SRM.ApplicationName = LaunchRequest.ProgramTarget;
+                    SRM.CPUUsage = 0.05f;
+                    SRM.MemoryUsage = 256f;
+                    SRM.SelectedProgramsWindowID = winman.TempWID;
+
+                    cp.enabled = true;
+                    cp.quit = false;
+                    //fileman.FMS.Add(new FileMangementSystem());
+
+                    ResetRequestInfo();
+                }
+                else
+                {
+                    SRM.ProgramName = LaunchRequest.ProgramName;
+                    SRM.ApplicationName = LaunchRequest.ProgramType.ToString();
+                    SRM.CPUUsage = 0.05f;
+                    SRM.MemoryUsage = 256f;
+                    SRM.SelectedProgramsWindowID = winman.TempWID;
+                    filename = "";
+                    content = "";
+                    location = "";
+                    selecteddocument = 0;
+                    cp.quit = false;
+
+                    ResetRequestInfo();
+                }
+                break;
+
+            case ProgramSystemv2.ProgramTypes.BugReport:
                 if (qa.enabled == false)
                 {
                     SRM.ProgramName = ProgramName;
@@ -392,34 +453,7 @@ public class AppMan : MonoBehaviour
                 }
                 break;
 
-            case "fakeapp":
-                if (FakeApp == true)
-                {
-                    SRM.ProgramName = ProgramName;
-                    SRM.ApplicationName = "";
-                    SRM.CPUUsage = 0.00f;
-                    SRM.MemoryUsage = 0f;
-                    SRM.SelectedProgramsWindowID = -2;
-                    FakeApp = false;
-                }
-                break;
-
-            case "Desktop":
-
-                winman.Name = LaunchRequest.PersonName;
-                winman.ProgramName = LaunchRequest.ProgramName;
-                winman.windowRect = new Rect(0, 0, Screen.width, Screen.height);
-                winman.AddProgramWindow();
-
-                SRM.ProgramName = LaunchRequest.ProgramName;
-                SRM.ApplicationName = LaunchRequest.ProgramTarget;
-                SRM.CPUUsage = 0.00f;
-                SRM.MemoryUsage = 0f;
-
-                ResetRequestInfo();
-                break;
-
-            case "Device Manager":
+            case ProgramSystemv2.ProgramTypes.DeviceManager:
                 if (deviceman.enabled == false)
                 {
                     SRM.ProgramName = ProgramName;
@@ -445,8 +479,7 @@ public class AppMan : MonoBehaviour
                 }
                 break;
 
-
-            case "ClockPro":
+            case ProgramSystemv2.ProgramTypes.ClockPro:
                 if (clockpro.quit == false)
                 {
                     winman.ProgramName = "Clock";
@@ -482,45 +515,7 @@ public class AppMan : MonoBehaviour
                 }
                 break;
 
-            case "ControlPanel":
-                if (cp.quit == false)
-                {
-                    winman.ProgramName = LaunchRequest.ProgramName;
-                    winman.ProcessName = LaunchRequest.ProgramTarget;
-                    winman.WindowName = LaunchRequest.ProgramName;
-                    winman.windowRect = new Rect(200, 200, 150 * Customize.cust.UIScale, 150 * Customize.cust.UIScale);
-                    winman.AddProgramWindow();
-
-                    SRM.ProgramName = ProgramName;
-                    SRM.ApplicationName = LaunchRequest.ProgramTarget;
-                    SRM.CPUUsage = 0.05f;
-                    SRM.MemoryUsage = 256f;
-                    SRM.SelectedProgramsWindowID = winman.TempWID;
-
-                    cp.enabled = true;
-                    cp.quit = false;
-                    //fileman.FMS.Add(new FileMangementSystem());
-
-                    ResetRequestInfo();
-                }
-                else
-                {
-                    SRM.ProgramName = LaunchRequest.ProgramName;
-                    SRM.ApplicationName = LaunchRequest.ProgramTarget;
-                    SRM.CPUUsage = 0.05f;
-                    SRM.MemoryUsage = 256f;
-                    SRM.SelectedProgramsWindowID = winman.TempWID;
-                    filename = "";
-                    content = "";
-                    location = "";
-                    selecteddocument = 0;
-                    cp.quit = false;
-
-                    ResetRequestInfo();
-                }
-                break;
-
-            case "FileManager":
+            case ProgramSystemv2.ProgramTypes.FileManager:
                 if (fileman.quit == false)
                 {
                     SetWindowInfo(150, 150);
@@ -554,7 +549,7 @@ public class AppMan : MonoBehaviour
                 }
                 break;
 
-            case "FileUtility":
+            case ProgramSystemv2.ProgramTypes.FileUtility:
                 SetWindowInfo(320, 230);
 
                 SRM.ProgramName = ProgramName;
@@ -566,7 +561,7 @@ public class AppMan : MonoBehaviour
                 ResetRequestInfo();
                 break;
 
-            case "Notepad":
+            case ProgramSystemv2.ProgramTypes.Notepad:
                 if (notepad.quit == false)
                 {
                     SetWindowInfo(150, 150);
@@ -600,7 +595,7 @@ public class AppMan : MonoBehaviour
                 }
                 break;
 
-            case "FileBrow":
+            case ProgramSystemv2.ProgramTypes.FileBrow:
                 if (filebrow.quit == false)
                 {
                     winman.ProgramName = "FileBrow";
@@ -636,45 +631,7 @@ public class AppMan : MonoBehaviour
                 }
                 break;
 
-            //case "ICQ":
-            //    if (icq.quit == false)
-            //    {
-            //        winman.ProgramName = "ICQ";
-            //        winman.windowRect = new Rect(200, 200, 150 * Customize.cust.UIScale, 150 * Customize.cust.UIScale);
-            //        winman.AddProgramWindow();
-
-            //        SRM.ProgramName = ProgramName;
-            //        SRM.ApplicationName = "ICQ";
-            //        SRM.CPUUsage = 0.05f;
-            //        SRM.MemoryUsage = 256f;
-            //        SRM.SelectedProgramsWindowID = winman.TempWID;
-            //        SRM.AddProgramUsage(ProgramName, "ICQ");
-
-            //        icq.enabled = true;
-            //        icq.quit = false;
-
-            //        ResetRequestInfo();
-            //        ProgramName = "";
-            //    }
-            //    else
-            //    {
-            //        SRM.ProgramName = ProgramName;
-            //        SRM.ApplicationName = "ICQ";
-            //        SRM.CPUUsage = 0.05f;
-            //        SRM.MemoryUsage = 256f;
-            //        SRM.SelectedProgramsWindowID = winman.TempWID;
-            //        SRM.RemoveProgramUsage();
-            //        filename = "";
-            //        content = "";
-            //        location = "";
-            //        selecteddocument = 0;
-            //        icq.quit = false;
-            //        ResetRequestInfo();
-            //        ProgramName = "";
-            //    }
-            //    break;
-
-            case "Calculator":
+            case ProgramSystemv2.ProgramTypes.Calculator:
                 if (calculator.quit == false)
                 {
                     SetWindowInfo(150, 150);
@@ -709,7 +666,7 @@ public class AppMan : MonoBehaviour
                 }
                 break;
 
-            case "Account Tracker":
+            case ProgramSystemv2.ProgramTypes.AccountTracker:
                 if (accountlogs.enabled == false)
                 {
                     SRM.ProgramName = ProgramName;
@@ -735,7 +692,7 @@ public class AppMan : MonoBehaviour
                 }
                 break;
 
-            case "Gateway Viewer":
+            case ProgramSystemv2.ProgramTypes.GatewayViewer:
                 if (gatewayviewer.enabled == false)
                 {
                     SRM.ProgramName = "Gateway Viewer";
@@ -762,38 +719,11 @@ public class AppMan : MonoBehaviour
                 }
                 break;
 
-            case "Pss2Crew":
-                if (randomProgram1.enabled == false)
-                {
-                    SRM.ProgramName = "Pss2Crew";
-                    SRM.ApplicationName = "Pss2Crew";
-                    SRM.CPUUsage = 0.05f;
-                    SRM.MemoryUsage = 256f;
-                    SRM.SelectedProgramsWindowID = gatewayviewer.windowID;
-                    gatewayviewer.enabled = true;
-                    gatewayviewer.show = true;
-                    ResetRequestInfo(); ;
-                    ProgramName = "";
-                }
-                else
-                {
-                    SRM.ProgramName = "Pss2Crew";
-                    SRM.ApplicationName = "Pss2Crew";
-                    SRM.CPUUsage = 0.05f;
-                    SRM.MemoryUsage = 256f;
-                    SRM.SelectedProgramsWindowID = gatewayviewer.windowID;
-                    gatewayviewer.enabled = false;
-                    gatewayviewer.show = false;
-                    ResetRequestInfo(); ;
-                    ProgramName = "";
-                }
-                break;
-
-            case "CLI":
+            case ProgramSystemv2.ProgramTypes.CLI:
 
                 if (cliv2.quit == false)
                 {
-                    SetWindowInfo(200,200);
+                    SetWindowInfo(200, 200);
 
                     SRM.ProgramName = ProgramName;
                     SRM.ApplicationName = "CLIv3";
@@ -820,7 +750,7 @@ public class AppMan : MonoBehaviour
                 }
                 break;
 
-            case "Error Prompt":
+            case ProgramSystemv2.ProgramTypes.ErrorPrompt:
                 if (errorprompt.quit == false)
                 {
                     winman.ProgramName = "Error Prompt";
@@ -871,35 +801,7 @@ public class AppMan : MonoBehaviour
                 }
                 break;
 
-
-            //case "File Explorer":
-            //    if (fp.enabled == false)
-            //    {
-            //        SRM.ProgramName = ProgramName;
-            //        SRM.ApplicationName = "File Explorer";
-            //        SRM.CPUUsage = 0.05f;
-            //        SRM.MemoryUsage = 256f;
-            //        SRM.SelectedProgramsWindowID = fp.windowID;
-            //        fp.enabled = true;
-            //        fp.show = true;
-            //        ResetRequestInfo(); ;
-            //        ProgramName = "";
-            //    }
-            //    else
-            //    {
-            //        SRM.ProgramName = ProgramName;
-            //        SRM.ApplicationName = "File Explorer";
-            //        SRM.CPUUsage = 0.05f;
-            //        SRM.MemoryUsage = 256f;
-            //        SRM.SelectedProgramsWindowID = fp.windowID;
-            //        fp.enabled = false;
-            //        fp.show = false;
-            //        ResetRequestInfo(); ;
-            //        ProgramName = "";
-            //    }
-            //    break;
-
-            case "Email":
+            case ProgramSystemv2.ProgramTypes.Email:
                 if (email.enabled == false)
                 {
                     SRM.ProgramName = ProgramName;
@@ -926,7 +828,7 @@ public class AppMan : MonoBehaviour
                 }
                 break;
 
-            case "EmailV2":
+            case ProgramSystemv2.ProgramTypes.EmailV2:
                 if (emailv2.quit == false)
                 {
                     winman.ProgramName = "EmailV2";
@@ -962,10 +864,10 @@ public class AppMan : MonoBehaviour
                 }
                 break;
 
-            case "MediaPlayer":
+            case ProgramSystemv2.ProgramTypes.MediaPlayer:
                 if (media.quit == false)
                 {
-                    SetWindowInfo(640,480);
+                    SetWindowInfo(640, 480);
                     SRM.ProgramName = ProgramName;
                     SRM.ApplicationName = "Media Player";
                     SRM.CPUUsage = 0.05f;
@@ -993,7 +895,7 @@ public class AppMan : MonoBehaviour
                 }
                 break;
 
-            case "Executor":
+            case ProgramSystemv2.ProgramTypes.Executor:
                 if (executor.enabled == false)
                 {
                     executor.ProgramName = ProgramName;
@@ -1022,34 +924,7 @@ public class AppMan : MonoBehaviour
                 }
                 break;
 
-            case "Volume Controller":
-                if (vc.enabled == false)
-                {
-                    SRM.ProgramName = "Audio Settings";
-                    SRM.ApplicationName = "Audio Settings";
-                    SRM.CPUUsage = 0.05f;
-                    SRM.MemoryUsage = 256f;
-                    SRM.SelectedProgramsWindowID = vc.windowID;
-                    vc.enabled = true;
-                    vc.show = true;
-                    ResetRequestInfo(); ;
-                    ProgramName = "";
-                }
-                else
-                {
-                    SRM.ProgramName = "Audio Settings";
-                    SRM.ApplicationName = "Audio Settings";
-                    SRM.CPUUsage = 0.05f;
-                    SRM.MemoryUsage = 256f;
-                    SRM.SelectedProgramsWindowID = vc.windowID;
-                    vc.enabled = false;
-                    vc.show = false;
-                    ResetRequestInfo(); ;
-                    ProgramName = "";
-                }
-                break;
-
-            case "Accounts":
+            case ProgramSystemv2.ProgramTypes.Accounts:
                 if (accountlogs.enabled == false)
                 {
                     SRM.ProgramName = ProgramName;
@@ -1076,7 +951,34 @@ public class AppMan : MonoBehaviour
                 }
                 break;
 
-            case "Net Viewer":
+            case ProgramSystemv2.ProgramTypes.VolumeController:
+                if (vc.enabled == false)
+                {
+                    SRM.ProgramName = "Audio Settings";
+                    SRM.ApplicationName = "Audio Settings";
+                    SRM.CPUUsage = 0.05f;
+                    SRM.MemoryUsage = 256f;
+                    SRM.SelectedProgramsWindowID = vc.windowID;
+                    vc.enabled = true;
+                    vc.show = true;
+                    ResetRequestInfo(); ;
+                    ProgramName = "";
+                }
+                else
+                {
+                    SRM.ProgramName = "Audio Settings";
+                    SRM.ApplicationName = "Audio Settings";
+                    SRM.CPUUsage = 0.05f;
+                    SRM.MemoryUsage = 256f;
+                    SRM.SelectedProgramsWindowID = vc.windowID;
+                    vc.enabled = false;
+                    vc.show = false;
+                    ResetRequestInfo(); ;
+                    ProgramName = "";
+                }
+                break;
+
+            case ProgramSystemv2.ProgramTypes.NetViewer:
                 if (edgebrowser.enabled == false)
                 {
                     SRM.ProgramName = ProgramName;
@@ -1103,7 +1005,7 @@ public class AppMan : MonoBehaviour
                 }
                 break;
 
-            case "Exchange Viewer":
+            case ProgramSystemv2.ProgramTypes.ExchangeViewer:
                 if (exchangeviewer.enabled == false)
                 {
                     SRM.ProgramName = ProgramName;
@@ -1130,7 +1032,7 @@ public class AppMan : MonoBehaviour
                 }
                 break;
 
-            case "Password Cracker":
+            case ProgramSystemv2.ProgramTypes.PasswordCracker:
                 if (passwordcracker.enabled == false)
                 {
                     passwordcracker.enabled = true;
@@ -1147,7 +1049,7 @@ public class AppMan : MonoBehaviour
                 }
                 break;
 
-            case "Trace Tracker":
+            case ProgramSystemv2.ProgramTypes.TraceTracker:
                 if (trace.show == false)
                 {
                     trace.show = true;
@@ -1162,7 +1064,7 @@ public class AppMan : MonoBehaviour
                 }
                 break;
 
-            case "CHM":
+            case ProgramSystemv2.ProgramTypes.CHM:
                 if (treeview.show == false)
                 {
                     SRM.ProgramName = ProgramName;
@@ -1189,7 +1091,7 @@ public class AppMan : MonoBehaviour
                 }
                 break;
 
-            case "Task Viewer":
+            case ProgramSystemv2.ProgramTypes.TaskViewer:
                 if (tasks.enabled == false)
                 {
                     SRM.ProgramName = ProgramName;
@@ -1216,7 +1118,7 @@ public class AppMan : MonoBehaviour
                 }
                 break;
 
-            case "Dictionary Cracker":
+            case ProgramSystemv2.ProgramTypes.DictionaryCracker:
                 if (dicCrk.enabled == false)
                 {
                     SRM.ProgramName = ProgramName;
@@ -1241,7 +1143,7 @@ public class AppMan : MonoBehaviour
                 }
                 break;
 
-            case "Directory Searcher":
+            case ProgramSystemv2.ProgramTypes.DirectorySearcher:
                 if (dirsearch.enabled == false)
                 {
                     SRM.ProgramName = ProgramName;
@@ -1265,7 +1167,7 @@ public class AppMan : MonoBehaviour
                 }
                 break;
 
-            case "Remote Viewer":
+            case ProgramSystemv2.ProgramTypes.RemoteViewer:
                 if (rv.enabled == false)
                 {
                     rv.enabled = true;
@@ -1282,7 +1184,7 @@ public class AppMan : MonoBehaviour
                 }
                 break;
 
-            case "System Map":
+            case ProgramSystemv2.ProgramTypes.SystemMap:
                 if (systemMap.show == false)
                 {
                     SRM.ProgramName = ProgramName;
@@ -1307,7 +1209,7 @@ public class AppMan : MonoBehaviour
                 }
                 break;
 
-            case "Notification Viewer":
+            case ProgramSystemv2.ProgramTypes.NotificationViewer:
                 if (nv.enabled == false)
                 {
                     SRM.ProgramName = ProgramName;
@@ -1334,7 +1236,7 @@ public class AppMan : MonoBehaviour
                 }
                 break;
 
-            case "Plan Viewer":
+            case ProgramSystemv2.ProgramTypes.PlanViewer:
                 if (pv.enabled == false)
                 {
                     SRM.ProgramName = ProgramName;
@@ -1361,7 +1263,7 @@ public class AppMan : MonoBehaviour
                 }
                 break;
 
-            case "Calendar":
+            case ProgramSystemv2.ProgramTypes.Calendar:
                 if (calendar.enabled == false)
                 {
                     SRM.ProgramName = ProgramName;
@@ -1388,7 +1290,7 @@ public class AppMan : MonoBehaviour
                 }
                 break;
 
-            case "Calendar v2":
+            case ProgramSystemv2.ProgramTypes.Calendarv2:
                 if (calendarv2.enabled == false)
                 {
                     SRM.ProgramName = ProgramName;
@@ -1415,7 +1317,7 @@ public class AppMan : MonoBehaviour
                 }
                 break;
 
-            case "Event Viewer":
+            case ProgramSystemv2.ProgramTypes.EventViewer:
                 if (eventview.enabled == false)
                 {
                     SRM.ProgramName = ProgramName;
@@ -1442,7 +1344,7 @@ public class AppMan : MonoBehaviour
                 }
                 break;
 
-            case "Start Menu":
+            case ProgramSystemv2.ProgramTypes.StartMenu:
                 if (startmenu.show == false)
                 {
                     startmenu.show = true;
@@ -1459,7 +1361,7 @@ public class AppMan : MonoBehaviour
                 }
                 break;
 
-            case "Shutdown":
+            case ProgramSystemv2.ProgramTypes.Shutdown:
                 if (shutdownprompt.enabled == false)
                 {
                     shutdownprompt.enabled = true;
@@ -1478,7 +1380,7 @@ public class AppMan : MonoBehaviour
                 }
                 break;
 
-            case "System Panel":
+            case ProgramSystemv2.ProgramTypes.SystemPanel:
                 if (systempanel.enabled == false)
                 {
                     SRM.ProgramName = ProgramName;
@@ -1505,7 +1407,8 @@ public class AppMan : MonoBehaviour
                 }
                 break;
 
-            case "Real Exe Creator":
+
+            case ProgramSystemv2.ProgramTypes.RealExeCreator:
                 if (realexecreator.enabled == false)
                 {
                     SRM.ProgramName = ProgramName;
@@ -1532,34 +1435,34 @@ public class AppMan : MonoBehaviour
                 }
                 break;
 
-            case "Music Player":
-                if (mp.enabled == false)
-                {
-                    SRM.ProgramName = ProgramName;
-                    SRM.ApplicationName = "Music Player";
-                    SRM.CPUUsage = 0.01f;
-                    SRM.MemoryUsage = 4f;
-                    SRM.SelectedProgramsWindowID = mp.windowID;
-                    mp.enabled = true;
-                    mp.show = true;
-                    ResetRequestInfo(); ;
-                    ProgramName = "";
-                }
-                else
-                {
-                    SRM.ProgramName = ProgramName;
-                    SRM.ApplicationName = "Music Player";
-                    SRM.CPUUsage = 0.01f;
-                    SRM.MemoryUsage = 4f;
-                    SRM.SelectedProgramsWindowID = mp.windowID;
-                    mp.show = false;
-                    mp.enabled = false;
-                    ResetRequestInfo(); ;
-                    ProgramName = "";
-                }
-                break;
+            //case ProgramSystemv2.ProgramTypes.MediaPlayer:
+            //    if (mp.enabled == false)
+            //    {
+            //        SRM.ProgramName = ProgramName;
+            //        SRM.ApplicationName = "Music Player";
+            //        SRM.CPUUsage = 0.01f;
+            //        SRM.MemoryUsage = 4f;
+            //        SRM.SelectedProgramsWindowID = mp.windowID;
+            //        mp.enabled = true;
+            //        mp.show = true;
+            //        ResetRequestInfo(); ;
+            //        ProgramName = "";
+            //    }
+            //    else
+            //    {
+            //        SRM.ProgramName = ProgramName;
+            //        SRM.ApplicationName = "Music Player";
+            //        SRM.CPUUsage = 0.01f;
+            //        SRM.MemoryUsage = 4f;
+            //        SRM.SelectedProgramsWindowID = mp.windowID;
+            //        mp.show = false;
+            //        mp.enabled = false;
+            //        ResetRequestInfo(); ;
+            //        ProgramName = "";
+            //    }
+            //    break;
 
-            case "Version":
+            case ProgramSystemv2.ProgramTypes.Version:
                 if (vv.enabled == false)
                 {
                     vv.enabled = true;
@@ -1576,7 +1479,7 @@ public class AppMan : MonoBehaviour
                 }
                 break;
 
-            case "Disk Manager":
+            case ProgramSystemv2.ProgramTypes.DiskManager:
                 if (diskmanv2.show == false)
                 {
                     SRM.ProgramName = ProgramName;
@@ -1601,7 +1504,7 @@ public class AppMan : MonoBehaviour
                 }
                 break;
 
-            case "Computer":
+            case ProgramSystemv2.ProgramTypes.Computer:
                 if (com.show == false)
                 {
                     SRM.ProgramName = ProgramName;
@@ -1626,7 +1529,7 @@ public class AppMan : MonoBehaviour
                 }
                 break;
 
-            case "Store":
+            case ProgramSystemv2.ProgramTypes.Store:
                 if (edgebrowser.enabled == false)
                 {
                     edgebrowser.enabled = true;
@@ -1642,6 +1545,18 @@ public class AppMan : MonoBehaviour
                     ProgramName = "";
                 }
                 break;
-        }
+
+            case ProgramSystemv2.ProgramTypes.fakeapp:
+                if (FakeApp == true)
+                {
+                    SRM.ProgramName = ProgramName;
+                    SRM.ApplicationName = "";
+                    SRM.CPUUsage = 0.00f;
+                    SRM.MemoryUsage = 0f;
+                    SRM.SelectedProgramsWindowID = -2;
+                    FakeApp = false;
+                }
+                break;
+        }    
     }
 }

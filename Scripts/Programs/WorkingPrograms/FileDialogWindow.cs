@@ -141,14 +141,14 @@ public class FileDialogWindow : MonoBehaviour
 							if(pwinman.RunningPrograms.Count == 1)
                             {
 								quit = false;
-								appman.LaunchRequest = Program.Run("File Browser", "FileBrow", "Player");
+								appman.LaunchRequest = Program.Run("File Browser", ProgramSystemv2.ProgramTypes.FileBrow, "Player");
 								pwinman.RunningPrograms.RemoveAt(i);
 								SetID();
 							}
 							else
                             {
 								quit = true;
-								appman.LaunchRequest = Program.Run("File Browser", "FileBrow", "Player");
+								appman.LaunchRequest = Program.Run("File Browser", ProgramSystemv2.ProgramTypes.FileBrow, "Player");
 								pwinman.RunningPrograms.RemoveAt(i);
 								SetID();
 							}

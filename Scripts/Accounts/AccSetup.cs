@@ -1,7 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
-using UnityEngine;
 using System.Linq;
+using UnityEngine;
 using UnityEngine.SceneManagement;
 
 public class AccSetup : MonoBehaviour
@@ -306,6 +306,11 @@ public class AccSetup : MonoBehaviour
         Registry.SetBoolData("Player", "System", "ShowDesktopIcons", true);
     }
 
+    void OSThemeSettings()
+    {
+        Registry.SetIntData("Player", "System", "Skin", 1);
+    }
+
     void Update()
     {
         if (CreatePlayerData == true)
@@ -320,8 +325,11 @@ public class AccSetup : MonoBehaviour
             DefaultMouseSettings();
             ColorSchemeSettings();
             DesktopSettings();
-            Registry.SetBoolData("Player", "System", "ShowDesktopBackground", true);
+            OSThemeSettings();
+        }
 
+        if(Registry.GetBoolData("Player","System","ShowDesktopBackground") == true)
+        {
             POST();
         }
         string day = System.DateTime.Now.ToString("dd/MM");
@@ -1294,79 +1302,494 @@ public class AccSetup : MonoBehaviour
     {
         if (PersonController.control.People.Count > 0)
         {
-            var person = PersonController.control.People.FirstOrDefault(x => x.Name == "Player");
-            // person.Gateway.ProgramAttribues.Add("OS", new RegistrySystem());
-            // person.Gateway.ProgramAttribues.Add("CLI", new RegistrySystem());
-
-            person.Gateway.Motherboard.CPUSockets.Add(new SocketSystem(88, 108));
-
-            person.Gateway.Motherboard.StorageSlots.Add(new SocketSystem(130, 180));
-            person.Gateway.Motherboard.StorageSlots.Add(new SocketSystem(130, 180));
-
-            person.Gateway.Motherboard.RAMSlots.Add(new SocketSystem(138, 70));
-
-            person.Gateway.CPU.Add(new CPUSystem("Zion Z-14", "Zion", "Z-14", "140", 32, 1, 0.5f, 0.1f, 0.5f, 0, 0, 0, 0, 0, 1, 0.01f, 0, 100, 100, 0, "", 0, 20, 0.0025f, 0, 0, 0));
-            person.Gateway.StorageDevices.Add(new StorageDevice("EasternVirtual 256", "", "", "", 133, 0, 256, 256, 15, 0.001f, 100, 100, 0, 0.0025f, 0.14f, StorageDevice.StorageType.HDD));
-            person.Gateway.StorageDevices.Add(new StorageDevice("EasternVirtual 128", "", "", "", 133, 0, 128, 128, 15, 0.001f, 100, 100, 0, 0.0025f, 0.14f, StorageDevice.StorageType.HDD));
-
-            person.Gateway.Name = person.Name + "'s Gateway";
-            person.Gateway.GPU.Add(new GPUSystem("Qividia 970", "PCI-E", 970, 2, 0.1f, 2f, 256, 0, 0, 0, 1, 0.01f, 100, 100, 0, 120, 0.0025f));
-            person.Gateway.RAM.Add(new RamSystem("Vortex 2GB", "DDR1", 0, 2048, 0, 0, 100, 0.01f, 100, 100, 0, 0.0025f, 0));
-            person.Gateway.PSU.Add(new PowerSupplySystem("Toughpower-2pack", "", 450, 0, 0, 0.01f, 100, 100, 0, 0.0025f));
-            person.Gateway.Modem.Add(new ModemSystem("TUGs Basic Modem", "", "", "", 0.56f, 0.56f, 0.56f, 0.28f, 0, 15, 0.01f, 100, 100, 0, 0.0025f, 50, 25, "", ModemSystem.ModemConnectionType.DialUp));
-
-            person.Gateway.StorageDevices.First().OS.Add(new OperatingSystems("Kernal-Sanders", OperatingSystems.OSName.SafeMode));
-            person.Gateway.StorageDevices.First().OS.Add(new OperatingSystems(SelectedOS.Title, SelectedOS.Name));
-            person.Gateway.StorageDevices.First().InstalledOS.Add(SelectedOS.Title);
-
-            person.Gateway.StorageDevices.First().OS[0].Partitions.Add(new DiskPartSystem("System", "C", 8, 0, 0, 0));
-            person.Gateway.StorageDevices.First().OS[1].Partitions.Add(new DiskPartSystem("System", "C", 120, 0, 0, 0));
-
-            person.Gateway.Timer.InitalTimer = 1;
-
-            for (int i = 0; i < person.Gateway.StorageDevices.First().OS.Count; i++)
+            for(int i = 0; i < PersonController.control.People.Count;i++)
             {
-                person.Gateway.StorageDevices.First().OS[i].Colour.Window = new ColorSystem(255, 255, 255, 255);
-                person.Gateway.StorageDevices.First().OS[i].Colour.Button = new ColorSystem(255, 255, 255, 255);
-                person.Gateway.StorageDevices.First().OS[i].Colour.Font = new ColorSystem(0, 0, 0, 255);
+                if (PersonController.control.People[i].Name == "Player")
+                {
+                    var person = PersonController.control.People[i];
 
-                person.Gateway.StorageDevices.First().OS[i].Options.FirstBoot = true;
-                person.Gateway.StorageDevices.First().OS[i].Options.EnableDesktopEnviroment = true;
-                person.Gateway.StorageDevices.First().OS[i].FPC.ShowDesktopBackground = true;
-                person.Gateway.StorageDevices.First().OS[i].FPC.ShowDesktopIcons = true;
-                person.Gateway.StorageDevices.First().OS[i].SerialKey = SerialKey;
+                    person.Gateway.Motherboard.CPUSockets.Add(new SocketSystem(88, 108));
 
-                person.Gateway.StorageDevices.First().OS[i].Partitions.First().Files.Add(new ProgramSystemv2("C:/", "System", "", "", "", "System", "Gateway", "C:/", "", "", ProgramSystemv2.FileExtension.dir, ProgramSystemv2.FileExtension.Null, 0, 0, 60, 0, 100, 0, 0, 0, 0, 0, 0, 0, 0, false, false, false, false, false, false, false,new ResourceManagerSystem()));
-                person.Gateway.StorageDevices.First().OS[i].Partitions.First().Files.Add(new ProgramSystemv2("Downloads", "", "", "", "", "", "C:/", "C:/Downloads", "", "", ProgramSystemv2.FileExtension.fdl, ProgramSystemv2.FileExtension.Null, 0, 0, 0, 0, 100, 0, 0, 0, 0, 0, 0, 0, 0, false, false, false, false, false, false, false, new ResourceManagerSystem()));
-                person.Gateway.StorageDevices.First().OS[i].Partitions.First().Files.Add(new ProgramSystemv2("Documents", "", "", "", "", "", "C:/", "C:/Documents", "", "", ProgramSystemv2.FileExtension.fdl, ProgramSystemv2.FileExtension.Null, 0, 0, 0, 0, 100, 0, 0, 0, 0, 0, 0, 0, 0, false, false, false, false, false, false, false, new ResourceManagerSystem()));
-                person.Gateway.StorageDevices.First().OS[i].Partitions.First().Files.Add(new ProgramSystemv2("Programs", "", "", "", "", "", "C:/", "C:/Programs", "", "", ProgramSystemv2.FileExtension.fdl, ProgramSystemv2.FileExtension.Null, 0, 0, 0, 0,100, 0, 0, 0, 0, 0, 0, 0, 0, false, false, false, false, false, false, false, new ResourceManagerSystem()));
-                person.Gateway.StorageDevices.First().OS[i].Partitions.First().Files.Add(new ProgramSystemv2("System", "", "", "", "", "", "C:/", "C:/System", "", "", ProgramSystemv2.FileExtension.fdl, ProgramSystemv2.FileExtension.Null, 0, 0, 0, 0, 100, 0, 0, 0, 0, 0, 0, 0, 0, false, false, false, false, false, false, false, new ResourceManagerSystem()));
-                person.Gateway.StorageDevices.First().OS[i].Partitions.First().Files.Add(new ProgramSystemv2("Control Panel", "", "", "", "", "", "C:/Programs", "ControlPanel", "", "", ProgramSystemv2.FileExtension.exe, ProgramSystemv2.FileExtension.Null, 0, 0, 0, 0, 100, 0, 0, 0, 0, 0, 0, 0, 0, false, false, false, false, false, false, false, new ResourceManagerSystem()));
-                person.Gateway.StorageDevices.First().OS[i].Partitions.First().Files.Add(new ProgramSystemv2("File Manager", "", "", "", "", "", "C:/Programs", "FileManager", "", "", ProgramSystemv2.FileExtension.exe, ProgramSystemv2.FileExtension.Null, 0, 0, 0, 0, 100, 0, 0, 0, 0, 0, 0, 0, 0, false, false, false, false, false, false, false, new ResourceManagerSystem()));
-                person.Gateway.StorageDevices.First().OS[i].Partitions.First().Files.Add(new ProgramSystemv2("CLI", "", "", "", "", "", "C:/Programs", "CLI", "", "", ProgramSystemv2.FileExtension.exe, ProgramSystemv2.FileExtension.Null, 0, 0, 0, 0, 100, 0, 0, 0, 0, 0, 0, 0, 0, false, false, false, false, false, false, false, new ResourceManagerSystem()));
-                person.Gateway.StorageDevices.First().OS[i].Partitions.First().Files.Add(new ProgramSystemv2("Task Viewer", "", "", "", "", "", "C:/Programs", "Task Viewer", "", "", ProgramSystemv2.FileExtension.exe, ProgramSystemv2.FileExtension.Null, 0, 0, 0, 0, 100, 0, 0, 0, 0, 0, 0, 0, 0, false, false, false, false, false, false, false, new ResourceManagerSystem()));
-                person.Gateway.StorageDevices.First().OS[i].Partitions.First().Files.Add(new ProgramSystemv2("Disk Manager", "", "", "", "", "", "C:/Programs", "Disk Manager", "", "", ProgramSystemv2.FileExtension.exe, ProgramSystemv2.FileExtension.Null, 0, 0, 0, 0, 100, 0, 0, 0, 0, 0, 0, 0, 0, false, false, false, false, false, false, false, new ResourceManagerSystem()));
-                person.Gateway.StorageDevices.First().OS[i].Partitions.First().Files.Add(new ProgramSystemv2("Gateway Viewer", "", "", "", "", "", "C:/Programs", "Gateway Viewer", "", "", ProgramSystemv2.FileExtension.exe, ProgramSystemv2.FileExtension.Null, 0, 0, 0, 0, 100, 0, 0, 0, 0, 0, 0, 0, 0, false, false, false, false, false, false, false, new ResourceManagerSystem()));
-                person.Gateway.StorageDevices.First().OS[i].Partitions.First().Files.Add(new ProgramSystemv2("Device Manager", "", "", "", "", "", "C:/Programs", "Device Manager", "", "", ProgramSystemv2.FileExtension.exe, ProgramSystemv2.FileExtension.Null, 0, 0, 0, 0, 100, 0, 0, 0, 0, 0, 0, 0, 0, false, false, false, false, false, false, false, new ResourceManagerSystem()));
-                person.Gateway.StorageDevices.First().OS[i].Partitions.First().Files.Add(new ProgramSystemv2("System Panel", "", "", "", "", "", "C:/Programs", "System Panel", "", "", ProgramSystemv2.FileExtension.exe, ProgramSystemv2.FileExtension.Null, 0, 0, 0, 0, 100, 0, 0, 0, 0, 0, 0, 0, 0, false, false, false, false, false, false, false, new ResourceManagerSystem()));
-                person.Gateway.StorageDevices.First().OS[i].Partitions.First().Files.Add(new ProgramSystemv2("Clock", "", "", "", "", "", "C:/Programs", "ClockPro", "", "", ProgramSystemv2.FileExtension.exe, ProgramSystemv2.FileExtension.Null, 0, 0, 0, 0, 100, 0, 0, 0, 0, 0, 0, 0, 0, false, false, false, false, false, false, false, new ResourceManagerSystem()));
-                person.Gateway.StorageDevices.First().OS[i].Partitions.First().Files.Add(new ProgramSystemv2("MediaPlayer", "", "", "", "", "", "C:/Programs", "MediaPlayer", "", "", ProgramSystemv2.FileExtension.exe, ProgramSystemv2.FileExtension.Null, 0, 0, 0, 0, 100, 0, 0, 0, 0, 0, 0, 0, 0, false, false, false, false, false, false, false, new ResourceManagerSystem()));
-                person.Gateway.StorageDevices.First().OS[i].Partitions.First().Files.Add(new ProgramSystemv2("Exchange", "", "", "", "", "", "C:/Programs", "Exchange Viewer", "", "", ProgramSystemv2.FileExtension.exe, ProgramSystemv2.FileExtension.Null, 0, 0, 0, 0, 100, 0, 0, 0, 0, 0, 0, 0, 0, false, false, false, false, false, false, false, new ResourceManagerSystem()));
-                person.Gateway.StorageDevices.First().OS[i].Partitions.First().Files.Add(new ProgramSystemv2("Calculator", "", "", "", "", "", "C:/Programs", "Calculator", "", "", ProgramSystemv2.FileExtension.exe, ProgramSystemv2.FileExtension.Null, 0, 0, 0, 0, 100, 0, 0, 0, 0, 0, 0, 0, 0, false, false, false, false, false, false, false, new ResourceManagerSystem()));
-                person.Gateway.StorageDevices.First().OS[i].Partitions.First().Files.Add(new ProgramSystemv2("Notepad", "", "", "", "", "", "C:/Programs", "Notepad", "", "", ProgramSystemv2.FileExtension.exe, ProgramSystemv2.FileExtension.Null, 0, 0, 0, 0, 100, 0, 0, 0, 0, 0, 0, 0, 0, false, false, false, false, false, false, false, new ResourceManagerSystem()));
-                person.Gateway.StorageDevices.First().OS[i].Partitions.First().Files.Add(new ProgramSystemv2("FileUtility", "", "", "", "", "", "C:/Programs", "FileUtility", "", "", ProgramSystemv2.FileExtension.exe, ProgramSystemv2.FileExtension.Null, 0, 0, 0, 0, 100, 0, 0, 0, 0, 0, 0, 0, 0, false, false, false, false, false, false, false, new ResourceManagerSystem()));
+                    person.Gateway.Motherboard.StorageSlots.Add(new SocketSystem(130, 180));
+                    person.Gateway.Motherboard.StorageSlots.Add(new SocketSystem(130, 180));
 
-                person.Gateway.StorageDevices.First().OS[i].Partitions.First().Files.Add(new ProgramSystemv2("Pss2Crew", "", "", "", "", "", "C:/Programs", "Pss2Crew", "", "", ProgramSystemv2.FileExtension.exe, ProgramSystemv2.FileExtension.Null, 0, 0, 0, 0, 100, 0, 0, 0, 0, 0, 0, 0, 0, false, false, false, false, false, false, false, new ResourceManagerSystem()));
+                    person.Gateway.Motherboard.RAMSlots.Add(new SocketSystem(138, 70));
 
-                person.Gateway.StorageDevices.First().OS[i].Partitions.First().Files.Add(new ProgramSystemv2("Document", "", "", "", "" +
-                    "Address: www.ping.com" + "\n" + "IP: Test",
-                    "", "C:/Documents", "", "", "", ProgramSystemv2.FileExtension.txt, ProgramSystemv2.FileExtension.Null, 0, 0, 0, 0, 100, 0, 0, 0, 0, 0, 0, 0, 0, false, false, false, false, false, false, false, new ResourceManagerSystem()));
+                    person.Gateway.CPU.Add(new CPUSystem("Zion Z-14", "Zion", "Z-14", "140", 32, 1, 0.5f, 0.1f, 0.5f, 0, 0, 0, 0, 0, 1, 0.01f, 0, 100, 100, 0, "", 0, 20, 0.0025f, 0, 0, 0));
+                    person.Gateway.StorageDevices.Add(new StorageDevice("EasternVirtual 256", "", "", "", 133, 0, 256, 256, 15, 0.001f, 100, 100, 0, 0.0025f, 0.14f, StorageDevice.StorageType.HDD));
+                    person.Gateway.StorageDevices.Add(new StorageDevice("EasternVirtual 128", "", "", "", 133, 0, 128, 128, 15, 0.001f, 100, 100, 0, 0.0025f, 0.14f, StorageDevice.StorageType.HDD));
+
+                    person.Gateway.Name = person.Name + "'s Gateway";
+                    person.Gateway.GPU.Add(new GPUSystem("Qividia 970", "PCI-E", 970, 2, 0.1f, 2f, 256, 0, 0, 0, 1, 0.01f, 100, 100, 0, 120, 0.0025f));
+                    person.Gateway.RAM.Add(new RamSystem("Vortex 2GB", "DDR1", 0, 2048, 0, 0, 100, 0.01f, 100, 100, 0, 0.0025f, 0));
+                    person.Gateway.PSU.Add(new PowerSupplySystem("Toughpower-2pack", "", 450, 0, 0, 0.01f, 100, 100, 0, 0.0025f));
+                    person.Gateway.Modem.Add(new ModemSystem("TUGs Basic Modem", "", "", "", 0.56f, 0.56f, 0.56f, 0.28f, 0, 15, 0.01f, 100, 100, 0, 0.0025f, 50, 25, "", ModemSystem.ModemConnectionType.DialUp));
+
+                    person.Gateway.StorageDevices.First().OS.Add(new OperatingSystems("Kernal-Sanders", OperatingSystems.OSName.SafeMode));
+                    person.Gateway.StorageDevices.First().OS.Add(new OperatingSystems(SelectedOS.Title, SelectedOS.Name));
+                    person.Gateway.StorageDevices.First().InstalledOS.Add(SelectedOS.Title);
+
+                    person.Gateway.StorageDevices.First().OS[0].Partitions.Add(new DiskPartSystem("System", "C", 8, 0, 0, 0));
+                    person.Gateway.StorageDevices.First().OS[1].Partitions.Add(new DiskPartSystem("System", "C", 120, 0, 0, 0));
+
+                    person.Gateway.Timer.InitalTimer = 1;
+
+                    for (int j = 0; j < person.Gateway.StorageDevices.Count; j++)
+                    {
+                        for (int k = 0; k < person.Gateway.StorageDevices[j].OS.Count; k++)
+                        {
+                            person.Gateway.StorageDevices[j].OS[k].Colour.Window = new ColorSystem(255, 255, 255, 255);
+                            person.Gateway.StorageDevices[j].OS[k].Colour.Button = new ColorSystem(255, 255, 255, 255);
+                            person.Gateway.StorageDevices[j].OS[k].Colour.Font = new ColorSystem(0, 0, 0, 255);
+
+                            person.Gateway.StorageDevices[j].OS[k].Options.FirstBoot = true;
+                            person.Gateway.StorageDevices[j].OS[k].Options.EnableDesktopEnviroment = true;
+                            person.Gateway.StorageDevices[j].OS[k].FPC.ShowDesktopBackground = true;
+                            person.Gateway.StorageDevices[j].OS[k].FPC.ShowDesktopIcons = true;
+                            person.Gateway.StorageDevices[j].OS[k].SerialKey = SerialKey;
+
+                            for (int l = 0; l < person.Gateway.StorageDevices[i].OS[j].Partitions.Count; l++)
+                            {
+                                if (l == 1)
+                                {
+                                    person.Gateway.StorageDevices[j].OS[k].Partitions[l].Files.Add(
+                                        new ProgramSystemv2(
+                                            "Kernal-Sanders",                              // Name
+                                            "",                                 // Content
+                                            "",                                 // Description
+                                            "C:/System",                           // Path
+                                            "",                                 // Target
+                                            "",                                 // IconPath
+                                            "",                                 // PicPath
+                                            ProgramSystemv2.FileExtension.os,  //FileExt
+                                            0,                                 // FileSize
+                                            100,                                // Health
+                                            1,                                  // Version
+                                            1,                                  // Permissions
+                                            ProgramSystemv2.ProgramTypes.Null,  // Programtype
+                                            new ResourceManagerSystem()         // ResourceManager
+                                        )
+                                    );
+                                }
+                                if (l == 0)
+                                {
+                                    person.Gateway.StorageDevices[j].OS[k].Partitions[l].Files.Add(
+                                        new ProgramSystemv2(
+                                            "" + SelectedOS.Name,                              // Name
+                                            "",                                 // Content
+                                            "",                                 // Description
+                                            "C:/System",                          // Path
+                                            "",                                 // Target
+                                            "",                                 // IconPath
+                                            "",                                 // PicPath
+                                            ProgramSystemv2.FileExtension.os,  //FileExt
+                                            0,                                 // FileSize
+                                            100,                                // Health
+                                            1,                                  // Version
+                                            1,                                  // Permissions
+                                            ProgramSystemv2.ProgramTypes.Null,  // Programtype
+                                            new ResourceManagerSystem()         // ResourceManager
+                                        )
+                                    );
+                                }
+                            }
+
+                            if (person.Gateway.StorageDevices[j].OS[k].Title == SelectedOS.Title)
+                            {
+                                for (int l = 0; l < person.Gateway.StorageDevices[j].OS[k].Partitions.Count; l++)
+                                {
+                                    var Files = person.Gateway.StorageDevices[j].OS[k].Partitions[l].Files;
+
+                                    Files.Add(
+                                        new ProgramSystemv2(
+                                            "C:/",                              // Name
+                                            "",                                 // Content
+                                            "",                                 // Description
+                                            "Gateway",                           // Path
+                                            "C:/",                        // Target
+                                            "",                                 // IconPath
+                                            "",                                 // PicPath
+                                            ProgramSystemv2.FileExtension.dir,  //FileExt
+                                            0,                                 // FileSize
+                                            100,                                // Health
+                                            1,                                  // Version
+                                            1,                                  // Permissions
+                                            ProgramSystemv2.ProgramTypes.Null,  // Programtype
+                                            new ResourceManagerSystem()         // ResourceManager
+                                        )
+                                    );
+
+                                    Files.Add(
+                                        new ProgramSystemv2(
+                                            "Downloads",                              // Name
+                                            "",                                 // Content
+                                            "",                                 // Description
+                                            "C:/",                           // Path
+                                            "C:/Downloads",                        // Target
+                                            "",                                 // IconPath
+                                            "",                                 // PicPath
+                                            ProgramSystemv2.FileExtension.fdl,  //FileExt
+                                            0,                                 // FileSize
+                                            100,                                // Health
+                                            1,                                  // Version
+                                            1,                                  // Permissions
+                                            ProgramSystemv2.ProgramTypes.Null,  // Programtype
+                                            new ResourceManagerSystem()         // ResourceManager
+                                        )
+                                    );
+
+                                    Files.Add(
+                                        new ProgramSystemv2(
+                                            "Documents",                              // Name
+                                            "",                                 // Content
+                                            "",                                 // Description
+                                            "C:/",                           // Path
+                                            "C:/Documents",                        // Target
+                                            "",                                 // IconPath
+                                            "",                                 // PicPath
+                                            ProgramSystemv2.FileExtension.fdl,  //FileExt
+                                            0,                                 // FileSize
+                                            100,                                // Health
+                                            1,                                  // Version
+                                            1,                                  // Permissions
+                                            ProgramSystemv2.ProgramTypes.Null,  // Programtype
+                                            new ResourceManagerSystem()         // ResourceManager
+                                        )
+                                    );
+
+                                    Files.Add(
+                                        new ProgramSystemv2(
+                                            "Programs",                              // Name
+                                            "",                                 // Content
+                                            "",                                 // Description
+                                            "C:/",                           // Path
+                                            "C:/Programs",                        // Target
+                                            "",                                 // IconPath
+                                            "",                                 // PicPath
+                                            ProgramSystemv2.FileExtension.fdl,  //FileExt
+                                            0,                                 // FileSize
+                                            100,                                // Health
+                                            1,                                  // Version
+                                            1,                                  // Permissions
+                                            ProgramSystemv2.ProgramTypes.Null,  // Programtype
+                                            new ResourceManagerSystem()         // ResourceManager
+                                        )
+                                    );
+
+                                    Files.Add(
+                                        new ProgramSystemv2(
+                                            "System",                              // Name
+                                            "",                                 // Content
+                                            "",                                 // Description
+                                            "C:/",                           // Path
+                                            "C:/System",                        // Target
+                                            "",                                 // IconPath
+                                            "",                                 // PicPath
+                                            ProgramSystemv2.FileExtension.fdl,  //FileExt
+                                            0,                                 // FileSize
+                                            100,                                // Health
+                                            1,                                  // Version
+                                            1,                                  // Permissions
+                                            ProgramSystemv2.ProgramTypes.Null,  // Programtype
+                                            new ResourceManagerSystem()         // ResourceManager
+                                        )
+                                    );
+
+
+                                    Files.Add(
+                                        new ProgramSystemv2(
+                                            "Control Panel",              // Name
+                                            "",                           // Content
+                                            "",                           // Description
+                                            "C:/Programs",                // Path
+                                            "ControlPanel",               // Target
+                                            "",                           // IconPath
+                                            "",                           // PicPath
+                                            ProgramSystemv2.FileExtension.exe, //FileExt
+                                            1,                           // FileSize
+                                            100,                          // Health
+                                            1,                            // Version
+                                            1,                            // Permissions
+                                            ProgramSystemv2.ProgramTypes.ControlPanel, // Program type
+                                            new ResourceManagerSystem()   // Resource manager
+                                        )
+                                    );
+
+                                    Files.Add(
+                                        new ProgramSystemv2(
+                                            "File Manager",              // Name
+                                            "",                           // Content
+                                            "",                           // Description
+                                            "C:/Programs",                // Path
+                                            "FileManager",               // Target
+                                            "",                           // IconPath
+                                            "",                           // PicPath
+                                            ProgramSystemv2.FileExtension.exe, //FileExt
+                                            1,                           // FileSize
+                                            100,                          // Health
+                                            1,                            // Version
+                                            1,                            // Permissions
+                                            ProgramSystemv2.ProgramTypes.FileManager, // Program type
+                                            new ResourceManagerSystem()   // Resource manager
+                                        )
+                                    );
+
+                                    Files.Add(
+                                        new ProgramSystemv2(
+                                            "CLI",              // Name
+                                            "",                           // Content
+                                            "",                           // Description
+                                            "C:/Programs",                // Path
+                                            "CLI",               // Target
+                                            "",                           // IconPath
+                                            "",                           // PicPath
+                                            ProgramSystemv2.FileExtension.exe, //FileExt
+                                            1,                           // FileSize
+                                            100,                          // Health
+                                            1,                            // Version
+                                            1,                            // Permissions
+                                            ProgramSystemv2.ProgramTypes.CLI, // Program type
+                                            new ResourceManagerSystem()   // Resource manager
+                                        )
+                                    );
+
+                                    Files.Add(
+                                        new ProgramSystemv2(
+                                            "Task Viewer",              // Name
+                                            "",                           // Content
+                                            "",                           // Description
+                                            "C:/Programs",                // Path
+                                            "Task Viewer",               // Target
+                                            "",                           // IconPath
+                                            "",                           // PicPath
+                                            ProgramSystemv2.FileExtension.exe, //FileExt
+                                            1,                           // FileSize
+                                            100,                          // Health
+                                            1,                            // Version
+                                            1,                            // Permissions
+                                            ProgramSystemv2.ProgramTypes.TaskViewer, // Program type
+                                            new ResourceManagerSystem()   // Resource manager
+                                        )
+                                    );
+
+                                    Files.Add(
+                                        new ProgramSystemv2(
+                                            "Disk Manager",              // Name
+                                            "",                           // Content
+                                            "",                           // Description
+                                            "C:/Programs",                // Path
+                                            "Disk Manager",               // Target
+                                            "",                           // IconPath
+                                            "",                           // PicPath
+                                            ProgramSystemv2.FileExtension.exe, //FileExt
+                                            1,                           // FileSize
+                                            100,                          // Health
+                                            1,                            // Version
+                                            1,                            // Permissions
+                                            ProgramSystemv2.ProgramTypes.DiskManager, // Program type
+                                            new ResourceManagerSystem()   // Resource manager
+                                        )
+                                    );
+
+                                    Files.Add(
+                                        new ProgramSystemv2(
+                                            "Gateway Viewer",              // Name
+                                            "",                           // Content
+                                            "",                           // Description
+                                            "C:/Programs",                // Path
+                                            "Gateway Viewer",               // Target
+                                            "",                           // IconPath
+                                            "",                           // PicPath
+                                            ProgramSystemv2.FileExtension.exe, //FileExt
+                                            1,                           // FileSize
+                                            100,                          // Health
+                                            1,                            // Version
+                                            1,                            // Permissions
+                                            ProgramSystemv2.ProgramTypes.GatewayViewer, // Program type
+                                            new ResourceManagerSystem()   // Resource manager
+                                        )
+                                    );
+
+                                    Files.Add(
+                                        new ProgramSystemv2(
+                                            "Device Manager",              // Name
+                                            "",                           // Content
+                                            "",                           // Description
+                                            "C:/Programs",                // Path
+                                            "Device Manager",               // Target
+                                            "",                           // IconPath
+                                            "",                           // PicPath
+                                            ProgramSystemv2.FileExtension.exe, //FileExt
+                                            1,                           // FileSize
+                                            100,                          // Health
+                                            1,                            // Version
+                                            1,                            // Permissions
+                                            ProgramSystemv2.ProgramTypes.DeviceManager, // Program type
+                                            new ResourceManagerSystem()   // Resource manager
+                                        )
+                                    );
+
+                                    Files.Add(
+                                        new ProgramSystemv2(
+                                            "System Panel",              // Name
+                                            "",                           // Content
+                                            "",                           // Description
+                                            "C:/Programs",                // Path
+                                            "System Panel",               // Target
+                                            "",                           // IconPath
+                                            "",                           // PicPath
+                                            ProgramSystemv2.FileExtension.exe, //FileExt
+                                            1,                           // FileSize
+                                            100,                          // Health
+                                            1,                            // Version
+                                            1,                            // Permissions
+                                            ProgramSystemv2.ProgramTypes.SystemPanel, // Program type
+                                            new ResourceManagerSystem()   // Resource manager
+                                        )
+                                    );
+
+                                    Files.Add(
+                                        new ProgramSystemv2(
+                                            "Clock",              // Name
+                                            "",                           // Content
+                                            "",                           // Description
+                                            "C:/Programs",                // Path
+                                            "ClockPro",               // Target
+                                            "",                           // IconPath
+                                            "",                           // PicPath
+                                            ProgramSystemv2.FileExtension.exe, //FileExt
+                                            1,                           // FileSize
+                                            100,                          // Health
+                                            1,                            // Version
+                                            1,                            // Permissions
+                                            ProgramSystemv2.ProgramTypes.ClockPro, // Program type
+                                            new ResourceManagerSystem()   // Resource manager
+                                        )
+                                    );
+
+                                    Files.Add(
+                                        new ProgramSystemv2(
+                                            "Media Player",              // Name
+                                            "",                           // Content
+                                            "",                           // Description
+                                            "C:/Programs",                // Path
+                                            "MediaPlayer",               // Target
+                                            "",                           // IconPath
+                                            "",                           // PicPath
+                                            ProgramSystemv2.FileExtension.exe, //FileExt
+                                            1,                           // FileSize
+                                            100,                          // Health
+                                            1,                            // Version
+                                            1,                            // Permissions
+                                            ProgramSystemv2.ProgramTypes.MediaPlayer, // Program type
+                                            new ResourceManagerSystem()   // Resource manager
+                                        )
+                                    );
+
+                                    Files.Add(
+                                        new ProgramSystemv2(
+                                            "Exchange",              // Name
+                                            "",                           // Content
+                                            "",                           // Description
+                                            "C:/Programs",                // Path
+                                            "Exchange Viewer",               // Target
+                                            "",                           // IconPath
+                                            "",                           // PicPath
+                                            ProgramSystemv2.FileExtension.exe, //FileExt
+                                            1,                           // FileSize
+                                            100,                          // Health
+                                            1,                            // Version
+                                            1,                            // Permissions
+                                            ProgramSystemv2.ProgramTypes.ExchangeViewer, // Program type
+                                            new ResourceManagerSystem()   // Resource manager
+                                        )
+                                    );
+
+                                    Files.Add(
+                                        new ProgramSystemv2(
+                                            "Calculator",              // Name
+                                            "",                           // Content
+                                            "",                           // Description
+                                            "C:/Programs",                // Path
+                                            "Calculator",               // Target
+                                            "",                           // IconPath
+                                            "",                           // PicPath
+                                            ProgramSystemv2.FileExtension.exe, //FileExt
+                                            1,                           // FileSize
+                                            100,                          // Health
+                                            1,                            // Version
+                                            1,                            // Permissions
+                                            ProgramSystemv2.ProgramTypes.Calculator, // Program type
+                                            new ResourceManagerSystem()   // Resource manager
+                                        )
+                                    );
+
+                                    Files.Add(
+                                        new ProgramSystemv2(
+                                            "Notepad",              // Name
+                                            "",                           // Content
+                                            "",                           // Description
+                                            "C:/Programs",                // Path
+                                            "Notepad",               // Target
+                                            "",                           // IconPath
+                                            "",                           // PicPath
+                                            ProgramSystemv2.FileExtension.exe, //FileExt
+                                            1,                           // FileSize
+                                            100,                          // Health
+                                            1,                            // Version
+                                            1,                            // Permissions
+                                            ProgramSystemv2.ProgramTypes.Notepad, // Program type
+                                            new ResourceManagerSystem()   // Resource manager
+                                        )
+                                    );
+
+                                    Files.Add(
+                                        new ProgramSystemv2(
+                                            "FileUtility",              // Name
+                                            "",                           // Content
+                                            "",                           // Description
+                                            "C:/Programs",                // Path
+                                            "FileUtility",               // Target
+                                            "",                           // IconPath
+                                            "",                           // PicPath
+                                            ProgramSystemv2.FileExtension.exe, //FileExt
+                                            1,                           // FileSize
+                                            100,                          // Health
+                                            1,                            // Version
+                                            1,                            // Permissions
+                                            ProgramSystemv2.ProgramTypes.FileUtility, // Program type
+                                            new ResourceManagerSystem()   // Resource manager
+                                        )
+                                    );
+
+
+                                    Files.Add(
+                                        new ProgramSystemv2(
+                                            "Test Document",              // Name
+                                            "Address: www.ping.com" + "\n" + "IP: Test", // Content
+                                            "",                           // Description
+                                            "C:/Documents",                // Path
+                                            "",                             // Target
+                                            "",                           // IconPath
+                                            "",                           // PicPath
+                                            ProgramSystemv2.FileExtension.txt, //FileExt
+                                            1,                           // FileSize
+                                            100,                          // Health
+                                            1,                            // Version
+                                            1,                            // Permissions
+                                            ProgramSystemv2.ProgramTypes.Null, // Program type
+                                            new ResourceManagerSystem()   // Resource manager
+                                        )
+                                    );
+
+                                }
+                            }
+                        }
+                    }
+
+                    person.Reputation.Add(new RepSystem("REVA", 0, 0, 0, 0, 0, 0));
+                }
             }
-
-            person.Gateway.StorageDevices.First().OS[0].Partitions.First().Files.Add(new ProgramSystemv2("" + "Kernal-Sanders", "", "", "", "", "", "C:/System", "", "", "", ProgramSystemv2.FileExtension.os, ProgramSystemv2.FileExtension.Null, 0, 0, 1, 0, 100, 1, 0, 0, 0, 0, 0, 0, 0, false, false, false, false, false, false, false, new ResourceManagerSystem()));
-            person.Gateway.StorageDevices.First().OS[1].Partitions.First().Files.Add(new ProgramSystemv2("" + SelectedOS.Name, "", "", "", "", "", "C:/System", "", "", "", ProgramSystemv2.FileExtension.os, ProgramSystemv2.FileExtension.Null, 0, 0, 10, 0, 100, 1, 0, 0, 0, 0, 0, 0, 0, false, false, false, false, false, false, false, new ResourceManagerSystem()));
-
-            person.Reputation.Add(new RepSystem("REVA", 0, 0, 0, 0, 0, 0));
         }
 
         RegCheck = true;
