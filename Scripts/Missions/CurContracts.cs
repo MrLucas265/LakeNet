@@ -67,12 +67,12 @@ public class CurContracts : MonoBehaviour
 
 	void SendContractorEmail()
 	{
-		GameControl.control.EmailData.Add (new EmailSystem (EmailSubject,GameControl.control.Contracts[Select].Address, GameControl.control.Time.FullDate, EmailContent, null, 0, 0, 0, false,EmailSystem.EmailType.New));
+		GameControl.control.EmailData.Add (new EmailSystem (EmailSubject,GameControl.control.Contracts[Select].Address, PersonController.control.Global.DateTime.FullDate, EmailContent, null, 0, 0, 0, false,EmailSystem.EmailType.New));
 	}
 
 	void SendAccountDetailsEmail()
 	{
-        GameControl.control.EmailData.Add (new EmailSystem (EmailSubject,"www.reva.com", GameControl.control.Time.FullDate, EmailContent, null, 0, 0, 0, false,EmailSystem.EmailType.New));
+        GameControl.control.EmailData.Add (new EmailSystem (EmailSubject,"www.reva.com", PersonController.control.Global.DateTime.FullDate, EmailContent, null, 0, 0, 0, false,EmailSystem.EmailType.New));
 
 		GameControl.control.StoredLogins.Add (new LoginSystem ("LEC Bank", StringGenerator.RandomNumberChar(6, 6), StringGenerator.RandomMixedChar(15, 15), 0));
 		//GameControl.control.MyBankDetails.Add (new BankSystem("192.168.56.91","LEC Bank",GameControl.control.StoredLogins[0].Username,GameControl.control.StoredLogins[1].Username,GameControl.control.StoredLogins[1].Password,0,1,0,0,1));
@@ -88,12 +88,12 @@ public class CurContracts : MonoBehaviour
 
 	void SendBankDetailsEmail()
 	{
-        GameControl.control.EmailData.Add (new EmailSystem (EmailSubject,"www.reva.com",GameControl.control.Time.FullDate, EmailContent, null, 0, 0, 0, false,EmailSystem.EmailType.New));
+        GameControl.control.EmailData.Add (new EmailSystem (EmailSubject,"www.reva.com",PersonController.control.Global.DateTime.FullDate, EmailContent, null, 0, 0, 0, false,EmailSystem.EmailType.New));
 	}
 
 	void SendEmail()
 	{
-        GameControl.control.EmailData.Add (new EmailSystem (EmailSubject,EmailSender,GameControl.control.Time.FullDate, EmailContent, null, 0, 0, 0, false,EmailSystem.EmailType.New));
+        GameControl.control.EmailData.Add (new EmailSystem (EmailSubject,EmailSender,PersonController.control.Global.DateTime.FullDate, EmailContent, null, 0, 0, 0, false,EmailSystem.EmailType.New));
 	}
 
     void RemoveMission()
@@ -560,17 +560,17 @@ public class CurContracts : MonoBehaviour
 		//	}
 		//	break;
 
-            case MissionSystem.MissionType.UniUpgrade:
-                int IndexPerson = PersonController.control.PeoplesName.IndexOf(GameControl.control.Contracts[Select].Target);
-                if (PersonController.control.People[IndexPerson].University.Grade == GameControl.control.Contracts[Select].File)
-                {
-                    RemoveMission();
-                }
-                else
-                {
+            //case MissionSystem.MissionType.UniUpgrade:
+                //int IndexPerson = PersonController.control.PeoplesName.IndexOf(GameControl.control.Contracts[Select].Target);
+                //if (PersonController.control.People[IndexPerson].University.Grade == GameControl.control.Contracts[Select].File)
+                //{
+                //    RemoveMission();
+                //}
+                //else
+                //{
 
-                }
-                break;
+                //}
+                //break;
 		}
 	}
 }

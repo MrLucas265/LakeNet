@@ -272,7 +272,7 @@ public class ClockProgram : MonoBehaviour
 
 			CurrentTimeRect = new Rect(2, 25, pwinman.RunningPrograms[i].windowRect.width - 4, pwinman.RunningPrograms[i].windowRect.height - 27);
 
-			GUI.Box(CurrentTimeRect, GameControl.control.Time.CurrentTime + "\n" + GameControl.control.Time.TodaysDate);
+			GUI.Box(CurrentTimeRect, PersonController.control.Global.DateTime.CurrentTime + "\n" + PersonController.control.Global.DateTime.TodaysDate);
 
 			GUI.Box(new Rect(40, 2, CloseButton.x - 41, 21), ProgramNameForWinMan);
 

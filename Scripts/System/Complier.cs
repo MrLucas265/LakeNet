@@ -71,14 +71,14 @@
 //            {
 //                if (GameControl.control.ProgramFiles[SelectedDocument].Name != TypedTitle)
 //                {
-//                    GameControl.control.ProgramFiles.Insert(0, new ProgramSystem(TypedTitle, "", "", GameControl.control.Time.DayName, TypedText, "", SaveLocation, "", "", "", ProgramSystem.FileExtension.Txt, ProgramSystem.FileExtension.Null, 0, 0, FileSize, 0, 0, 0, 0, 100, 0f, 0, 0, 0, 0, 0, 0, 0, false, false, false, false, BlankInfections, BlankFileType));
+//                    GameControl.control.ProgramFiles.Insert(0, new ProgramSystem(TypedTitle, "", "", PersonController.control.Global.DateTime.DayName, TypedText, "", SaveLocation, "", "", "", ProgramSystem.FileExtension.Txt, ProgramSystem.FileExtension.Null, 0, 0, FileSize, 0, 0, 0, 0, 100, 0f, 0, 0, 0, 0, 0, 0, 0, false, false, false, false, BlankInfections, BlankFileType));
 //                    GameControl.control.ProgramFiles[0].Used = FileSize;
 //                }
 //            }
 //        }
 //        else
 //        {
-//            GameControl.control.ProgramFiles.Insert(0, new ProgramSystem(TypedTitle, "", "", GameControl.control.Time.DayName, TypedText, "", SaveLocation, "", "", "", ProgramSystem.FileExtension.Txt, ProgramSystem.FileExtension.Null, 0, 0, FileSize, 0, 0, 0, 0, 100, 0f, 0, 0, 0, 0, 0, 0, 0, false, false, false, false, BlankInfections, BlankFileType));
+//            GameControl.control.ProgramFiles.Insert(0, new ProgramSystem(TypedTitle, "", "", PersonController.control.Global.DateTime.DayName, TypedText, "", SaveLocation, "", "", "", ProgramSystem.FileExtension.Txt, ProgramSystem.FileExtension.Null, 0, 0, FileSize, 0, 0, 0, 0, 100, 0f, 0, 0, 0, 0, 0, 0, 0, false, false, false, false, BlankInfections, BlankFileType));
 //            GameControl.control.ProgramFiles[0].Used = FileSize;
 //        }
 //    }

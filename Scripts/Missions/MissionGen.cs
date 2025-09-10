@@ -193,7 +193,7 @@ public class MissionGen : MonoBehaviour
 			SelectedFile = Random.Range (0, REVATestPublic.Count);
 			DescFile = REVATestPublic[SelectedFile];
 			GameControl.control.Contracts.Add(new MissionSystem ("REVA Test",DescFile,"www.revatest.com","www.reva.com","done","done","Public","REVA",0,0,0,Random.Range (200, 200),0,MissionSystem.MissionType.PTCopy));
-			GameControl.control.EmailData.Add (new EmailSystem ("Reva Test","www.reva.com",GameControl.control.Time.FullDate,"We would like you to connect to www.reva.com/test by opening net viewer in the app menu then typing the URL in the address bar then goto the public file section find and copy this file " + DescFile +  " then reply to this email and click the @ to attach the file to the email and send it then we will give you the membership login details", null, 0, 0, 0, false,EmailSystem.EmailType.Contract));
+			GameControl.control.EmailData.Add (new EmailSystem ("Reva Test","www.reva.com",PersonController.control.Global.DateTime.FullDate,"We would like you to connect to www.reva.com/test by opening net viewer in the app menu then typing the URL in the address bar then goto the public file section find and copy this file " + DescFile +  " then reply to this email and click the @ to attach the file to the email and send it then we will give you the membership login details", null, 0, 0, 0, false,EmailSystem.EmailType.Contract));
 			noti.AddStackNotification("New Mail", "Open Mail", "To open the new mail click the letter Icon>Folders>Con", true, 60,true);
 			noti.AddStackNotification("New Notification", "Open Notification", "To open the new notification click the letter Icon>Folders>Con", true, 120,false);
 			GameControl.control.NewAccount = false;
@@ -482,8 +482,8 @@ public class MissionGen : MonoBehaviour
 			MissionRep = Random.Range (150, 250);
 			DescName = Random.Range (0, PersonController.control.People.Count);
             DescTarget = PersonController.control.People[DescName].Name;
-            int CurrentGradeIndex = PersonController.control.UniGrades.IndexOf(DescTarget);
-            DescFile = PersonController.control.UniGrades[Random.Range(0, PersonController.control.UniGrades.Count)];
+            //int CurrentGradeIndex = PersonController.control.UniGrades.IndexOf(DescTarget);
+            //DescFile = PersonController.control.UniGrades[Random.Range(0, PersonController.control.UniGrades.Count)];
             IdleDeleteTime = Random.Range(300, 900);
 			EditDatabase = true;
 			DescGenerator ();

@@ -95,7 +95,7 @@ public class FileUtilityFunc
 
         Data.Percentage = Data.OurFileSize / Data.ProgramFile.Used * 100;
         Data.ItemRemain = Data.ProgramFile.Used - Data.OurFileSize;
-        Data.TimeRemainSeconds = Data.ItemRemain / Data.Speed / GameControl.control.TimeMulti;
+        Data.TimeRemainSeconds = Data.ItemRemain / Data.Speed / PersonController.control.Global.DateTime.TimeMulti;
         Data.TimeRemainSeconds = Mathf.Round(Data.TimeRemainSeconds - 1);
         Data.TimeRemainUISeconds = (int)(Data.TimeRemainSeconds % 60); // return the remainder of the seconds divide by 60 as an int
         Data.TimeRemainSeconds /= 60; // divide current time y 60 to get minutes

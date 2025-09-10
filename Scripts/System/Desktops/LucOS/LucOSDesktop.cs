@@ -529,7 +529,7 @@ public class LucOSDesktop : MonoBehaviour
 
 	//void ClockUI()
 	//{
-	//	if (GUI.Button(new Rect(ClockDisplay), GameControl.control.Time.TodaysDate + "" + GameControl.control.Time.CurrentTime, GameControl.control.Skins[Registry.GetIntData("Player", "System", "Skin")].customStyles[DesktopStyle]))
+	//	if (GUI.Button(new Rect(ClockDisplay), PersonController.control.Global.DateTime.TodaysDate + "" + PersonController.control.Global.DateTime.CurrentTime, GameControl.control.Skins[Registry.GetIntData("Player", "System", "Skin")].customStyles[DesktopStyle]))
 	//	{
 	//		sc.SoundSelect = 3;
 	//		sc.PlaySound();

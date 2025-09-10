@@ -184,7 +184,7 @@ public class TUG : MonoBehaviour
             //GameControl.control.Gateway.InstalledModem[0].MaxSpeed = SelectedSpeed;
            // GameControl.control.Gateway.InstalledModem[0].CurrentSpeed = SelectedSpeed;
             
-            DateSystem InitalPlanDate = new DateSystem(GameControl.control.Time.Seconds, GameControl.control.Time.Miniutes, GameControl.control.Time.Hours, GameControl.control.Time.TwelveHours, GameControl.control.Time.Day, GameControl.control.Time.Month, GameControl.control.Time.Year, 0, "", false, "", 0, 0, 0, false, "" + GameControl.control.Time.Day.ToString("00") + "" + "/" + GameControl.control.Time.Month.ToString("00") + "/" + GameControl.control.Time.Year.ToString("0000"), "", "", "", false);
+            DateSystem InitalPlanDate = new DateSystem(PersonController.control.Global.DateTime.Seconds, PersonController.control.Global.DateTime.Miniutes, PersonController.control.Global.DateTime.Hours, PersonController.control.Global.DateTime.TwelveHours, PersonController.control.Global.DateTime.Day, PersonController.control.Global.DateTime.Month, PersonController.control.Global.DateTime.Year, 0, "", false, "", 0, 0, 0, false, "" + PersonController.control.Global.DateTime.Day.ToString("00") + "" + "/" + PersonController.control.Global.DateTime.Month.ToString("00") + "/" + PersonController.control.Global.DateTime.Year.ToString("0000"), "", "", "", false);
             int MonthMath = InitalPlanDate.Month + 1;
             int DDay = InitalPlanDate.Day;
             int DYear = InitalPlanDate.Year;

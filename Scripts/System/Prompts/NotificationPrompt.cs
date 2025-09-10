@@ -96,7 +96,7 @@ public class NotificationPrompt : MonoBehaviour
 		winman.windowRect = new Rect(Screen.width - 315, Screen.height, 200 * Customize.cust.UIScale, 75 * Customize.cust.UIScale);
 		winman.AddProgramWindow();
 		StackedNotifications.Add(new DisplayNotificationSystem(Title, SubTitle, Message, playsnd, Timer, AutoDismiss));
-		GameControl.control.Notifications.Add(new NotificationSystem(Title, SubTitle, Message, GameControl.control.Time.CurrentTime, GameControl.control.Time.TodaysDate, NotificationSystem.NotificationType.System));
+		GameControl.control.Notifications.Add(new NotificationSystem(Title, SubTitle, Message, PersonController.control.Global.DateTime.CurrentTime, PersonController.control.Global.DateTime.TodaysDate, NotificationSystem.NotificationType.System));
 		if (playsnd == true && Customize.cust.PlayNotiSound)
 		{
 			PlayNotificationSound();

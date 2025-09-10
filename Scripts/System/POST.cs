@@ -87,7 +87,7 @@ public class POST : MonoBehaviour
 		cooldown = 0.256f;
 		cooldown1 = 0.256f;
 		Screen.SetResolution (Customize.cust.RezX, Customize.cust.RezY, Customize.cust.FullScreen);
-		GameControl.control.TimeMulti = 1;
+		PersonController.control.Global.DateTime.TimeMulti = 1;
 
 		if (Application.isEditor == true) 
 		{

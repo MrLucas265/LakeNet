@@ -1,10 +1,11 @@
-﻿using System.Collections;
+﻿using JetBrains.Annotations;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Rendering;
 
 class DistinctItemComparer : IEqualityComparer<RegistrySystem>
 {
-
     public bool Equals(RegistrySystem x, RegistrySystem y)
     {
         return x.KeyName == y.KeyName &&
@@ -198,6 +199,8 @@ public class RegistryLoader : MonoBehaviour
 					DefaultRegistryKeys[i].Values.Add(new RegistryDataSystem("Exists"));
 					DefaultRegistryKeys[i].Values.Add(new RegistryDataSystem("Seek"));
                     DefaultRegistryKeys[i].Values.Add(new RegistryDataSystem("Startup"));
+
+
 					//Scroll
                     DefaultRegistryKeys[i].Values.Add(new RegistryDataSystem("ScrollRect"));
                     DefaultRegistryKeys[i].Values.Add(new RegistryDataSystem("ScrollPos"));

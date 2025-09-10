@@ -1609,18 +1609,18 @@ public class CLICommandsV2 : MonoBehaviour
 			{
 				if (inputArray[1] == "current")
 				{
-					PastCommands.Add("Current Time Multi: " + GameControl.control.TimeMulti);
+					PastCommands.Add("Current Time Multi: " + PersonController.control.Global.DateTime.TimeMulti);
 				}
 				else if (inputArray[1] == "reset")
 				{
-					GameControl.control.TimeMulti = 1;
-					PastCommands.Add("Time Multi Reset: " + GameControl.control.TimeMulti);
+					PersonController.control.Global.DateTime.TimeMulti = 1;
+					PastCommands.Add("Time Multi Reset: " + PersonController.control.Global.DateTime.TimeMulti);
 				}
 				else
 				{
 					int select = 0;
 					int.TryParse(inputArray[1], out select);
-					GameControl.control.TimeMulti = select;
+					PersonController.control.Global.DateTime.TimeMulti = select;
 					PastCommands.Add("Time Multi: " + select);
 				}
 			}
@@ -1879,19 +1879,19 @@ public class CLICommandsV2 : MonoBehaviour
 			break;
 
 			case "time":
-			PastCommands.Add ("" + GameControl.control.Time.CurrentTime);
+			PastCommands.Add ("" + PersonController.control.Global.DateTime.CurrentTime);
 			break;
 
 		case "date":
-			PastCommands.Add ("" + GameControl.control.Time.FullDate);
-			PastCommands.Add ("" + GameControl.control.Time.DayName);
+			PastCommands.Add ("" + PersonController.control.Global.DateTime.FullDate);
+			PastCommands.Add ("" + PersonController.control.Global.DateTime.DayName);
 			//PastCommands.Add ("" + ProfileController.procon.DayName + " " + ProfileController.procon.Day + " " + ProfileController.procon.MonthName);
 			break;
 
 		case "datetime":
-			PastCommands.Add ("" + GameControl.control.Time.CurrentTime);
-			PastCommands.Add ("" + GameControl.control.Time.FullDate);
-			PastCommands.Add ("" + GameControl.control.Time.DayName);
+			PastCommands.Add ("" + PersonController.control.Global.DateTime.CurrentTime);
+			PastCommands.Add ("" + PersonController.control.Global.DateTime.FullDate);
+			PastCommands.Add ("" + PersonController.control.Global.DateTime.DayName);
 			//PastCommands.Add ("" + ProfileController.procon.DayName + " " + ProfileController.procon.Day + " " + ProfileController.procon.MonthName);
 			break;
 

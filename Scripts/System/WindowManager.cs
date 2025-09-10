@@ -33,11 +33,14 @@ public class WindowManager : MonoBehaviour
 
     public Rect ResizeRect;
     public bool Resize;
+    public bool AlreadyResizing;
     public Rect WindowResizeRect;
 
     public string Name;
 
     public ResourceManagerSystem RMS;
+
+    public ProgramSystemv2.ProgramTypes ProgramType;
 
     public static void QuitProgram(string PersonName,string ProgramName,int WPN)
     {
@@ -144,12 +147,12 @@ public class WindowManager : MonoBehaviour
 
                         if (Index == RunningPrograms.Count)
                         {
-                            RunningPrograms.Add(new WindowConSys(WindowName, ProgramName, ProcessName, Status, ProcessType, WID, PID,Index, windowRect, windowButtons, TitleBoxRect, Resize, ResizeRect, WindowResizeRect,RMS));
+                            RunningPrograms.Add(new WindowConSys(WindowName, ProgramName, ProcessName, Status, ProcessType, WID, PID,Index, windowRect, windowButtons, TitleBoxRect, Resize, ResizeRect, WindowResizeRect,RMS, ProgramType));
                         }
                     }
                     else
                     {
-                        RunningPrograms.Add(new WindowConSys(WindowName, ProgramName, ProcessName, Status, ProcessType, WID, PID,Index, windowRect, windowButtons, TitleBoxRect, Resize, ResizeRect, WindowResizeRect, RMS));
+                        RunningPrograms.Add(new WindowConSys(WindowName, ProgramName, ProcessName, Status, ProcessType, WID, PID,Index, windowRect, windowButtons, TitleBoxRect, Resize, ResizeRect, WindowResizeRect, RMS,ProgramType));
                     }
                     SetLocalRegistry();
                     TempWID = WID;
@@ -240,13 +243,17 @@ public class WindowManager : MonoBehaviour
             {
                 for (int j= 0; j < RunningPrograms.Count; j++)
                 {
+                    if (RunningPrograms[j].Resize == true)
+                    {
+                        AlreadyResizing = true;
+                    }
                     if (RunningPrograms[j].WID == WID)
                     {
                         if (Input.GetMouseButton(0))
                         {
                             if(Registry.GetIntData("Player","WindowManager","SelectedWindow") != -1)
                             {
-                                if (rect.Contains(Event.current.mousePosition))
+                                if (rect.Contains(Event.current.mousePosition) && AlreadyResizing == false)
                                 {
                                     Dragging = true;
                                 }
@@ -429,6 +436,7 @@ public class WindowManager : MonoBehaviour
         ProcessName = "";
         Status = "";
         ProcessType = "";
+        ProgramType = ProgramSystemv2.ProgramTypes.Null;
         WID = 0;
         PID = 0;
         windowRect = new Rect(0, 0, 0, 0);

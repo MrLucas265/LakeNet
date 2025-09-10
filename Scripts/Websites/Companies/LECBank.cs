@@ -313,7 +313,7 @@ public class LECBank : MonoBehaviour
 										GameControl.control.CompanyServerData[CompanyID].BankDetails[j].AccountBalance += Ammount;
 										GameControl.control.CompanyServerData[CompanyID].BankDetails[j].Loan += Ammount;
 
-										string DateTime = GameControl.control.Time.CurrentTime + " " + GameControl.control.Time.TodaysDate;
+										string DateTime = PersonController.control.Global.DateTime.CurrentTime + " " + PersonController.control.Global.DateTime.TodaysDate;
 										string FromBankIP = GameControl.control.BankData[SelectedBank].IP;
 										string FromBankAccountNumber = GameControl.control.CompanyServerData[CompanyID].BankDetails[j].AccountNumber;
 
@@ -337,7 +337,7 @@ public class LECBank : MonoBehaviour
 								{
 									GameControl.control.CompanyServerData[CompanyID].BankDetails[j].AccountBalance -= Ammount;
 									GameControl.control.CompanyServerData[CompanyID].BankDetails[j].Loan -= Ammount;
-									string DateTime = GameControl.control.Time.CurrentTime + " " + GameControl.control.Time.TodaysDate;
+									string DateTime = PersonController.control.Global.DateTime.CurrentTime + " " + PersonController.control.Global.DateTime.TodaysDate;
 									string FromBankIP = GameControl.control.CompanyServerData[CompanyID].IP;
 									string FromBankAccountNumber = GameControl.control.CompanyServerData[CompanyID].BankDetails[j].AccountNumber;
 									GameControl.control.CompanyServerData[CompanyID].BankDetails[j].Logs.Add(new BankLogsSystem("LEC Bank Credit", "", LoggedInAs.AccIP, LoggedInAs.AccountName, "Loan Deposit", Ammount, DateTime));
@@ -392,7 +392,7 @@ public class LECBank : MonoBehaviour
 											GameControl.control.CompanyServerData[i].BankDetails[j].AccountBalance += Ammount1;
 											GameControl.control.CompanyServerData[SelectedBank].BankDetails[SelectedAccount].AccountBalance -= Ammount1;
 
-											string DateTime = GameControl.control.Time.CurrentTime + " " + GameControl.control.Time.TodaysDate;
+											string DateTime = PersonController.control.Global.DateTime.CurrentTime + " " + PersonController.control.Global.DateTime.TodaysDate;
 											string FromBankIP = GameControl.control.CompanyServerData[SelectedBank].IP;
 											string FromBankAccountNumber = GameControl.control.CompanyServerData[SelectedBank].BankDetails[SelectedAccount].AccountNumber;
 

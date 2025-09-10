@@ -179,7 +179,7 @@ public class FileUtility : MonoBehaviour
 				{
 					ProgramHandle[selectedID].Percentage = ProgramHandle[selectedID].OurFileSize / ProgramHandle[selectedID].ProgramFile.Used * 100;
 					ProgramHandle[selectedID].ItemRemain = ProgramHandle[selectedID].ProgramFile.Used - ProgramHandle[selectedID].OurFileSize;
-					ProgramHandle[selectedID].TimeRemainSeconds = ProgramHandle[selectedID].ItemRemain / Speed / GameControl.control.TimeMulti;
+					ProgramHandle[selectedID].TimeRemainSeconds = ProgramHandle[selectedID].ItemRemain / Speed / PersonController.control.Global.DateTime.TimeMulti;
 					ProgramHandle[selectedID].TimeRemainSeconds = Mathf.RoundToInt(ProgramHandle[selectedID].TimeRemainSeconds-1);
 					ProgramHandle[selectedID].TimeRemainUISeconds = (int)(ProgramHandle[selectedID].TimeRemainSeconds % 60); // return the remainder of the seconds divide by 60 as an int
 					ProgramHandle[selectedID].TimeRemainSeconds /= 60; // divide current time y 60 to get minutes
@@ -345,7 +345,7 @@ public class FileUtility : MonoBehaviour
 
 	void Done()
 	{
-		string CurrentDateTime = GameControl.control.Time.FullDate + " " + GameControl.control.Time.CurrentTime;
+		string CurrentDateTime = PersonController.control.Global.DateTime.FullDate + " " + PersonController.control.Global.DateTime.CurrentTime;
 
 		switch (ProgramHandle[selectedID].Type)
 		{

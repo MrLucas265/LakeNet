@@ -27,7 +27,7 @@ public class Rep : MonoBehaviour
 								GameControl.control.Rep[i].RepLevel += 1;
 								GameControl.control.Rep[i].RepLevelMod = 1 + GameControl.control.Rep[i].RepLevel/100;
 								GameControl.control.Rep[i].RepLevelRequirement = 100 * GameControl.control.Rep[i].RepLevel * GameControl.control.Rep[i].RepLevelMod;
-								GameControl.control.EmailData.Add (new EmailSystem ("Reva Promotion","www.reva.com",GameControl.control.Time.FullDate,"Your reva grade has been increased Agent " + GameControl.control.StoredLogins[0].Username + " Your grade is now " + GameControl.control.Rep[i].RepLevel, null, 0, 0, 0, false,EmailSystem.EmailType.New));
+								GameControl.control.EmailData.Add (new EmailSystem ("Reva Promotion","www.reva.com",PersonController.control.Global.DateTime.FullDate,"Your reva grade has been increased Agent " + GameControl.control.StoredLogins[0].Username + " Your grade is now " + GameControl.control.Rep[i].RepLevel, null, 0, 0, 0, false,EmailSystem.EmailType.New));
                                 noti.NewNotification("New Mail", "Reva Promotion", "Your reva grade has been increased Agent");
                             }
 						}

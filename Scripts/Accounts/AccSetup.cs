@@ -1827,14 +1827,14 @@ public class AccSetup : MonoBehaviour
         PersonController.control.ProfileName = ProfileController.procon.Profiles[Select];
         //PersonController.control.People.RemoveRange(0, PersonController.control.People.Count);
 
-        GameControl.control.Time.Day = 1;
-        GameControl.control.Time.DayNumber = 5;
-        GameControl.control.Time.Month = 1;
-        GameControl.control.Time.LeapYearCount = 2;
-        GameControl.control.Time.Year = 1970;
-        GameControl.control.Time.StartDay = 5;
+        PersonController.control.Global.DateTime.Day = 1;
+        PersonController.control.Global.DateTime.DayNumber = 5;
+        PersonController.control.Global.DateTime.Month = 1;
+        PersonController.control.Global.DateTime.LeapYearCount = 2;
+        PersonController.control.Global.DateTime.Year = 1970;
+        PersonController.control.Global.DateTime.StartDay = 5;
 
-        string FullDate = "" + GameControl.control.Time.Day + "-" + GameControl.control.Time.Month + "-" + GameControl.control.Time.Year;
+        string FullDate = "" + PersonController.control.Global.DateTime.Day + "-" + PersonController.control.Global.DateTime.Month + "-" + PersonController.control.Global.DateTime.Year;
 
         string InstallLocation = "D:/Programs";
         string SysInstallLocation = "C:/Programs";

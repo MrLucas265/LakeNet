@@ -109,7 +109,7 @@ public class Portfolio : MonoBehaviour
 			}
 		}
 
-        GameControl.control.TransactionHistory.Add(new StockPortfolioSystem(GameControl.control.Portfolio[SelectedCompany].Exchange, "S", GameControl.control.Portfolio[SelectedCompany].Company, "",GameControl.control.Time.FullDate, CurrentSharePrice, Amount));
+        GameControl.control.TransactionHistory.Add(new StockPortfolioSystem(GameControl.control.Portfolio[SelectedCompany].Exchange, "S", GameControl.control.Portfolio[SelectedCompany].Company, "",PersonController.control.Global.DateTime.FullDate, CurrentSharePrice, Amount));
         GameControl.control.Portfolio.RemoveAt (SelectedCompany);
 		Amount = 0;
 		showSellMenu = false;

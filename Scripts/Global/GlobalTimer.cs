@@ -24,7 +24,7 @@
 //					}
 //					else
 //					{
-//						PersonController.control.People[i].Gateway.Timer.TimeRemain -= Time.deltaTime * GameControl.control.TimeMulti;
+//						PersonController.control.People[i].Gateway.Timer.TimeRemain -= Time.deltaTime * PersonController.control.Global.DateTime.TimeMulti;
 //					}
 //				}
 //			}

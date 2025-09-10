@@ -89,7 +89,7 @@ public class MediaPlayer : MonoBehaviour
 
 		if(Registry.GetStringData(RegPersonName, RegProgramName, "Path") == "")
         {
-			Registry.SetStringData(RegPersonName, RegProgramName, "Path", "E:/");
+			Registry.SetStringData(RegPersonName, RegProgramName, "Path", "C:/");
 		}
 
 		//Registry.CreateNewKeyValue(RegPersonName, RegPersonName, "Looping", "", false, 0, 0);
@@ -261,7 +261,7 @@ public class MediaPlayer : MonoBehaviour
 				{
 					for (int i = 0; i < pwinman.RunningPrograms.Count; i++)
 					{
-						if (pwinman.RunningPrograms[i].ProgramName == RegProgramName)
+						if (pwinman.RunningPrograms[i].ProgramType == ProgramSystemv2.ProgramTypes.MediaPlayer)
 						{
 							//ColorUI(pwinman.RunningPrograms[i].WPN);
 							//GUI.color = new Color32(LocalRegistry.GetRedColorData(PersonName, pwinman.RunningPrograms[i].WPN, ProgramName, "WindowColor"),
@@ -784,7 +784,7 @@ public class MediaPlayer : MonoBehaviour
 					{
 						video.Stop();
 					}
-					appman.SelectedApp = "Media Player";
+					appman.SelectedProgram = ProgramSystemv2.ProgramTypes.MediaPlayer;
 				}
 			}
 			else

@@ -48,8 +48,8 @@ public class InternetBrowser : MonoBehaviour
 //	private Para para;
 	private CLICommandsV2 clic;
 	private Store store;
-    private MelvenaUniversity melvenauni;
-    private ISD isd;
+    //private MelvenaUniversity melvenauni;
+    //private ISD isd;
 	private DiskManV2 dskmanv2;
 	private FileUtility fu;
 
@@ -121,8 +121,8 @@ public class InternetBrowser : MonoBehaviour
 		gstocks = Database.GetComponent<GStocks>();
 		hs = Database.GetComponent<HardwareSite>();
 		store = Database.GetComponent<Store>();
-        melvenauni = Database.GetComponent<MelvenaUniversity>();
-        isd = Database.GetComponent<ISD>();
+        //melvenauni = Database.GetComponent<MelvenaUniversity>();
+        //isd = Database.GetComponent<ISD>();
 		dskmanv2 = SysSoftware.GetComponent<DiskManV2>();
 		fu = SysSoftware.GetComponent<FileUtility>();
         //cc = Database.GetComponent<CabbageCorp>();
@@ -471,7 +471,7 @@ public class InternetBrowser : MonoBehaviour
 				connected = true;
 				break;
 			case "www.melvena.com":
-				melvenauni.RenderSite();
+				//melvenauni.RenderSite();
 				sm.Connect();
 				clic.storedConnection = "www.melvena.com";
 				connected = true;
@@ -495,7 +495,7 @@ public class InternetBrowser : MonoBehaviour
 				connected = true;
 				break;
 			case "www.isd.com":
-				isd.RenderSite();
+				//isd.RenderSite();
 				sm.Connect();
 				clic.storedConnection = "www.isd.com";
 				connected = true;

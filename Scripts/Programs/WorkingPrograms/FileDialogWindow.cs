@@ -369,7 +369,7 @@ public class FileDialogWindow : MonoBehaviour
 				}
 			}
 
-			//GUI.Box(CurrentTimeRect, GameControl.control.Time.CurrentTime + "\n" + GameControl.control.Time.TodaysDate);
+			//GUI.Box(CurrentTimeRect, PersonController.control.Global.DateTime.CurrentTime + "\n" + PersonController.control.Global.DateTime.TodaysDate);
 
 			if (pwinman.RunningPrograms[i].Resize == true)
 			{

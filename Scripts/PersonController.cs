@@ -12,18 +12,7 @@ public class PersonController : MonoBehaviour
 
     public List<PeopleSystem> People = new List<PeopleSystem>();
 
-    public List<DomainSystem> Domains = new List<DomainSystem>();
-
-
-    public List<OrgnizationSystem> Orgnizations = new List<OrgnizationSystem>();
-
-
-    public List<string> PeoplesName = new List<string>();
-
-    public List<string> CollageClasses = new List<string>();
-    public List<string> CollageGrades = new List<string>();
-    public List<string> UniClasses = new List<string>();
-    public List<string> UniGrades = new List<string>();
+    public GlobalSystem Global;
 
     public string ProfilePath;
     public string ProfileName;
@@ -65,6 +54,7 @@ public class PersonController : MonoBehaviour
     public void DeleteFile()
     {
         File.Delete(Application.dataPath + "/saves/" + ProfileController.procon.VersionNumber + "/people/" + ProfileName + ".dat");
+        File.Delete(Application.dataPath + "/saves/" + ProfileController.procon.VersionNumber + "/people/" + ProfileName + ".json");
     }
 
     public void Save()
@@ -76,6 +66,7 @@ public class PersonController : MonoBehaviour
         CustomData data = new CustomData();
 
         data.People = People;
+        data.Global = Global;
 
         string JsonString = JsonUtility.ToJson(data);
         StreamWriter sw = new StreamWriter(ActualFilePath + ".json");
@@ -98,6 +89,7 @@ public class PersonController : MonoBehaviour
             sr.Close();
 
             People = data.People;
+            Global = data.Global;
         }
     }
 
@@ -119,5 +111,7 @@ public class PersonController : MonoBehaviour
     class CustomData
     {
         public List<PeopleSystem> People = new List<PeopleSystem>();
+
+        public GlobalSystem Global;
     }
 }

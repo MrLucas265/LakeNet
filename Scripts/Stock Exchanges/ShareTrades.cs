@@ -239,8 +239,8 @@ public class ShareTrades : MonoBehaviour
                 }
             }
         }
-        GameControl.control.Portfolio.Add(new StockPortfolioSystem(Exchange[SelectedCompany].Exchange, "", Exchange[SelectedCompany].Company, "", GameControl.control.Time.FullDate, Exchange[SelectedCompany].CurPrice, Amount));
-        GameControl.control.TransactionHistory.Add(new StockPortfolioSystem(Exchange[SelectedCompany].Exchange, "B", Exchange[SelectedCompany].Company, "", GameControl.control.Time.FullDate, Exchange[SelectedCompany].CurPrice, Amount));
+        GameControl.control.Portfolio.Add(new StockPortfolioSystem(Exchange[SelectedCompany].Exchange, "", Exchange[SelectedCompany].Company, "", PersonController.control.Global.DateTime.FullDate, Exchange[SelectedCompany].CurPrice, Amount));
+        GameControl.control.TransactionHistory.Add(new StockPortfolioSystem(Exchange[SelectedCompany].Exchange, "B", Exchange[SelectedCompany].Company, "", PersonController.control.Global.DateTime.FullDate, Exchange[SelectedCompany].CurPrice, Amount));
         Amount = 0;
         showBuyMenu = false;
     }

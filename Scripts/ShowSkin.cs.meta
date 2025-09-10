@@ -1,6 +1,7 @@
 fileFormatVersion: 2
 guid: 258516bcf44e943898699bad9a6e0855
 MonoImporter:
+  externalObjects: {}
   serializedVersion: 2
   defaultReferences: []
   executionOrder: 0
@@ -8,3 +9,10 @@ MonoImporter:
   userData: 
   assetBundleName: 
   assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 5105
+  packageName: Built-in GUI Skin
+  packageVersion: 1.1
+  assetPath: Assets/Scripts/ShowSkin.cs
+  uploadId: 27094

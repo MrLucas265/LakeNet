@@ -256,7 +256,7 @@ public class ScreenSaver : MonoBehaviour
 
 		if (UseRealTime == false)
 		{
-			GUI.Label(new Rect(posX, posY, 200, 200), "" + GameControl.control.Time.CurrentTime, ClockFont);
+			GUI.Label(new Rect(posX, posY, 200, 200), "" + PersonController.control.Global.DateTime.CurrentTime, ClockFont);
 		}
 		else
 		{

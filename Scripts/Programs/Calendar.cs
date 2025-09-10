@@ -118,15 +118,15 @@ public class Calendar : MonoBehaviour {
 
     void CurrentTimeUpdate()
     {
-        CurrentTime.Year = GameControl.control.Time.Year;
-        CurrentTime.Month = GameControl.control.Time.Month;
-        CurrentTime.MonthName = GameControl.control.Time.MonthName;
-        CurrentTime.Day = GameControl.control.Time.Day;
-        CurrentTime.DayNumber = GameControl.control.Time.DayNumber;
-        CurrentTime.DayName = GameControl.control.Time.DayName;
-        CurrentTime.StartDay = GameControl.control.Time.StartDay;
-        CurrentTime.EndDay = GameControl.control.Time.EndDay;
-        CurrentTime.LeapYearCount = GameControl.control.Time.LeapYearCount;
+        CurrentTime.Year = PersonController.control.Global.DateTime.Year;
+        CurrentTime.Month = PersonController.control.Global.DateTime.Month;
+        CurrentTime.MonthName = PersonController.control.Global.DateTime.MonthName;
+        CurrentTime.Day = PersonController.control.Global.DateTime.Day;
+        CurrentTime.DayNumber = PersonController.control.Global.DateTime.DayNumber;
+        CurrentTime.DayName = PersonController.control.Global.DateTime.DayName;
+        CurrentTime.StartDay = PersonController.control.Global.DateTime.StartDay;
+        CurrentTime.EndDay = PersonController.control.Global.DateTime.EndDay;
+        CurrentTime.LeapYearCount = PersonController.control.Global.DateTime.LeapYearCount;
 
         SelectedTime = CurrentTime;
 

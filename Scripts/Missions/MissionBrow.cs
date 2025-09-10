@@ -34,7 +34,7 @@ public class MissionBrow : MonoBehaviour
 		GameControl.control.Contracts.Add (misgen.MissionList[Select]);
 
 		GameControl.control.EmailData.Add(new EmailSystem(misgen.MissionList[Select].Name,
-			misgen.MissionList[Select].Address,GameControl.control.Time.FullDate,
+			misgen.MissionList[Select].Address,PersonController.control.Global.DateTime.FullDate,
 			misgen.MissionList[Select].EDesc, null, 0,1,1,false,
 			EmailSystem.EmailType.Contract));
 

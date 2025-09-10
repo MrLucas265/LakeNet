@@ -538,8 +538,8 @@ public class IceOSDesktop : MonoBehaviour
 
 	void ClockUI()
 	{
-		string Date = GameControl.control.Time.TodaysDate;
-		if (GameControl.control.Time.Hours >= 12) 
+		string Date = PersonController.control.Global.DateTime.TodaysDate;
+		if (PersonController.control.Global.DateTime.Hours >= 12) 
 		{
 			MTS = " PM";
 		} 
@@ -548,25 +548,25 @@ public class IceOSDesktop : MonoBehaviour
 			MTS = " AM";
 		}
 
-		if (GameControl.control.Time.Hours < 13 && MilitaryTime == false)
+		if (PersonController.control.Global.DateTime.Hours < 13 && MilitaryTime == false)
 		{
 			string Time = "";
-            MTF = GameControl.control.Time.Hours;
-            Time = "" + MTF.ToString ("00") + ":" + GameControl.control.Time.Miniutes.ToString ("00") + MTS + " " + Date;
+            MTF = PersonController.control.Global.DateTime.Hours;
+            Time = "" + MTF.ToString ("00") + ":" + PersonController.control.Global.DateTime.Miniutes.ToString ("00") + MTS + " " + Date;
 			GUI.Box (new Rect (Clock),Time,GameControl.control.Skins[Registry.GetIntData("Player", "System", "Skin")].box);
 		} 
-		if (GameControl.control.Time.Hours >= 13 && MilitaryTime == false)
+		if (PersonController.control.Global.DateTime.Hours >= 13 && MilitaryTime == false)
 		{
-			MTF = GameControl.control.Time.Hours;
+			MTF = PersonController.control.Global.DateTime.Hours;
 			MTF -= 12;
 			string Time = "";
-			Time = "" + MTF.ToString ("00") + ":" + GameControl.control.Time.Miniutes.ToString ("00") + MTS + " " + Date;
+			Time = "" + MTF.ToString ("00") + ":" + PersonController.control.Global.DateTime.Miniutes.ToString ("00") + MTS + " " + Date;
 			GUI.Box (new Rect (Clock),Time,GameControl.control.Skins[Registry.GetIntData("Player", "System", "Skin")].box);
 		}
 		if (MilitaryTime == true || BootTime == true)
 		{
 			string Time = "";
-			Time = "" + GameControl.control.Time.CurrentTime + " " + Date;
+			Time = "" + PersonController.control.Global.DateTime.CurrentTime + " " + Date;
 			GUI.Box (new Rect (Clock),Time,GameControl.control.Skins[Registry.GetIntData("Player", "System", "Skin")].box);
 		}
 	}

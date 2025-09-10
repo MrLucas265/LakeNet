@@ -525,7 +525,7 @@ public class EthelOSDesktop : MonoBehaviour
 
 	void ClockUI()
 	{
-		if (GUI.Button(new Rect(ClockDisplay), GameControl.control.Time.TodaysDate + "\n" + GameControl.control.Time.CurrentTime, GameControl.control.Skins[Registry.GetIntData("Player", "System", "Skin")].customStyles[4]))
+		if (GUI.Button(new Rect(ClockDisplay), PersonController.control.Global.DateTime.TodaysDate + "\n" + PersonController.control.Global.DateTime.CurrentTime, GameControl.control.Skins[Registry.GetIntData("Player", "System", "Skin")].customStyles[4]))
 		{
 			sc.SoundSelect = 3;
 			sc.PlaySound();

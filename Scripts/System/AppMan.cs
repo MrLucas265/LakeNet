@@ -365,6 +365,7 @@ public class AppMan : MonoBehaviour
 
         winman.ProgramName = LaunchRequest.ProgramName;
         winman.ProcessName = LaunchRequest.ProgramTarget;
+        winman.ProgramType = LaunchRequest.ProgramType;
         winman.WindowName = WindowName;
         winman.windowRect = new Rect(200, 200, Width, Height);
         winman.AddProgramWindow();
@@ -868,8 +869,18 @@ public class AppMan : MonoBehaviour
                 if (media.quit == false)
                 {
                     SetWindowInfo(640, 480);
+
+                    print(LaunchRequest.ProgramType.ToString());
+
+                    //winman.ProgramName = "MediaPlayer";
+                    //winman.ProcessName = "MediaPlayer";
+                    //winman.WindowName = "MediaPlayer";
+                    //winman.ProgramType = LaunchRequest.ProgramType;
+                    //winman.windowRect = new Rect(200, 200, 640 * Customize.cust.UIScale, 480 * Customize.cust.UIScale);
+                    //winman.AddProgramWindow();
+
                     SRM.ProgramName = ProgramName;
-                    SRM.ApplicationName = "Media Player";
+                    SRM.ApplicationName = "MediaPlayer";
                     SRM.CPUUsage = 0.05f;
                     SRM.MemoryUsage = 256f;
                     SRM.SelectedProgramsWindowID = media.windowID;
@@ -883,8 +894,8 @@ public class AppMan : MonoBehaviour
                 }
                 else
                 {
-                    SRM.ProgramName = ProgramName;
-                    SRM.ApplicationName = "Media Player";
+                    SRM.ProgramName = "MediaPlayer";
+                    SRM.ApplicationName = "MediaPlayer";
                     SRM.CPUUsage = 0.05f;
                     SRM.MemoryUsage = 256f;
                     SRM.SelectedProgramsWindowID = media.windowID;

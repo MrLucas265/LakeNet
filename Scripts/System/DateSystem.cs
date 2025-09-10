@@ -9,6 +9,7 @@ public class DateSystem
     public float Miniutes;
     public float Hours;
     public float TwelveHours;
+    public float TimeMulti;
     public int Day;
     public int Month;
     public int Year;

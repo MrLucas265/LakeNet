@@ -68,7 +68,7 @@ public class NotfiPrompt : MonoBehaviour
 	{
 		if (SubTitle == "OS Kernal Panic")
 		{
-			GameControl.control.Notifications.Add(new NotificationSystem(Title, SubTitle, Message, GameControl.control.Time.CurrentTime, GameControl.control.Time.TodaysDate, NotificationSystem.NotificationType.System));
+			GameControl.control.Notifications.Add(new NotificationSystem(Title, SubTitle, Message, PersonController.control.Global.DateTime.CurrentTime, PersonController.control.Global.DateTime.TodaysDate, NotificationSystem.NotificationType.System));
 			ShowNoti = false;
 		}
 		else
@@ -92,7 +92,7 @@ public class NotfiPrompt : MonoBehaviour
 				playsound = Customize.cust.PlayNotiSound;
 			}
 			DisplayTime = 4;
-			GameControl.control.Notifications.Add(new NotificationSystem(Title, SubTitle, Message, GameControl.control.Time.CurrentTime, GameControl.control.Time.TodaysDate, NotificationSystem.NotificationType.System));
+			GameControl.control.Notifications.Add(new NotificationSystem(Title, SubTitle, Message, PersonController.control.Global.DateTime.CurrentTime, PersonController.control.Global.DateTime.TodaysDate, NotificationSystem.NotificationType.System));
 		}
 	}
 
@@ -102,7 +102,7 @@ public class NotfiPrompt : MonoBehaviour
 		DisplayTime = Timer;
 		Notification = Message;
 		playsound = playsnd;
-		GameControl.control.Notifications.Add(new NotificationSystem(Title, SubTitle, Message, GameControl.control.Time.CurrentTime, GameControl.control.Time.TodaysDate, NotificationSystem.NotificationType.System));
+		GameControl.control.Notifications.Add(new NotificationSystem(Title, SubTitle, Message, PersonController.control.Global.DateTime.CurrentTime, PersonController.control.Global.DateTime.TodaysDate, NotificationSystem.NotificationType.System));
 	}
 
 	void OnGUI()

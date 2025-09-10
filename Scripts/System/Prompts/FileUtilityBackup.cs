@@ -173,7 +173,7 @@
 //				{
 //					ProgramHandle[selectedID].Percentage = ProgramHandle[selectedID].OurFileSize / ProgramHandle[selectedID].FileSize * 100;
 //					ProgramHandle[selectedID].ItemRemain = ProgramHandle[selectedID].FileSize - ProgramHandle[selectedID].OurFileSize;
-//					ProgramHandle[selectedID].TimeRemainSeconds = ProgramHandle[selectedID].ItemRemain / Speed / GameControl.control.TimeMulti;
+//					ProgramHandle[selectedID].TimeRemainSeconds = ProgramHandle[selectedID].ItemRemain / Speed / PersonController.control.Global.DateTime.TimeMulti;
 //					ProgramHandle[selectedID].TimeRemainMin = ProgramHandle[selectedID].TimeRemainSeconds / 60;
 //					ProgramHandle[selectedID].TimeRemainHour = ProgramHandle[selectedID].TimeRemainMin / 60;
 
@@ -300,7 +300,7 @@
 
 //	void Done()
 //	{
-//		string CurrentDateTime = GameControl.control.Time.FullDate + " " + GameControl.control.Time.CurrentTime;
+//		string CurrentDateTime = PersonController.control.Global.DateTime.FullDate + " " + PersonController.control.Global.DateTime.CurrentTime;
 
 //		switch (ProgramHandle[selectedID].Type)
 //		{
