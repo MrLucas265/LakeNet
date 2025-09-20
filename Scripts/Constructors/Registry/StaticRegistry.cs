@@ -1487,6 +1487,64 @@ public class Registry
         return Test;
     }
 
+    public static void SetValueDataType(string PersonsName, string KeyName, string ValueName, string StringData)
+    {
+        var people = PersonController.control.People;
+
+        for (int i = 0; i < people.Count; i++)
+        {
+            if (people[i].Name == PersonsName)
+            {
+                for (int j = 0; j < people[i].Gateway.Registry.Count; j++)
+                {
+                    if (people[i].Gateway.Registry[j].KeyName == KeyName)
+                    {
+                        for (int k = 0; k < people[i].Gateway.Registry[j].Valuesv2.Count; k++)
+                        {
+                            if (people[i].Gateway.Registry[j].Valuesv2[k].ValueName == ValueName)
+                            {
+                                var regdata = people[i].Gateway.Registry[j].Valuesv2[k];
+                                regdata.DataTypeString = StringData;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    public static string GetValueDataType(string PersonsName, string KeyName, string ValueName)
+    {
+        var people = PersonController.control.People;
+
+        string Test = "";
+
+        for (int i = 0; i < people.Count; i++)
+        {
+            if (people[i].Name == PersonsName)
+            {
+                for (int j = 0; j < people[i].Gateway.Registry.Count; j++)
+                {
+                    if (people[i].Gateway.Registry[j].KeyName == KeyName)
+                    {
+                        for (int k = 0; k < people[i].Gateway.Registry[j].Valuesv2.Count; k++)
+                        {
+                            if (people[i].Gateway.Registry[j].Valuesv2[k].ValueName == ValueName)
+                            {
+                                var regdata = people[i].Gateway.Registry[j].Valuesv2[k];
+                                var DataType = regdata.DataTypeString;
+
+                                if (DataType != null)
+                                    Test = DataType;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        return Test;
+    }
+
     public static string GetStringData(string PersonsName,  string KeyName, string ValueName)
     {
         var people = PersonController.control.People;

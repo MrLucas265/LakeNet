@@ -91,7 +91,8 @@ public class ProgramSystemv2
         Version,
         DiskManager,
         Computer,
-        Store
+        Store,
+		Discord
 
     }
 

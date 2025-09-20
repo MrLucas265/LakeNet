@@ -7,6 +7,7 @@ public class RegistryDataSystem
 {
     public string ValueName;
     public string DataString;
+    public string DataTypeString;
     public int DataInt;
     public bool DataBool;
     public float DataFloat;
@@ -25,9 +26,18 @@ public class RegistryDataSystem
     public List<FileUtilitySystem> FMSList = new List<FileUtilitySystem>();
     public PlayerDataSystem PlayerData;
 
+    public List<string> DataType = new List<string>();
+    public List<string> DataValue = new List<string>();
+
     public RegistryDataSystem(string valuename)
     {
         ValueName = valuename;
+    }
+
+    public RegistryDataSystem(string valuename, string valuedatatype)
+    {
+        ValueName = valuename;
+        DataTypeString = valuedatatype;
     }
 
     public RegistryDataSystem()

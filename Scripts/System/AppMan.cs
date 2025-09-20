@@ -85,6 +85,7 @@ public class AppMan : MonoBehaviour
     EventViewer eventview;
     ExchangeViewer exchangeviewer;
     MediaPlayer media;
+    MessageUI discordUI;
     //   ChatProgram icq;
 
     BugReport qa;
@@ -226,6 +227,7 @@ public class AppMan : MonoBehaviour
         calendarv2 = Applications.GetComponent<CalendarV2>();
         eventview = Applications.GetComponent<EventViewer>();
         exchangeviewer = Applications.GetComponent<ExchangeViewer>();
+        discordUI = Applications.GetComponent<MessageUI>();
         //    icq = Applications.GetComponent<ChatProgram>();
 
         //INTERNET BROWSERS
@@ -560,6 +562,36 @@ public class AppMan : MonoBehaviour
                 SRM.SelectedProgramsWindowID = winman.TempWID;
 
                 ResetRequestInfo();
+                break;
+
+            case ProgramSystemv2.ProgramTypes.Discord:
+                if (discordUI.quit == false)
+                {
+                    SetWindowInfo(150, 150);
+
+                    SRM.ProgramName = ProgramName;
+                    SRM.ApplicationName = LaunchRequest.ProgramTarget;
+                    SRM.CPUUsage = 0.05f;
+                    SRM.MemoryUsage = 256f;
+                    SRM.SelectedProgramsWindowID = winman.TempWID;
+
+                    discordUI.enabled = true;
+                    discordUI.quit = false;
+                    //fileman.FMS.Add(new FileMangementSystem());
+
+                    ResetRequestInfo();
+                }
+                else
+                {
+                    SRM.ProgramName = LaunchRequest.ProgramName;
+                    SRM.ApplicationName = LaunchRequest.ProgramTarget;
+                    SRM.CPUUsage = 0.05f;
+                    SRM.MemoryUsage = 256f;
+                    SRM.SelectedProgramsWindowID = winman.TempWID;
+                    discordUI.quit = false;
+
+                    ResetRequestInfo();
+                }
                 break;
 
             case ProgramSystemv2.ProgramTypes.Notepad:

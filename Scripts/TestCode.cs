@@ -5,7 +5,7 @@ using System.Text.RegularExpressions;
 using System.Security.Cryptography;
 using System.Linq;
 using System.Linq.Expressions;
-
+using UnityEditor.ShaderGraph.Serialization;
 public class TestCode 
 {
     public static void KeywordCheck(string PersonsName,int PID, string Parse)
@@ -165,6 +165,23 @@ public class TestCode
                 ParseValue = ParseArray[i].Split(':');
 
 				//Registry.AddProgramData(PersonsName, "System", "Clipboard",);
+                ParseArray[i] = "";
+            }
+            //if (ParseArray[i].Contains("SetDataType"))
+            //{
+            //    ParseValue = ParseArray[i].Split(':');
+            //    Registry.SetValueDataType(PersonsName, "System", "Test", ParseValue[1]);
+            //    ParseArray[i] = "";
+            //}
+            if (ParseArray[i].Contains("SaveJson"))
+            {
+                ParseValue = ParseArray[i].Split(':');
+                ParseArray[i] = "";
+            }
+            if (ParseArray[i].Contains("SetDataType"))
+            {
+                ParseValue = ParseArray[i].Split(':');
+                Registry.SetValueDataType(PersonsName, ParseValue[1], ParseValue[2], ParseValue[3]);
                 ParseArray[i] = "";
             }
             if (ParseArray[i].Contains("SetBackground"))

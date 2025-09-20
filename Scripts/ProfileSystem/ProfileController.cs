@@ -25,9 +25,6 @@ public class ProfileController : MonoBehaviour
 
 	public List<OperatingSystems> SelectedOS = new List<OperatingSystems>();
 
-	//Hardware
-	public List<MotherboardSystem> Motherboard = new List<MotherboardSystem>();
-
 	public bool ResetAccount;
 
 	void Awake ()
@@ -111,7 +108,6 @@ public class ProfileController : MonoBehaviour
 		data.VersionNumber = VersionNumber;
 		data.PasswordHint = PasswordHint;
 		data.SelectedOS = SelectedOS;
-		data.Motherboard = Motherboard;
 		data.ResetAccount = ResetAccount;
 
 		bf.Serialize (file, data);
@@ -135,7 +131,6 @@ public class ProfileController : MonoBehaviour
 			VersionNumber = data.VersionNumber;
 			PasswordHint = data.PasswordHint;
 			SelectedOS = data.SelectedOS;
-			Motherboard = data.Motherboard;
 			ResetAccount = data.ResetAccount;
 		}
 	}
@@ -156,9 +151,6 @@ public class ProfileController : MonoBehaviour
 		public string GatewayLocation;
 
 		public List<OperatingSystems> SelectedOS = new List<OperatingSystems>();
-
-		//Hardware
-		public List<MotherboardSystem> Motherboard = new List<MotherboardSystem>();
 
 		public bool ResetAccount;
 	}

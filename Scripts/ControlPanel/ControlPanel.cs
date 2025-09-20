@@ -188,12 +188,12 @@ public class ControlPanel : MonoBehaviour
 
 			if (pwinman.RunningPrograms.Count > 0)
 			{
-				if (WindowID == SelectedWindowID)
-				{
-					winman.RegistryWindowResize(PersonName, SelectedWindowID);
-				}
+                if (WindowID == Registry.GetIntData(PersonName, "WindowManager", "SelectedWindow"))
+                {
+                    winman.WindowResize(PersonName, Registry.GetIntData(PersonName, "WindowManager", "SelectedWindow"));
+                }
 
-				for (int i = 0; i < pwinman.RunningPrograms.Count; i++)
+                for (int i = 0; i < pwinman.RunningPrograms.Count; i++)
 				{
 					if (pwinman.RunningPrograms[i].ProcessName == ProgramNameForWinMan)
 					{

@@ -713,7 +713,14 @@ public class AccSetup : MonoBehaviour
                 SelectedCharacter = 0;
                 RunKeyGen = true;
                 ScoredTime = 0;
-                PasswordBreakerV2();
+                //PasswordBreakerV2();
+            }
+            if(RunKeyGen == true)
+            {
+                if (GUI.Button(new Rect(Screen.width / 3f, Screen.height / 1.5f, 150, 25), "Stop", Button))
+                {
+                    RunKeyGen = false;
+                }
             }
         }
 
@@ -1778,6 +1785,25 @@ public class AccSetup : MonoBehaviour
                                             1,                            // Version
                                             1,                            // Permissions
                                             ProgramSystemv2.ProgramTypes.Null, // Program type
+                                            new ResourceManagerSystem()   // Resource manager
+                                        )
+                                    );
+
+                                    Files.Add(
+                                        new ProgramSystemv2(
+                                            "Discord",              // Name
+                                            "",                           // Content
+                                            "",                           // Description
+                                            "C:/Programs",                // Path
+                                            "Discord",               // Target
+                                            "",                           // IconPath
+                                            "",                           // PicPath
+                                            ProgramSystemv2.FileExtension.exe, //FileExt
+                                            1,                           // FileSize
+                                            100,                          // Health
+                                            1,                            // Version
+                                            1,                            // Permissions
+                                            ProgramSystemv2.ProgramTypes.Discord, // Program type
                                             new ResourceManagerSystem()   // Resource manager
                                         )
                                     );

@@ -111,8 +111,8 @@ public class WindowManager : MonoBehaviour
 
     public void AddProgramWindow()
     {
-        QThread.MakeThread(ThreadedLoop);
-        //ThreadedLoop();
+        //QThread.MakeThread(ThreadedLoop);
+        ThreadedLoop();
 
         int MaxWindowValue = 99999;
         int MinWindowValue = 500;
@@ -155,6 +155,7 @@ public class WindowManager : MonoBehaviour
                         RunningPrograms.Add(new WindowConSys(WindowName, ProgramName, ProcessName, Status, ProcessType, WID, PID,Index, windowRect, windowButtons, TitleBoxRect, Resize, ResizeRect, WindowResizeRect, RMS,ProgramType));
                     }
                     SetLocalRegistry();
+                    SetLocalRegistryv2();
                     TempWID = WID;
                     //ProgramLocalRegisterCheck();
                     ResetValues();
@@ -198,6 +199,51 @@ public class WindowManager : MonoBehaviour
                                     if (RunningPrograms[j].LocalRegister[m].Values[0].ValueName != Registry[k].Values[0].ValueName)
                                     {
                                         RunningPrograms[j].LocalRegister[m].Values.Insert(0, new RegistryDataSystem(Registry[k].Values[0].ValueName));
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    public void SetLocalRegistryv2()
+    {
+        for (int i = 0; i < PersonController.control.People.Count; i++)
+        {
+            var RunningPrograms = PersonController.control.People[i].Gateway.RunningPrograms;
+            var Registry = PersonController.control.People[i].Gateway.Registry;
+
+            for (int j = 0; j < RunningPrograms.Count; j++)
+            {
+                for (int k = 0; k < Registry.Count; k++)
+                {
+                    if (RunningPrograms[j].ProcessName == Registry[k].KeyName)
+                    {
+                        for (int l = 0; l < Registry[k].Valuesv2.Count; l++)
+                        {
+                            var RegVal = Registry[k].Valuesv2[l];
+
+                            if (RunningPrograms[j].LocalRegister.Count == 0)
+                            {
+                                RunningPrograms[j].LocalRegister.Add(new RegistrySystem("" + Registry[k].KeyName, new List<RegistryDataSystem>()));
+                            }
+                            else
+                            {
+                                for (int m = 0; m < RunningPrograms[j].LocalRegister.Count; m++)
+                                {
+                                    if (RunningPrograms[j].LocalRegister[m].Valuesv2.Count < Registry[k].Valuesv2.Count)
+                                    {
+                                        //RunningPrograms[j].LocalRegister[m].KeyName = Registry[k].KeyName;
+                                        RunningPrograms[j].LocalRegister[m].Valuesv2.Add(new RegistryValueSystem(RegVal.ValueName));
+                                    }
+
+
+                                    if (RunningPrograms[j].LocalRegister[m].Valuesv2[0].ValueName != Registry[k].Valuesv2[0].ValueName)
+                                    {
+                                        RunningPrograms[j].LocalRegister[m].Valuesv2.Insert(0, new RegistryValueSystem(Registry[k].Valuesv2[0].ValueName));
                                     }
                                 }
                             }

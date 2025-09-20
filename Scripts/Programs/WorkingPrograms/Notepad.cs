@@ -114,7 +114,7 @@ public class Notepad : MonoBehaviour
 
                         pwinman.RunningPrograms[i].windowRect = WindowClamp.ClampToScreen(GUI.Window(pwinman.RunningPrograms[i].WID, pwinman.RunningPrograms[i].windowRect, DoMyWindow, ""));
 
-                        LocalRegistry.SetRectData(PersonName, i, ProgramNameForWinMan, "Window", pwinman.RunningPrograms[i].windowRect);
+                        LocalRegistryv2.SetRectData(PersonName, i, ProgramNameForWinMan, "WindowRect", pwinman.RunningPrograms[i].windowRect);
                     }
                 }
             }
@@ -123,22 +123,22 @@ public class Notepad : MonoBehaviour
 
     void TitleBarStuff(int PID)
     {
-        if (LocalRegistry.GetStringData(PersonName, PID, ProgramName, "OpenedFile") == "")
+        if (LocalRegistryv2.GetStringData(PersonName, PID, ProgramName, "OpenedFile") == "")
         {
-            LocalRegistry.SetStringData(PersonName, PID, ProgramName, "Window", "Untitled");
+            LocalRegistryv2.SetStringData(PersonName, PID, ProgramName, "WindowName", "Untitled");
         }
         else
         {
-            LocalRegistry.GetStringData(PersonName, PID, ProgramName, "Window");
+            LocalRegistryv2.GetStringData(PersonName, PID, ProgramName, "WindowName");
         }
 
-        if(LocalRegistry.GetRectData(PersonName, PID, ProgramName, "Window").width <= 220)
+        if(LocalRegistryv2.GetRectData(PersonName, PID, ProgramName, "WindowRect").width <= 220)
         {
-            GUI.Box(new Rect(40, 2, CloseButton.x - 79, 20), LocalRegistry.GetStringData(PersonName, PID, ProgramName, "Window"));
+            GUI.Box(new Rect(40, 2, CloseButton.x - 79, 20), LocalRegistryv2.GetStringData(PersonName, PID, ProgramName, "WindowName"));
         }
         else
         {
-            GUI.Box(new Rect(40, 2, CloseButton.x - 79, 20), ProgramNameForWinMan + "-" + LocalRegistry.GetStringData(PersonName, PID, ProgramName, "Window"));
+            GUI.Box(new Rect(40, 2, CloseButton.x - 79, 20), ProgramNameForWinMan + "-" + LocalRegistryv2.GetStringData(PersonName, PID, ProgramName, "WindowName"));
         }
         GUI.DragWindow(new Rect(40, 2, CloseButton.x - 79, 20));
         winman.WindowDragging(Registry.GetIntData(PersonName,"WindowManager","SelectedWindow"), new Rect(40, 2, CloseButton.x - 79, 21));
@@ -248,7 +248,7 @@ public class Notepad : MonoBehaviour
                 LocalRegistry.AddStringListData(PersonName, PID, ProgramName, "PageHistory", "");
             }
 
-            LocalRegistry.AddStringListData(PersonName, PID, ProgramName, "PageHistory", LocalRegistry.GetProgramData(PersonName, PID, ProgramName, "Test 1", LocalRegistry.GetIntData(PersonName, PID, ProgramName, "SelectedFile")).Target);
+            LocalRegistry.AddStringListData(PersonName, PID, ProgramName, "PageHistory", LocalRegistry.GetProgramData(PersonName, PID, ProgramName, "Test 1", LocalRegistryv2.GetIntData(PersonName, PID, ProgramName, "SelectedFile")).Target);
         }
 
 
@@ -266,7 +266,7 @@ public class Notepad : MonoBehaviour
                 LocalRegistry.AddStringListData(PersonName, PID, ProgramName, "PageHistory", "");
             }
 
-            LocalRegistry.SetIntData(PersonName, PID, ProgramName, "SelectedFile", -1);
+            LocalRegistryv2.SetIntData(PersonName, PID, ProgramName, "SelectedFile", -1);
 
             LocalRegistry.SetStringData(PersonName, PID, ProgramName, "CurrentDirectory",
                 LocalRegistry.GetStringListData(PersonName, PID, ProgramName, "PageHistory",
@@ -359,7 +359,7 @@ public class Notepad : MonoBehaviour
         LocalRegistry.SetStringData(PersonName, PID, ProgramName, "CurrentDirectory", LocalRegistry.GetProgramData(PersonName, PID, ProgramName, "Test 1", LocalRegistry.GetIntData(PersonName, PID, ProgramName, "SelectedFile")).Target);
         LocalRegistry.SetStringData(PersonName, PID, ProgramName, "TypedDirectory", LocalRegistry.GetStringData(PersonName, PID, ProgramName, "CurrentDirectory"));
         LocalRegistry.RemoveAllProgramData(PersonName, PID, ProgramName, "Test 1");
-        LocalRegistry.SetIntData(PersonName, PID, ProgramName, "SelectedFile", -1);
+        LocalRegistryv2.SetIntData(PersonName, PID, ProgramName, "SelectedFile", -1);
     }
 
     void OpenFile(int PID)
@@ -370,7 +370,7 @@ public class Notepad : MonoBehaviour
 
         TestCode.KeywordCheck(PersonName, "Open:" + PName + ";");
 
-        LocalRegistry.SetIntData(PersonName, PID, ProgramName, "SelectedFile", -1);
+        LocalRegistryv2.SetIntData(PersonName, PID, ProgramName, "SelectedFile", -1);
     }
 
     void RenderFileUI(int PID)
@@ -384,16 +384,44 @@ public class Notepad : MonoBehaviour
                 RenderFileSaveAs(PID);
                 break;
             case "New":
+                //print(LocalRegistryv2.GetStringListData(PersonName, PID, ProgramName, "PageHistory"));
                 LocalRegistry.SetStringData(PersonName, PID, ProgramName, "SelectedMenu", "");
-                LocalRegistry.SetStringData(PersonName, PID, ProgramName, "TypedText", "");
-                LocalRegistry.SetStringData(PersonName, PID, ProgramName, "OpenedFile", "");
+                LocalRegistryv2.SetStringData(PersonName, PID, ProgramName, "TypedText", "");
+                LocalRegistryv2.SetStringData(PersonName, PID, ProgramName, "OpenedFile", "");
                 break;
             case "Back":
                 LocalRegistry.SetStringData(PersonName, PID, ProgramName, "SelectedMenu", "");
-                LocalRegistry.RemoveMenuButtonData(PersonName, PID, ProgramName, "MenuBar","Back");
+                LocalRegistry.RemoveMenuButtonData(PersonName, PID, ProgramName, "MenuBar", "Back");
                 break;
-            case"Compile":
-                TestCode.KeywordCheck("Player", LocalRegistry.GetStringData(PersonName, PID, ProgramName, "TypedText"));
+            case "Compile":
+                //LocalRegistryv2.SetIntData(PersonName, PID, ProgramName, "SelectedFile", -1);
+                //LocalRegistryv2.SetBoolData(PersonName, PID, ProgramName, "PageHistory", true);
+                //print(LocalRegistryv2.GetBoolData(PersonName, PID, ProgramName, "PageHistory").ToString());
+                //LocalRegistryv2.AddStringListData(PersonName, PID, ProgramName, "SelectedFile", "");
+
+
+                for (int i = 0; i < 10; i++)
+                {
+                    float Test1 = i * 0.05f;
+                    LocalRegistryv2.AddFloatListData(PersonName, PID, ProgramName, "PageHistory", Test1);
+                }
+
+                //for(int i = 0; i < LocalRegistryv2.GetStringListDataCount(PersonName, PID, ProgramName, "PageHistory"); i++)
+                //{
+                //    float Math1 = LocalRegistryv2.GetFloatListData(PersonName, PID, ProgramName, "PageHistory", i);
+                //    float Math = Math1 + LocalRegistryv2.GetFloatData(PersonName, PID, ProgramName, "PageHistory1");
+                //    LocalRegistryv2.SetStringData(PersonName, PID, ProgramName, "PageHistory1", "" + Math);
+                //    float Math2 = LocalRegistryv2.GetFloatData(PersonName, PID, ProgramName, "PageHistory1");
+                if(LocalRegistryv2.GetStringListDataCount(PersonName, PID, ProgramName, "PageHistory") > 3)
+                {
+                    LocalRegistryv2.RemoveAtListData(PersonName, PID, ProgramName, "PageHistory", 2);
+                }
+
+                print(LocalRegistryv2.GetFloatListData(PersonName, PID, ProgramName, "PageHistory", 2));
+                //}
+
+
+                TestCode.KeywordCheck("Player", LocalRegistryv2.GetStringData(PersonName, PID, ProgramName, "TypedText"));
                 LocalRegistry.SetStringData(PersonName, PID, ProgramName, "SelectedMenu", "");
                 break;
         }
@@ -403,38 +431,38 @@ public class Notepad : MonoBehaviour
     {
         if (LocalRegistry.GetMenuButtonCountData(PersonName, PID, ProgramName, "MenuBar") > 0)
         {
-            LocalRegistry.SetRectData(PersonName, PID, ProgramName, "TypedText", new Rect(2, 46,
-            LocalRegistry.GetRectData(PersonName, PID, ProgramName, "Window").width - 4,
-            LocalRegistry.GetRectData(PersonName, PID, ProgramName, "Window").height - 48));
+            LocalRegistryv2.SetRectData(PersonName, PID, ProgramName, "TypedTextRect", new Rect(2, 46,
+            LocalRegistryv2.GetRectData(PersonName, PID, ProgramName, "WindowRect").width - 4,
+            LocalRegistryv2.GetRectData(PersonName, PID, ProgramName, "WindowRect").height - 48));
         }
         else
         {
-            LocalRegistry.SetRectData(PersonName, PID, ProgramName, "TypedText", new Rect(2, 25,
-            LocalRegistry.GetRectData(PersonName, PID, ProgramName, "Window").width - 4,
-            LocalRegistry.GetRectData(PersonName, PID, ProgramName, "Window").height - 27));
+            LocalRegistryv2.SetRectData(PersonName, PID, ProgramName, "TypedTextRect", new Rect(2, 25,
+            LocalRegistryv2.GetRectData(PersonName, PID, ProgramName, "WindowRect").width - 4,
+            LocalRegistryv2.GetRectData(PersonName, PID, ProgramName, "WindowRect").height - 27));
         }
 
-        LocalRegistry.SetStringData(PersonName, PID, ProgramName, "TypedText", GUI.TextArea(
-            LocalRegistry.GetRectData(PersonName, PID, ProgramName, "TypedText"),
-            LocalRegistry.GetStringData(PersonName, PID, ProgramName, "TypedText")));
+        LocalRegistryv2.SetStringData(PersonName, PID, ProgramName, "TypedText", GUI.TextArea(
+            LocalRegistryv2.GetRectData(PersonName, PID, ProgramName, "TypedTextRect"),
+            LocalRegistryv2.GetStringData(PersonName, PID, ProgramName, "TypedText")));
     }
 
     void RenderFileSaveAs(int PID)
     {
 
-        var FileName = LocalRegistry.GetStringData(PersonName, PID, ProgramName, "TypedTitle");
-        var SaveLocation = LocalRegistry.GetStringData(PersonName, PID, ProgramName, "SaveLocation");
-        var TypedText = LocalRegistry.GetStringData(PersonName, PID, ProgramName, "TypedText");
+        var FileName = LocalRegistryv2.GetStringData(PersonName, PID, ProgramName, "TypedTitle");
+        var SaveLocation = LocalRegistryv2.GetStringData(PersonName, PID, ProgramName, "SaveLocation");
+        var TypedText = LocalRegistryv2.GetStringData(PersonName, PID, ProgramName, "TypedText");
 
         GUI.Label(new Rect(5, 50, 150, 21), "File Name");
-        LocalRegistry.SetStringData(PersonName, PID, ProgramName, "TypedTitle",
+        LocalRegistryv2.SetStringData(PersonName, PID, ProgramName, "TypedTitle",
             GUI.TextField(new Rect(5, 100, 140, 21),
-            LocalRegistry.GetStringData(PersonName, PID, ProgramName, "TypedTitle")));
+            LocalRegistryv2.GetStringData(PersonName, PID, ProgramName, "TypedTitle")));
 
         GUI.Label(new Rect(5, 150, 150, 21), "File Location");
-        LocalRegistry.SetStringData(PersonName, PID, ProgramName, "SaveLocation",
+        LocalRegistryv2.SetStringData(PersonName, PID, ProgramName, "SaveLocation",
             GUI.TextField(new Rect(5, 200, 140, 21),
-            LocalRegistry.GetStringData(PersonName, PID, ProgramName, "SaveLocation")));
+            LocalRegistryv2.GetStringData(PersonName, PID, ProgramName, "SaveLocation")));
 
         if (FileName != "")
         {
@@ -442,7 +470,7 @@ public class Notepad : MonoBehaviour
             {
                 if (GUI.Button(new Rect(50, 250, 80, 21), "Add File"))
                 {
-                    LocalRegistry.SetStringData(PersonName, PID, ProgramName, "Window",FileName);
+                    LocalRegistryv2.SetStringData(PersonName, PID, ProgramName, "WindowName",FileName);
                     TestCode.KeywordCheck("Player", "SaveAs?" + FileName + "?" + SaveLocation + "?" + "Txt" + "?" + TypedText + ";");
                 }
             }

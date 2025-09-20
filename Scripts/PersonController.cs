@@ -113,5 +113,5 @@ public class PersonController : MonoBehaviour
         public List<PeopleSystem> People = new List<PeopleSystem>();
 
         public GlobalSystem Global;
-    }
+    } 
 }

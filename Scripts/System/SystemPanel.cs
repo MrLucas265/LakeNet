@@ -1793,7 +1793,7 @@ public class SystemPanel : MonoBehaviour
 		Registry.SetAlphaFloatColorData("Player", "System", "ButtonColor", GUI.HorizontalSlider(new Rect(60, 125, 200, 20), Registry.GetAlphaFloatColorData("Player", "System", "ButtonColor"), 0, 255));
 
 
-		byte red = DataConverter.FloatToByte(Registry.GetRedFloatColorData("Player", "System", "ButtonColor"));
+        byte red = DataConverter.FloatToByte(Registry.GetRedFloatColorData("Player", "System", "ButtonColor"));
 		byte green = DataConverter.FloatToByte(Registry.GetBlueFloatColorData("Player", "System", "ButtonColor"));
 		byte blue = DataConverter.FloatToByte(Registry.GetGreenFloatColorData("Player", "System", "ButtonColor"));
 		byte alpha = DataConverter.FloatToByte(Registry.GetAlphaFloatColorData("Player", "System", "ButtonColor"));
